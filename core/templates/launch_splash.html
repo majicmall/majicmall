@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Majic Mall – Grand Opening</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-black text-white flex flex-col items-center justify-center h-screen">
+  <h1 class="text-5xl font-bold mb-6">🎉 Grand Opening Coming Soon</h1>
+  <p class="text-lg mb-4">Majic Mall will open its doors in:</p>
+  <div id="countdown" class="text-3xl font-bold">⏳ Countdown loading...</div>
+  <script>
+    const targetDate = new Date("2025-07-01T12:00:00-05:00");
+    const countdown = document.getElementById('countdown');
+    setInterval(() => {
+      const now = new Date();
+      const diff = targetDate - now;
+      if (diff <= 0) {
+        countdown.innerText = "🚪 Enter the Mall Now!";
+      } else {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / 1000 / 60) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+        countdown.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

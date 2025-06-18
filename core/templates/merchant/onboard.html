@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Become a Majic Mall Merchant</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-white text-black p-10">
+  <h1 class="text-3xl font-bold mb-4">🛍️ Join Majic Mall</h1>
+  <p class="mb-6">Fill out the merchant application below to open your storefront.</p>
+  <form method="post">
+    {% csrf_token %}
+    <!-- Replace this with actual fields later -->
+    <input type="text" name="store_name" placeholder="Your Store Name" class="border p-2 mb-4 w-full"><br>
+    <input type="email" name="email" placeholder="Your Email" class="border p-2 mb-4 w-full"><br>
+    <button type="submit" class="bg-yellow-400 px-4 py-2 rounded text-black font-bold">Submit</button>
+  </form>
+</body>
+</html>
+

@@ -1,0 +1,23 @@
+name: Backup Majic Mall
+
+on:
+  push:
+    branches:
+      - main  # Change this if your branch is named differently
+
+jobs:
+  create-backup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create ZIP of the entire project
+      run: zip -r majicmall-backup.zip . -x "*.git*" "venv/*"
+
+    - name: Upload backup artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: majicmall-backup
+        path: majicmall-backup.zip

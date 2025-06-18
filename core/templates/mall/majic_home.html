@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inside Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+    .mall-inside-bg {
+      background: url("{% static 'img/inside_majic_mall.png' %}") no-repeat center center;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      height: 100vh;
+      width: 100vw;
+    }
+  </style>
+</head>
+<body class="mall-inside-bg">
+  <div class="flex items-center justify-center h-full bg-black bg-opacity-40">
+    <div class="text-center text-white p-6 rounded-xl">
+      <h1 class="text-4xl font-bold mb-4">🏬 Welcome Inside Majic Mall</h1>
+      <p class="text-lg">Explore shops, restaurants, and magical moments!</p>
+    </div>
+  </div>
+</body>
+</html>
+
+

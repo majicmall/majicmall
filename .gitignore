@@ -32,3 +32,5 @@ node_modules/
 core/static/videos/
 core/static/videos/
 .gitattributes
+core/static/videos/*
+!core/static/videos/.gitkeep

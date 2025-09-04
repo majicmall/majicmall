@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 import csv
 import json
 
@@ -345,23 +345,121 @@ def merchant_store_restore(request):
     return redirect("merchant-profile")
 
 
-# ===== Product stubs so base header links don't break ===========================
+# ===== Products: create / edit / delete ========================================
 @login_required
 def add_product(request):
-    messages.info(request, "Product creation coming soon. (Route is wired.)")
-    return redirect("merchant-dashboard")
+    store = _get_user_store_or_none(request)
+    if not store:
+        messages.error(request, "Create your store first.")
+        return redirect("merchant-profile")
+
+    guard = _redirect_if_archived(request, store)
+    if guard:
+        return guard
+
+    if request.method == "POST":
+        name = (request.POST.get("name") or "").strip()
+        description = (request.POST.get("description") or "").strip()
+        image = request.FILES.get("image")
+
+        # price (optional)
+        price_val: Decimal | None = None
+        price_raw = (request.POST.get("price") or "").strip()
+        if price_raw:
+            try:
+                price_val = Decimal(price_raw)
+            except (InvalidOperation, ValueError):
+                messages.error(request, "Price must be a valid number.")
+                return render(request, "merchant/add_product.html")
+
+        if not name:
+            messages.error(request, "Please provide a product name.")
+            return render(request, "merchant/add_product.html")
+
+        product = Product(store=store, name=name)
+        if hasattr(Product, "price") and price_val is not None:
+            product.price = price_val
+        if hasattr(Product, "description"):
+            product.description = description or ""
+        if hasattr(Product, "image") and image:
+            product.image = image
+
+        product.save()
+        messages.success(request, "Product created successfully.")
+        return redirect("merchant-dashboard")
+
+    # GET
+    return render(request, "merchant/add_product.html")
 
 
 @login_required
 def edit_product(request, product_id: int):
-    messages.info(request, f"Edit Product #{product_id} coming soon. (Route is wired.)")
-    return redirect("merchant-dashboard")
+    store = _get_user_store_or_none(request)
+    if not store:
+        messages.error(request, "Create your store first.")
+        return redirect("merchant-profile")
+
+    guard = _redirect_if_archived(request, store)
+    if guard:
+        return guard
+
+    product = get_object_or_404(Product, pk=product_id, store=store)
+
+    if request.method == "POST":
+        name = (request.POST.get("name") or "").strip()
+        description = (request.POST.get("description") or "").strip()
+        image = request.FILES.get("image")
+
+        price_raw = (request.POST.get("price") or "").strip()
+        if price_raw:
+            try:
+                price_val = Decimal(price_raw)
+            except (InvalidOperation, ValueError):
+                messages.error(request, "Price must be a valid number.")
+                return render(request, "merchant/edit_product.html", {"product": product})
+        else:
+            price_val = None
+
+        if not name:
+            messages.error(request, "Please provide a product name.")
+            return render(request, "merchant/edit_product.html", {"product": product})
+
+        product.name = name
+        if hasattr(Product, "description"):
+            product.description = description or product.description
+        if hasattr(Product, "price") and price_val is not None:
+            product.price = price_val
+        if hasattr(Product, "image") and image:
+            product.image = image
+
+        product.save()
+        messages.success(request, "Product updated.")
+        return redirect("merchant-dashboard")
+
+    return render(request, "merchant/edit_product.html", {"product": product})
 
 
 @login_required
 def delete_product(request, product_id: int):
-    messages.info(request, f"Delete Product #{product_id} coming soon. (Route is wired.)")
-    return redirect("merchant-dashboard")
+    store = _get_user_store_or_none(request)
+    if not store:
+        messages.error(request, "Create your store first.")
+        return redirect("merchant-profile")
+
+    guard = _redirect_if_archived(request, store)
+    if guard:
+        return guard
+
+    product = get_object_or_404(Product, pk=product_id, store=store)
+
+    if request.method == "POST":
+        name = product.name
+        product.delete()
+        messages.success(request, f"Deleted “{name}”.")
+        return redirect("merchant-dashboard")
+
+    # Confirm screen
+    return render(request, "merchant/confirm_delete.html", {"product": product})
 
 
 # ===== CSV export for reports ===================================================

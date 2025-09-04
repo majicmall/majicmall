@@ -31,6 +31,5 @@ node_modules/
 # ---- Large static assets ----
 core/static/videos/
 core/static/videos/
-.gitattributes
 core/static/videos/*
 !core/static/videos/.gitkeep

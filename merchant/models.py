@@ -75,6 +75,10 @@ class Product(models.Model):
     image = models.ImageField(upload_to="product_images/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        db_table = "core_product"   # <-- use the old table that already has your rows
+
+
     def __str__(self):
         return self.name
 

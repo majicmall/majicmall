@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Order #{{ order.id }} | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-gray-900 px-6 py-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold text-yellow-400">Order #{{ order.id }}</h1>
+    <nav class="space-x-6 text-sm flex items-center">
+      <a href="{% url 'merchant-dashboard' %}" class="text-gray-300 hover:text-yellow-400">Dashboard</a>
+      <a href="{% url 'merchant-profile' %}" class="text-gray-300 hover:text-yellow-400">Profile</a>
+      <a href="{% url 'order-list' %}" class="text-yellow-400">Orders</a>
+      <a href="{% url 'merchant-reports' %}" class="text-gray-300 hover:text-yellow-400">Reports</a>
+      <form action="{% url 'merchant-logout' %}" method="post" class="inline">
+        {% csrf_token %}
+        <button type="submit" class="text-gray-300 hover:text-yellow-400">Logout</button>
+      </form>
+    </nav>
+  </header>
+
+  <!-- Messages -->
+  {% if messages %}
+    <div class="max-w-5xl mx-auto px-6 mt-4 space-y-2">
+      {% for message in messages %}
+        <div class="rounded-xl px-4 py-3
+                    {% if message.tags == 'success' %}bg-green-900/40 text-green-200
+                    {% elif message.tags == 'error' %}bg-red-900/40 text-red-200
+                    {% else %}bg-gray-800 text-gray-200{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main -->
+  <main class="max-w-5xl mx-auto px-6 py-8">
+
+    <!-- Order Info -->
+    <section class="mb-6 bg-gray-900 p-6 rounded-2xl shadow">
+      <h2 class="text-lg font-semibold mb-4 text-yellow-400">Order Information</h2>
+      <div class="grid gap-2 sm:grid-cols-2">
+        <p><strong>Status:</strong>
+          {% with s=order.status %}
+            <span class="ml-2 px-2.5 py-1 rounded-full text-xs font-semibold
+                         {% if s == 'paid' or s == 'completed' %}bg-green-900/40 text-green-200
+                         {% elif s == 'pending' %}bg-yellow-900/40 text-yellow-200
+                         {% elif s == 'shipped' %}bg-blue-900/40 text-blue-200
+                         {% elif s == 'refunded' or s == 'canceled' %}bg-red-900/40 text-red-200
+                         {% else %}bg-gray-800 text-gray-200{% endif %}">
+              {{ s|title }}
+            </span>
+          {% endwith %}
+        </p>
+        <p><strong>Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}</p>
+        <p class="sm:col-span-2"><strong>Total:</strong> ${{ order.total|floatformat:2 }}</p>
+      </div>
+    </section>
+
+    <!-- Order Items -->
+    <section class="bg-gray-900 p-6 rounded-2xl shadow">
+      <h2 class="text-lg font-semibold mb-4 text-yellow-400">Items</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-left">
+          <thead class="bg-gray-800 text-gray-300 uppercase text-sm">
+            <tr>
+              <th class="px-6 py-3">Product</th>
+              <th class="px-6 py-3">Qty</th>
+              <th class="px-6 py-3">Unit Price</th>
+              <th class="px-6 py-3">Line Total</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800">
+            {% for it in order.items.all %}
+              <tr class="hover:bg-gray-800">
+                <td class="px-6 py-3">{{ it.name }}</td>
+                <td class="px-6 py-3">{{ it.quantity }}</td>
+                <td class="px-6 py-3">${{ it.unit_price|floatformat:2 }}</td>
+                <td class="px-6 py-3">${{ it.line_total|floatformat:2 }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="px-6 py-6 text-center text-gray-400">
+                  No items in this order.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Back to Dashboard (footer shortcut) -->
+    <div class="mt-8 text-center">
+      <a href="{% url 'merchant-dashboard' %}"
+         class="px-6 py-3 bg-yellow-400 text-black rounded-xl shadow hover:opacity-90">
+        🏬 Back to Dashboard
+      </a>
+    </div>
+
+  </main>
+</body>
+</html>

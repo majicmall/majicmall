@@ -1,0 +1,46 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Delete Product | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+
+  <header class="bg-gray-900 shadow px-6 py-4 flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-yellow-400">Delete Product</h1>
+    <nav class="space-x-4 text-sm">
+      <a href="{% url 'merchant-dashboard' %}" class="text-gray-300 hover:text-yellow-400">← Back to Dashboard</a>
+    </nav>
+  </header>
+
+  {% if messages %}
+    <div class="max-w-3xl mx-auto px-6 mt-4 space-y-2">
+      {% for message in messages %}
+        <div class="rounded-xl px-4 py-3
+                    {% if message.tags == 'success' %}bg-green-900/40 text-green-200
+                    {% elif message.tags == 'error' %}bg-red-900/40 text-red-200
+                    {% else %}bg-gray-800 text-gray-200{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="max-w-3xl mx-auto px-6 py-8">
+    <div class="bg-gray-900 rounded-2xl p-6 space-y-4">
+      <h2 class="text-lg font-semibold text-red-300">Are you sure you want to delete <span class="text-yellow-400">“{{ product.name }}”</span>?</h2>
+      <p class="text-gray-300">This action can’t be undone.</p>
+
+      <form method="post" class="flex items-center gap-3">
+        {% csrf_token %}
+        <button type="submit" class="px-5 py-2.5 bg-red-600/80 text-white rounded-xl hover:bg-red-600">Yes, delete it</button>
+        <a href="{% url 'merchant-dashboard' %}" class="px-5 py-2.5 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">Cancel</a>
+      </form>
+    </div>
+  </main>
+</body>
+</html>
+

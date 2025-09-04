@@ -1,0 +1,113 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Orders | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .nav-active { position: relative; color: #facc15; }
+    .nav-active::after {
+      content: ""; position: absolute; left: 0; bottom: -4px;
+      width: 100%; height: 2px; background: #facc15; border-radius: 1px;
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+
+  {% include "merchant/_nav.html" %}
+
+  <!-- Page Header -->
+  <header class="bg-gray-900 shadow px-6 py-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <h1 class="text-2xl font-bold text-yellow-400">Orders</h1>
+      <nav class="space-x-4 text-sm">
+        <a href="{% url 'merchant-dashboard' %}" class="text-gray-300 hover:text-yellow-400">← Back to Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Messages -->
+  {% if messages %}
+    <div class="max-w-6xl mx-auto px-6 mt-4 space-y-2">
+      {% for message in messages %}
+        <div class="rounded-xl px-4 py-3
+                    {% if message.tags == 'success' %}bg-green-900/40 text-green-200
+                    {% elif message.tags == 'error' %}bg-red-900/40 text-red-200
+                    {% else %}bg-gray-800 text-gray-200{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main -->
+  <main class="max-w-6xl mx-auto px-6 py-8">
+
+    {% if orders %}
+      <div class="overflow-x-auto bg-gray-900 rounded-2xl shadow">
+        <table class="min-w-full text-left">
+          <thead class="bg-gray-800 text-gray-300 uppercase text-sm">
+            <tr>
+              <th class="px-6 py-3">Order</th>
+              <th class="px-6 py-3">Status</th>
+              <th class="px-6 py-3">Date</th>
+              <th class="px-6 py-3">Total</th>
+              <th class="px-6 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800">
+            {% for order in orders %}
+              <tr class="hover:bg-gray-800">
+                <td class="px-6 py-3 font-medium">#{{ order.id }}</td>
+                <td class="px-6 py-3">
+                  {% with s=order.status %}
+                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold
+                                 {% if s == 'paid' or s == 'completed' %}bg-green-900/40 text-green-200
+                                 {% elif s == 'pending' %}bg-yellow-900/40 text-yellow-200
+                                 {% elif s == 'shipped' %}bg-blue-900/40 text-blue-200
+                                 {% elif s == 'refunded' or s == 'canceled' %}bg-red-900/40 text-red-200
+                                 {% else %}bg-gray-800 text-gray-200{% endif %}">
+                      {{ s|title }}
+                    </span>
+                  {% endwith %}
+                </td>
+                <td class="px-6 py-3">{{ order.created_at|date:"M d, Y" }}</td>
+                <td class="px-6 py-3">${{ order.total|floatformat:2 }}</td>
+                <td class="px-6 py-3">
+                  <a href="{% url 'order-detail' order.id %}" class="text-yellow-400 hover:underline">View</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if page_obj %}
+        <div class="flex items-center justify-between mt-4 text-sm text-gray-300">
+          <div>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</div>
+          <div class="space-x-2">
+            {% if page_obj.has_previous %}
+              <a class="px-3 py-1 bg-gray-800 rounded hover:bg-gray-700" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+            {% if page_obj.has_next %}
+              <a class="px-3 py-1 bg-gray-800 rounded hover:bg-gray-700" href="?page={{ page_obj.next_page_number }}">Next</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="bg-gray-900 rounded-2xl p-10 text-center">
+        <div class="text-5xl mb-4">🧾</div>
+        <h2 class="text-xl font-semibold mb-2">No orders yet</h2>
+        <p class="text-gray-400 mb-6">Orders will appear here once customers start buying.</p>
+        <a href="{% url 'merchant-dashboard' %}" class="px-5 py-3 bg-yellow-400 text-black rounded-xl hover:opacity-90">
+          Go to Dashboard
+        </a>
+      </div>
+    {% endif %}
+
+  </main>
+</body>
+</html>

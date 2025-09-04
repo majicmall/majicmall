@@ -1,0 +1,134 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Create Your Store | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-gray-900 px-6 py-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold text-yellow-400">Create Your Store</h1>
+    <nav class="space-x-4 text-sm">
+      <a href="{% url 'merchant-dashboard' %}" class="text-gray-300 hover:text-yellow-400">← Back to Dashboard</a>
+    </nav>
+  </header>
+
+  <!-- Messages -->
+  {% if messages %}
+    <div class="max-w-3xl mx-auto px-6 mt-4 space-y-2">
+      {% for message in messages %}
+        <div class="rounded-xl px-4 py-3
+                    {% if message.tags == 'success' %}bg-green-900/40 text-green-200
+                    {% elif message.tags == 'error' %}bg-red-900/40 text-red-200
+                    {% else %}bg-gray-800 text-gray-200{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main -->
+  <main class="max-w-3xl mx-auto px-6 py-8">
+    <section class="bg-gray-900 p-6 rounded-2xl shadow">
+      <h2 class="text-lg font-semibold mb-6 text-yellow-400">Let’s set up your store</h2>
+
+      <form method="post" enctype="multipart/form-data" class="space-y-5">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        <!-- Store Name -->
+        <div>
+          <label for="{{ form.store_name.id_for_label }}" class="block text-sm font-medium text-gray-200 mb-1">
+            {{ form.store_name.label }}{% if form.store_name.field.required %}<span class="text-red-400">*</span>{% endif %}
+          </label>
+          {{ form.store_name }}
+          {% if form.store_name.help_text %}<p class="text-xs text-gray-400 mt-1">{{ form.store_name.help_text|safe }}</p>{% endif %}
+          {% for error in form.store_name.errors %}<p class="text-sm text-red-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+
+        <!-- Slogan -->
+        <div>
+          <label for="{{ form.slogan.id_for_label }}" class="block text-sm font-medium text-gray-200 mb-1">
+            {{ form.slogan.label }}
+          </label>
+          {{ form.slogan }}
+          {% if form.slogan.help_text %}<p class="text-xs text-gray-400 mt-1">{{ form.slogan.help_text|safe }}</p>{% endif %}
+          {% for error in form.slogan.errors %}<p class="text-sm text-red-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-200 mb-1">
+            {{ form.description.label }}
+          </label>
+          {{ form.description }}
+          {% if form.description.help_text %}<p class="text-xs text-gray-400 mt-1">{{ form.description.help_text|safe }}</p>{% endif %}
+          {% for error in form.description.errors %}<p class="text-sm text-red-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+
+        <!-- Category -->
+        <div>
+          <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-200 mb-1">
+            {{ form.category.label }}{% if form.category.field.required %}<span class="text-red-400">*</span>{% endif %}
+          </label>
+          {{ form.category }}
+          {% for error in form.category.errors %}<p class="text-sm text-red-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+
+        <!-- Plan -->
+        <div>
+          <label for="{{ form.plan.id_for_label }}" class="block text-sm font-medium text-gray-200 mb-1">
+            {{ form.plan.label }}
+          </label>
+          {{ form.plan }}
+          {% for error in form.plan.errors %}<p class="text-sm text-red-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+
+        <!-- Logo -->
+        <div>
+          <label for="{{ form.logo.id_for_label }}" class="block text-sm font-medium text-gray-200 mb-2">Store Logo</label>
+          <div class="flex items-center gap-4">
+            <div id="logoPreviewFallback" class="w-20 h-20 rounded-lg grid place-items-center bg-gray-800 text-gray-400">🏬</div>
+            <img id="logoPreview" src="" alt="" class="w-20 h-20 rounded-lg object-cover bg-gray-800 hidden">
+            {{ form.logo }}
+          </div>
+          {% if form.logo.errors %}<p class="text-red-400 text-sm mt-2">{{ form.logo.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="submit"
+                  class="px-6 py-3 bg-yellow-400 text-black rounded-xl shadow hover:opacity-90">
+            🚀 Create Store
+          </button>
+          <a href="{% url 'merchant-dashboard' %}"
+             class="px-6 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Live logo preview -->
+  <script>
+    const fileInput = document.getElementById('id_logo');
+    const img = document.getElementById('logoPreview');
+    const fallback = document.getElementById('logoPreviewFallback');
+    if (fileInput) {
+      fileInput.addEventListener('change', (e) => {
+        const [file] = e.target.files || [];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        if (fallback) fallback.classList.add('hidden');
+        img.src = url;
+        img.classList.remove('hidden');
+      });
+    }
+  </script>
+</body>
+</html>

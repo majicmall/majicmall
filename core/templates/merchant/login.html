@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% load socialaccount %}
+{% load form_filters %}
+
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-yellow-100 to-red-200 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-xl border border-gray-300">
+    
+    <!-- Logo or Title -->
+    <div class="text-center">
+      <!-- Logo -->
+<div class="flex justify-center">
+  <img src="{% static 'img/majicmall_logo.png' %}" alt="Majic Mall Logo" class="h-24 mb-4 drop-shadow-xl">
+<div class="text-center mb-6">
+  <h2 class="text-3xl font-extrabold text-yellow-600 animate-pulse drop-shadow-lg">👑 Welcome Back to Majic Mall</h2>
+  <p class="mt-2 text-md text-gray-700">Your store, your empire, your magic ✨</p>
+</div>
+
+
+    {% if form.errors %}
+      <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4">
+        Invalid login credentials. Please try again.
+      </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'merchant-login' %}" class="mt-8 space-y-6">
+      {% csrf_token %}
+      <div class="rounded-md shadow-sm -space-y-px">
+        {{ form.username|add_class:"appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" }}
+        {{ form.password|add_class:"appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" }}
+      </div>
+
+      <div class="flex items-center justify-between">
+        <label class="flex items-center">
+          <input type="checkbox" name="remember" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
+          <span class="ml-2 text-sm text-gray-600">Remember me</span>
+        </label>
+        <a href="#" class="text-sm text-red-600 hover:text-red-800">Need help?</a>
+      </div>
+
+      <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+        Login
+      </button>
+    </form>
+
+    <div class="text-center mt-6 text-sm text-gray-600">
+      Or login with:
+      <div class="mt-2 italic text-gray-400">Social login coming soon...</div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

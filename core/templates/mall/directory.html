@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Majic Mall Directory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: black;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      animation: directoryFadeIn 2s ease-in-out;
+    }
+
+    @keyframes directoryFadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes welcomeFade {
+      0%   { opacity: 0; transform: translateY(-20px); }
+      10%  { opacity: 1; transform: translateY(0); }
+      90%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-20px); }
+    }
+
+    .animate-welcome {
+      animation: welcomeFade 4s ease-in-out forwards;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Fading Welcome Message -->
+  <div id="welcome-message" class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-yellow-300 text-black text-xl font-bold px-6 py-3 rounded-xl shadow-2xl z-50 opacity-0 animate-welcome">
+    👋 Welcome to Majic Mall
+  </div>
+
+  <div class="flex flex-col items-center justify-center min-h-screen p-6 fade-in">
+    <img src="{% static 'img/majic_directory.png' %}" 
+         alt="Majic Mall Directory"
+         class="w-full h-auto mb-6">
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+      <a href="{% url 'fashion-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">FASHION</a>
+      <a href="{% url 'entertainment-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">ENTERTAINMENT</a>
+      <a href="{% url 'tech-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">TECH</a>
+      <a href="{% url 'home-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">HOME</a>
+      <a href="{% url 'family-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">FAMILY</a>
+      <a href="{% url 'creators-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">CREATORS</a>
+      <a href="{% url 'merchant-invite' %}" class="px-4 py-2 m-2 bg-yellow-400 text-black font-bold rounded-xl shadow-lg hover:bg-yellow-500 transition duration-300">
+  🛍️ Become a Merchant
+</a>
+<a href="/merchant/login/" class="px-4 py-2 m-2 bg-gray-700 text-white rounded-xl shadow-lg hover:bg-gray-900 transition duration-300">
+  🔐 Merchant Login
+</a>
+
+      <a href="{% url 'luxury-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">LUXURY</a>
+      <a href="{% url 'atls-hottest-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">ATL's HOTTEST</a>
+      <a href="{% url 'food-court-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">FOOD COURT</a>
+      <a href="{% url 'theater-entrance' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">THEATER</a>
+      <a href="{% url 'learning-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">LEARNING</a>
+    </div>
+
+    <p class="text-white mt-6 italic">🧭 You Are Here: Main Entrance</p>
+  </div>
+</body>
+</html>

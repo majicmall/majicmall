@@ -1,0 +1,93 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Add Product | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-gray-900 shadow px-6 py-4 flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-yellow-400">Add Product</h1>
+    <nav class="space-x-4 text-sm">
+      <a href="{% url 'merchant-dashboard' %}" class="text-gray-300 hover:text-yellow-400">← Back to Dashboard</a>
+    </nav>
+  </header>
+
+  <!-- Messages -->
+  {% if messages %}
+    <div class="max-w-3xl mx-auto px-6 mt-4 space-y-2">
+      {% for message in messages %}
+        <div class="rounded-xl px-4 py-3
+                    {% if message.tags == 'success' %}bg-green-900/40 text-green-200
+                    {% elif message.tags == 'error' %}bg-red-900/40 text-red-200
+                    {% else %}bg-gray-800 text-gray-200{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main -->
+  <main class="max-w-3xl mx-auto px-6 py-8">
+    <form method="post" enctype="multipart/form-data" class="bg-gray-900 rounded-2xl p-6 space-y-6">
+      {% csrf_token %}
+
+      <div>
+        <label for="name" class="block text-sm text-gray-300 mb-1">Name</label>
+        <input id="name" name="name" type="text" required
+               class="w-full px-3 py-2 rounded border border-gray-700 bg-white text-black focus:outline-none focus:ring-2 focus:ring-yellow-400"
+               placeholder="e.g. Classic Tee" />
+      </div>
+
+      <div>
+        <label for="price" class="block text-sm text-gray-300 mb-1">Price</label>
+        <input id="price" name="price" type="number" step="0.01" min="0" required
+               class="w-full px-3 py-2 rounded border border-gray-700 bg-white text-black focus:outline-none focus:ring-2 focus:ring-yellow-400"
+               placeholder="0.00" />
+      </div>
+
+      <div>
+        <label for="description" class="block text-sm text-gray-300 mb-1">Description</label>
+        <textarea id="description" name="description" rows="4"
+                  class="w-full px-3 py-2 rounded border border-gray-700 bg-white text-black focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  placeholder="Tell customers about this product…"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm text-gray-300 mb-2">Image</label>
+        <div class="flex items-center gap-4">
+          <div id="imgPreviewFallback" class="w-20 h-20 rounded-lg grid place-items-center bg-gray-800 text-gray-400">🖼️</div>
+          <img id="imgPreview" src="" alt="" class="w-20 h-20 rounded-lg object-cover bg-gray-800 hidden" />
+          <input type="file" name="image" id="id_image" accept="image/*"
+                 class="block text-sm file:mr-3 file:py-2 file:px-3 file:rounded file:border-0 file:bg-yellow-400 file:text-black hover:file:opacity-90">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button type="submit" class="px-5 py-2.5 bg-yellow-400 text-black rounded-xl hover:opacity-90">Add Product</button>
+        <a href="{% url 'merchant-dashboard' %}" class="px-5 py-2.5 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">Cancel</a>
+      </div>
+    </form>
+  </main>
+
+  <!-- Simple image preview -->
+  <script>
+    const fi = document.getElementById('id_image');
+    const img = document.getElementById('imgPreview');
+    const fb  = document.getElementById('imgPreviewFallback');
+    if (fi) {
+      fi.addEventListener('change', e => {
+        const [file] = e.target.files || [];
+        if (!file) return;
+        img.src = URL.createObjectURL(file);
+        img.classList.remove('hidden');
+        if (fb) fb.classList.add('hidden');
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}🎟️ Majic Mall Box Office{% endblock %}
+
+{% block content %}
+<style>
+  .box-office-wrapper {
+    padding: 40px;
+    background-image: url('{% static "img/theater_bg.jpg" %}');
+    background-size: cover;
+    background-position: center;
+  }
+</style>
+
+<div class="box-office-wrapper">
+  <h1 style="text-align: center; font-size: 3rem; color: gold; text-shadow: 2px 2px 5px red;">🎟️ Majic Mall Box Office</h1>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; margin-top: 30px;">
+    {% for movie in movies %}
+      <div style="background: rgba(0,0,0,0.8); padding: 20px; border: 2px solid gold; border-radius: 12px; width: 300px; box-shadow: 0 0 15px red; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        <img src="{{ movie.image.url }}" alt="{{ movie.title }}" style="width: 100%; border-radius: 10px; box-shadow: 0 0 8px gold;">
+
+        <h2 style="margin-top: 10px; color: white;">{{ movie.title }}</h2>
+        <p style="color: lightgray;"><strong>Genre:</strong> {{ movie.genre }}</p>
+        <p style="color: lightgray;"><strong>Runtime:</strong> {{ movie.runtime }}</p>
+        <p style="color: lightgray;"><strong>Rating:</strong> ⭐⭐⭐⭐☆</p>
+
+        {% if movie.description %}
+          <p style="margin-top: 10px; font-size: 0.9rem; color: #ccc;">{{ movie.description|truncatechars:100 }}</p>
+        {% endif %}
+
+        <div style="margin-top: 15px;">
+          {% if movie.trailer_url %}
+            <a href="{% url 'trailer-view' %}?id={{ movie.id }}" class="button" style="display: inline-block; margin: 5px 0; padding: 10px 15px; background: gold; color: black; border-radius: 8px; text-decoration: none;">▶️ Watch Trailer</a>
+          {% endif %}
+          <a href="{% url 'buy-ticket' movie.id %}" class="button" style="display: inline-block; margin: 5px 0; padding: 10px 15px; background: red; color: white; border-radius: 8px; text-decoration: none;">🎟 Buy Ticket</a>
+          <a href="{% url 'coming-soon' %}" class="button" style="display: inline-block; margin: 5px 0; padding: 10px 15px; background: #555; color: white; border-radius: 8px; text-decoration: none;">🔔 Coming Soon</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

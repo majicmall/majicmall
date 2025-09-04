@@ -1,6 +1,24 @@
-venv/
+# Python
 __pycache__/
-*.pyc
-db.sqlite3
+*.py[cod]
+*.egg-info/
+
+# Env & IDE
+venv/
 .env
+.vscode/
+.DS_Store
+
+# Django
+db.sqlite3
+/media/
+staticfiles/
 *.log
+
+# Archives/Backups
+*.zip
+*.tar
+*.tar.gz
+
+# Node (if any)
+node_modules/

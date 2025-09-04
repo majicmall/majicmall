@@ -6,31 +6,61 @@
   <title>Inside Majic Mall</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
   <style>
-    html, body {
+    body {
       margin: 0;
       padding: 0;
-      height: 100%;
-      width: 100%;
+      background-color: black;
+      font-family: 'Arial', sans-serif;
+      animation: fadeOut 3s ease-in-out 3s forwards; /* fade out after 3 sec delay */
     }
-    .mall-inside-bg {
-      background: url("{% static 'img/inside_majic_mall.png' %}") no-repeat center center;
+
+    .mall-background {
+      background-image: url("{% static 'img/inside_majic_mall.png' %}");
       background-size: cover;
       background-position: center;
-      background-attachment: fixed;
       height: 100vh;
-      width: 100vw;
+      width: 100%;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+      }
+    }
+
+    @keyframes welcomeFade {
+      0%   { opacity: 0; transform: translateY(-20px); }
+      10%  { opacity: 1; transform: translateY(0); }
+      90%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-20px); }
+    }
+
+    .animate-welcome {
+      animation: welcomeFade 4s ease-in-out forwards;
     }
   </style>
+
+  <script>
+    // Redirect to the directory after 5 seconds
+    setTimeout(function() {
+      window.location.href = "/directory/";
+    }, 5000);
+  </script>
 </head>
-<body class="mall-inside-bg">
-  <div class="flex items-center justify-center h-full bg-black bg-opacity-40">
-    <div class="text-center text-white p-6 rounded-xl">
-      <h1 class="text-4xl font-bold mb-4">🏬 Welcome Inside Majic Mall</h1>
-      <p class="text-lg">Explore shops, restaurants, and magical moments!</p>
+<body>
+  <div class="mall-background"></div>
+
+  <!-- ✨ Centered Welcome Message -->
+  <div class="fixed inset-0 flex items-center justify-center z-50">
+    <div id="welcome-message" class="bg-yellow-300 text-black text-xl font-bold px-6 py-3 rounded-xl shadow-2xl opacity-0 animate-welcome">
+      ✨ Welcome to Majic Mall – Shop, Browse, Play & Experience the Majic!
     </div>
   </div>
 </body>
 </html>
+
 
 

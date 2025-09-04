@@ -1,0 +1,348 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Reports | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .nav-active { position: relative; color: #facc15; }
+    .nav-active::after {
+      content: ""; position: absolute; left: 0; bottom: -4px;
+      width: 100%; height: 2px; background: #facc15; border-radius: 1px;
+    }
+    .card { background:#111827; }
+    .tick { fill: rgba(255,255,255,.6); font-size: 10px }
+    .axis { stroke: rgba(255,255,255,.15) }
+    .grid { stroke: rgba(255,255,255,.08) }
+    .series-line { stroke: #facc15; fill: none; stroke-width: 2; }
+    .series-area { fill: rgba(250,204,21,.15); }
+    .kpi { text-align:center }
+    .placeholder { color:#9CA3AF; background:#0B1220; border:1px dashed #374151; padding:28px; border-radius:12px; text-align:center; }
+  </style>
+  {% if use_chartjs %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  {% endif %}
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+
+  {% include "merchant/_nav.html" %}
+
+  <!-- Messages -->
+  {% if messages %}
+    <div class="max-w-6xl mx-auto px-6 mt-4 space-y-2">
+      {% for message in messages %}
+        <div class="rounded-xl px-4 py-3
+                    {% if message.tags == 'success' %}bg-green-900/40 text-green-200
+                    {% elif message.tags == 'error' %}bg-red-900/40 text-red-200
+                    {% else %}bg-gray-800 text-gray-200{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main -->
+  <main class="max-w-6xl mx-auto px-6 py-8">
+
+    <!-- Page Title + Quick Links -->
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <h1 class="text-xl font-bold text-yellow-400">Reports &amp; Analytics</h1>
+      <div class="space-x-4 text-sm">
+        <a href="{% url 'merchant-dashboard' %}" class="text-gray-300 hover:text-yellow-400">Dashboard</a>
+        <a href="{% url 'merchant-profile' %}" class="text-gray-300 hover:text-yellow-400">Profile</a>
+        <a href="{% url 'order-list' %}" class="text-gray-300 hover:text-yellow-400">Orders</a>
+        {% if use_chartjs %}
+          <a href="{% url 'merchant-reports' %}?range={{ days }}" class="text-gray-300 hover:text-yellow-400">Switch to Lite</a>
+        {% else %}
+          <a href="{% url 'merchant-reports' %}?charts=pro&range={{ days }}" class="text-gray-300 hover:text-yellow-400">Switch to Pro</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Filters / Export -->
+    <section class="mb-6 card p-4 rounded-2xl shadow">
+      <div class="flex flex-wrap items-center gap-3">
+        <form method="get" class="flex items-center gap-3">
+          {% if use_chartjs %}<input type="hidden" name="charts" value="pro">{% endif %}
+          <label class="text-sm text-gray-300">Range</label>
+          <select name="range" class="text-black rounded px-2 py-1">
+            <option value="7"  {% if days == 7 %}selected{% endif %}>Last 7 days</option>
+            <option value="30" {% if days == 30 %}selected{% endif %}>Last 30 days</option>
+            <option value="90" {% if days == 90 %}selected{% endif %}>Last 90 days</option>
+          </select>
+          <button class="px-3 py-2 bg-gray-800 text-yellow-400 rounded hover:bg-gray-700" type="submit">Apply</button>
+        </form>
+
+        <a
+          href="{% url 'merchant-reports-export' %}?range={{ days }}{% if use_chartjs %}&charts=pro{% endif %}"
+          class="px-3 py-2 bg-yellow-400 text-black rounded hover:opacity-90">
+          ⬇️ Export CSV
+        </a>
+      </div>
+    </section>
+
+    <!-- Store summary -->
+    <section class="mb-8 card p-6 rounded-2xl shadow flex items-center gap-4">
+      {% if store.logo %}
+        <img src="{{ store.logo.url }}" alt="{{ store.store_name }}" class="h-12 w-12 rounded-lg object-cover" />
+      {% else %}
+        <div class="h-12 w-12 rounded-lg bg-gray-800 grid place-items-center text-gray-400">🏬</div>
+      {% endif %}
+      <div class="flex-1">
+        <h2 class="text-2xl font-bold text-yellow-400">{{ store.store_name }}</h2>
+        {% if store.slogan %}
+          <p class="text-gray-400">{{ store.slogan }}</p>
+        {% elif store.description %}
+          <p class="text-gray-400">{{ store.description|truncatechars:120 }}</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="card p-6 rounded-2xl shadow kpi">
+        <div class="text-2xl mb-2">🧾</div>
+        <p class="text-gray-400">Total Orders</p>
+        <p class="text-3xl font-bold text-yellow-400">{{ total_orders }}</p>
+      </div>
+      <div class="card p-6 rounded-2xl shadow kpi">
+        <div class="text-2xl mb-2">💰</div>
+        <p class="text-gray-400">Total Revenue</p>
+        <p class="text-3xl font-bold text-yellow-400">${{ total_revenue|floatformat:2 }}</p>
+      </div>
+      <div class="card p-6 rounded-2xl shadow kpi">
+        <div class="text-2xl mb-2">📦</div>
+        <p class="text-gray-400">Products</p>
+        <p class="text-3xl font-bold text-yellow-400">{{ product_count }}</p>
+      </div>
+    </section>
+
+    {% if use_chartjs %}
+      <!-- Pro: Chart.js -->
+      <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="card p-6 rounded-2xl shadow">
+          <h3 class="text-lg font-semibold mb-4">Orders (Last {{ days }} Days)</h3>
+          <canvas id="ordersChart" height="140"></canvas>
+        </div>
+        <div class="card p-6 rounded-2xl shadow">
+          <h3 class="text-lg font-semibold mb-4">Revenue (Last {{ days }} Days)</h3>
+          <canvas id="revenueChart" height="140"></canvas>
+        </div>
+      </section>
+
+      <script>
+        (function () {
+          const chartLabels = JSON.parse('{{ labels|escapejs }}');
+          const ordersSeries = JSON.parse('{{ orders_series|escapejs }}');
+          const revenueSeries = JSON.parse('{{ revenue_series|escapejs }}');
+
+          const gridColor = 'rgba(255,255,255,0.08)';
+          const tickColor = 'rgba(255,255,255,0.6)';
+          const borderColor = 'rgba(250, 204, 21, 0.9)';
+          const fillColor = 'rgba(250, 204, 21, 0.18)';
+
+          function maybePlaceholder(id, data) {
+            const empty = !Array.isArray(data) || data.length === 0 || data.reduce((a,b)=>a+(+b||0),0) === 0;
+            if (empty) {
+              const c = document.getElementById(id);
+              if (c && c.parentElement) {
+                c.remove();
+                const ph = document.createElement('div');
+                ph.className = 'placeholder';
+                ph.textContent = 'No data yet';
+                c.parentElement.appendChild(ph);
+              }
+              return true;
+            }
+            return false;
+          }
+
+          if (!maybePlaceholder("ordersChart", ordersSeries)) {
+            new Chart(document.getElementById('ordersChart'), {
+              type: 'bar',
+              data: {
+                labels: chartLabels || [],
+                datasets: [{
+                  label: 'Orders',
+                  data: ordersSeries || [],
+                  borderColor,
+                  backgroundColor: 'rgba(250,204,21,.35)',
+                  borderWidth: 1,
+                  borderRadius: 4
+                }]
+              },
+              options: {
+                responsive: true,
+                scales: {
+                  x: { grid: { color: gridColor }, ticks: { color: tickColor, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } },
+                  y: { grid: { color: gridColor }, ticks: { color: tickColor, precision: 0 } }
+                },
+                plugins: { legend: { labels: { color: tickColor } } }
+              }
+            });
+          }
+
+          if (!maybePlaceholder("revenueChart", revenueSeries)) {
+            new Chart(document.getElementById('revenueChart'), {
+              type: 'line',
+              data: {
+                labels: chartLabels || [],
+                datasets: [{
+                  label: 'Revenue',
+                  data: revenueSeries || [],
+                  borderColor,
+                  backgroundColor: fillColor,
+                  fill: true,
+                  tension: 0.35,
+                  pointRadius: 0
+                }]
+              },
+              options: {
+                responsive: true,
+                scales: {
+                  x: { grid: { color: gridColor }, ticks: { color: tickColor, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } },
+                  y: { grid: { color: gridColor }, ticks: { color: tickColor } }
+                },
+                plugins: { legend: { labels: { color: tickColor } } }
+              }
+            });
+          }
+        })();
+      </script>
+
+    {% else %}
+      <!-- Lite: inline SVG -->
+      <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="card p-6 rounded-2xl shadow">
+          <h3 class="text-lg font-semibold mb-4">Orders — last {{ days }} days</h3>
+          {% if no_orders_data %}
+            <div class="placeholder">No data yet</div>
+          {% else %}
+            <div class="chart"
+                 data-type="bar"
+                 data-labels='{{ labels|escapejs }}'
+                 data-series='{{ orders_series|escapejs }}'
+                 style="width:100%;height:220px"></div>
+          {% endif %}
+        </div>
+        <div class="card p-6 rounded-2xl shadow">
+          <h3 class="text-lg font-semibold mb-4">Revenue — last {{ days }} days</h3>
+          {% if no_revenue_data %}
+            <div class="placeholder">No data yet</div>
+          {% else %}
+            <div class="chart"
+                 data-type="line"
+                 data-labels='{{ labels|escapejs }}'
+                 data-series='{{ revenue_series|escapejs }}'
+                 style="width:100%;height:220px"></div>
+          {% endif %}
+        </div>
+      </section>
+
+      <script>
+        (function () {
+          function niceMax(n){ if(n<=10)return 10; const p=Math.pow(10,Math.floor(Math.log10(n))); return Math.ceil(n/p)*p; }
+          function drawChart(container){
+            const labels = JSON.parse(container.dataset.labels || "[]");
+            const series = JSON.parse(container.dataset.series || "[]").map(Number);
+            const type = container.dataset.type || "line";
+            const W = Math.floor(container.clientWidth), H = Math.floor(container.clientHeight);
+            const M = {top:10,right:12,bottom:28,left:36}, w=W-M.left-M.right, h=H-M.top-M.bottom;
+
+            const svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+            svg.setAttribute("width",W); svg.setAttribute("height",H); svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+            const g = document.createElementNS(svg.namespaceURI,"g"); g.setAttribute("transform",`translate(${M.left},${M.top})`); svg.appendChild(g);
+
+            const maxY = niceMax(Math.max(1,...series)); const ticks=4;
+            for(let i=0;i<=ticks;i++){
+              const y = h-(h*i/ticks);
+              const grid = document.createElementNS(svg.namespaceURI,"line");
+              grid.setAttribute("x1",0); grid.setAttribute("y1",y); grid.setAttribute("x2",w); grid.setAttribute("y2",y); grid.setAttribute("class","grid"); g.appendChild(grid);
+              const txt = document.createElementNS(svg.namespaceURI,"text");
+              txt.setAttribute("x",-8); txt.setAttribute("y",y+3); txt.setAttribute("text-anchor","end"); txt.setAttribute("class","tick"); txt.textContent = Math.round(maxY*i/ticks); g.appendChild(txt);
+            }
+            const x0 = document.createElementNS(svg.namespaceURI,"line"); x0.setAttribute("x1",0); x0.setAttribute("y1",h); x0.setAttribute("x2",w); x0.setAttribute("y2",h); x0.setAttribute("class","axis"); g.appendChild(x0);
+
+            const L=labels.length, xTicks=Math.min(6,L);
+            for(let i=0;i<xTicks;i++){
+              const idx=Math.round(i*(L-1)/(xTicks-1||1));
+              const x=w*idx/(L-1||1);
+              const t=document.createElementNS(svg.namespaceURI,"text");
+              t.setAttribute("x",x); t.setAttribute("y",h+16); t.setAttribute("text-anchor","middle"); t.setAttribute("class","tick");
+              t.textContent=labels[idx];
+              g.appendChild(t);
+            }
+
+            const xFor=i=>w*i/(series.length-1||1), yFor=v=>h-(h*v/(maxY||1));
+
+            if(type==="bar"){
+              const band=w/(series.length||1), barW=Math.max(2,band*.66);
+              series.forEach((v,i)=>{
+                const x=xFor(i)-barW/2, y=yFor(v);
+                const r=document.createElementNS(svg.namespaceURI,"rect");
+                r.setAttribute("x",x); r.setAttribute("y",y); r.setAttribute("width",barW); r.setAttribute("height",Math.max(0,h-y));
+                r.setAttribute("fill","rgba(250,204,21,.35)"); r.setAttribute("rx","4");
+                g.appendChild(r);
+              });
+              const path=document.createElementNS(svg.namespaceURI,"path"); let d="";
+              series.forEach((v,i)=>{ d+=(i?" L ":"M ")+xFor(i)+" "+yFor(v); });
+              path.setAttribute("d",d); path.setAttribute("class","series-line"); g.appendChild(path);
+            } else {
+              if(series.length){
+                let dA="M 0 "+yFor(series[0]);
+                series.forEach((v,i)=>{ dA+=" L "+xFor(i)+" "+yFor(v); });
+                dA+=" L "+w+" "+h+" L 0 "+h+" Z";
+                const area=document.createElementNS(svg.namespaceURI,"path");
+                area.setAttribute("d",dA); area.setAttribute("class","series-area"); g.appendChild(area);
+              }
+              const path=document.createElementNS(svg.namespaceURI,"path"); let d="";
+              series.forEach((v,i)=>{ d+=(i?" L ":"M ")+xFor(i)+" "+yFor(v); });
+              path.setAttribute("d",d); path.setAttribute("class","series-line"); path.setAttribute("stroke-linecap","round"); g.appendChild(path);
+            }
+            container.innerHTML=""; container.appendChild(svg);
+          }
+          function drawAll(){ document.querySelectorAll(".chart").forEach(drawChart); }
+          window.addEventListener("resize",()=>{ clearTimeout(window.__r); window.__r=setTimeout(drawAll,120); });
+          drawAll();
+        })();
+      </script>
+    {% endif %}
+
+    <!-- Top products -->
+    <section class="mt-8 card p-6 rounded-2xl shadow">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold">Top Products ({{ days }} days)</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-left">
+          <thead class="bg-gray-800 text-gray-300 uppercase text-sm">
+            <tr>
+              <th class="px-4 py-2">Product</th>
+              <th class="px-4 py-2">Qty</th>
+              <th class="px-4 py-2">Revenue</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800">
+            {% if top_products %}
+              {% for p in top_products %}
+              <tr class="hover:bg-gray-800">
+                <td class="px-4 py-2">{{ p.name }}</td>
+                <td class="px-4 py-2">{{ p.qty }}</td>
+                <td class="px-4 py-2">${{ p.revenue|floatformat:2 }}</td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="3" class="px-4 py-4 text-center text-gray-400">No product breakdown yet.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

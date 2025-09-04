@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-yellow-100 to-red-200 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-2xl w-full bg-white p-10 rounded-xl shadow-lg">
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <img src="{% static 'img/majicmall_logo.png' %}" alt="Majic Mall Logo" class="mx-auto h-16 mb-4">
+      <h2 class="text-3xl font-extrabold text-gray-900">Let’s Set Up Your Store 🛍️</h2>
+      <p class="text-gray-600 mt-2">Just a few quick details and you'll be open for business inside Majic Mall!</p>
+    </div>
+
+    <!-- Form -->
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+
+      <div>
+        <label for="store_name" class="block text-sm font-medium text-gray-700">Store Name</label>
+        <input type="text" name="store_name" id="store_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="Enter your store name">
+      </div>
+
+      <div>
+        <label for="slogan" class="block text-sm font-medium text-gray-700">Slogan or Tagline</label>
+        <input type="text" name="slogan" id="slogan" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="e.g. Where Majic Happens!">
+      </div>
+
+      <div>
+        <label for="category" class="block text-sm font-medium text-gray-700">Store Category</label>
+        <select id="category" name="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm">
+          <option value="">Choose a category</option>
+          <option value="fashion">Fashion</option>
+          <option value="tech">Tech</option>
+          <option value="entertainment">Entertainment</option>
+          <option value="beauty">Beauty</option>
+          <option value="home">Home & Decor</option>
+          <option value="food">Food & Beverage</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="logo" class="block text-sm font-medium text-gray-700">Upload Store Logo</label>
+        <input type="file" name="logo" id="logo" class="mt-1 block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800">
+      </div>
+
+      <div>
+        <label for="description" class="block text-sm font-medium text-gray-700">Short Store Description</label>
+        <textarea name="description" id="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="Tell shoppers what makes your store unique..."></textarea>
+      </div>
+
+      <div>
+        <button type="submit" class="w-full bg-black text-white py-3 px-6 rounded-md hover:bg-gray-800 transition">
+          🚀 Save & Continue
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Become a Merchant – Majic Mall{% endblock %}
+
+{% block content %}
+<style>
+  .merchant-invite-wrapper {
+    background-image: url("{% static 'img/mall_background.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    padding: 60px 20px;
+  }
+
+  .merchant-invite-card {
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 40px;
+    max-width: 900px;
+    margin: auto;
+    border-radius: 20px;
+    box-shadow: 0 0 20px gold;
+  }
+
+  .merchant-invite-card h1 {
+    text-align: center;
+    font-size: 3rem;
+    color: gold;
+    text-shadow: 2px 2px red;
+  }
+
+  .merchant-invite-card p {
+    text-align: center;
+    font-size: 1.2rem;
+    color: white;
+    margin-top: 20px;
+  }
+
+  .merchant-invite-card ul {
+    color: #ddd;
+    margin-top: 30px;
+    font-size: 1.1rem;
+    line-height: 1.8;
+  }
+
+  .merchant-buttons {
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .merchant-button {
+    background-color: gold;
+    color: black;
+    font-weight: bold;
+    padding: 14px 30px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    box-shadow: 0 0 10px red;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+
+  .merchant-login {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .merchant-login a {
+    color: gold;
+    text-decoration: underline;
+  }
+
+  .merchant-login p {
+    color: #ccc;
+  }
+</style>
+
+<div class="merchant-invite-wrapper">
+  <div class="merchant-invite-card">
+    <h1>🛍️ Open Your Store in Majic Mall</h1>
+
+    <p>
+      Join a powerful digital mall built for dreamers, doers, and go-getters like you. ✨
+    </p>
+
+    <ul>
+      <li>🚀 Reach new customers across the globe</li>
+      <li>📊 Access analytics & sales tools built to grow your brand</li>
+      <li>🎯 Get featured in our marketplace and streaming network</li>
+      <li>💼 Manage products, digital content, and services in one dashboard</li>
+      <li>🎉 Participate in mall-wide promotions and events</li>
+    </ul>
+
+    <div class="merchant-buttons">
+      <a href="{% url 'merchant-onboard' %}" class="merchant-button">
+        ✨ Become a Merchant Now
+      </a>
+    </div>
+
+    <div class="merchant-login">
+      <p>Already have a merchant account?</p>
+      <a href="/merchant/login/">Sign In Here</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

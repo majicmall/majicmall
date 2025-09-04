@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Theater Zone</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Curtain container to position images */
+    .curtain-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    /* Left Curtain */
+    .curtain-left {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 50%;
+      object-fit: cover;
+      animation: curtainLeft 3s forwards;
+    }
+
+    /* Right Curtain */
+    .curtain-right {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 50%;
+      object-fit: cover;
+      animation: curtainRight 3s forwards;
+    }
+
+    @keyframes curtainLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    @keyframes curtainRight {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(100%); }
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 2rem;
+    }
+
+    .poster-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+
+    .poster-gallery img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
+    }
+
+    .poster-gallery img:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <!-- Luxurious Velvet Curtains -->
+  <div class="curtain-container">
+    <img src="{% static 'img/curtain_left.png' %}" alt="Left Curtain" class="curtain curtain-left" />
+    <img src="{% static 'img/curtain_right.png' %}" alt="Right Curtain" class="curtain curtain-right" />
+  </div>
+
+  <!-- Main Content -->
+  <h1>Welcome to the Theater Zone</h1>
+
+  <div class="poster-gallery">
+    <img src="{% static 'img/poster1.jpg' %}" alt="Movie 1" />
+    <img src="{% static 'img/poster2.jpg' %}" alt="Movie 2" />
+    <img src="{% static 'img/poster3.jpg' %}" alt="Movie 3" />
+    <img src="{% static 'img/poster4.jpg' %}" alt="Movie 4" />
+    <!-- Add more posters as needed -->
+  </div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Merchant Plans – Majic Mall{% endblock %}
+
+{% block content %}
+<div class="bg-black min-h-screen py-16 px-4 text-white">
+  <div class="max-w-6xl mx-auto text-center">
+    <h1 class="text-4xl font-extrabold text-gold mb-6">Choose Your Merchant Plan</h1>
+    <p class="text-lg text-gray-300 mb-12">Pick the tier that fits your business goals best. Upgrade anytime. No risk. All reward. 🛍️</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+      <!-- STARTER PLAN -->
+      <div class="border border-yellow-500 rounded-2xl p-8 bg-gray-900 shadow-xl">
+        <h2 class="text-2xl font-bold text-yellow-400">Starter</h2>
+        <p class="text-3xl my-4">$19<span class="text-lg">/mo</span></p>
+        <ul class="text-left space-y-3 text-sm text-gray-200">
+          <li>✅ Basic Storefront</li>
+          <li>✅ 10 Products</li>
+          <li>✅ 1 Category Listing</li>
+          <li>✅ Access to Promotions</li>
+        </ul>
+        <a href="{% url 'merchant-onboard' %}?plan=starter" class="mt-6 inline-block bg-yellow-400 text-black font-bold py-2 px-6 rounded-lg hover:bg-yellow-300 transition">Choose Starter</a>
+      </div>
+
+      <!-- PRO PLAN -->
+      <div class="border-4 border-purple-600 rounded-2xl p-8 bg-gray-800 shadow-2xl transform scale-105">
+        <h2 class="text-2xl font-bold text-purple-400">Pro</h2>
+        <p class="text-3xl my-4">$49<span class="text-lg">/mo</span></p>
+        <ul class="text-left space-y-3 text-sm text-gray-200">
+          <li>✅ Full Storefront + Custom Pages</li>
+          <li>✅ Up to 100 Products</li>
+          <li>✅ Featured Listing Placement</li>
+          <li>✅ Loyalty Program Tools</li>
+        </ul>
+        <a href="{% url 'merchant-onboard' %}?plan=pro" class="mt-6 inline-block bg-purple-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-purple-400 transition">Choose Pro</a>
+      </div>
+
+      <!-- ELITE PLAN -->
+      <div class="border border-red-400 rounded-2xl p-8 bg-gray-900 shadow-xl">
+        <h2 class="text-2xl font-bold text-red-400">Elite</h2>
+        <p class="text-3xl my-4">$99<span class="text-lg">/mo</span></p>
+        <ul class="text-left space-y-3 text-sm text-gray-200">
+          <li>✅ Everything in Pro</li>
+          <li>✅ Unlimited Products</li>
+          <li>✅ Ad Spots in Theater & TV</li>
+          <li>✅ VIP Event Invites + Sponsorship Tools</li>
+        </ul>
+        <a href="{% url 'merchant-onboard' %}?plan=elite" class="mt-6 inline-block bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-400 transition">Choose Elite</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

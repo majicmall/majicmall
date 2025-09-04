@@ -1,0 +1,92 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Stores | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+
+  <header class="bg-gray-900 px-6 py-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold text-yellow-400">All Stores</h1>
+    <nav class="space-x-4 text-sm">
+      <a href="{% url 'merchant-dashboard' %}" class="text-gray-300 hover:text-yellow-400">← Back to Dashboard</a>
+    </nav>
+  </header>
+
+  {% if messages %}
+    <div class="max-w-6xl mx-auto px-6 mt-4 space-y-2">
+      {% for message in messages %}
+        <div class="rounded-xl px-4 py-3
+                    {% if message.tags == 'success' %}bg-green-900/40 text-green-200
+                    {% elif message.tags == 'error' %}bg-red-900/40 text-red-200
+                    {% elif message.tags == 'warning' %}bg-yellow-900/40 text-yellow-200
+                    {% else %}bg-gray-800 text-gray-200{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+    <div class="overflow-x-auto bg-gray-900 rounded-2xl shadow">
+      <table class="min-w-full text-left">
+        <thead class="bg-gray-800 text-gray-300 uppercase text-sm">
+          <tr>
+            <th class="px-6 py-3">Store</th>
+            <th class="px-6 py-3">Owner</th>
+            <th class="px-6 py-3">Plan</th>
+            <th class="px-6 py-3">Status</th>
+            <th class="px-6 py-3">Created</th>
+            <th class="px-6 py-3">Products</th>
+            <th class="px-6 py-3">Orders</th>
+            <th class="px-6 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-800">
+          {% for s in stores %}
+          <tr class="hover:bg-gray-800">
+            <td class="px-6 py-3">{{ s.store_name }}</td>
+            <td class="px-6 py-3">{{ s.owner.username }}</td>
+            <td class="px-6 py-3">{{ s.get_plan_display }}</td>
+            <td class="px-6 py-3">
+              {% if s.is_archived %}
+                <span class="text-yellow-300">Archived</span>
+                {% if s.archived_at %}
+                  <span class="text-gray-400 text-xs block">since {{ s.archived_at|date:"M d, Y" }}</span>
+                {% endif %}
+              {% else %}
+                <span class="text-green-300">Active</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-3">{{ s.created_at|date:"M d, Y" }}</td>
+            <td class="px-6 py-3">{{ s.products.count }}</td>
+            <td class="px-6 py-3">{{ s.orders.count }}</td>
+            <td class="px-6 py-3 space-x-3">
+              {% if s.is_archived %}
+                <form class="inline" method="post" action="{% url 'admin-store-restore' s.id %}">
+                  {% csrf_token %}
+                  <button class="text-green-400 hover:underline">Restore</button>
+                </form>
+                {# Let the purge view enforce the 7-day waiting period #}
+                <a href="{% url 'admin-store-purge' s.id %}" class="text-red-400 hover:underline">Purge</a>
+              {% else %}
+                <a href="{% url 'admin-store-archive' s.id %}" class="text-yellow-400 hover:underline">Archive</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" class="px-6 py-6 text-center text-gray-400">
+              No stores yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

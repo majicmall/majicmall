@@ -1,0 +1,71 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Merchant Login | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen flex items-center justify-center">
+
+  <div class="w-full max-w-md bg-gray-900 rounded-2xl shadow-xl p-8">
+    <!-- Logo / Heading -->
+    <div class="text-center mb-6">
+      <h1 class="text-2xl font-bold text-yellow-400">Merchant Login</h1>
+      <p class="text-gray-400 text-sm">Access your store dashboard</p>
+    </div>
+
+    <!-- Login Form -->
+    <form method="post" class="space-y-5" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      <div>
+        <label for="id_username" class="block text-sm font-medium text-gray-300 mb-1">
+          Username
+        </label>
+        {{ form.username }}
+      </div>
+
+      <div>
+        <label for="id_password" class="block text-sm font-medium text-gray-300 mb-1">
+          Password
+        </label>
+        {{ form.password }}
+      </div>
+
+      <button type="submit"
+        class="w-full py-3 bg-yellow-400 text-black font-semibold rounded-xl hover:opacity-90 transition">
+        🔑 Login
+      </button>
+    </form>
+
+    <!-- Extra Links -->
+    <div class="mt-6 text-center text-sm text-gray-400 space-y-2">
+      <a href="{% url 'account_reset_password' %}" class="hover:text-yellow-400">Forgot password?</a>
+      <div>
+        New to Majic Mall?
+        <a href="{% url 'merchant-register' %}" class="text-yellow-400 hover:underline">Create a merchant account</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tailwind form reset so inputs look consistent -->
+  <style>
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid #d1d5db;
+      background-color: #fff;
+      color: #000;
+      outline: none;
+    }
+    input:focus {
+      box-shadow: 0 0 0 2px #facc15; /* yellow-400 */
+    }
+  </style>
+</body>
+</html>
+

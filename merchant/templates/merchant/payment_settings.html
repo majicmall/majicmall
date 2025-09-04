@@ -1,0 +1,96 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Payment Settings | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+  <header class="bg-gray-900 px-6 py-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold text-yellow-400">Payment Settings</h1>
+    <nav class="space-x-4 text-sm">
+      <a href="{% url 'merchant-dashboard' %}" class="text-gray-300 hover:text-yellow-400">← Back to Dashboard</a>
+    </nav>
+  </header>
+
+  {% if messages %}
+    <div class="max-w-5xl mx-auto px-6 mt-4 space-y-2">
+      {% for message in messages %}
+        <div class="rounded-xl px-4 py-3
+                    {% if message.tags == 'success' %}bg-green-900/40 text-green-200
+                    {% elif message.tags == 'error' %}bg-red-900/40 text-red-200
+                    {% elif message.tags == 'warning' %}bg-yellow-900/40 text-yellow-200
+                    {% else %}bg-gray-800 text-gray-200{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="max-w-5xl mx-auto px-6 py-8">
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-semibold">Your Payment Methods</h2>
+        <p class="text-gray-400 text-sm">Enable Stripe, PayPal, or your own processors.</p>
+      </div>
+      <a href="{% url 'merchant-payment-create' %}" class="px-4 py-2 bg-yellow-400 text-black rounded-xl hover:opacity-90">
+        + Add Method
+      </a>
+    </div>
+
+    <div class="bg-gray-900 rounded-2xl overflow-hidden">
+      <table class="min-w-full text-left">
+        <thead class="bg-gray-800 text-gray-300 text-sm uppercase">
+          <tr>
+            <th class="px-6 py-3">Provider</th>
+            <th class="px-6 py-3">Display Name</th>
+            <th class="px-6 py-3">Mode</th>
+            <th class="px-6 py-3">Active</th>
+            <th class="px-6 py-3">Default</th>
+            <th class="px-6 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-800">
+          {% for m in methods %}
+          <tr class="hover:bg-gray-800">
+            <td class="px-6 py-3">
+              {% if m.provider == 'stripe' %}<span class="px-2 py-1 bg-indigo-600/30 text-indigo-200 rounded">Stripe</span>{% endif %}
+              {% if m.provider == 'paypal' %}<span class="px-2 py-1 bg-blue-600/30 text-blue-200 rounded">PayPal</span>{% endif %}
+              {% if m.provider == 'card' %}<span class="px-2 py-1 bg-teal-600/30 text-teal-200 rounded">Credit/Debit</span>{% endif %}
+              {% if m.provider not in 'stripe paypal card' %}<span class="px-2 py-1 bg-gray-600/30 text-gray-200 rounded">{{ m.provider|title }}</span>{% endif %}
+            </td>
+            <td class="px-6 py-3">{{ m.display_name|default:"—" }}</td>
+            <td class="px-6 py-3">{{ m.mode|title }}</td>
+            <td class="px-6 py-3">
+              {% if m.is_active %}
+                <span class="text-green-300">Active</span>
+              {% else %}
+                <span class="text-gray-400">Disabled</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-3">{% if m.is_default %}⭐{% else %}—{% endif %}</td>
+            <td class="px-6 py-3 space-x-3">
+              <a href="{% url 'merchant-payment-edit' m.id %}" class="text-yellow-400 hover:underline">Edit</a>
+              <form method="post" action="{% url 'merchant-payment-delete' m.id %}" class="inline" onsubmit="return confirm('Delete this method?');">
+                {% csrf_token %}
+                <button class="text-red-400 hover:underline" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="px-6 py-6 text-center text-gray-400">No payment methods yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-8 text-sm text-gray-400">
+      <p>Tip: You can add multiple methods and mark one as default. Your checkout flow can show all active methods.</p>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<header class="bg-gray-900 shadow px-6 py-4 flex items-center justify-between">
+  <h1 class="text-2xl font-bold text-yellow-400">Merchant</h1>
+
+  <nav class="space-x-6 text-sm flex items-center">
+    <a href="{% url 'merchant-dashboard' %}"
+       class="{% if request.resolver_match.url_name == 'merchant-dashboard' %}nav-active{% else %}text-gray-300 hover:text-yellow-400{% endif %}">
+      Dashboard
+    </a>
+
+    <a href="{% url 'merchant-profile' %}"
+       class="{% if request.resolver_match.url_name == 'merchant-profile' %}nav-active{% else %}text-gray-300 hover:text-yellow-400{% endif %}">
+      Profile
+    </a>
+
+    <a href="{% url 'order-list' %}"
+       class="{% if request.resolver_match.url_name == 'order-list' %}nav-active{% else %}text-gray-300 hover:text-yellow-400{% endif %}">
+      Orders
+    </a>
+
+    <a href="{% url 'merchant-reports' %}"
+       class="{% if request.resolver_match.url_name == 'merchant-reports' %}nav-active{% else %}text-gray-300 hover:text-yellow-400{% endif %}">
+      Reports
+    </a>
+
+    {% if request.user.is_superuser or request.user.is_staff %}
+      <a href="{% url 'admin-store-list' %}" class="text-gray-300 hover:text-yellow-400">
+        Manage Stores
+      </a>
+    {% endif %}
+
+    <form action="{% url 'merchant-logout' %}" method="post" class="inline">
+      {% csrf_token %}
+      <button type="submit" class="text-gray-300 hover:text-yellow-400">Logout</button>
+    </form>
+  </nav>
+</header>

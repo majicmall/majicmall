@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Majic Mall Theater Entrance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: 'Georgia', serif;
+    }
+
+    .theater-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      background: url("{% static 'img/majic_mall_theater_front_1920.jpg' %}") center center no-repeat;
+      background-size: cover;
+      background-color: black;
+      z-index: 0;
+    }
+
+    .overlay {
+      position: relative;
+      z-index: 1;
+      color: gold;
+      text-align: center;
+      padding-top: 3rem;
+      text-shadow: 0 0 10px red;
+    }
+
+    .overlay h1 {
+      font-size: 2.5rem;
+    }
+
+    .overlay p {
+      font-size: 1.25rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="bg" class="theater-background"></div>
+
+  <div id="overlay" class="overlay">
+    <h1>🎥 Welcome to the Majic Mall Theater</h1>
+    <p></p>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      document.getElementById('bg').style.transition = "opacity 1s ease-out";
+      document.getElementById('overlay').style.transition = "opacity 1s ease-out";
+
+      document.getElementById('bg').style.opacity = "0";
+      document.getElementById('overlay').style.opacity = "0";
+
+      setTimeout(() => {
+        window.location.href = "{% url 'theater-lobby' %}";
+      }, 1000);  // after fade
+    }, 2000);  // wait before fade
+  </script>
+</body>
+</html>

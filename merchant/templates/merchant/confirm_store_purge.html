@@ -1,0 +1,45 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Purge Store | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+  <header class="bg-gray-900 px-6 py-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold text-red-400">Purge Store</h1>
+    <nav class="space-x-4 text-sm">
+      <a href="{% url 'admin-store-list' %}" class="text-gray-300 hover:text-yellow-400">← Back to Stores</a>
+    </nav>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-6 py-8">
+    <section class="bg-gray-900 p-6 rounded-2xl shadow">
+      <h2 class="text-lg font-semibold mb-4 text-red-400">Permanent deletion</h2>
+      {% if can_purge %}
+        <p class="text-gray-300 mb-6">
+          You are about to permanently delete <strong>{{ store.store_name }}</strong> and ALL associated products and orders.
+          This action cannot be undone.
+        </p>
+        <form method="post">
+          {% csrf_token %}
+          <div class="flex items-center gap-3">
+            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-500">
+              Yes, purge permanently
+            </button>
+            <a href="{% url 'admin-store-list' %}" class="px-4 py-2 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+              Cancel
+            </a>
+          </div>
+        </form>
+      {% else %}
+        <div class="px-4 py-3 rounded-xl bg-yellow-900/30 text-yellow-200">
+          This store is not eligible for purge yet (still within the 7-day restore window).
+        </div>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>

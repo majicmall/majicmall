@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Theater Lobby - Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Georgia', serif;
+      background-color: black;
+    }
+
+    .lobby-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .lobby-overlay {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      color: gold;
+      text-shadow: 0 0 10px red;
+      padding-top: 3rem;
+    }
+
+    .lobby-buttons {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .lobby-buttons a {
+      background: gold;
+      color: black;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 0 10px red;
+    }
+  </style>
+</head>
+<body>
+
+ <img src="{% static 'img/majictheater_lobby.jpg' %}" alt="Majic Lobby" class="lobby-image">
+ 
+
+  <div class="lobby-overlay">
+    <h1>🎟️ Welcome to the Majic Mall Theater Lobby</h1>
+    <div class="lobby-buttons">
+      <a href="{% url 'box-office' %}">🎬 Visit Box Office</a>
+      <a href="{% url 'theater-zone' %}">⬅️ Back to Theater Directory</a>
+    </div>
+  </div>
+
+</body>
+</html>

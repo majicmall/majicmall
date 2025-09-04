@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Majic Mall{% endblock %}</title>
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Brand colors
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            majic: {
+              gold: '#F5C542',   // Gold
+              red:  '#E11D48',   // Rose/Red
+              black:'#000000',
+              white:'#FFFFFF',
+            }
+          },
+          boxShadow: {
+            'soft': '0 8px 24px rgba(0,0,0,0.12)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="icon" href="{% static 'img/favicon.png' %}" />
+</head>
+<body class="min-h-screen bg-gradient-to-b from-majic-black via-zinc-900 to-black text-zinc-100">
+
+  <!-- Top Bar -->
+  <header class="bg-majic-black/95 border-b border-zinc-800 sticky top-0 z-40 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3 group">
+        <img src="{% static 'img/majicmall_logo.png' %}" alt="Majic Mall" class="h-8 w-auto">
+        <span class="font-extrabold tracking-wide text-majic-gold group-hover:text-white transition">
+          Majic Mall
+        </span>
+      </a>
+
+      <nav class="flex items-center gap-1">
+        <a href="{% url 'merchant-dashboard' %}"
+           class="px-3 py-2 rounded-lg text-sm font-medium hover:text-white hover:bg-zinc-800 transition">
+          Dashboard
+        </a>
+        <a href="{% url 'add-product' %}"
+           class="px-3 py-2 rounded-lg text-sm font-medium hover:text-white hover:bg-zinc-800 transition">
+          Add Product
+        </a>
+        <a href="{% url 'merchant-setup' %}"
+           class="px-3 py-2 rounded-lg text-sm font-medium hover:text-white hover:bg-zinc-800 transition">
+          Setup Store
+        </a>
+        <!-- Accent CTA -->
+        <a href="{% url 'merchant-dashboard' %}"
+           class="ml-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold
+                  bg-majic-gold text-black hover:brightness-95 shadow-soft transition">
+          <span>Open Dashboard</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Flash Messages -->
+  {% if messages %}
+    <div class="max-w-4xl mx-auto px-4 mt-5">
+      {% for message in messages %}
+        <div class="mb-3 rounded-md p-3 border
+                    {% if message.tags == 'success' %} bg-green-50/10 text-green-300 border-green-700
+                    {% elif message.tags == 'error' %} bg-red-50/10 text-red-300 border-red-700
+                    {% elif message.tags == 'warning' %} bg-yellow-50/10 text-yellow-300 border-yellow-600
+                    {% else %} bg-zinc-800/60 text-zinc-100 border-zinc-700 {% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-zinc-800 py-8 mt-10">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-zinc-400">&copy; {{ now|date:"Y" }} Majic Mall. All rights reserved.</p>
+      <div class="flex items-center gap-3 text-sm">
+        <span class="text-zinc-400">Powered by</span>
+        <span class="font-semibold text-majic-gold">Majic</span>
+        <span class="text-zinc-500">•</span>
+        <a href="{% url 'merchant-dashboard' %}" class="hover:underline">Dashboard</a>
+        <a href="{% url 'add-product' %}" class="hover:underline">Add Product</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>All Payment Methods | Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+  <header class="bg-gray-900 px-6 py-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold text-yellow-400">All Payment Methods</h1>
+    <nav class="space-x-4 text-sm">
+      <a href="{% url 'admin-store-list' %}" class="text-gray-300 hover:text-yellow-400">← Stores Admin</a>
+    </nav>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+    <div class="bg-gray-900 rounded-2xl overflow-auto">
+      <table class="min-w-full text-left">
+        <thead class="bg-gray-800 text-gray-300 text-sm uppercase">
+          <tr>
+            <th class="px-6 py-3">Store</th>
+            <th class="px-6 py-3">Owner</th>
+            <th class="px-6 py-3">Provider</th>
+            <th class="px-6 py-3">Display Name</th>
+            <th class="px-6 py-3">Mode</th>
+            <th class="px-6 py-3">Active</th>
+            <th class="px-6 py-3">Default</th>
+            <th class="px-6 py-3">Updated</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-800">
+          {% for m in methods %}
+          <tr class="hover:bg-gray-800">
+            <td class="px-6 py-3">{{ m.store.store_name }}</td>
+            <td class="px-6 py-3">{{ m.store.owner.username }}</td>
+            <td class="px-6 py-3">{{ m.get_provider_display }}</td>
+            <td class="px-6 py-3">{{ m.display_name|default:"—" }}</td>
+            <td class="px-6 py-3">{{ m.mode|title }}</td>
+            <td class="px-6 py-3">{% if m.is_active %}<span class="text-green-300">Active</span>{% else %}<span class="text-gray-400">Disabled</span>{% endif %}</td>
+            <td class="px-6 py-3">{% if m.is_default %}⭐{% else %}—{% endif %}</td>
+            <td class="px-6 py-3 text-gray-400 text-sm">{{ m.updated_at|date:"Y-m-d H:i" }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" class="px-6 py-6 text-center text-gray-400">No payment methods configured.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

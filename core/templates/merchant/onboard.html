@@ -1,20 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Become a Majic Mall Merchant</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-white text-black p-10">
-  <h1 class="text-3xl font-bold mb-4">🛍️ Join Majic Mall</h1>
-  <p class="mb-6">Fill out the merchant application below to open your storefront.</p>
-  <form method="post">
-    {% csrf_token %}
-    <!-- Replace this with actual fields later -->
-    <input type="text" name="store_name" placeholder="Your Store Name" class="border p-2 mb-4 w-full"><br>
-    <input type="email" name="email" placeholder="Your Email" class="border p-2 mb-4 w-full"><br>
-    <button type="submit" class="bg-yellow-400 px-4 py-2 rounded text-black font-bold">Submit</button>
-  </form>
-</body>
-</html>
+<!-- merchant/templates/merchant/onboard.html --> 
+{% extends "base.html" %}
+{% load static %}
 
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-yellow-100 to-red-200 flex items-center justify-center py-16 px-6">
+  <div class="bg-white p-10 rounded-xl shadow-xl max-w-xl w-full text-center">
+    <img src="{% static 'img/majicmall_logo.png' %}" alt="Majic Mall Logo" class="mx-auto mb-6 w-32 h-auto">
+
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-4">Welcome to Majic Mall! 🎉</h1>
+    <p class="text-gray-600 mb-6">You’ve just unlocked your path to online success. Let’s build your storefront now!</p>
+    
+    <!-- Signup with redirect -->
+    <a href="{% url 'account_signup' %}?next={% url 'merchant-setup' %}" 
+       class="inline-block px-6 py-3 bg-black text-white font-semibold rounded-lg shadow hover:bg-gray-800 transition">
+      🚀 Start Building My Store
+    </a>
+
+    <!-- Already have account? -->
+    <div class="mt-4">
+      <a href="{% url 'account_login' %}?next={% url 'merchant-setup' %}" 
+         class="text-sm text-gray-600 underline hover:text-gray-800">
+        Already have an account? Sign in here
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

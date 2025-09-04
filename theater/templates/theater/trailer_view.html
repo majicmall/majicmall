@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Watch Trailer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: black;
+      color: gold;
+      text-align: center;
+      font-family: 'Georgia', serif;
+      padding-top: 40px;
+    }
+
+    video {
+      width: 80%;
+      max-width: 900px;
+      border: 5px solid gold;
+      border-radius: 20px;
+      box-shadow: 0 0 20px red;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎬 When A Man Loves A Woman - Trailer</h1>
+
+  <video controls>
+    <source src="{% static 'videos/when_a_man_loves_a_woman_trailer.mp4' %}" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+</body>
+</html

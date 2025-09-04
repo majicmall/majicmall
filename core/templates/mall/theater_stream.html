@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Now Playing - Theater Zone</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Georgia', serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      text-align: center;
+      color: gold;
+      text-shadow: 0 0 10px red, 0 0 20px darkred;
+    }
+
+    .video-container {
+      width: 100%;
+      max-width: 1280px;
+      position: relative;
+      border: 5px solid gold;
+      border-radius: 12px;
+      box-shadow: 0 0 30px gold;
+      overflow: hidden;
+      transition: all 0.5s ease-in-out;
+    }
+
+    /* Animation class triggered during playback */
+    .video-playing {
+      animation: pulse-glow 1.5s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulse-glow {
+      from {
+        box-shadow: 0 0 30px gold;
+      }
+      to {
+        box-shadow: 0 0 60px #ffcc00, 0 0 40px red;
+      }
+    }
+
+    video {
+      width: 100%;
+      border: none;
+    }
+
+    .back-button {
+      margin-top: 2rem;
+      padding: 0.5rem 1.25rem;
+      background-color: #facc15;
+      color: black;
+      font-weight: bold;
+      border-radius: 8px;
+      text-decoration: none;
+      box-shadow: 0 0 8px gold;
+    }
+
+    .back-button:hover {
+      background-color: #fde047;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎬 Now Playing in The Majic Theater</h1>
+  
+<div class="video-container" id="videoBox"> 
+  <video controls poster="{{ poster }}" id="theaterVideo">
+    <source src="{{ video }}" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
+
+<a href="{% url 'theater-zone' %}" class="back-button">⬅️ Back to Theater Lobby</a>
+
+
+  <script>
+    const video = document.getElementById('theaterVideo');
+    const box = document.getElementById('videoBox');
+
+    video.addEventListener('play', () => {
+      box.classList.add('video-playing');
+    });
+
+    video.addEventListener('pause', () => {
+      box.classList.remove('video-playing');
+    });
+
+    video.addEventListener('ended', () => {
+      box.classList.remove('video-playing');
+    });
+  </script>
+
+</body>
+</html>

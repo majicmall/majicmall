@@ -1,35 +1,18 @@
-# ---- Python ----
+# Python
 __pycache__/
 *.py[cod]
-*.egg-info/
+*.pyo
+*.pyd
 
-# ---- Virtual Environments ----
-.venv/
+# Virtual env
 venv/
 .env
-ENV/
 
-# ---- IDE / OS ----
-.vscode/
-.DS_Store
-.idea/
-
-# ---- Django ----
+# Django
 db.sqlite3
 media/
 staticfiles/
-*.log
 
-# ---- Archives / Backups ----
-*.zip
-*.tar
-*.tar.gz
-
-# ---- Node ----
-node_modules/
-
-# ---- Large static assets ----
-core/static/videos/
-core/static/videos/
-core/static/videos/*
-!core/static/videos/.gitkeep
+# IDE
+.vscode/
+.idea/

@@ -11,16 +11,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # --- Core ---
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
-    "django-insecure-=cv-tm#+=jzhe66(2j(u=@1d)4q0hqxmv7#v%1=2eby*-(na=i",  # dev fallback
+    "django-insecure-=cv-tm#+=jzhe66(2j(u=@1d)4q0hqxmv7#v%1=2eby*-(na=i",
 )
-DEBUG = os.getenv("DEBUG", "true").lower() == "true"
+DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() == "true"
+
+# PUBLIC_BASE_URL is useful for prod (e.g. https://majicmall.example.com)
+PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "").rstrip("/")
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 CSRF_TRUSTED_ORIGINS = ["http://localhost:8000", "https://localhost:8000"]
-CSRF_COOKIE_SECURE = False  # fine for local dev
 
-# Allow a public base URL (e.g., Railway or your domain) to extend hosts/origins
-PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "").rstrip("/")
 if PUBLIC_BASE_URL:
     _u = urlparse(PUBLIC_BASE_URL)
     if _u.hostname and _u.hostname not in ALLOWED_HOSTS:
@@ -31,7 +31,6 @@ if PUBLIC_BASE_URL:
 
 # --- Apps ---
 INSTALLED_APPS = [
-    # Django
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -39,7 +38,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # Project apps
     "core",
     "theater",
     "merchant",
@@ -52,8 +50,6 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.facebook",
 ]
-
-SITE_ID = 1
 
 # --- Middleware (WhiteNoise right after SecurityMiddleware) ---
 MIDDLEWARE = [
@@ -74,7 +70,7 @@ ROOT_URLCONF = "majicmall.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        # Shared/base templates (app templates are discovered via APP_DIRS=True)
+        # Base templates (apps will be auto-discovered via APP_DIRS=True)
         "DIRS": [BASE_DIR / "core" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -90,7 +86,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "majicmall.wsgi.application"
 
-# --- Database (sqlite for dev) ---
+# --- DB ---
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -114,23 +110,17 @@ USE_TZ = True
 
 # --- Static/Media ---
 STATIC_URL = "/static/"
-# Local app static (e.g., core/static). Keep this if you actually have that folder.
+STATIC_ROOT = BASE_DIR / "staticfiles"          # collectstatic target
+# If you keep a project-level static dir, list it here. (App /static/ dirs are auto-found)
 STATICFILES_DIRS = [BASE_DIR / "core" / "static"]
-
-# Where collectstatic gathers files (required for collectstatic)
-STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# Django 4.2+/5.x STORAGES API + WhiteNoise
+# Django 5.x STORAGES with WhiteNoise
 STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -140,20 +130,21 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
+SITE_ID = 1
 
 LOGIN_URL = "/merchant/login/"
 LOGIN_REDIRECT_URL = "/merchant/dashboard/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/merchant/login/"
 ACCOUNT_LOGOUT_ON_GET = True
-ACCOUNT_SIGNUP_REDIRECT_URL = "/merchant/setup/"  # after signup go to setup
+ACCOUNT_SIGNUP_REDIRECT_URL = "/merchant/setup/"
 
 # New-style allauth settings
-ACCOUNT_LOGIN_METHODS = {"email", "username"}  # both
+ACCOUNT_LOGIN_METHODS = {"email", "username"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 # --- Feature flags ---
-USE_CHARTJS_REPORTS = False  # set True to make Chart.js default
+USE_CHARTJS_REPORTS = False  # set True to make Chart.js the default
 
 # --- Payments (env-based; safe defaults for dev) ---
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
@@ -164,8 +155,3 @@ PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")  # 'sandbox' or 'live'
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET", "")
 PAYPAL_WEBHOOK_ID = os.getenv("PAYPAL_WEBHOOK_ID", "")
-
-# --- Security behind proxies (optional; uncomment for Railway/Heroku-style proxies) ---
-# SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-# SESSION_COOKIE_SECURE = not DEBUG
-# CSRF_COOKIE_SECURE = not DEBUG

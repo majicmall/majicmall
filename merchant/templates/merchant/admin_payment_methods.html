@@ -1,0 +1,8 @@
+<h1>Payment Methods</h1>
+<ul>
+  {% for m in methods %}
+    <li>{{ m.store.store_name }} — {{ m.get_provider_display }} ({{ m.mode }}){% if m.is_default %} [default]{% endif %}</li>
+  {% empty %}
+    <li>No methods found.</li>
+  {% endfor %}
+</ul>

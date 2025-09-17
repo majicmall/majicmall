@@ -1,0 +1,25 @@
+{# merchant/templates/merchant/_store_switcher.html #}
+{% if request.user.is_authenticated %}
+  {% with stores=request.user.stores.all|dictsort:"store_name" %}
+    {% if stores %}
+      <form method="get" action="{% url 'merchant-switch-store' 0 %}" onsubmit="return false;"
+            class="inline-flex items-center gap-2">
+        <label for="storeSelect" class="text-sm text-gray-400">Store:</label>
+        <select id="storeSelect"
+                class="bg-gray-800 text-yellow-400 rounded-lg px-3 py-1.5 text-sm"
+                onchange="if(this.value){ window.location = this.value; }">
+          {% for s in stores %}
+            <option
+              value="{% url 'merchant-switch-store' s.id %}"
+              {% if store and store.id == s.id %}selected{% endif %}
+            >{{ s.store_name|default:"(Untitled Store)" }}</option>
+          {% endfor %}
+        </select>
+        <a href="{% url 'merchant-profile' %}"
+           class="px-2.5 py-1.5 bg-gray-800 text-xs rounded-lg hover:bg-gray-700">
+          Manage
+        </a>
+      </form>
+    {% endif %}
+  {% endwith %}
+{% endif %}

@@ -12,3 +12,10 @@ PyJWT==2.10.1
 requests==2.32.4
 sqlparse==0.5.3
 urllib3==2.5.0
+
+# Added for deployment
+gunicorn
+whitenoise
+psycopg[binary]
+dj-database-url
+python-dotenv

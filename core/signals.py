@@ -17,7 +17,7 @@ def create_merchant_for_user(sender, instance, created, **kwargs):
         return
 
     # Create Merchant profile if missing
-    merchant, _ = Merchant.objects.get_or_create(
+    Merchant.objects.get_or_create(
         user=instance,
         defaults={
             "display_name": instance.username or (instance.email or "New User"),
@@ -27,7 +27,7 @@ def create_merchant_for_user(sender, instance, created, **kwargs):
         },
     )
 
-    # Create a default store for this user (no is_public kwarg here)
+    # Create a default store for this user — explicitly set is_public to satisfy NOT NULL
     MerchantStore.objects.create(
         owner=instance,
         store_name=f"{(instance.username or 'My')}'s Store",
@@ -35,5 +35,6 @@ def create_merchant_for_user(sender, instance, created, **kwargs):
         slogan="Welcome to my store!",
         description="This is your first store inside Majic Mall.",
         plan="starter",
-        # is_public is a BooleanField with default=False on the model
+        is_public=False,  # <-- important for your current DB schema
     )
+

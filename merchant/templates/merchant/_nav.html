@@ -1,21 +1,54 @@
 {# merchant/templates/merchant/_nav.html #}
-<nav>
-  <ul>
-    <li><a href="{% url 'home' %}">Home</a></li>
+<header class="bg-gray-900 shadow px-6 py-4 flex items-center justify-between">
+  <h1 class="text-2xl font-bold text-yellow-400">
+    <a href="{% url 'home' %}">Merchant</a>
+  </h1>
 
+  <nav class="space-x-6 text-sm flex items-center">
     {% if request.user.is_authenticated %}
+      <a href="{% url 'merchant-dashboard' %}"
+         class="{% if request.resolver_match and request.resolver_match.url_name == 'merchant-dashboard' %}nav-active{% else %}text-gray-300 hover:text-yellow-400{% endif %}">
+        Dashboard
+      </a>
+
+      <a href="{% url 'merchant-profile' %}"
+         class="{% if request.resolver_match and request.resolver_match.url_name == 'merchant-profile' %}nav-active{% else %}text-gray-300 hover:text-yellow-400{% endif %}">
+        Profile
+      </a>
+
+      <a href="{% url 'order-list' %}"
+         class="{% if request.resolver_match and request.resolver_match.url_name == 'order-list' %}nav-active{% else %}text-gray-300 hover:text-yellow-400{% endif %}">
+        Orders
+      </a>
+
+      <a href="{% url 'merchant-reports' %}"
+         class="{% if request.resolver_match and request.resolver_match.url_name == 'merchant-reports' %}nav-active{% else %}text-gray-300 hover:text-yellow-400{% endif %}">
+        Reports
+      </a>
+
+      {% if request.user.is_staff or request.user.is_superuser %}
+        <a href="{% url 'admin-store-list' %}" class="text-gray-300 hover:text-yellow-400">
+          Manage Stores
+        </a>
+      {% endif %}
+
+      {# Optional storefront link if you have a URL that takes a slug. Adjust name if needed. #}
       {% with store=request.user.stores.all|first %}
-        {% if store %}
-          <li><a href="{% url 'merchant:dashboard' %}">Dashboard</a></li>
-          <li><a href="{% url 'merchant:storefront' store.slug %}">My Storefront</a></li>
-        {% else %}
-          <li><a href="{% url 'merchant:setup' %}">Create your store</a></li>
+        {% if store and store.slug %}
+          <a href="{% url 'storefront' store.slug %}" class="text-gray-300 hover:text-yellow-400">
+            My Storefront
+          </a>
         {% endif %}
       {% endwith %}
-      <li><a href="{% url 'account_logout' %}">Logout</a></li>
+
+      <form action="{% url 'merchant-logout' %}" method="post" class="inline">
+        {% csrf_token %}
+        <button type="submit" class="text-gray-300 hover:text-yellow-400">Logout</button>
+      </form>
     {% else %}
-      <li><a href="{% url 'account_login' %}">Login</a></li>
-      <li><a href="{% url 'account_signup' %}">Sign up</a></li>
+      <a href="{% url 'account_login' %}" class="text-gray-300 hover:text-yellow-400">Login</a>
+      <a href="{% url 'account_signup' %}" class="text-gray-300 hover:text-yellow-400">Sign up</a>
     {% endif %}
-  </ul>
-</nav>
+  </nav>
+</header>
+

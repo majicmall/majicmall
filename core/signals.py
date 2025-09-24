@@ -37,6 +37,5 @@ def create_merchant_for_user(sender, instance, created, **kwargs):
         slogan="Welcome to my store!",
         description="This is your first store inside Majic Mall.",
         plan="starter",
-        is_public=False,  # explicit even though model has default
-        # slug is auto-generated in model.save()
+        
     )

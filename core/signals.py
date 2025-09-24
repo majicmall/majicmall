@@ -2,6 +2,7 @@
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.exceptions import FieldDoesNotExist
 
 from .models import Merchant
 from merchant.models import MerchantStore
@@ -11,7 +12,7 @@ from merchant.models import MerchantStore
 def create_merchant_for_user(sender, instance, created, **kwargs):
     """
     Auto-create a Merchant profile AND a default MerchantStore when a User is created.
-    Idempotent: only runs on initial creation.
+    Idempotent: only runs on initial creation. Works whether `is_public` exists or not.
     """
     if not created:
         return
@@ -27,14 +28,19 @@ def create_merchant_for_user(sender, instance, created, **kwargs):
         },
     )
 
-    # Create a default store for this user — explicitly set is_public to satisfy NOT NULL
-    MerchantStore.objects.create(
+    # Build kwargs for MerchantStore, adding is_public only if the field exists
+    store_kwargs = dict(
         owner=instance,
         store_name=f"{(instance.username or 'My')}'s Store",
         category="General",
         slogan="Welcome to my store!",
         description="This is your first store inside Majic Mall.",
         plan="starter",
-        is_public=False,  # <-- important for your current DB schema
     )
+    try:
+        MerchantStore._meta.get_field("is_public")
+        store_kwargs["is_public"] = False
+    except FieldDoesNotExist:
+        pass
 
+    MerchantStore.objects.create(**store_kwargs)

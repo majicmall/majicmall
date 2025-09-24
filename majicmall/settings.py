@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # --- Core ---
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
-    "django-insecure-=cv-tm#+=jzhe66(2j(u=@1d)4q0hqxmv7#v%1=2eby*-(na=i",
+    "django-insecure-=cv-tm#+=jzhe66(2j(u=@1d)4q0hqxmv7#v%1=2eby*-(na=i"
 )
 DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() == "true"
 
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    "core",
+    "core.apps.CoreConfig",
     "theater",
     "merchant",
 

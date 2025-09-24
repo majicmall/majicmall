@@ -1,7 +1,7 @@
 # core/signals.py
+from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.conf import settings
 
 from .models import Merchant
 from merchant.models import MerchantStore
@@ -12,23 +12,31 @@ def create_merchant_for_user(sender, instance, created, **kwargs):
     """
     Automatically create a Merchant profile AND a default MerchantStore
     whenever a User is created.
+    Ensures all required fields are present to avoid IntegrityError.
     """
-    if created and not hasattr(instance, "merchant"):
-        # Create Merchant profile
-        merchant = Merchant.objects.create(
-            user=instance,
-            display_name=instance.username,
-            slug=f"merchant-{instance.pk}",  # simple default slug
-            email=instance.email or "",
-            plan="starter",  # default plan
-        )
+    if not created:
+        return
 
-        # 🚀 Auto-create the first store linked to this user
-        MerchantStore.objects.create(
-            owner=instance,
-            store_name=f"{instance.username}'s Store",
-            slogan="Welcome to my store!",
-            category="General",
-            plan="starter",
-            description="This is your first store inside Majic Mall.",
-        )
+    # Create Merchant profile if missing (OneToOne to User)
+    merchant, _ = Merchant.objects.get_or_create(
+        user=instance,
+        defaults={
+            "display_name": instance.username or (instance.email or "New User"),
+            "slug": f"merchant-{instance.pk}",
+            "email": instance.email or "",
+            "plan": "starter",
+        },
+    )
+
+    # Create a default store for this user with ALL required fields
+    # Explicitly set is_public to avoid NOT NULL issues during signal execution.
+    MerchantStore.objects.create(
+        owner=instance,
+        store_name=f"{instance.username or 'My'}'s Store",
+        category="General",
+        slogan="Welcome to my store!",
+        description="This is your first store inside Majic Mall.",
+        plan="starter",
+        is_public=False,  # explicit even though model has default
+        # slug is auto-generated in model.save()
+    )

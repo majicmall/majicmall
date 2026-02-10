@@ -16,6 +16,9 @@ urlpatterns = [
     path("profile/",   views.profile,   name="merchant-profile"),
     path("reports/",   views.reports,   name="merchant-reports"),
 
+    path("switch/<int:store_id>/", views.switch_store, name="merchant-switch-store"),
+
+
     # Orders
     path("orders/",                 views.order_list,   name="order-list"),
     path("orders/<int:order_id>/",  views.order_detail, name="order-detail"),

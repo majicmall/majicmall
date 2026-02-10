@@ -5,6 +5,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.db import models
 from django.utils.timezone import now
+from django.utils.text import slugify
 
 
 # -----------------------------
@@ -17,12 +18,13 @@ class MerchantStore(models.Model):
         ("elite", "Elite"),
     ]
 
-    owner = models.OneToOneField(
+    # ⬇️ CHANGED: OneToOneField -> ForeignKey (multi-store support)
+    owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="merchant_store",
+        related_name="stores",
     )
-    store_name = models.CharField(max_length=100)
+    store_name = models.CharField(max_length=255)
     slogan = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
     category = models.CharField(max_length=100)
@@ -30,14 +32,30 @@ class MerchantStore(models.Model):
     plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default="starter")
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # ✅ Archive fields
+    # Public storefront controls
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    is_public = models.BooleanField(default=False)
+
+    # Archive fields
     is_archived = models.BooleanField(default=False)
     archived_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.store_name
 
-    # ✅ Archive helpers
+    def save(self, *args, **kwargs):
+        # Auto-generate unique slug from store_name
+        if not self.slug and self.store_name:
+            base = slugify(self.store_name) or "store"
+            candidate = base
+            n = 1
+            while MerchantStore.objects.filter(slug=candidate).exclude(pk=self.pk).exists():
+                n += 1
+                candidate = f"{base}-{n}"
+            self.slug = candidate
+        super().save(*args, **kwargs)
+
+    # Archive helpers
     def archive(self):
         self.is_archived = True
         self.archived_at = now()
@@ -76,8 +94,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "core_product"   # <-- use the old table that already has your rows
-
+        db_table = "core_product"  # keep using the existing table with your rows
 
     def __str__(self):
         return self.name

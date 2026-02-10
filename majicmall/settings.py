@@ -18,13 +18,22 @@ DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() == "true"
 # PUBLIC_BASE_URL is useful for prod (e.g. https://majicmall.example.com)
 PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "").rstrip("/")
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-CSRF_TRUSTED_ORIGINS = ["http://localhost:8000", "https://localhost:8000"]
+# --- Hosts / CSRF ---
+# Local dev hosts + allow Render default domains
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "https://*.onrender.com",
+]
+
+# If you set PUBLIC_BASE_URL, auto-append it to allowed hosts + trusted origins
 if PUBLIC_BASE_URL:
     _u = urlparse(PUBLIC_BASE_URL)
     if _u.hostname and _u.hostname not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(_u.hostname)
+
     origin = f"{_u.scheme}://{_u.hostname}"
     if origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(origin)
@@ -110,7 +119,7 @@ USE_TZ = True
 
 # --- Static/Media ---
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"          # collectstatic target
+STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic target
 # If you keep a project-level static dir, list it here. (App /static/ dirs are auto-found)
 STATICFILES_DIRS = [BASE_DIR / "core" / "static"]
 
@@ -155,3 +164,4 @@ PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")  # 'sandbox' or 'live'
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET", "")
 PAYPAL_WEBHOOK_ID = os.getenv("PAYPAL_WEBHOOK_ID", "")
+

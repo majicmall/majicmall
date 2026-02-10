@@ -6,36 +6,16 @@
   <title>Store Profile | Majic Mall</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .nav-active { position: relative; color: #facc15; }
-    .nav-active::after {
-      content: ""; position: absolute; left: 0; bottom: -4px;
-      width: 100%; height: 2px; background: #facc15; border-radius: 1px;
-    }
-  </style>
 </head>
 <body class="bg-gray-950 text-white min-h-screen">
-
   {% include "merchant/_nav.html" %}
 
-  <!-- Page Header -->
-  <header class="bg-gray-900 shadow px-6 py-4">
-    <div class="max-w-6xl mx-auto flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-yellow-400">Store Profile</h1>
-      <nav class="space-x-4 text-sm">
-        <a href="{% url 'merchant-dashboard' %}" class="text-gray-300 hover:text-yellow-400">← Back to Dashboard</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Messages -->
   {% if messages %}
-    <div class="max-w-3xl mx-auto px-6 mt-4 space-y-2">
+    <div class="max-w-4xl mx-auto px-6 mt-4 space-y-2">
       {% for message in messages %}
         <div class="rounded-xl px-4 py-3
                     {% if message.tags == 'success' %}bg-green-900/40 text-green-200
                     {% elif message.tags == 'error' %}bg-red-900/40 text-red-200
-                    {% elif message.tags == 'warning' %}bg-yellow-900/40 text-yellow-200
                     {% else %}bg-gray-800 text-gray-200{% endif %}">
           {{ message }}
         </div>
@@ -43,146 +23,101 @@
     </div>
   {% endif %}
 
-  <!-- Archive banner -->
-  {% if store.is_archived %}
-    <div class="max-w-3xl mx-auto px-6 mt-4">
-      <div class="rounded-xl px-4 py-3 bg-yellow-900/30 text-yellow-200">
-        ⚠️ <strong>Archived:</strong> This store was archived on {{ store.archived_at|date:"M d, Y H:i" }}.
-        {% if store.restore_deadline %}
-          You can restore it until <strong>{{ store.restore_deadline|date:"M d, Y H:i" }}</strong>.
+  <main class="max-w-4xl mx-auto px-6 py-8">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-3xl font-bold text-yellow-400">Store Profile</h1>
+      <a href="/" class="px-4 py-2 rounded-xl bg-gray-800 text-yellow-400 hover:bg-gray-700">← Back to Mall</a>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="md:col-span-2 bg-gray-900 rounded-2xl p-6">
+        <form method="post" enctype="multipart/form-data" class="space-y-4">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+
+          {% for field in form.visible_fields %}
+            <div>
+              <label class="block text-sm text-gray-300 mb-1" for="{{ field.id_for_label }}">
+                {{ field.label }}
+              </label>
+              <div class="bg-gray-800 rounded-xl px-3 py-2">
+                {{ field }}
+              </div>
+              {% if field.help_text %}
+                <p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>
+              {% endif %}
+              {% for error in field.errors %}
+                <p class="text-sm text-red-400 mt-1">{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endfor %}
+
+          <button class="px-5 py-3 bg-yellow-400 text-black rounded-xl hover:opacity-90">
+            Save Profile
+          </button>
+        </form>
+      </div>
+
+      <div class="bg-gray-900 rounded-2xl p-6 space-y-4">
+        <h2 class="font-semibold text-lg">Public Storefront</h2>
+
+        {% if store.slug %}
+          <div>
+            <div class="text-sm text-gray-300 mb-1">Public URL</div>
+            <div class="flex items-center gap-2">
+              <input id="puburl" class="w-full bg-gray-800 rounded-xl px-3 py-2 text-sm"
+                     value="{{ public_url }}" readonly>
+              <button type="button" id="copyBtn"
+                class="px-3 py-2 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+                Copy
+              </button>
+            </div>
+            <div class="mt-2">
+              <a href="{{ public_url }}" target="_blank" rel="noopener"
+                 class="text-yellow-400 hover:underline">Open storefront →</a>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-gray-800">
+            <div class="text-sm text-gray-300 mb-2">Shareable QR</div>
+            <div class="bg-white rounded-xl p-3 inline-block">
+              <img src="{% url 'storefront-qr' store.slug %}?box=1&size=6"
+                   alt="QR to storefront {{ store.store_name }}" class="h-44 w-44 object-contain">
+            </div>
+            <div class="mt-2 flex items-center gap-3">
+              <a class="px-3 py-2 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700"
+                 href="{% url 'storefront-qr' store.slug %}?box=1&size=10" download="{{ store.slug }}.png">
+                Download PNG
+              </a>
+              <span class="text-xs text-gray-500">Tip: print on flyers, posters, product tags</span>
+            </div>
+          </div>
+        {% else %}
+          <p class="text-gray-400 text-sm">
+            Set your store name to generate a public URL and QR code.
+          </p>
         {% endif %}
       </div>
     </div>
-  {% endif %}
-
-  <!-- Main -->
-  <main class="max-w-3xl mx-auto px-6 py-8 space-y-6">
-
-    <!-- Profile form -->
-    <form method="post" enctype="multipart/form-data" class="bg-gray-900 rounded-2xl p-6 space-y-6">
-      {% csrf_token %}
-
-      <!-- Logo -->
-      <div>
-        <label class="block text-sm text-gray-300 mb-2">Store Logo</label>
-        <div class="flex items-center gap-4">
-          {% if store.logo %}
-            <img id="logoPreview" src="{{ store.logo.url }}" alt="Logo" class="w-20 h-20 rounded-lg object-cover bg-gray-800">
-          {% else %}
-            <div id="logoPreviewFallback" class="w-20 h-20 rounded-lg grid place-items-center bg-gray-800 text-gray-400">🏬</div>
-            <img id="logoPreview" src="" alt="" class="w-20 h-20 rounded-lg object-cover bg-gray-800 hidden">
-          {% endif %}
-
-          <div class="space-y-2">
-            {{ form.logo }}
-            <label class="inline-flex items-center gap-2 text-sm text-gray-300">
-              <input type="checkbox" name="remove_logo" class="rounded border-gray-700 bg-gray-800">
-              Remove current logo
-            </label>
-          </div>
-        </div>
-        {% if form.logo.errors %}
-          <p class="text-red-400 text-sm mt-2">{{ form.logo.errors.0 }}</p>
-        {% endif %}
-      </div>
-
-      <!-- Store Name -->
-      <div>
-        <label for="{{ form.store_name.id_for_label }}" class="block text-sm text-gray-300 mb-1">Store Name</label>
-        {{ form.store_name }}
-        {% if form.store_name.errors %}
-          <p class="text-red-400 text-sm mt-1">{{ form.store_name.errors.0 }}</p>
-        {% endif %}
-      </div>
-
-      <!-- Slogan -->
-      <div>
-        <label for="{{ form.slogan.id_for_label }}" class="block text-sm text-gray-300 mb-1">Slogan</label>
-        {{ form.slogan }}
-        {% if form.slogan.errors %}
-          <p class="text-red-400 text-sm mt-1">{{ form.slogan.errors.0 }}</p>
-        {% endif %}
-      </div>
-
-      <!-- Description -->
-      <div>
-        <label for="{{ form.description.id_for_label }}" class="block text-sm text-gray-300 mb-1">Description</label>
-        {{ form.description }}
-        {% if form.description.errors %}
-          <p class="text-red-400 text-sm mt-1">{{ form.description.errors.0 }}</p>
-        {% endif %}
-      </div>
-
-      <!-- Category -->
-      <div>
-        <label for="{{ form.category.id_for_label }}" class="block text-sm text-gray-300 mb-1">Category</label>
-        {{ form.category }}
-        {% if form.category.errors %}
-          <p class="text-red-400 text-sm mt-1">{{ form.category.errors.0 }}</p>
-        {% endif %}
-      </div>
-
-      <!-- Plan -->
-      <div>
-        <label for="{{ form.plan.id_for_label }}" class="block text-sm text-gray-300 mb-1">Plan</label>
-        {{ form.plan }}
-        {% if form.plan.errors %}
-          <p class="text-red-400 text-sm mt-1">{{ form.plan.errors.0 }}</p>
-        {% endif %}
-      </div>
-
-      <div class="flex items-center gap-3">
-        <button type="submit" class="px-4 py-2 bg-yellow-400 text-black rounded-xl hover:opacity-90">Save Changes</button>
-        <a href="{% url 'merchant-dashboard' %}" class="px-4 py-2 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">Cancel</a>
-      </div>
-    </form>
-
-    <!-- Danger Zone -->
-    <section class="bg-gray-900 rounded-2xl p-6">
-      <h3 class="text-lg font-semibold text-red-400 mb-2">Danger Zone</h3>
-      {% if store.is_archived %}
-        <p class="text-sm text-gray-300 mb-4">
-          This store is <strong>archived</strong>. You can restore it within 7 days of archiving. After that, it may be permanently deleted.
-        </p>
-        <form method="post" action="{% url 'merchant-store-restore' %}">
-          {% csrf_token %}
-          <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-500">
-            ♻️ Restore Store
-          </button>
-        </form>
-      {% else %}
-        <p class="text-sm text-gray-300 mb-4">
-          Archiving will hide your store from dashboards and customers. You can restore it within 7 days.
-        </p>
-        <form method="post" action="{% url 'merchant-store-archive' %}">
-          {% csrf_token %}
-          <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-500"
-                  onclick="return confirm('Archive this store? You can restore it within 7 days.');">
-            🗄️ Archive Store
-          </button>
-        </form>
-      {% endif %}
-    </section>
-
   </main>
 
-  <!-- Live preview when selecting a new logo -->
   <script>
-    const fileInput = document.getElementById('id_logo');
-    const img = document.getElementById('logoPreview');
-    const fallback = document.getElementById('logoPreviewFallback');
-    if (fileInput) {
-      fileInput.addEventListener('change', (e) => {
-        const [file] = e.target.files || [];
-        if (!file) return;
-        const url = URL.createObjectURL(file);
-        if (fallback) fallback.classList.add('hidden');
-        img.src = url;
-        img.classList.remove('hidden');
-      });
-    }
+    (function () {
+      const btn = document.getElementById('copyBtn');
+      const inp = document.getElementById('puburl');
+      if (btn && inp) {
+        btn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(inp.value);
+            btn.textContent = 'Copied!';
+            setTimeout(() => (btn.textContent = 'Copy'), 1200);
+          } catch (e) {
+            btn.textContent = 'Copy failed';
+            setTimeout(() => (btn.textContent = 'Copy'), 1200);
+          }
+        });
+      }
+    })();
   </script>
-
 </body>
 </html>
-

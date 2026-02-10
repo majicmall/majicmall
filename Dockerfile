@@ -14,6 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+
 # entrypoint will run migrations + collectstatic, then start gunicorn
 RUN chmod +x ./entrypoint.sh
 

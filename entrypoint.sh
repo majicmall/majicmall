@@ -1,11 +1,12 @@
 #!/usr/bin/env sh
-set -eu
+set -e
 
-# Safety defaults (Render will set real values in env)
-: "${DJANGO_SECRET_KEY:=CHANGE_ME}"
-: "${DJANGO_DEBUG:=False}"
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput
 
-python3 manage.py migrate --noinput
-python3 manage.py collectstatic --noinput
+gunicorn majicmall.wsgi:application \
+  --bind 0.0.0.0:${PORT:-8000} \
+  --log-level info \
+  --access-logfile - \
+  --error-logfile -
 
-exec gunicorn majicmall.wsgi:application --bind 0.0.0.0:${PORT:-8000}

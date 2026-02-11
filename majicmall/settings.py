@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # --- Core ---
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
-    "django-insecure-=cv-tm#+=jzhe66(2j(u=@1d)4q0hqxmv7#v%1=2eby*-(na=i"
+    "django-insecure-=cv-tm#+=jzhe66(2j(u=@1d)4q0hqxmv7#v%1=2eby*-(na=i",
 )
 DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() == "true"
 
@@ -141,9 +141,10 @@ AUTHENTICATION_BACKENDS = [
 ]
 SITE_ID = 1
 
-LOGIN_URL = "/merchant/login/"
+# ✅ Fastest fix: use allauth login URLs
+LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/merchant/dashboard/"
-ACCOUNT_LOGOUT_REDIRECT_URL = "/merchant/login/"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/accounts/login/"
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_SIGNUP_REDIRECT_URL = "/merchant/setup/"
 

@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv(
     "django-insecure-=cv-tm#+=jzhe66(2j(u=@1d)4q0hqxmv7#v%1=2eby*-(na=i",
 )
 
-# ✅ Recommended: safer default (set DJANGO_DEBUG=True locally if needed)
+# ✅ Safer default (set DJANGO_DEBUG=True locally if needed)
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
 
 # PUBLIC_BASE_URL is useful for prod (e.g. https://majicmall.example.com)
@@ -26,7 +26,6 @@ if PUBLIC_BASE_URL.startswith("https://"):
     SECURE_SSL_REDIRECT = True
 
 # --- Hosts / CSRF ---
-# Local dev hosts + allow Render default domains
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com"]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -86,7 +85,6 @@ ROOT_URLCONF = "majicmall.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        # Base templates (apps will be auto-discovered via APP_DIRS=True)
         "DIRS": [BASE_DIR / "core" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -120,22 +118,17 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # --- I18N ---
 LANGUAGE_CODE = "en-us"
-
-# ✅ Recommended: your local timezone
 TIME_ZONE = "America/New_York"
-
 USE_I18N = True
 USE_TZ = True
 
 # --- Static/Media ---
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic target
+STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic target (Render/Prod)
 
-# ✅ Recommended: avoid errors if core/static doesn't exist in some envs
-STATICFILES_DIRS = []
-_core_static = BASE_DIR / "core" / "static"
-if _core_static.exists():
-    STATICFILES_DIRS.append(_core_static)
+STATICFILES_DIRS = [
+    BASE_DIR / "core" / "static",
+]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -155,7 +148,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 SITE_ID = 1
 
-# ✅ Fastest fix: use allauth login URLs
 LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/merchant/dashboard/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/accounts/login/"
@@ -167,11 +159,10 @@ ACCOUNT_LOGIN_METHODS = {"email", "username"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
-# ✅ Recommended: prevent email headaches later
+# Kept for now (warning is harmless); we can remove later if you want
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 
-# ✅ Nice-to-have for dev: print emails in console
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # --- Feature flags ---

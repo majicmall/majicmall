@@ -14,16 +14,15 @@ SECRET_KEY = os.getenv(
     "django-insecure-=cv-tm#+=jzhe66(2j(u=@1d)4q0hqxmv7#v%1=2eby*-(na=i",
 )
 
-# ✅ Safer default (set DJANGO_DEBUG=True locally if needed)
+# Safer default (set DJANGO_DEBUG=True locally if needed)
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
 
-# PUBLIC_BASE_URL is useful for prod (e.g. https://majicmall.example.com)
+# PUBLIC_BASE_URL is useful for prod (e.g. https://majicmall.onrender.com)
 PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "").rstrip("/")
 
-# ✅ Recommended for Render/Proxies (prevents https confusion)
+# Recommended for Render/Proxies (prevents https confusion)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-if PUBLIC_BASE_URL.startswith("https://"):
-    SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = PUBLIC_BASE_URL.startswith("https://")
 
 # --- Hosts / CSRF ---
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com"]
@@ -124,11 +123,15 @@ USE_TZ = True
 
 # --- Static/Media ---
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic target (Render/Prod)
+STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic target
 
-STATICFILES_DIRS = [
-    BASE_DIR / "core" / "static",
-]
+# IMPORTANT:
+# Do NOT add BASE_DIR/core/static here because core is an INSTALLED_APP and
+# AppDirectoriesFinder already includes core/static automatically.
+STATICFILES_DIRS = []
+_project_static = BASE_DIR / "static"
+if _project_static.exists():
+    STATICFILES_DIRS.append(_project_static)
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -154,26 +157,24 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "/accounts/login/"
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_SIGNUP_REDIRECT_URL = "/merchant/setup/"
 
-# New-style allauth settings
+# New-style allauth settings (fixes deprecation warning)
 ACCOUNT_LOGIN_METHODS = {"email", "username"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "none"
-
-# Kept for now (warning is harmless); we can remove later if you want
-ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 
+# Dev email
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # --- Feature flags ---
-USE_CHARTJS_REPORTS = False  # set True to make Chart.js the default
+USE_CHARTJS_REPORTS = False
 
-# --- Payments (env-based; safe defaults for dev) ---
+# --- Payments ---
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 
-PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")  # 'sandbox' or 'live'
+PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET", "")
 PAYPAL_WEBHOOK_ID = os.getenv("PAYPAL_WEBHOOK_ID", "")

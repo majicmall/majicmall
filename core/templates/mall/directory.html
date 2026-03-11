@@ -34,38 +34,104 @@
 </head>
 <body>
 
-  <!-- ✅ Fading Welcome Message -->
+  <!-- Welcome Message -->
   <div id="welcome-message" class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-yellow-300 text-black text-xl font-bold px-6 py-3 rounded-xl shadow-2xl z-50 opacity-0 animate-welcome">
     👋 Welcome to Majic Mall
   </div>
 
-  <div class="flex flex-col items-center justify-center min-h-screen p-6 fade-in">
-    <img src="{% static 'img/majic_directory.png' %}" 
+  <div class="flex flex-col items-center justify-center min-h-screen p-6">
+    <img src="{% static 'img/majic_directory.png' %}"
          alt="Majic Mall Directory"
          class="w-full h-auto mb-6">
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-      <a href="{% url 'fashion-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">FASHION</a>
-      <a href="{% url 'entertainment-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">ENTERTAINMENT</a>
-      <a href="{% url 'tech-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">TECH</a>
-      <a href="{% url 'home-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">HOME</a>
-      <a href="{% url 'family-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">FAMILY</a>
-      <a href="{% url 'creators-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">CREATORS</a>
-      <a href="{% url 'merchant-invite' %}" class="px-4 py-2 m-2 bg-yellow-400 text-black font-bold rounded-xl shadow-lg hover:bg-yellow-500 transition duration-300">
-  🛍️ Become a Merchant
-</a>
-<a href="/merchant/login/" class="px-4 py-2 m-2 bg-gray-700 text-white rounded-xl shadow-lg hover:bg-gray-900 transition duration-300">
-  🔐 Merchant Login
-</a>
+    <!-- Live directory buttons -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
+      {% for zone in zones %}
+        <a href="#zone-{{ zone.slug }}"
+           class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+          {{ zone.name|upper }}
+        </a>
+      {% empty %}
+        <div class="col-span-full text-gray-400">
+          No active zones available.
+        </div>
+      {% endfor %}
 
-      <a href="{% url 'luxury-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">LUXURY</a>
-      <a href="{% url 'atls-hottest-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">ATL's HOTTEST</a>
-      <a href="{% url 'food-court-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">FOOD COURT</a>
-      <a href="{% url 'theater-entrance' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">THEATER</a>
-      <a href="{% url 'learning-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">LEARNING</a>
+      <a href="{% url 'merchant-invite' %}" class="px-4 py-2 m-2 bg-yellow-400 text-black font-bold rounded-xl shadow-lg hover:bg-yellow-500 transition duration-300">
+        🛍️ Become a Merchant
+      </a>
+
+      <a href="/merchant/login/" class="px-4 py-2 m-2 bg-gray-700 text-white rounded-xl shadow-lg hover:bg-gray-900 transition duration-300">
+        🔐 Merchant Login
+      </a>
     </div>
 
-    <p class="text-white mt-6 italic">🧭 You Are Here: Main Entrance</p>
+    <!-- Live zones + stores -->
+    <div class="w-full max-w-6xl mt-4">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-yellow-400">Live Stores by Zone</h2>
+        <p class="text-gray-300 mt-2">Explore the real Majic Mall layout powered by active merchant zones.</p>
+      </div>
+
+      {% if zones %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {% for zone in zones %}
+            <div id="zone-{{ zone.slug }}" class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-2xl font-bold text-yellow-400">{{ zone.name }}</h3>
+                <span class="text-xs uppercase tracking-wide text-gray-400">
+                  {{ zone.stores.count }} store{{ zone.stores.count|pluralize }}
+                </span>
+              </div>
+
+              {% if zone.description %}
+                <p class="text-gray-400 mb-4">{{ zone.description }}</p>
+              {% endif %}
+
+              {% with stores=zone.stores.all %}
+                {% if stores %}
+                  <div class="space-y-3">
+                    {% for store in stores %}
+                      <div class="bg-gray-800 rounded-xl p-4 flex items-center justify-between">
+                        <div>
+                          <div class="text-white font-semibold">{{ store.store_name }}</div>
+                          {% if store.slogan %}
+                            <div class="text-sm text-gray-400">{{ store.slogan }}</div>
+                          {% elif store.description %}
+                            <div class="text-sm text-gray-400">{{ store.description|truncatewords:12 }}</div>
+                          {% endif %}
+                        </div>
+
+                        {% if store.slug and store.is_public and not store.is_archived %}
+                          <a href="{% url 'storefront' store.slug %}"
+                             class="px-4 py-2 bg-yellow-400 text-black rounded-xl hover:opacity-90 font-medium">
+                            Visit Store
+                          </a>
+                        {% else %}
+                          <span class="px-4 py-2 bg-gray-700 text-gray-300 rounded-xl text-sm">
+                            Coming Soon
+                          </span>
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="bg-gray-800 rounded-xl p-4 text-gray-400">
+                    No stores assigned to this zone yet.
+                  </div>
+                {% endif %}
+              {% endwith %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 text-center text-gray-400">
+          No active zones yet.
+        </div>
+      {% endif %}
+    </div>
+
+    <p class="text-white mt-8 italic">🧭 You Are Here: Main Entrance</p>
   </div>
 </body>
 </html>

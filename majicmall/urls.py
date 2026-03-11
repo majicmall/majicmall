@@ -6,8 +6,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.http import HttpResponse
 
-# storefront + qr endpoints
-from merchant.views import storefront, storefront_qr
+# Public storefront views
+from merchant.views import storefront, storefront_qr, product_detail
 
 
 # --- Health check (prevents Render from killing the service) ---
@@ -28,8 +28,9 @@ urlpatterns = [
     path("theater/", include("theater.urls")),
     path("", include("core.urls")),
 
-    # Public storefront + QR
+    # Public storefront + product detail + QR
     path("s/<slug:slug>/", storefront, name="storefront"),
+    path("s/<slug:slug>/products/<int:product_id>/", product_detail, name="product-detail"),
     path("s/<slug:slug>/qr.png", storefront_qr, name="storefront-qr"),
 ]
 
@@ -37,4 +38,3 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-

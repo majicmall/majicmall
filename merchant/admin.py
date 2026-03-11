@@ -1,65 +1,51 @@
 from django.contrib import admin
-from .models import MerchantStore, Product, Order, OrderItem
+from .models import MallZone, MerchantStore, StoreCategory, Product, Order, OrderItem, MerchantPaymentMethod
+
+
+@admin.register(MallZone)
+class MallZoneAdmin(admin.ModelAdmin):
+    list_display = ("name", "is_active", "sort_order")
+    list_editable = ("is_active", "sort_order")
+    search_fields = ("name",)
+    ordering = ("sort_order", "name")
+
 
 @admin.register(MerchantStore)
 class MerchantStoreAdmin(admin.ModelAdmin):
-    list_display = ("store_name", "owner", "plan", "created_at")
+    list_display = ("store_name", "owner", "zone", "plan", "is_public", "is_archived")
+    list_filter = ("zone", "plan", "is_public", "is_archived")
     search_fields = ("store_name", "owner__username", "owner__email")
-    list_filter = ("plan", "created_at")
-    readonly_fields = ("created_at",)
+
+
+@admin.register(StoreCategory)
+class StoreCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "store", "slug")
+    list_filter = ("store",)
+    search_fields = ("name", "store__store_name")
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "store", "price", "created_at")
+    list_display = ("name", "store", "category", "product_type", "price", "created_at")
+    list_filter = ("product_type", "store", "category")
     search_fields = ("name", "store__store_name")
-    list_filter = ("store", "created_at")
-    readonly_fields = ("created_at",)
-
-
-class OrderItemInline(admin.TabularInline):
-    model = OrderItem
-    extra = 0
-    fields = ("product", "name", "quantity", "unit_price")
-    autocomplete_fields = ("product",)
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ("id", "store", "status", "total", "created_at")
-    list_filter = ("status", "store", "created_at")
-    date_hierarchy = "created_at"
-    search_fields = ("id", "note", "store__store_name", "user__username", "user__email")
-    inlines = [OrderItemInline]
-    readonly_fields = ("created_at",)
-    ordering = ("-created_at",)
-
-    # speed up list view
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.select_related("store", "user")
-
-    # quick admin actions
-    actions = ["mark_paid", "mark_shipped", "mark_completed"]
-
-    def mark_paid(self, request, queryset):
-        updated = queryset.update(status="paid")
-        self.message_user(request, f"{updated} order(s) marked Paid.")
-    mark_paid.short_description = "Mark selected orders as Paid"
-
-    def mark_shipped(self, request, queryset):
-        updated = queryset.update(status="shipped")
-        self.message_user(request, f"{updated} order(s) marked Shipped.")
-    mark_shipped.short_description = "Mark selected orders as Shipped"
-
-    def mark_completed(self, request, queryset):
-        updated = queryset.update(status="completed")
-        self.message_user(request, f"{updated} order(s) marked Completed.")
-    mark_completed.short_description = "Mark selected orders as Completed"
+    list_filter = ("status", "store")
+    search_fields = ("id", "store__store_name")
 
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ("order", "name", "quantity", "unit_price")
-    search_fields = ("name", "order__id", "order__store__store_name")
-    list_select_related = ("order", "order__store")
+    search_fields = ("name",)
+
+
+@admin.register(MerchantPaymentMethod)
+class MerchantPaymentMethodAdmin(admin.ModelAdmin):
+    list_display = ("store", "provider", "display_name", "mode", "is_active", "is_default")
+    list_filter = ("provider", "mode", "is_active", "is_default")
+    search_fields = ("store__store_name", "display_name")

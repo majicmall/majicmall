@@ -1,4 +1,3 @@
-# merchant/views.py
 from __future__ import annotations
 
 from datetime import timedelta
@@ -19,7 +18,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 # ----- Models ------------------------------------------------------------------
-from .models import MerchantStore, Product, Order, OrderItem, MerchantPaymentMethod
+from .models import MerchantStore, StoreCategory, Product, Order, OrderItem, MerchantPaymentMethod
 
 # ----- Forms -------------------------------------------------------------------
 from .forms import StoreForm, MerchantPaymentMethodForm
@@ -107,6 +106,7 @@ def switch_store(request, store_id: int):
     messages.success(request, f'Switched to "{store.store_name}".')
     return redirect(request.META.get("HTTP_REFERER") or reverse("merchant-dashboard"))
 
+
 @staff_required
 def admin_payment_methods(request):
     methods = (
@@ -117,7 +117,6 @@ def admin_payment_methods(request):
     return render(request, "merchant/admin_payment_methods.html", {"methods": methods})
 
 
-
 # ===== Public Storefront ========================================================
 def storefront(request, slug: str):
     """
@@ -125,7 +124,7 @@ def storefront(request, slug: str):
     Shows store info and product grid if the store is public & not archived.
     """
     store = get_object_or_404(
-        MerchantStore.objects.prefetch_related("products"),
+        Store.objects.prefetch_related("products"),
         slug=slug,
     )
 
@@ -133,7 +132,50 @@ def storefront(request, slug: str):
         raise Http404("Store not available")
 
     products = store.products.all().order_by("-created_at")
-    return render(request, "merchant/storefront.html", {"store": store, "products": products})
+
+    base = (getattr(settings, "PUBLIC_BASE_URL", "") or request.build_absolute_uri("/")).rstrip("/")
+    public_url = f"{base}{reverse('storefront', args=[slug])}"
+    qr_url = reverse("storefront-qr", args=[slug])
+
+    return render(
+        request,
+        "merchant/storefront.html",
+        {
+            "store": store,
+            "products": products,
+            "public_url": public_url,
+            "qr_url": qr_url,
+        },
+    )
+
+
+def product_detail(request, slug: str, product_id: int):
+    """
+    Public product detail page within a storefront.
+    URL: /s/<slug>/products/<product_id>/
+    """
+    store = get_object_or_404(
+        Store.objects.prefetch_related("products"),
+        slug=slug,
+    )
+
+    if store.is_archived or not store.is_public:
+        raise Http404("Store not available")
+
+    product = get_object_or_404(Product, pk=product_id, store=store)
+
+    base = (getattr(settings, "PUBLIC_BASE_URL", "") or request.build_absolute_uri("/")).rstrip("/")
+    public_url = f"{base}{reverse('product-detail', args=[slug, product.id])}"
+
+    return render(
+        request,
+        "merchant/product_detail.html",
+        {
+            "store": store,
+            "product": product,
+            "public_url": public_url,
+        },
+    )
 
 
 def storefront_qr(request, slug: str):
@@ -144,7 +186,7 @@ def storefront_qr(request, slug: str):
       - box:  1/true/yes/on => larger white border for printing
       - download: truthy => force download
     """
-    store = get_object_or_404(MerchantStore, slug=slug)
+    store = get_object_or_404(Store, slug=slug)
 
     if store.is_archived or not store.is_public:
         raise Http404("Store not available")
@@ -182,6 +224,47 @@ def storefront_qr(request, slug: str):
     if (request.GET.get("download") or "").strip().lower() in {"1", "true", "yes", "on"}:
         resp["Content-Disposition"] = f'attachment; filename="majicmall-store-{store.slug}.png"'
     return resp
+
+
+# ===== Categories ===============================================================
+@login_required
+def category_list(request):
+    store = get_current_store(request)
+    if not store:
+        messages.error(request, "Create your store first.")
+        return redirect("merchant-profile")
+
+    guard = _redirect_if_archived(request, store)
+    if guard:
+        return guard
+
+    categories = store.categories.all()
+    return render(request, "merchant/category_list.html", {"store": store, "categories": categories})
+
+
+@login_required
+def add_category(request):
+    store = get_current_store(request)
+    if not store:
+        messages.error(request, "Create your store first.")
+        return redirect("merchant-profile")
+
+    guard = _redirect_if_archived(request, store)
+    if guard:
+        return guard
+
+    if request.method == "POST":
+        name = (request.POST.get("name") or "").strip()
+
+        if not name:
+            messages.error(request, "Please provide a category name.")
+            return render(request, "merchant/add_category.html", {"store": store})
+
+        StoreCategory.objects.create(store=store, name=name)
+        messages.success(request, f'Category "{name}" created.')
+        return redirect("merchant-category-list")
+
+    return render(request, "merchant/add_category.html", {"store": store})
 
 
 # ===== Merchant dashboard / profile / reports ==================================
@@ -259,7 +342,11 @@ def profile(request):
         public_url = f"{base}{reverse('storefront', args=[store.slug])}"
         qr_url = reverse("storefront-qr", args=[store.slug])
 
-    return render(request, "merchant/profile.html", {"store": store, "form": form, "public_url": public_url, "qr_url": qr_url})
+    return render(
+        request,
+        "merchant/profile.html",
+        {"store": store, "form": form, "public_url": public_url, "qr_url": qr_url},
+    )
 
 
 @login_required
@@ -412,10 +499,13 @@ def add_product(request):
     if guard:
         return guard
 
+    categories = store.categories.all().order_by("name")
+
     if request.method == "POST":
         name = (request.POST.get("name") or "").strip()
         description = (request.POST.get("description") or "").strip()
         image = request.FILES.get("image")
+        category_id = (request.POST.get("category") or "").strip()
 
         price_val: Decimal | None = None
         price_raw = (request.POST.get("price") or "").strip()
@@ -424,13 +514,35 @@ def add_product(request):
                 price_val = Decimal(price_raw)
             except (InvalidOperation, ValueError):
                 messages.error(request, "Price must be a valid number.")
-                return render(request, "merchant/add_product.html")
+                return render(
+                    request,
+                    "merchant/add_product.html",
+                    {"categories": categories},
+                )
 
         if not name:
             messages.error(request, "Please provide a product name.")
-            return render(request, "merchant/add_product.html")
+            return render(
+                request,
+                "merchant/add_product.html",
+                {"categories": categories},
+            )
+
+        selected_category = None
+        if category_id:
+            try:
+                selected_category = store.categories.get(pk=int(category_id))
+            except (ValueError, StoreCategory.DoesNotExist):
+                messages.error(request, "Invalid category selected.")
+                return render(
+                    request,
+                    "merchant/add_product.html",
+                    {"categories": categories},
+                )
 
         product = Product(store=store, name=name)
+        product.category = selected_category
+
         if hasattr(Product, "price") and price_val is not None:
             product.price = price_val
         if hasattr(Product, "description"):
@@ -442,7 +554,11 @@ def add_product(request):
         messages.success(request, "Product created successfully.")
         return redirect("merchant-dashboard")
 
-    return render(request, "merchant/add_product.html")
+    return render(
+        request,
+        "merchant/add_product.html",
+        {"categories": categories},
+    )
 
 
 @login_required
@@ -457,11 +573,18 @@ def edit_product(request, product_id: int):
         return guard
 
     product = get_object_or_404(Product, pk=product_id, store=store)
+    categories = store.categories.all().order_by("name")
 
     if request.method == "POST":
         name = (request.POST.get("name") or "").strip()
         description = (request.POST.get("description") or "").strip()
         image = request.FILES.get("image")
+        digital_file = request.FILES.get("digital_file")
+        category_id = (request.POST.get("category") or "").strip()
+        product_type = (request.POST.get("product_type") or "physical").strip()
+
+        if product_type not in {"physical", "digital"}:
+            product_type = "physical"
 
         price_raw = (request.POST.get("price") or "").strip()
         if price_raw:
@@ -469,28 +592,56 @@ def edit_product(request, product_id: int):
                 price_val = Decimal(price_raw)
             except (InvalidOperation, ValueError):
                 messages.error(request, "Price must be a valid number.")
-                return render(request, "merchant/edit_product.html", {"product": product})
+                return render(
+                    request,
+                    "merchant/edit_product.html",
+                    {"product": product, "categories": categories},
+                )
         else:
             price_val = None
 
         if not name:
             messages.error(request, "Please provide a product name.")
-            return render(request, "merchant/edit_product.html", {"product": product})
+            return render(
+                request,
+                "merchant/edit_product.html",
+                {"product": product, "categories": categories},
+            )
+
+        selected_category = None
+        if category_id:
+            try:
+                selected_category = store.categories.get(pk=int(category_id))
+            except (ValueError, StoreCategory.DoesNotExist):
+                messages.error(request, "Invalid category selected.")
+                return render(
+                    request,
+                    "merchant/edit_product.html",
+                    {"product": product, "categories": categories},
+                )
 
         product.name = name
+        product.product_type = product_type
+        product.category = selected_category
+
         if hasattr(Product, "description"):
-            product.description = description or product.description
+            product.description = description or ""
         if hasattr(Product, "price") and price_val is not None:
             product.price = price_val
         if hasattr(Product, "image") and image:
             product.image = image
+        if hasattr(Product, "digital_file") and digital_file and product_type == "digital":
+            product.digital_file = digital_file
 
         product.save()
         messages.success(request, "Product updated.")
         return redirect("merchant-dashboard")
 
-    return render(request, "merchant/edit_product.html", {"product": product})
-
+    return render(
+        request,
+        "merchant/edit_product.html",
+        {"product": product, "categories": categories},
+    )
 
 @login_required
 def delete_product(request, product_id: int):
@@ -664,7 +815,7 @@ def checkout_cancel(request):
 
 # ===== Plans (pricing + checkout) ==============================================
 PLAN_PRICES = {
-    "starter": 900,  # cents
+    "starter": 900,
     "pro": 2900,
     "elite": 7900,
 }
@@ -716,7 +867,12 @@ def plan_checkout(request, plan_slug: str):
     success_url = request.build_absolute_uri(f"{reverse('merchant-plan-success')}?plan={plan}")
     cancel_url = request.build_absolute_uri(reverse("merchant-plan-cancel"))
 
-    adapter = build_adapter(pm.provider, credentials=pm.credentials, success_url=success_url, cancel_url=cancel_url)
+    adapter = build_adapter(
+        pm.provider,
+        credentials=pm.credentials,
+        success_url=success_url,
+        cancel_url=cancel_url,
+    )
     result = adapter.start_checkout(
         amount_cents=amount_cents,
         currency=currency,
@@ -794,7 +950,6 @@ def admin_store_purge(request, store_id: int):
         messages.error(request, "Store must be archived before it can be purged.")
         return redirect("admin-store-list")
 
-    # Enforce 7-day window (604800 seconds)
     delta = timezone.now() - store.archived_at
     if delta.total_seconds() < 604800:
         remaining = 604800 - int(delta.total_seconds())

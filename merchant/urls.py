@@ -11,6 +11,9 @@ urlpatterns = [
     # Setup
     path("setup/", views.profile, name="merchant-setup"),
 
+    path("categories/", views.category_list, name="merchant-category-list"),
+    path("categories/add/", views.add_category, name="merchant-add-category"),
+
     # Merchant-facing pages
     path("dashboard/", views.dashboard, name="merchant-dashboard"),
     path("profile/", views.profile, name="merchant-profile"),
@@ -26,9 +29,9 @@ urlpatterns = [
     path("reports/export/", views.reports_export, name="merchant-reports-export"),
 
     # Products
-    path("products/add/", views.add_product, name="add-product"),
-    path("products/<int:product_id>/edit/", views.edit_product, name="edit-product"),
-    path("products/<int:product_id>/delete/", views.delete_product, name="delete-product"),
+path("products/add/", views.add_product, name="merchant-add-product"),
+path("products/<int:product_id>/edit/", views.edit_product, name="merchant-edit-product"),
+path("products/<int:product_id>/delete/", views.delete_product, name="merchant-delete-product"),
 
     # Admin store management (staff)
     path("stores/", views.admin_store_list, name="admin-store-list"),

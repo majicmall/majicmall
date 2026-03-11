@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-
+from merchant.models import MallZone
 from .forms import MerchantSignupForm
 from .models import Movie, Ticket
 
@@ -76,7 +76,8 @@ class MerchantLoginView(LoginView):
 # ---------------------------
 
 def mall_directory(request):
-    return render(request, 'mall/directory.html')
+    zones = MallZone.objects.filter(is_active=True).order_by("sort_order", "name").prefetch_related("stores")
+    return render(request, 'mall/directory.html', {'zones': zones})
 
 def fashion_zone(request):
     return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Fashion'})

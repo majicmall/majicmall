@@ -9,6 +9,34 @@ from django.utils.text import slugify
 
 
 # -----------------------------
+# 🏬 Mall Zone Model
+# -----------------------------
+class MallZone(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    sort_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order", "name"]
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.name:
+            base = slugify(self.name) or "zone"
+            candidate = base
+            n = 1
+            while MallZone.objects.filter(slug=candidate).exclude(pk=self.pk).exists():
+                n += 1
+                candidate = f"{base}-{n}"
+            self.slug = candidate
+        super().save(*args, **kwargs)
+
+
+# -----------------------------
 # 💼 Merchant Store Model
 # -----------------------------
 class MerchantStore(models.Model):
@@ -18,10 +46,16 @@ class MerchantStore(models.Model):
         ("elite", "Elite"),
     ]
 
-    # ⬇️ CHANGED: OneToOneField -> ForeignKey (multi-store support)
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        related_name="stores",
+    )
+    zone = models.ForeignKey(
+        "merchant.MallZone",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name="stores",
     )
     store_name = models.CharField(max_length=255)
@@ -32,11 +66,11 @@ class MerchantStore(models.Model):
     plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default="starter")
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # Public storefront controls
     slug = models.SlugField(max_length=255, unique=True, blank=True)
-    is_public = models.BooleanField(default=False)
+    is_public = models.BooleanField(
+        default=getattr(settings, "AUTO_PUBLIC_STOREFRONTS", False)
+    )
 
-    # Archive fields
     is_archived = models.BooleanField(default=False)
     archived_at = models.DateTimeField(blank=True, null=True)
 
@@ -44,7 +78,6 @@ class MerchantStore(models.Model):
         return self.store_name
 
     def save(self, *args, **kwargs):
-        # Auto-generate unique slug from store_name
         if not self.slug and self.store_name:
             base = slugify(self.store_name) or "store"
             candidate = base
@@ -55,14 +88,12 @@ class MerchantStore(models.Model):
             self.slug = candidate
         super().save(*args, **kwargs)
 
-    # Archive helpers
     def archive(self):
         self.is_archived = True
         self.archived_at = now()
         self.save(update_fields=["is_archived", "archived_at"])
 
     def can_restore(self) -> bool:
-        """Restorable within 7 days of archived_at."""
         return bool(
             self.is_archived
             and self.archived_at
@@ -79,25 +110,82 @@ class MerchantStore(models.Model):
 
 
 # -----------------------------
+# 🗂️ Store Category Model
+# -----------------------------
+class StoreCategory(models.Model):
+    store = models.ForeignKey(
+        MerchantStore,
+        on_delete=models.CASCADE,
+        related_name="categories",
+    )
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=120, blank=True)
+
+    class Meta:
+        unique_together = ("store", "slug")
+        ordering = ["name"]
+
+    def __str__(self):
+        return f"{self.store.store_name} - {self.name}"
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.name:
+            base = slugify(self.name) or "category"
+            candidate = base
+            n = 1
+            while StoreCategory.objects.filter(store=self.store, slug=candidate).exclude(pk=self.pk).exists():
+                n += 1
+                candidate = f"{base}-{n}"
+            self.slug = candidate
+        super().save(*args, **kwargs)
+
+
+# -----------------------------
 # 🛍️ Product Model
 # -----------------------------
 class Product(models.Model):
+    PRODUCT_TYPE_CHOICES = [
+        ("physical", "Physical"),
+        ("digital", "Digital"),
+    ]
+
     store = models.ForeignKey(
         MerchantStore,
         on_delete=models.CASCADE,
         related_name="products",
     )
+    category = models.ForeignKey(
+        "merchant.StoreCategory",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="products",
+    )
     name = models.CharField(max_length=255)
+    product_type = models.CharField(
+        max_length=10,
+        choices=PRODUCT_TYPE_CHOICES,
+        default="physical",
+    )
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to="product_images/", blank=True, null=True)
+    digital_file = models.FileField(upload_to="digital_products/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "core_product"  # keep using the existing table with your rows
+        db_table = "core_product"
 
     def __str__(self):
         return self.name
+
+    @property
+    def is_digital(self) -> bool:
+        return self.product_type == "digital"
+
+    @property
+    def is_physical(self) -> bool:
+        return self.product_type == "physical"
 
 
 # -----------------------------
@@ -129,7 +217,6 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="paid")
     note = models.TextField(blank=True)
 
-    # cached totals (optionally recompute in views or signals)
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
@@ -149,24 +236,21 @@ class OrderItem(models.Model):
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
-        related_name="items",  # used by templates: order.items.all
+        related_name="items",
     )
     product = models.ForeignKey(
         Product,
-        on_delete=models.PROTECT,  # keep item history even if product is removed
+        on_delete=models.PROTECT,
     )
-    # snapshot fields (so historical records don't change if product changes)
     name = models.CharField(max_length=255, blank=True)
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
 
     @property
     def line_total(self) -> Decimal:
-        # quantity (int) * unit_price (Decimal) -> Decimal
         return Decimal(self.quantity) * (self.unit_price or Decimal("0.00"))
 
     def save(self, *args, **kwargs):
-        # Snapshot defaults before saving
         if not self.name and self.product_id:
             self.name = self.product.name
         if self.unit_price is None and self.product_id:
@@ -187,7 +271,6 @@ class MerchantPaymentMethod(models.Model):
         ("stripe", "Stripe"),
         ("paypal", "PayPal"),
         ("card", "Credit/Debit (On-site)"),
-        # add your own identifiers later, e.g. ("myprocessor", "My Processor")
     ]
 
     store = models.ForeignKey(
@@ -200,8 +283,6 @@ class MerchantPaymentMethod(models.Model):
     mode = models.CharField(max_length=10, choices=MODE_CHOICES, default="test")
     is_active = models.BooleanField(default=True)
     is_default = models.BooleanField(default=False)
-
-    # Keep credentials in JSON (API keys, secrets, etc.). NEVER expose in templates.
     credentials = models.JSONField(default=dict, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -216,6 +297,5 @@ class MerchantPaymentMethod(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        # Ensure only one default per store
         if self.is_default:
             MerchantPaymentMethod.objects.filter(store=self.store).exclude(pk=self.pk).update(is_default=False)

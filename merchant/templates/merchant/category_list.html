@@ -1,0 +1,78 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Categories | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+
+  {% include "merchant/_nav.html" %}
+
+  {% if messages %}
+    <div class="max-w-5xl mx-auto px-6 mt-4 space-y-2">
+      {% for message in messages %}
+        <div class="rounded-xl px-4 py-3
+                    {% if message.tags == 'success' %}bg-green-900/40 text-green-200
+                    {% elif message.tags == 'error' %}bg-red-900/40 text-red-200
+                    {% else %}bg-gray-800 text-gray-200{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="max-w-5xl mx-auto px-6 py-8">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-3xl font-bold text-yellow-400">Store Categories</h1>
+        <p class="text-gray-400 mt-1">{{ store.store_name }}</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="{% url 'merchant-dashboard' %}"
+           class="px-4 py-2 rounded-xl bg-gray-800 text-yellow-400 hover:bg-gray-700">
+          ← Back to Dashboard
+        </a>
+        <a href="{% url 'merchant-add-category' %}"
+           class="px-4 py-2 rounded-xl bg-yellow-400 text-black hover:opacity-90">
+          + Add Category
+        </a>
+      </div>
+    </div>
+
+    <div class="bg-gray-900 rounded-2xl shadow overflow-hidden">
+      {% if categories %}
+        <table class="min-w-full text-left">
+          <thead class="bg-gray-800 text-gray-300 uppercase text-sm">
+            <tr>
+              <th class="px-6 py-3">Category Name</th>
+              <th class="px-6 py-3">Slug</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800">
+            {% for category in categories %}
+              <tr class="hover:bg-gray-800">
+                <td class="px-6 py-4 font-medium text-white">{{ category.name }}</td>
+                <td class="px-6 py-4 text-gray-400">{{ category.slug }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="p-8 text-center text-gray-400">
+          No categories yet.
+          <div class="mt-4">
+            <a href="{% url 'merchant-add-category' %}"
+               class="inline-flex px-4 py-2 rounded-xl bg-yellow-400 text-black hover:opacity-90">
+              Create your first category
+            </a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </main>
+</body>
+</html>

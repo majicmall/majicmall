@@ -3,23 +3,16 @@ certifi==2025.7.14
 cffi==1.17.1
 charset-normalizer==3.4.2
 cryptography==45.0.5
-dj-database-url==3.0.1
+dj-database-url==3.1.2
 Django==5.2.3
 django-allauth==65.10.0
-gunicorn==23.0.0
+git-filter-repo==2.47.0
 idna==3.10
-packaging==25.0
 pillow==11.3.0
-psycopg==3.2.10
-psycopg-binary==3.2.10
 pycparser==2.22
 PyJWT==2.10.1
-python-dotenv==1.1.1
 qrcode==8.2
 requests==2.32.4
 sqlparse==0.5.3
-typing_extensions==4.15.0
 urllib3==2.5.0
-whitenoise==6.10.0
-# force rebuild Wed Sep 24 17:48:03 UTC 2025
-# force rebuild Wed Sep 24 18:05:17 UTC 2025
+whitenoise==6.11.0

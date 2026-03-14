@@ -47,19 +47,19 @@ def merchant_thank_you(request):
 @login_required
 def merchant_dashboard(request):
     """
-    Safely retrieve the current user's merchant store.
-    Avoids RelatedObjectDoesNotExist by using getattr fallback.
-    Redirects to 'merchant-setup' if the user hasn't created a store yet.
+    Multi-store safe dashboard fallback.
+    Uses the user's first non-archived store.
     """
-    store = getattr(request.user, 'merchant_store', None)
-    if not store:
-        return redirect('merchant-setup')
+    store = request.user.stores.filter(is_archived=False).order_by("created_at").first()
 
-    # Pass a consistent context key; keep 'merchant' too if your template expects it.
-    return render(request, 'merchant/dashboard.html', {
-        'store': store,
-        'merchant': store,
+    if not store:
+        return redirect("merchant-setup")
+
+    return render(request, "merchant/dashboard.html", {
+        "store": store,
+        "merchant": store,
     })
+
 
 def merchant_invite(request):
     return render(request, 'merchant/invite.html')

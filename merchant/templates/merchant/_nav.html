@@ -12,11 +12,29 @@
       <span class="mx-1 w-px h-6 bg-gray-800"></span>
 
       {% if request.user.is_authenticated %}
+        {% if nav_stores %}
+          <form method="get" action="{% url 'merchant-dashboard' %}" class="inline">
+            <select name="store"
+                    onchange="this.form.submit()"
+                    class="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-200">
+              {% for s in nav_stores %}
+                <option value="{{ s.id }}"
+                  {% if nav_current_store and nav_current_store.id == s.id %}selected{% endif %}>
+                  {{ s.store_name }}
+                </option>
+              {% endfor %}
+            </select>
+          </form>
+        {% endif %}
+
         <a href="{% url 'merchant-dashboard' %}" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">
           Dashboard
         </a>
         <a href="{% url 'merchant-profile' %}" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">
-          Store Profile
+          Manage Store
+        </a>
+        <a href="{% url 'merchant-category-list' %}" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">
+          Categories
         </a>
         <a href="{% url 'merchant-reports' %}" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">
           Reports
@@ -24,6 +42,12 @@
         <a href="{% url 'merchant-plans' %}" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">
           Plans
         </a>
+
+        {% if request.user.is_staff or request.user.is_superuser %}
+          <a href="{% url 'admin-store-list' %}" class="px-3 py-2 rounded-lg text-yellow-400 hover:bg-gray-800">
+            Manage Stores
+          </a>
+        {% endif %}
 
         <form method="post" action="/accounts/logout/" class="inline">
           {% csrf_token %}

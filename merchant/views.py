@@ -36,6 +36,17 @@ def staff_required(view_func):
         user_passes_test(lambda u: u.is_staff or u.is_superuser)(view_func)
     )
 
+def merchant_nav_context(request):
+    if not request.user.is_authenticated:
+        return {}
+
+    stores = Store.objects.filter(owner=request.user, is_archived=False).order_by("created_at")
+    current_store = get_current_store(request)
+
+    return {
+        "nav_stores": stores,
+        "nav_current_store": current_store,
+    }
 
 def _get_user_store_or_none(request):
     """Legacy helper (kept for compatibility). Prefer get_current_store()."""

@@ -9,6 +9,7 @@ django-allauth==65.10.0
 git-filter-repo==2.47.0
 idna==3.10
 pillow==11.3.0
+psycopg2-binary==2.9.11
 pycparser==2.22
 PyJWT==2.10.1
 qrcode==8.2

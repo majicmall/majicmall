@@ -22,9 +22,4 @@ class Migration(migrations.Migration):
                 to=settings.AUTH_USER_MODEL,
             ),
         ),
-        migrations.AlterField(
-            model_name="merchantstore",
-            name="slug",
-            field=models.SlugField(blank=True, max_length=255, unique=True),
-        ),
     ]

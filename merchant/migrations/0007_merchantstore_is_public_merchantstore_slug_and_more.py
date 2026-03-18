@@ -5,14 +5,12 @@ from django.utils.text import slugify
 def backfill_slugs(apps, schema_editor):
     Store = apps.get_model("merchant", "MerchantStore")
 
-    # gather existing non-empty slugs, if any
     used = set(
         s for s in
         Store.objects.exclude(slug__isnull=True).exclude(slug__exact="").values_list("slug", flat=True)
     )
 
     for store in Store.objects.all().order_by("id"):
-        # prefer any existing slug value; else derive from store_name; else fallback
         base = None
         if getattr(store, "slug", None):
             base = slugify(store.slug)
@@ -39,7 +37,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # Add fields permissively first (slug nullable so we can backfill)
         migrations.AddField(
             model_name="merchantstore",
             name="is_public",
@@ -55,14 +52,10 @@ class Migration(migrations.Migration):
             name="store_name",
             field=models.CharField(max_length=255),
         ),
-
-        # Backfill unique slugs for existing rows
         migrations.RunPython(backfill_slugs, reverse_code=migrations.RunPython.noop),
-
-        # Enforce uniqueness only after backfill
         migrations.AlterField(
             model_name="merchantstore",
             name="slug",
-            field=models.SlugField(max_length=255, unique=True),
+            field=models.SlugField(max_length=255, unique=True, blank=True),
         ),
     ]

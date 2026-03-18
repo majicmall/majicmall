@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="merchantstore",
             name="slug",
-            field=models.SlugField(max_length=255, null=True, blank=True),
+            field=models.CharField(max_length=255, null=True, blank=True),
         ),
         migrations.AlterField(
             model_name="merchantstore",

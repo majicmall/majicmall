@@ -28,6 +28,8 @@ urlpatterns = [
     path("zone/food/", views.food_court_zone, name="food-court-zone"),
     path("zone/theater/", views.theater_zone, name="theater-zone"),
     path("zone/learning/", views.learning_zone, name="learning-zone"),
+    path("zone/business/", views.business_zone, name="business-zone"),
+    path("zone/music/", views.music_zone, name="music-zone"),
 
     # TV
     path("tv/", views.tv_home, name="tv-home"),

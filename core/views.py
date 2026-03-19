@@ -67,6 +67,12 @@ def merchant_invite(request):
 def merchant_tiers(request):
     return render(request, 'merchant/tiers.html')
 
+def business_zone(request):
+    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Business Services'})
+
+def music_zone(request):
+    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Music'})
+
 class MerchantLoginView(LoginView):
     template_name = 'merchant/login.html'
 
@@ -76,8 +82,23 @@ class MerchantLoginView(LoginView):
 # ---------------------------
 
 def mall_directory(request):
-    zones = MallZone.objects.filter(is_active=True).order_by("sort_order", "name").prefetch_related("stores")
-    return render(request, 'mall/directory.html', {'zones': zones})
+    zones = (
+        MallZone.objects
+        .filter(is_active=True)
+        .order_by("sort_order", "name")
+        .prefetch_related("stores")
+    )
+
+    active_zone = request.GET.get("zone", "").strip()
+
+    return render(
+        request,
+        "mall/directory.html",
+        {
+            "zones": zones,
+            "active_zone": active_zone,
+        },
+    )
 
 def fashion_zone(request):
     return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Fashion'})

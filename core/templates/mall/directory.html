@@ -54,38 +54,26 @@
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
   {% for zone in zones %}
 
-    {% if "fashion" in zone.slug %}
-      <a href="{% url 'fashion-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "entertainment" in zone.slug %}
-      <a href="{% url 'entertainment-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "tech" in zone.slug %}
-      <a href="{% url 'tech-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "home" in zone.slug %}
-      <a href="{% url 'home-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "family" in zone.slug %}
-      <a href="{% url 'family-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "creators" in zone.slug %}
-      <a href="{% url 'creators-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "luxury" in zone.slug %}
-      <a href="{% url 'luxury-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "atls-hottest" in zone.slug %}
+    {% if "atls-hottest" in zone.slug %}
       <a href="{% url 'atls-hottest-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
+
+    {% elif "business" in zone.slug %}
+      <a href="{% url 'business-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
+
+    {% elif "fashion" in zone.slug %}
+      <a href="{% url 'fashion-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
 
     {% elif "food" in zone.slug %}
       <a href="{% url 'food-court-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
 
+    {% elif "music" in zone.slug %}
+      <a href="{% url 'music-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
+
+    {% elif "tech" in zone.slug %}
+      <a href="{% url 'tech-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
+
     {% elif "theater" in zone.slug %}
       <a href="{% url 'theater-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "learning" in zone.slug %}
-      <a href="{% url 'learning-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
 
     {% else %}
       <a href="#zone-{{ zone.slug }}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>

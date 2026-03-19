@@ -13,6 +13,7 @@ class Command(BaseCommand):
             "Theater Zone",
             "Music Zone",
             "Business Services Zone",
+            "ATL's Hottest Zone",
         ]
 
         created = 0

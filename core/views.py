@@ -68,7 +68,13 @@ def merchant_tiers(request):
     return render(request, 'merchant/tiers.html')
 
 def business_zone(request):
-    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Business Services'})
+    zone = get_object_or_404(MallZone, slug="business-services-zone")
+    stores = zone.stores.filter(is_public=True, is_archived=False).order_by("store_name")
+
+    return render(request, "mall/zone_live.html", {
+        "zone": zone,
+        "stores": stores,
+    })
 
 def music_zone(request):
     return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Music'})

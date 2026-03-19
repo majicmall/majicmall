@@ -34,7 +34,6 @@
 </head>
 <body>
 
-  <!-- Welcome Message -->
   <div id="welcome-message" class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-yellow-300 text-black text-xl font-bold px-6 py-3 rounded-xl shadow-2xl z-50 opacity-0 animate-welcome">
     👋 Welcome to Majic Mall
   </div>
@@ -44,10 +43,15 @@
          alt="Majic Mall Directory"
          class="w-full h-auto mb-6">
 
-    <!-- Live directory buttons -->
+    {% if active_zone %}
+      <div class="mb-4 text-yellow-300 font-semibold">
+        Showing zone: {{ active_zone }}
+      </div>
+    {% endif %}
+
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
       {% for zone in zones %}
-        <a href="#zone-{{ zone.slug }}"
+        <a href="?zone={{ zone.slug }}#zone-{{ zone.slug }}"
            class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
           {{ zone.name|upper }}
         </a>
@@ -66,7 +70,6 @@
       </a>
     </div>
 
-    <!-- Live zones + stores -->
     <div class="w-full max-w-6xl mt-4">
       <div class="text-center mb-8">
         <h2 class="text-3xl font-bold text-yellow-400">Live Stores by Zone</h2>
@@ -133,5 +136,18 @@
 
     <p class="text-white mt-8 italic">🧭 You Are Here: Main Entrance</p>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const params = new URLSearchParams(window.location.search);
+      const zone = params.get("zone");
+      if (zone) {
+        const target = document.getElementById("zone-" + zone);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    });
+  </script>
 </body>
 </html>

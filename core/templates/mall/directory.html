@@ -51,7 +51,71 @@
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
       {% for zone in zones %}
-        <a href="?zone={{ zone.slug }}#zone-{{ zone.slug }}"
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
+  {% for zone in zones %}
+    {% if zone.slug == "fashion-zone" or zone.slug == "fashion" %}
+      <a href="{% url 'fashion-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+        {{ zone.name|upper }}
+      </a>
+    {% elif zone.slug == "entertainment-zone" or zone.slug == "entertainment" %}
+      <a href="{% url 'entertainment-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+        {{ zone.name|upper }}
+      </a>
+    {% elif zone.slug == "tech-zone" or zone.slug == "tech" %}
+      <a href="{% url 'tech-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+        {{ zone.name|upper }}
+      </a>
+    {% elif zone.slug == "home-zone" or zone.slug == "home" %}
+      <a href="{% url 'home-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+        {{ zone.name|upper }}
+      </a>
+    {% elif zone.slug == "family-zone" or zone.slug == "family" %}
+      <a href="{% url 'family-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+        {{ zone.name|upper }}
+      </a>
+    {% elif zone.slug == "creators-zone" or zone.slug == "creators" %}
+      <a href="{% url 'creators-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+        {{ zone.name|upper }}
+      </a>
+    {% elif zone.slug == "luxury-zone" or zone.slug == "luxury" %}
+      <a href="{% url 'luxury-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+        {{ zone.name|upper }}
+      </a>
+    {% elif zone.slug == "atls-hottest-zone" or zone.slug == "atls-hottest" %}
+      <a href="{% url 'atls-hottest-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+        {{ zone.name|upper }}
+      </a>
+    {% elif zone.slug == "food-court-zone" or zone.slug == "food-court" or zone.slug == "food" %}
+      <a href="{% url 'food-court-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+        {{ zone.name|upper }}
+      </a>
+    {% elif zone.slug == "theater-zone" or zone.slug == "theater" %}
+      <a href="{% url 'theater-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+        {{ zone.name|upper }}
+      </a>
+    {% elif zone.slug == "learning-zone" or zone.slug == "learning" %}
+      <a href="{% url 'learning-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+        {{ zone.name|upper }}
+      </a>
+    {% else %}
+      <a href="#zone-{{ zone.slug }}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
+        {{ zone.name|upper }}
+      </a>
+    {% endif %}
+  {% empty %}
+    <div class="col-span-full text-gray-400">
+      No active zones available.
+    </div>
+  {% endfor %}
+
+  <a href="{% url 'merchant-invite' %}" class="px-4 py-2 m-2 bg-yellow-400 text-black font-bold rounded-xl shadow-lg hover:bg-yellow-500 transition duration-300">
+    🛍️ Become a Merchant
+  </a>
+
+  <a href="/merchant/login/" class="px-4 py-2 m-2 bg-gray-700 text-white rounded-xl shadow-lg hover:bg-gray-900 transition duration-300">
+    🔐 Merchant Login
+  </a>
+</div>
            class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">
           {{ zone.name|upper }}
         </a>

@@ -461,7 +461,6 @@ def order_detail(request, order_id: int):
     return render(request, "merchant/order_detail.html", {"order": order})
 
 
-@login_required
 def cart_add(request, product_id: int):
     if request.method != "POST":
         return redirect("mall-directory")

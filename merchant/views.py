@@ -486,7 +486,7 @@ def cart_add(request, product_id: int):
     request.session.modified = True
 
     messages.success(request, f"{product.name} added to cart.")
-    return redirect("storefront", slug=product.store.slug)
+    return redirect("cart-view")
 
 # ===== Merchant self-service archive/restore ===================================
 @login_required
@@ -506,6 +506,9 @@ def merchant_store_archive(request):
     messages.success(request, "Your store has been archived. You can restore it within 7 days.")
     return redirect("merchant-profile")
 
+def cart_view(request):
+    cart = request.session.get("cart", {})
+    return render(request, "merchant/cart.html", {"cart": cart})
 
 @login_required
 def merchant_store_restore(request):

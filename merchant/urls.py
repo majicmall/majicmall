@@ -34,6 +34,7 @@ path("products/<int:product_id>/edit/", views.edit_product, name="merchant-edit-
 path("products/<int:product_id>/delete/", views.delete_product, name="merchant-delete-product"),
 
 path("cart/add/<int:product_id>/", views.cart_add, name="cart-add"),
+path("cart/", views.cart_view, name="cart-view"),
 
     # Admin store management (staff)
     path("stores/", views.admin_store_list, name="admin-store-list"),

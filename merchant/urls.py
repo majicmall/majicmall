@@ -33,6 +33,8 @@ path("products/add/", views.add_product, name="merchant-add-product"),
 path("products/<int:product_id>/edit/", views.edit_product, name="merchant-edit-product"),
 path("products/<int:product_id>/delete/", views.delete_product, name="merchant-delete-product"),
 
+path("cart/add/<int:product_id>/", views.cart_add, name="cart-add"),
+
     # Admin store management (staff)
     path("stores/", views.admin_store_list, name="admin-store-list"),
     path("stores/<int:store_id>/archive/", views.admin_store_archive, name="admin-store-archive"),

@@ -32,7 +32,6 @@
 </head>
 <body class="bg-gray-950 text-white min-h-screen">
 
-  <!-- Top bar -->
   <div class="glass sticky top-0 z-30 border-b border-gray-800/70">
     <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
       <a href="{% url 'storefront' store.slug %}" class="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-yellow-400">
@@ -49,7 +48,6 @@
   <main class="max-w-6xl mx-auto px-6 py-10">
     <div class="grid md:grid-cols-2 gap-8 items-start">
 
-      <!-- Product Image -->
       <div class="bg-gray-900 rounded-2xl p-4 card">
         {% if product.image %}
           <img src="{{ product.image.url }}" alt="{{ product.name }}"
@@ -61,7 +59,6 @@
         {% endif %}
       </div>
 
-      <!-- Product Details -->
       <div class="bg-gray-900 rounded-2xl p-6 card">
         <div class="mb-3">
           <a href="{% url 'storefront' store.slug %}" class="text-sm text-yellow-400 hover:underline">
@@ -90,9 +87,11 @@
         </div>
 
         <div class="flex flex-wrap gap-3">
-          <button class="btn px-5 py-3 bg-yellow-400 text-black rounded-xl hover:opacity-90 font-semibold">
-            Add to Cart
-          </button>
+          <form method="post" action="{% url 'cart-add' product.id %}" style="border:2px solid red; padding:12px;">
+            {% csrf_token %}
+            <input type="hidden" name="quantity" value="1">
+            <input type="submit" value="ADD TO CART TEST" style="background: yellow; color: black; padding: 12px 18px; font-weight: bold; cursor: pointer;">
+          </form>
 
           <a href="{% url 'storefront' store.slug %}"
              class="btn px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">

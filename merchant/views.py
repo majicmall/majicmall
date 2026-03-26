@@ -235,7 +235,60 @@ def storefront_qr(request, slug: str):
     if (request.GET.get("download") or "").strip().lower() in {"1", "true", "yes", "on"}:
         resp["Content-Disposition"] = f'attachment; filename="majicmall-store-{store.slug}.png"'
     return resp
+from decimal import Decimal
 
+def public_checkout(request):
+    cart = request.session.get("cart", {})
+
+    items = []
+    total = Decimal("0.00")
+
+    for key, item in cart.items():
+        price = Decimal(str(item.get("price", "0.00")))
+        quantity = int(item.get("quantity", 0))
+        line_total = price * quantity
+        total += line_total
+
+        items.append({
+            "key": key,
+            "name": item.get("name", "Item"),
+            "price": price,
+            "quantity": quantity,
+            "line_total": line_total,
+            "store_slug": item.get("store_slug", ""),
+        })
+
+    return render(
+        request,
+        "merchant/public_checkout.html",
+        {
+            "items": items,
+            "total": total,
+        },
+    )
+
+
+def public_checkout_submit(request):
+    if request.method != "POST":
+        return redirect("public-checkout")
+
+    cart = request.session.get("cart", {})
+    if not cart:
+        messages.warning(request, "Your cart is empty.")
+        return redirect("cart-view")
+
+    customer_name = (request.POST.get("customer_name") or "").strip()
+    customer_email = (request.POST.get("customer_email") or "").strip()
+
+    if not customer_name or not customer_email:
+        messages.error(request, "Please enter your name and email.")
+        return redirect("public-checkout")
+
+    request.session["cart"] = {}
+    request.session.modified = True
+
+    messages.success(request, f"Demo checkout complete for {customer_name}.")
+    return redirect("mall-directory")
 
 # ===== Categories ===============================================================
 @login_required

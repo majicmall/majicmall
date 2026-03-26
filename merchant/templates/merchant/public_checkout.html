@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Checkout | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+  <main class="max-w-4xl mx-auto px-6 py-10">
+    <h1 class="text-3xl font-bold text-yellow-400 mb-6">Checkout</h1>
+
+    {% if items %}
+      <div class="space-y-4 mb-8">
+        {% for item in items %}
+          <div class="bg-gray-900 rounded-2xl p-5 border border-gray-800">
+            <div class="text-xl font-semibold">{{ item.name }}</div>
+            <div class="text-gray-400 mt-1">Quantity: {{ item.quantity }}</div>
+            <div class="text-yellow-400 font-bold mt-2">
+              ${{ item.price }} each
+            </div>
+            <div class="text-white mt-1">
+              Line Total: ${{ item.line_total }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 mb-8">
+        <div class="text-2xl font-bold text-yellow-400">
+          Total: ${{ total }}
+        </div>
+      </div>
+
+      <form method="post" action="{% url 'public-checkout-submit' %}" class="bg-gray-900 rounded-2xl p-6 border border-gray-800 space-y-4">
+        {% csrf_token %}
+
+        <div>
+          <label class="block text-sm text-gray-300 mb-2">Name</label>
+          <input type="text" name="customer_name" class="w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white" required>
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-300 mb-2">Email</label>
+          <input type="email" name="customer_email" class="w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white" required>
+        </div>
+
+        <div class="flex gap-3 flex-wrap pt-2">
+          <a href="{% url 'cart-view' %}"
+             class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+            Back to Cart
+          </a>
+
+          <button type="submit"
+                  class="px-5 py-3 bg-yellow-400 text-black rounded-xl font-semibold hover:opacity-90">
+            Place Demo Order
+          </button>
+        </div>
+      </form>
+    {% else %}
+      <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 text-gray-300">
+        Your cart is empty.
+      </div>
+
+      <div class="mt-8">
+        <a href="{% url 'mall-directory' %}"
+           class="px-5 py-3 bg-purple-700 text-white rounded-xl hover:bg-purple-800">
+          Browse More Stores
+        </a>
+      </div>
+    {% endif %}
+  </main>
+</body>
+</html>

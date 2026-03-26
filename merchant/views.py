@@ -462,31 +462,8 @@ def order_detail(request, order_id: int):
 
 
 def cart_add(request, product_id: int):
-    if request.method != "POST":
-        return redirect("mall-directory")
-
-    product = get_object_or_404(Product, pk=product_id)
-
-    cart = request.session.get("cart", {})
-    key = str(product.id)
-
-    if key in cart:
-        cart[key]["quantity"] += 1
-    else:
-        cart[key] = {
-            "name": product.name,
-            "quantity": 1,
-            "price": str(product.price) if getattr(product, "price", None) is not None else "0.00",
-            "store_id": product.store_id,
-            "store_slug": product.store.slug,
-            "image_url": product.image.url if getattr(product, "image", None) else "",
-        }
-
-    request.session["cart"] = cart
-    request.session.modified = True
-
-    messages.success(request, f"{product.name} added to cart.")
-    return redirect("cart-view")
+    from django.http import HttpResponse
+    return HttpResponse(f"CART ADD HIT: product_id={product_id}, method={request.method}")
 
 # ===== Merchant self-service archive/restore ===================================
 @login_required

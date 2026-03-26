@@ -21,20 +21,34 @@
         {% endfor %}
       </div>
 
-      <div class="mt-8 flex gap-3">
+      <div class="mt-8 flex gap-3 flex-wrap">
+        {% if last_store_slug %}
+          <a href="{% url 'storefront' last_store_slug %}"
+             class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+            Continue This Store
+          </a>
+        {% endif %}
+
+        <a href="{% url 'mall-directory' %}"
+           class="px-5 py-3 bg-purple-700 text-white rounded-xl hover:bg-purple-800">
+          Browse More Stores
+        </a>
+
         <a href="{% url 'merchant-checkout-start' %}"
            class="px-5 py-3 bg-yellow-400 text-black rounded-xl font-semibold hover:opacity-90">
           Proceed to Checkout
-        </a>
-
-        <a href="/directory/"
-           class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
-          Continue Shopping
         </a>
       </div>
     {% else %}
       <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 text-gray-300">
         Your cart is empty.
+      </div>
+
+      <div class="mt-8 flex gap-3 flex-wrap">
+        <a href="{% url 'mall-directory' %}"
+           class="px-5 py-3 bg-purple-700 text-white rounded-xl hover:bg-purple-800">
+          Browse More Stores
+        </a>
       </div>
     {% endif %}
   </main>

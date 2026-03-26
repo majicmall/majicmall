@@ -483,6 +483,7 @@ def cart_add(request, product_id: int):
         }
 
     request.session["cart"] = cart
+    request.session["last_store_slug"] = product.store.slug
     request.session.modified = True
 
     messages.success(request, f"{product.name} added to cart.")

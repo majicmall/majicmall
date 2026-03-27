@@ -45,32 +45,36 @@ class StripeAdapterImpl:
         currency: str,
         metadata: Dict[str, Any],
     ) -> Dict[str, str]:
-        stripe.api_key = settings.STRIPE_SECRET_KEY
+        try:
+            stripe.api_key = settings.STRIPE_SECRET_KEY
 
-        session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
-            line_items=[
-                {
-                    "price_data": {
-                        "currency": currency,
-                        "product_data": {
-                            "name": "Majic Mall Order",
+            session = stripe.checkout.Session.create(
+                payment_method_types=["card"],
+                line_items=[
+                    {
+                        "price_data": {
+                            "currency": currency,
+                            "product_data": {
+                                "name": "Majic Mall Order",
+                            },
+                            "unit_amount": amount_cents,
                         },
-                        "unit_amount": amount_cents,
-                    },
-                    "quantity": 1,
-                }
-            ],
-            mode="payment",
-            success_url=f"{self.success_url}?session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=self.cancel_url,
-            metadata=metadata,
-        )
+                        "quantity": 1,
+                    }
+                ],
+                mode="payment",
+                success_url=f"{self.success_url}?session_id={{CHECKOUT_SESSION_ID}}",
+                cancel_url=self.cancel_url,
+                metadata=metadata,
+            )
 
-        return {
-            "redirect_url": session.url,
-            "session_id": session.id,
-        }
+            return {
+                "redirect_url": session.url,
+                "session_id": session.id,
+            }
+        except Exception as e:
+            print("STRIPE CHECKOUT ERROR:", repr(e))
+            raise
 
 
 @dataclass

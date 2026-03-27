@@ -36,6 +36,7 @@ def staff_required(view_func):
         user_passes_test(lambda u: u.is_staff or u.is_superuser)(view_func)
     )
 
+
 def merchant_nav_context(request):
     if not request.user.is_authenticated:
         return {}
@@ -47,6 +48,7 @@ def merchant_nav_context(request):
         "nav_stores": stores,
         "nav_current_store": current_store,
     }
+
 
 def _get_user_store_or_none(request):
     """Legacy helper (kept for compatibility). Prefer get_current_store()."""
@@ -79,7 +81,6 @@ def get_current_store(request):
 
     qs = Store.objects.filter(owner=request.user, is_archived=False).order_by("created_at")
 
-    # URL override
     store_id = request.GET.get("store")
     if store_id:
         try:
@@ -89,7 +90,6 @@ def get_current_store(request):
         except (ValueError, Store.DoesNotExist):
             pass
 
-    # Session
     sid = request.session.get("active_store_id")
     if sid:
         try:
@@ -97,11 +97,81 @@ def get_current_store(request):
         except (ValueError, Store.DoesNotExist):
             request.session.pop("active_store_id", None)
 
-    # Fallback
     store = qs.first()
     if store:
         request.session["active_store_id"] = store.id
     return store
+
+
+# ===== Promo Codes =============================================================
+PROMO_CODES = {
+    "SAVE10": {"kind": "percent", "value": Decimal("10.00"), "label": "10% off"},
+    "WELCOME5": {"kind": "fixed", "value": Decimal("5.00"), "label": "$5 off"},
+}
+
+
+def _calculate_checkout_context(request):
+    cart = request.session.get("cart", {})
+    promo_code = (request.session.get("promo_code") or "").strip().upper()
+
+    items = []
+    subtotal = Decimal("0.00")
+    discount = Decimal("0.00")
+    total = Decimal("0.00")
+    store_id = None
+    store = None
+    payment_methods = []
+    promo = PROMO_CODES.get(promo_code)
+
+    for key, item in cart.items():
+        item_store_id = item.get("store_id")
+
+        if store_id is None:
+            store_id = item_store_id
+        elif item_store_id != store_id:
+            return {
+                "error": "Your cart contains items from multiple stores. Please use one store at a time."
+            }
+
+        price = Decimal(str(item.get("price", "0.00")))
+        quantity = int(item.get("quantity", 0))
+        line_total = price * quantity
+        subtotal += line_total
+
+        items.append({
+            "key": key,
+            "product_id": key,
+            "name": item.get("name", "Item"),
+            "price": price,
+            "quantity": quantity,
+            "line_total": line_total,
+            "store_slug": item.get("store_slug", ""),
+        })
+
+    if promo and subtotal > 0:
+        if promo["kind"] == "percent":
+            discount = (subtotal * promo["value"] / Decimal("100")).quantize(Decimal("0.01"))
+        else:
+            discount = min(subtotal, promo["value"])
+
+    total = max(Decimal("0.00"), subtotal - discount)
+
+    if store_id:
+        store = get_object_or_404(MerchantStore, pk=store_id)
+        payment_methods = list(
+            store.payment_methods.filter(is_active=True).order_by("-is_default", "provider")
+        )
+
+    return {
+        "cart": cart,
+        "items": items,
+        "subtotal": subtotal,
+        "discount": discount,
+        "total": total,
+        "store": store,
+        "payment_methods": payment_methods,
+        "promo_code": promo_code,
+    }
 
 
 @login_required
@@ -202,7 +272,6 @@ def storefront_qr(request, slug: str):
     if store.is_archived or not store.is_public:
         raise Http404("Store not available")
 
-    # Build absolute URL using PUBLIC_BASE_URL if provided (avoids localhost in QR)
     base = (getattr(settings, "PUBLIC_BASE_URL", "") or request.build_absolute_uri("/")).rstrip("/")
     target_url = f"{base}{reverse('storefront', args=[slug])}"
 
@@ -235,60 +304,227 @@ def storefront_qr(request, slug: str):
     if (request.GET.get("download") or "").strip().lower() in {"1", "true", "yes", "on"}:
         resp["Content-Disposition"] = f'attachment; filename="majicmall-store-{store.slug}.png"'
     return resp
-from decimal import Decimal
 
-def public_checkout(request):
+
+# ===== Public Cart / Checkout ==================================================
+def cart_add(request, product_id: int):
+    if request.method != "POST":
+        return redirect("mall-directory")
+
+    product = get_object_or_404(Product, pk=product_id)
+
     cart = request.session.get("cart", {})
+    key = str(product.id)
 
-    items = []
+    existing_store_id = None
+    if cart:
+        first_item = next(iter(cart.values()))
+        existing_store_id = first_item.get("store_id")
+
+    if existing_store_id and int(existing_store_id) != int(product.store_id):
+        messages.warning(
+            request,
+            "Your cart already contains items from another store. Please finish checkout or clear that cart before adding items from a different store."
+        )
+        return redirect("cart-view")
+
+    if key in cart:
+        cart[key]["quantity"] += 1
+    else:
+        cart[key] = {
+            "name": product.name,
+            "quantity": 1,
+            "price": str(product.price) if getattr(product, "price", None) is not None else "0.00",
+            "store_id": product.store_id,
+            "store_slug": product.store.slug,
+            "image_url": product.image.url if getattr(product, "image", None) else "",
+        }
+
+    request.session["cart"] = cart
+    request.session["last_store_slug"] = product.store.slug
+    request.session.modified = True
+
+    messages.success(request, f"{product.name} added to cart.")
+    return redirect("cart-view")
+
+
+def cart_remove(request, product_id: int):
+    if request.method != "POST":
+        return redirect("cart-view")
+
+    cart = request.session.get("cart", {})
+    key = str(product_id)
+
+    if key in cart:
+        removed_name = cart[key].get("name", "Item")
+        del cart[key]
+        request.session["cart"] = cart
+
+        if cart:
+            first_item = next(iter(cart.values()))
+            request.session["last_store_slug"] = first_item.get("store_slug", "")
+        else:
+            request.session.pop("last_store_slug", None)
+            request.session.pop("promo_code", None)
+
+        request.session.modified = True
+        messages.success(request, f"{removed_name} removed from cart.")
+    else:
+        messages.warning(request, "Item was not found in your cart.")
+
+    return redirect("cart-view")
+
+
+def cart_view(request):
+    cart = request.session.get("cart", {})
+    last_store_slug = request.session.get("last_store_slug")
+
     total = Decimal("0.00")
-
-    for key, item in cart.items():
+    for item in cart.values():
         price = Decimal(str(item.get("price", "0.00")))
         quantity = int(item.get("quantity", 0))
-        line_total = price * quantity
-        total += line_total
-
-        items.append({
-            "key": key,
-            "name": item.get("name", "Item"),
-            "price": price,
-            "quantity": quantity,
-            "line_total": line_total,
-            "store_slug": item.get("store_slug", ""),
-        })
+        total += price * quantity
 
     return render(
         request,
-        "merchant/public_checkout.html",
+        "merchant/cart.html",
         {
-            "items": items,
+            "cart": cart,
+            "last_store_slug": last_store_slug,
             "total": total,
         },
     )
+
+
+def public_checkout(request):
+    context = _calculate_checkout_context(request)
+
+    if context.get("error"):
+        messages.error(request, context["error"])
+        return redirect("cart-view")
+
+    return render(request, "merchant/public_checkout.html", context)
+
+
+def public_checkout_apply_promo(request):
+    if request.method != "POST":
+        return redirect("public-checkout")
+
+    context = _calculate_checkout_context(request)
+    if context.get("error"):
+        messages.error(request, context["error"])
+        return redirect("cart-view")
+
+    if not context["items"]:
+        messages.warning(request, "Your cart is empty.")
+        return redirect("cart-view")
+
+    if request.POST.get("clear_promo") == "1":
+        request.session.pop("promo_code", None)
+        request.session.modified = True
+        messages.success(request, "Promo code removed.")
+        return redirect("public-checkout")
+
+    promo_code = (request.POST.get("promo_code") or "").strip().upper()
+
+    if not promo_code:
+        request.session.pop("promo_code", None)
+        request.session.modified = True
+        messages.warning(request, "Please enter a promo code.")
+        return redirect("public-checkout")
+
+    if promo_code not in PROMO_CODES:
+        messages.error(request, "That promo code is not valid.")
+        return redirect("public-checkout")
+
+    request.session["promo_code"] = promo_code
+    request.session.modified = True
+    messages.success(request, f"Promo code {promo_code} applied.")
+    return redirect("public-checkout")
 
 
 def public_checkout_submit(request):
     if request.method != "POST":
         return redirect("public-checkout")
 
-    cart = request.session.get("cart", {})
-    if not cart:
+    context = _calculate_checkout_context(request)
+
+    if context.get("error"):
+        messages.error(request, context["error"])
+        return redirect("cart-view")
+
+    if not context["items"]:
         messages.warning(request, "Your cart is empty.")
         return redirect("cart-view")
 
     customer_name = (request.POST.get("customer_name") or "").strip()
     customer_email = (request.POST.get("customer_email") or "").strip()
+    payment_method_id = (request.POST.get("payment_method_id") or "").strip()
 
     if not customer_name or not customer_email:
         messages.error(request, "Please enter your name and email.")
         return redirect("public-checkout")
 
-    request.session["cart"] = {}
+    if not payment_method_id:
+        messages.error(request, "Please select a payment method.")
+        return redirect("public-checkout")
+
+    store = context["store"]
+    total = context["total"]
+
+    try:
+        payment_method = store.payment_methods.get(pk=int(payment_method_id), is_active=True)
+    except (ValueError, MerchantPaymentMethod.DoesNotExist):
+        messages.error(request, "Invalid payment method selected.")
+        return redirect("public-checkout")
+
+    success_url = request.build_absolute_uri(reverse("public-checkout-success"))
+    cancel_url = request.build_absolute_uri(reverse("public-checkout-cancel"))
+
+    adapter = build_adapter(
+        payment_method.provider,
+        credentials=payment_method.credentials,
+        success_url=success_url,
+        cancel_url=cancel_url,
+    )
+
+    result = adapter.start_checkout(
+        amount_cents=int(total * 100),
+        currency="usd",
+        metadata={
+            "store_id": store.id,
+            "customer_name": customer_name,
+            "customer_email": customer_email,
+            "promo_code": context.get("promo_code", ""),
+            "purchase_type": "storefront_order",
+        },
+    )
+
+    request.session["checkout_customer_name"] = customer_name
+    request.session["checkout_customer_email"] = customer_email
     request.session.modified = True
 
-    messages.success(request, f"Demo checkout complete for {customer_name}.")
+    return redirect(result["redirect_url"])
+
+
+def public_checkout_success(request):
+    customer_name = request.session.get("checkout_customer_name", "Customer")
+
+    request.session["cart"] = {}
+    request.session.pop("last_store_slug", None)
+    request.session.pop("promo_code", None)
+    request.session.pop("checkout_customer_name", None)
+    request.session.pop("checkout_customer_email", None)
+    request.session.modified = True
+
+    messages.success(request, f"Payment approved (demo). Thank you, {customer_name}!")
     return redirect("mall-directory")
+
+
+def public_checkout_cancel(request):
+    messages.warning(request, "Checkout canceled.")
+    return redirect("cart-view")
+
 
 # ===== Categories ===============================================================
 @login_required
@@ -352,7 +588,6 @@ def dashboard(request):
     revenue = orders_qs.aggregate(total=Sum("total"))["total"] or Decimal("0.00")
     recent_orders = list(orders_qs[:10])
 
-    # simple placeholder spark series
     order_spark = ",".join(str(i) for i in range(1, 17))
     product_spark = ",".join(str(i * 2) for i in range(1, 17))
     revenue_spark = ",".join(str(i * 5) for i in range(1, 17))
@@ -514,34 +749,6 @@ def order_detail(request, order_id: int):
     return render(request, "merchant/order_detail.html", {"order": order})
 
 
-def cart_add(request, product_id: int):
-    if request.method != "POST":
-        return redirect("mall-directory")
-
-    product = get_object_or_404(Product, pk=product_id)
-
-    cart = request.session.get("cart", {})
-    key = str(product.id)
-
-    if key in cart:
-        cart[key]["quantity"] += 1
-    else:
-        cart[key] = {
-            "name": product.name,
-            "quantity": 1,
-            "price": str(product.price) if getattr(product, "price", None) is not None else "0.00",
-            "store_id": product.store_id,
-            "store_slug": product.store.slug,
-            "image_url": product.image.url if getattr(product, "image", None) else "",
-        }
-
-    request.session["cart"] = cart
-    request.session["last_store_slug"] = product.store.slug
-    request.session.modified = True
-
-    messages.success(request, f"{product.name} added to cart.")
-    return redirect("cart-view")
-
 # ===== Merchant self-service archive/restore ===================================
 @login_required
 def merchant_store_archive(request):
@@ -560,9 +767,6 @@ def merchant_store_archive(request):
     messages.success(request, "Your store has been archived. You can restore it within 7 days.")
     return redirect("merchant-profile")
 
-def cart_view(request):
-    cart = request.session.get("cart", {})
-    return render(request, "merchant/cart.html", {"cart": cart})
 
 @login_required
 def merchant_store_restore(request):
@@ -737,6 +941,7 @@ def edit_product(request, product_id: int):
         "merchant/edit_product.html",
         {"product": product, "categories": categories},
     )
+
 
 @login_required
 def delete_product(request, product_id: int):

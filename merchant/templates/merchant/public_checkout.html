@@ -10,39 +10,139 @@
   <main class="max-w-4xl mx-auto px-6 py-10">
     <h1 class="text-3xl font-bold text-yellow-400 mb-6">Checkout</h1>
 
+    {% if store %}
+      <div class="bg-gray-900 rounded-2xl p-5 border border-gray-800 mb-6">
+        <div class="text-lg text-gray-300">Checking out from:</div>
+        <div class="text-2xl font-bold text-white mt-1">{{ store.store_name }}</div>
+      </div>
+    {% endif %}
+
     {% if items %}
       <div class="space-y-4 mb-8">
         {% for item in items %}
           <div class="bg-gray-900 rounded-2xl p-5 border border-gray-800">
-            <div class="text-xl font-semibold">{{ item.name }}</div>
-            <div class="text-gray-400 mt-1">Quantity: {{ item.quantity }}</div>
-            <div class="text-yellow-400 font-bold mt-2">
-              ${{ item.price }} each
-            </div>
-            <div class="text-white mt-1">
-              Line Total: ${{ item.line_total }}
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <div class="text-xl font-semibold">{{ item.name }}</div>
+                <div class="text-gray-400 mt-1">Quantity: {{ item.quantity }}</div>
+                <div class="text-yellow-400 font-bold mt-2">${{ item.price }} each</div>
+                <div class="text-white mt-1">Line Total: ${{ item.line_total }}</div>
+              </div>
+
+              <form method="post" action="{% url 'cart-remove' item.product_id %}">
+                {% csrf_token %}
+                <button type="submit"
+                        class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700">
+                  Remove
+                </button>
+              </form>
             </div>
           </div>
         {% endfor %}
       </div>
 
       <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 mb-8">
-        <div class="text-2xl font-bold text-yellow-400">
+        <div class="text-xl text-gray-300">Subtotal: <span class="text-white">${{ subtotal }}</span></div>
+
+        {% if discount > 0 %}
+          <div class="text-xl text-gray-300 mt-2">
+            Discount
+            {% if promo_code %}
+              <span class="text-sm text-yellow-400">({{ promo_code }})</span>
+            {% endif %}
+            :
+            <span class="text-green-400">- ${{ discount }}</span>
+          </div>
+        {% endif %}
+
+        <div class="text-2xl font-bold text-yellow-400 mt-3">
           Total: ${{ total }}
         </div>
       </div>
 
-      <form method="post" action="{% url 'public-checkout-submit' %}" class="bg-gray-900 rounded-2xl p-6 border border-gray-800 space-y-4">
+      <form method="post"
+            action="{% url 'public-checkout-apply-promo' %}"
+            class="bg-gray-900 rounded-2xl p-6 border border-gray-800 space-y-4 mb-8">
+        {% csrf_token %}
+        <div>
+          <label class="block text-sm text-gray-300 mb-2">Promo Code</label>
+          <input type="text"
+                 name="promo_code"
+                 value="{{ promo_code }}"
+                 placeholder="Enter promo code"
+                 class="w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white">
+        </div>
+
+        <div class="flex gap-3 flex-wrap">
+          <button type="submit"
+                  class="px-5 py-3 bg-purple-700 text-white rounded-xl hover:bg-purple-800">
+            Apply Promo Code
+          </button>
+
+          {% if promo_code %}
+            <button type="submit"
+                    name="clear_promo"
+                    value="1"
+                    class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+              Remove Promo
+            </button>
+          {% endif %}
+        </div>
+      </form>
+
+      <form method="post"
+            action="{% url 'public-checkout-submit' %}"
+            class="bg-gray-900 rounded-2xl p-6 border border-gray-800 space-y-5">
         {% csrf_token %}
 
         <div>
           <label class="block text-sm text-gray-300 mb-2">Name</label>
-          <input type="text" name="customer_name" class="w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white" required>
+          <input type="text"
+                 name="customer_name"
+                 class="w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"
+                 required>
         </div>
 
         <div>
           <label class="block text-sm text-gray-300 mb-2">Email</label>
-          <input type="email" name="customer_email" class="w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white" required>
+          <input type="email"
+                 name="customer_email"
+                 class="w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"
+                 required>
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-300 mb-3">Choose Payment Method</label>
+
+          {% if payment_methods %}
+            <div class="space-y-3">
+              {% for method in payment_methods %}
+                <label class="block cursor-pointer">
+                  <input type="radio"
+                         name="payment_method_id"
+                         value="{{ method.id }}"
+                         class="mr-2"
+                         {% if forloop.first %}checked{% endif %}>
+                  <span class="inline-block bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 w-full">
+                    {% if method.provider == "stripe" %}
+                      Pay with Credit / Debit Card
+                    {% elif method.provider == "paypal" %}
+                      Pay with PayPal
+                    {% else %}
+                      {{ method.provider|title }}
+                    {% endif %}
+                    {% if method.is_default %}
+                      <span class="text-yellow-400 text-sm ml-2">(Default)</span>
+                    {% endif %}
+                  </span>
+                </label>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-gray-300">
+              This store does not currently have any active payment methods available.
+            </div>
+          {% endif %}
         </div>
 
         <div class="flex gap-3 flex-wrap pt-2">
@@ -51,10 +151,12 @@
             Back to Cart
           </a>
 
-          <button type="submit"
-                  class="px-5 py-3 bg-yellow-400 text-black rounded-xl font-semibold hover:opacity-90">
-            Place Demo Order
-          </button>
+          {% if payment_methods %}
+            <button type="submit"
+                    class="px-5 py-3 bg-yellow-400 text-black rounded-xl font-semibold hover:opacity-90">
+              Pay Now
+            </button>
+          {% endif %}
         </div>
       </form>
     {% else %}

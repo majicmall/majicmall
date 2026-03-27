@@ -38,3 +38,54 @@ python manage.py seed_zones
 - Safe to run multiple times (uses get_or_create)
 - Will NOT duplicate zones
 - This is the source of truth for platform zones
+
+---
+
+## Deploying to Render (Django + Docker)
+
+### Overview
+Majic Mall is deployed on Render using Docker and PostgreSQL.
+
+---
+
+### Standard Deploy Flow
+
+1. Make code changes locally (Codespaces)
+
+2. Commit and push:
+
+git add .
+git commit -m "Describe your change"
+git push
+
+3. Render automatically:
+- Builds Docker image
+- Runs pre-deploy command (migrations)
+- Starts the app
+
+---
+
+### Important Configuration
+
+#### Database
+- Uses PostgreSQL in production
+- Controlled by `DATABASE_URL` environment variable
+- Falls back to SQLite locally if not set
+
+#### Entrypoint (entrypoint.sh)
+
+Production startup should NOT run migrations.
+
+Correct version:
+
+```sh
+#!/usr/bin/env sh
+set -e
+
+python manage.py collectstatic --noinput
+
+exec gunicorn majicmall.wsgi:application \
+  --bind 0.0.0.0:${PORT:-8000} \
+  --log-level info \
+  --access-logfile - \
+  --error-logfile -

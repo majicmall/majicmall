@@ -1,14 +1,17 @@
 """
-Lightweight payment adapter pattern.
+Payment adapter pattern.
 
-These are *demo* adapters — they DO NOT call real gateways. They build a
-fake "checkout URL" and return it so you can wire up the flow end-to-end.
-Replace the start_checkout() logic with real Stripe/PayPal SDK calls later.
+Stripe is wired to real Stripe Checkout.
+PayPal remains a demo stub for now until live PayPal API wiring is added.
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Dict, Any, Protocol
+
+import stripe
+from django.conf import settings
 
 
 class PaymentAdapter(Protocol):
@@ -19,7 +22,13 @@ class PaymentAdapter(Protocol):
       - session_id: opaque gateway session/intent id (string)
     """
 
-    def start_checkout(self, *, amount_cents: int, currency: str, metadata: Dict[str, Any]) -> Dict[str, str]:
+    def start_checkout(
+        self,
+        *,
+        amount_cents: int,
+        currency: str,
+        metadata: Dict[str, Any],
+    ) -> Dict[str, str]:
         ...
 
 
@@ -29,11 +38,39 @@ class StripeAdapterImpl:
     success_url: str | None = None
     cancel_url: str | None = None
 
-    def start_checkout(self, *, amount_cents: int, currency: str, metadata: Dict[str, Any]) -> Dict[str, str]:
-        # TODO: replace this with stripe.checkout.Session.create(...)
-        session_id = f"cs_test_{metadata.get('order_id','demo')}"
-        redirect_url = f"{self.success_url or '/merchant/checkout/success/'}?session_id={session_id}&gateway=stripe"
-        return {"redirect_url": redirect_url, "session_id": session_id}
+    def start_checkout(
+        self,
+        *,
+        amount_cents: int,
+        currency: str,
+        metadata: Dict[str, Any],
+    ) -> Dict[str, str]:
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": currency,
+                        "product_data": {
+                            "name": "Majic Mall Order",
+                        },
+                        "unit_amount": amount_cents,
+                    },
+                    "quantity": 1,
+                }
+            ],
+            mode="payment",
+            success_url=f"{self.success_url}?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=self.cancel_url,
+            metadata=metadata,
+        )
+
+        return {
+            "redirect_url": session.url,
+            "session_id": session.id,
+        }
 
 
 @dataclass
@@ -43,22 +80,35 @@ class PayPalAdapterImpl:
     success_url: str | None = None
     cancel_url: str | None = None
 
-    def start_checkout(self, *, amount_cents: int, currency: str, metadata: Dict[str, Any]) -> Dict[str, str]:
-        # TODO: replace with PayPal Orders API create+approve URLs
-        session_id = f"pp_sess_{metadata.get('order_id','demo')}"
+    def start_checkout(
+        self,
+        *,
+        amount_cents: int,
+        currency: str,
+        metadata: Dict[str, Any],
+    ) -> Dict[str, str]:
+        # Demo stub for now
+        session_id = f"pp_sess_{metadata.get('order_id', 'demo')}"
         redirect_url = f"{self.success_url or '/merchant/checkout/success/'}?session_id={session_id}&gateway=paypal"
         return {"redirect_url": redirect_url, "session_id": session_id}
 
 
-# Registry of provider -> adapter factory (so you can plug in new providers later)
-def build_adapter(provider: str, *, credentials: dict, success_url: str, cancel_url: str) -> PaymentAdapter:
+def build_adapter(
+    provider: str,
+    *,
+    credentials: dict,
+    success_url: str,
+    cancel_url: str,
+) -> PaymentAdapter:
     provider = (provider or "").lower()
+
     if provider == "stripe":
         return StripeAdapterImpl(
             api_key=credentials.get("api_key"),
             success_url=success_url,
             cancel_url=cancel_url,
         )
+
     if provider == "paypal":
         return PayPalAdapterImpl(
             client_id=credentials.get("client_id"),
@@ -66,5 +116,8 @@ def build_adapter(provider: str, *, credentials: dict, success_url: str, cancel_
             success_url=success_url,
             cancel_url=cancel_url,
         )
-    # Fallback "credit/debit" placeholder (as if it were an on-site gateway)
-    return StripeAdapterImpl(success_url=success_url, cancel_url=cancel_url)  # reuse stub
+
+    return StripeAdapterImpl(
+        success_url=success_url,
+        cancel_url=cancel_url,
+    )

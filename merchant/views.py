@@ -18,7 +18,14 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 # ----- Models ------------------------------------------------------------------
-from .models import MerchantStore, StoreCategory, Product, Order, OrderItem, MerchantPaymentMethod
+from .models import (
+    MerchantStore,
+    StoreCategory,
+    Product,
+    Order,
+    OrderItem,
+    MerchantPaymentMethod,
+)
 
 # ----- Forms -------------------------------------------------------------------
 from .forms import StoreForm, MerchantPaymentMethodForm
@@ -103,7 +110,54 @@ def get_current_store(request):
     return store
 
 
+def ensure_default_payment_methods(store: MerchantStore):
+    """
+    Make sure every store has default active payment methods.
+    Safe to call multiple times.
+    """
+    stripe_method, _ = MerchantPaymentMethod.objects.get_or_create(
+        store=store,
+        provider="stripe",
+        defaults={
+            "is_active": True,
+            "is_default": True,
+            "credentials": {},
+        },
+    )
+
+    paypal_method, _ = MerchantPaymentMethod.objects.get_or_create(
+        store=store,
+        provider="paypal",
+        defaults={
+            "is_active": True,
+            "is_default": False,
+            "credentials": {},
+        },
+    )
+
+    changed = False
+
+    if not stripe_method.is_active:
+        stripe_method.is_active = True
+        changed = True
+
+    if not paypal_method.is_active:
+        paypal_method.is_active = True
+        changed = True
+
+    if not MerchantPaymentMethod.objects.filter(store=store, is_default=True).exists():
+        stripe_method.is_default = True
+        changed = True
+
+    if changed:
+        stripe_method.save()
+        paypal_method.save()
+
+
 # ===== Promo Codes =============================================================
+# Later upgrade:
+# - Move promo codes into a real model so merchants can create/manage their own
+# - Add expiration dates, minimum order thresholds, usage limits, zone/store rules
 PROMO_CODES = {
     "SAVE10": {"kind": "percent", "value": Decimal("10.00"), "label": "10% off"},
     "WELCOME5": {"kind": "fixed", "value": Decimal("5.00"), "label": "$5 off"},
@@ -158,6 +212,7 @@ def _calculate_checkout_context(request):
 
     if store_id:
         store = get_object_or_404(MerchantStore, pk=store_id)
+        ensure_default_payment_methods(store)
         payment_methods = list(
             store.payment_methods.filter(is_active=True).order_by("-is_default", "provider")
         )
@@ -624,15 +679,19 @@ def profile(request):
             plan="starter",
         )
         request.session["active_store_id"] = store.id
+        ensure_default_payment_methods(store)
 
     if request.method == "POST":
         form = StoreForm(request.POST, request.FILES, instance=store)
         if form.is_valid():
             form.save()
+            ensure_default_payment_methods(store)
             messages.success(request, "Store profile saved.")
             return redirect("merchant-profile")
     else:
         form = StoreForm(instance=store)
+
+    ensure_default_payment_methods(store)
 
     public_url = None
     qr_url = None
@@ -1006,7 +1065,9 @@ def payment_settings(request):
         messages.error(request, "Create your store first.")
         return redirect("merchant-profile")
 
-    methods = store.payment_methods.all()
+    ensure_default_payment_methods(store)
+
+    methods = store.payment_methods.all().order_by("-is_default", "provider")
     return render(request, "merchant/payment_settings.html", {"store": store, "methods": methods})
 
 
@@ -1073,6 +1134,8 @@ def checkout_start(request):
         messages.error(request, "Create your store first.")
         return redirect("merchant-profile")
 
+    ensure_default_payment_methods(store)
+
     pm = (
         store.payment_methods.filter(is_active=True, is_default=True).first()
         or store.payment_methods.filter(is_active=True).first()
@@ -1128,6 +1191,8 @@ def plan_pricing(request):
         messages.info(request, "Create your store to continue.")
         return redirect("merchant-profile")
 
+    ensure_default_payment_methods(store)
+
     methods = list(store.payment_methods.filter(is_active=True).order_by("-is_default", "provider"))
     return render(request, "merchant/plans.html", {"store": store, "methods": methods})
 
@@ -1143,6 +1208,8 @@ def plan_checkout(request, plan_slug: str):
     if not store:
         messages.info(request, "Create your store to continue.")
         return redirect("merchant-profile")
+
+    ensure_default_payment_methods(store)
 
     provider = (request.GET.get("provider") or "").lower()
 

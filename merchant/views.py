@@ -155,9 +155,6 @@ def ensure_default_payment_methods(store: MerchantStore):
 
 
 # ===== Promo Codes =============================================================
-# Later upgrade:
-# - Move promo codes into a real model so merchants can create/manage their own
-# - Add expiration dates, minimum order thresholds, usage limits, zone/store rules
 PROMO_CODES = {
     "SAVE10": {"kind": "percent", "value": Decimal("10.00"), "label": "10% off"},
     "WELCOME5": {"kind": "fixed", "value": Decimal("5.00"), "label": "$5 off"},
@@ -533,6 +530,34 @@ def public_checkout_submit(request):
         messages.error(request, "Invalid payment method selected.")
         return redirect("public-checkout")
 
+    if payment_method.provider == "stripe":
+        payment_label = "Credit / Debit Card"
+    elif payment_method.provider == "paypal":
+        payment_label = "PayPal"
+    else:
+        payment_label = payment_method.provider.title()
+
+    request.session["checkout_success_data"] = {
+        "customer_name": customer_name,
+        "customer_email": customer_email,
+        "store_name": store.store_name,
+        "store_slug": getattr(store, "slug", ""),
+        "items": [
+            {
+                "name": item["name"],
+                "quantity": item["quantity"],
+                "price": str(item["price"]),
+                "line_total": str(item["line_total"]),
+            }
+            for item in context["items"]
+        ],
+        "subtotal": str(context["subtotal"]),
+        "discount": str(context["discount"]),
+        "total": str(context["total"]),
+        "promo_code": context.get("promo_code", ""),
+        "payment_label": payment_label,
+    }
+
     success_url = request.build_absolute_uri(reverse("public-checkout-success"))
     cancel_url = request.build_absolute_uri(reverse("public-checkout-cancel"))
 
@@ -563,17 +588,21 @@ def public_checkout_submit(request):
 
 
 def public_checkout_success(request):
-    customer_name = request.session.get("checkout_customer_name", "Customer")
+    success_data = request.session.get("checkout_success_data")
+
+    if not success_data:
+        messages.info(request, "Your checkout session has already been completed.")
+        return redirect("mall-directory")
 
     request.session["cart"] = {}
     request.session.pop("last_store_slug", None)
     request.session.pop("promo_code", None)
     request.session.pop("checkout_customer_name", None)
     request.session.pop("checkout_customer_email", None)
+    request.session.pop("checkout_success_data", None)
     request.session.modified = True
 
-    messages.success(request, f"Payment approved (demo). Thank you, {customer_name}!")
-    return redirect("mall-directory")
+    return render(request, "merchant/checkout_success.html", success_data)
 
 
 def public_checkout_cancel(request):

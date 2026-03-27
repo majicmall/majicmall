@@ -4,169 +4,256 @@
   <meta charset="utf-8">
   <title>Checkout | Majic Mall</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0b0b">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-950 text-white min-h-screen">
-  <main class="max-w-4xl mx-auto px-6 py-10">
-    <h1 class="text-3xl font-bold text-yellow-400 mb-6">Checkout</h1>
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    <div class="mb-8 text-center">
+      <h1 class="text-4xl md:text-5xl font-black text-yellow-400">Secure Checkout</h1>
+      <p class="text-gray-300 mt-3 text-lg">
+        Complete your purchase and enjoy the Majic Mall experience.
+      </p>
+    </div>
 
     {% if store %}
-      <div class="bg-gray-900 rounded-2xl p-5 border border-gray-800 mb-6">
-        <div class="text-lg text-gray-300">Checking out from:</div>
-        <div class="text-2xl font-bold text-white mt-1">{{ store.store_name }}</div>
+      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-2xl mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div class="text-sm uppercase tracking-widest text-gray-400">Checking out from</div>
+            <div class="text-3xl font-black text-white mt-1">{{ store.store_name }}</div>
+          </div>
+
+          {% if store.slug %}
+            <a href="{% url 'storefront' store.slug %}"
+               class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+              Return to Store
+            </a>
+          {% endif %}
+        </div>
       </div>
     {% endif %}
 
     {% if items %}
-      <div class="space-y-4 mb-8">
-        {% for item in items %}
-          <div class="bg-gray-900 rounded-2xl p-5 border border-gray-800">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <div class="text-xl font-semibold">{{ item.name }}</div>
-                <div class="text-gray-400 mt-1">Quantity: {{ item.quantity }}</div>
-                <div class="text-yellow-400 font-bold mt-2">${{ item.price }} each</div>
-                <div class="text-white mt-1">Line Total: ${{ item.line_total }}</div>
-              </div>
+      <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Left Column -->
+        <div class="lg:col-span-2 space-y-8">
+          <!-- Cart Items -->
+          <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-2xl">
+            <h2 class="text-2xl font-black text-yellow-400 mb-6">Order Items</h2>
 
-              <form method="post" action="{% url 'cart-remove' item.product_id %}">
-                {% csrf_token %}
-                <button type="submit"
-                        class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700">
-                  Remove
-                </button>
-              </form>
-            </div>
-          </div>
-        {% endfor %}
-      </div>
+            <div class="space-y-4">
+              {% for item in items %}
+                <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5">
+                  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                      <div class="text-xl font-bold text-white">{{ item.name }}</div>
+                      <div class="text-gray-400 mt-2">Quantity: {{ item.quantity }}</div>
+                      <div class="text-gray-400">Price: ${{ item.price }} each</div>
+                      <div class="text-yellow-400 font-semibold mt-2">Line Total: ${{ item.line_total }}</div>
+                    </div>
 
-      <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 mb-8">
-        <div class="text-xl text-gray-300">Subtotal: <span class="text-white">${{ subtotal }}</span></div>
-
-        {% if discount > 0 %}
-          <div class="text-xl text-gray-300 mt-2">
-            Discount
-            {% if promo_code %}
-              <span class="text-sm text-yellow-400">({{ promo_code }})</span>
-            {% endif %}
-            :
-            <span class="text-green-400">- ${{ discount }}</span>
-          </div>
-        {% endif %}
-
-        <div class="text-2xl font-bold text-yellow-400 mt-3">
-          Total: ${{ total }}
-        </div>
-      </div>
-
-      <form method="post"
-            action="{% url 'public-checkout-apply-promo' %}"
-            class="bg-gray-900 rounded-2xl p-6 border border-gray-800 space-y-4 mb-8">
-        {% csrf_token %}
-        <div>
-          <label class="block text-sm text-gray-300 mb-2">Promo Code</label>
-          <input type="text"
-                 name="promo_code"
-                 value="{{ promo_code }}"
-                 placeholder="Enter promo code"
-                 class="w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white">
-        </div>
-
-        <div class="flex gap-3 flex-wrap">
-          <button type="submit"
-                  class="px-5 py-3 bg-purple-700 text-white rounded-xl hover:bg-purple-800">
-            Apply Promo Code
-          </button>
-
-          {% if promo_code %}
-            <button type="submit"
-                    name="clear_promo"
-                    value="1"
-                    class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
-              Remove Promo
-            </button>
-          {% endif %}
-        </div>
-      </form>
-
-      <form method="post"
-            action="{% url 'public-checkout-submit' %}"
-            class="bg-gray-900 rounded-2xl p-6 border border-gray-800 space-y-5">
-        {% csrf_token %}
-
-        <div>
-          <label class="block text-sm text-gray-300 mb-2">Name</label>
-          <input type="text"
-                 name="customer_name"
-                 class="w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"
-                 required>
-        </div>
-
-        <div>
-          <label class="block text-sm text-gray-300 mb-2">Email</label>
-          <input type="email"
-                 name="customer_email"
-                 class="w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"
-                 required>
-        </div>
-
-        <div>
-          <label class="block text-sm text-gray-300 mb-3">Choose Payment Method</label>
-
-          {% if payment_methods %}
-            <div class="space-y-3">
-              {% for method in payment_methods %}
-                <label class="block cursor-pointer">
-                  <input type="radio"
-                         name="payment_method_id"
-                         value="{{ method.id }}"
-                         class="mr-2"
-                         {% if forloop.first %}checked{% endif %}>
-                  <span class="inline-block bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 w-full">
-                    {% if method.provider == "stripe" %}
-                      Pay with Credit / Debit Card
-                    {% elif method.provider == "paypal" %}
-                      Pay with PayPal
-                    {% else %}
-                      {{ method.provider|title }}
-                    {% endif %}
-                    {% if method.is_default %}
-                      <span class="text-yellow-400 text-sm ml-2">(Default)</span>
-                    {% endif %}
-                  </span>
-                </label>
+                    <form method="post" action="{% url 'cart-remove' item.product_id %}">
+                      {% csrf_token %}
+                      <button type="submit"
+                              class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700">
+                        Remove
+                      </button>
+                    </form>
+                  </div>
+                </div>
               {% endfor %}
             </div>
-          {% else %}
-            <div class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-gray-300">
-              This store does not currently have any active payment methods available.
+          </div>
+
+          <!-- Promo Code -->
+          <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-2xl">
+            <h2 class="text-2xl font-black text-yellow-400 mb-6">Promo Code</h2>
+
+            <form method="post"
+                  action="{% url 'public-checkout-apply-promo' %}"
+                  class="space-y-4">
+              {% csrf_token %}
+
+              <div>
+                <label class="block text-sm text-gray-300 mb-2">Have a special code?</label>
+                <input type="text"
+                       name="promo_code"
+                       value="{{ promo_code }}"
+                       placeholder="Enter promo code"
+                       class="w-full rounded-2xl bg-gray-800 border border-gray-700 px-4 py-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+              </div>
+
+              <div class="flex gap-3 flex-wrap">
+                <button type="submit"
+                        class="px-5 py-3 bg-purple-700 text-white rounded-xl hover:bg-purple-800">
+                  Apply Promo Code
+                </button>
+
+                {% if promo_code %}
+                  <button type="submit"
+                          name="clear_promo"
+                          value="1"
+                          class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+                    Remove Promo
+                  </button>
+                {% endif %}
+              </div>
+            </form>
+          </div>
+
+          <!-- Customer Info + Payment -->
+          <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-2xl">
+            <h2 class="text-2xl font-black text-yellow-400 mb-6">Customer & Payment</h2>
+
+            <form method="post"
+                  action="{% url 'public-checkout-submit' %}"
+                  class="space-y-6">
+              {% csrf_token %}
+
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm text-gray-300 mb-2">Full Name</label>
+                  <input type="text"
+                         name="customer_name"
+                         class="w-full rounded-2xl bg-gray-800 border border-gray-700 px-4 py-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                         placeholder="Enter your name"
+                         required>
+                </div>
+
+                <div>
+                  <label class="block text-sm text-gray-300 mb-2">Email Address</label>
+                  <input type="email"
+                         name="customer_email"
+                         class="w-full rounded-2xl bg-gray-800 border border-gray-700 px-4 py-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                         placeholder="Enter your email"
+                         required>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm text-gray-300 mb-3">Choose Payment Method</label>
+
+                {% if payment_methods %}
+                  <div class="space-y-4">
+                    {% for method in payment_methods %}
+                      <label class="block cursor-pointer">
+                        <input type="radio"
+                               name="payment_method_id"
+                               value="{{ method.id }}"
+                               class="sr-only peer"
+                               {% if forloop.first %}checked{% endif %}>
+
+                        <div class="rounded-2xl border border-gray-700 bg-gray-800 px-5 py-4 peer-checked:border-yellow-400 peer-checked:ring-2 peer-checked:ring-yellow-400 transition">
+                          <div class="flex items-center justify-between gap-4">
+                            <div>
+                              {% if method.provider == "stripe" %}
+                                <div class="text-lg font-bold text-white">Pay with Credit / Debit Card</div>
+                                <div class="text-sm text-gray-400 mt-1">Fast and secure card checkout</div>
+                              {% elif method.provider == "paypal" %}
+                                <div class="text-lg font-bold text-white">Pay with PayPal</div>
+                                <div class="text-sm text-gray-400 mt-1">Checkout with your PayPal account</div>
+                              {% else %}
+                                <div class="text-lg font-bold text-white">{{ method.provider|title }}</div>
+                                <div class="text-sm text-gray-400 mt-1">Available payment option</div>
+                              {% endif %}
+                            </div>
+
+                            {% if method.is_default %}
+                              <span class="text-xs uppercase tracking-wide bg-yellow-400 text-black px-3 py-1 rounded-full font-bold">
+                                Default
+                              </span>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </label>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="bg-gray-800 border border-gray-700 rounded-2xl px-4 py-4 text-gray-300">
+                    This store does not currently have any active payment methods available.
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="flex gap-3 flex-wrap pt-2">
+                <a href="{% url 'cart-view' %}"
+                   class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+                  Back to Cart
+                </a>
+
+                {% if payment_methods %}
+                  <button type="submit"
+                          class="px-6 py-3 bg-yellow-400 text-black rounded-xl font-bold hover:opacity-90">
+                    Pay Now
+                  </button>
+                {% endif %}
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="lg:col-span-1">
+          <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-2xl sticky top-6">
+            <h2 class="text-2xl font-black text-yellow-400 mb-6">Order Summary</h2>
+
+            <div class="space-y-4">
+              <div class="flex items-center justify-between text-gray-300">
+                <span>Subtotal</span>
+                <span class="text-white font-semibold">${{ subtotal }}</span>
+              </div>
+
+              {% if discount > 0 %}
+                <div class="flex items-center justify-between text-gray-300">
+                  <span>
+                    Discount
+                    {% if promo_code %}
+                      <span class="text-yellow-400 text-sm">({{ promo_code }})</span>
+                    {% endif %}
+                  </span>
+                  <span class="text-green-400 font-semibold">- ${{ discount }}</span>
+                </div>
+              {% endif %}
+
+              <div class="border-t border-gray-700 pt-4 flex items-center justify-between">
+                <span class="text-xl font-bold text-white">Total</span>
+                <span class="text-3xl font-black text-yellow-400">${{ total }}</span>
+              </div>
             </div>
-          {% endif %}
-        </div>
 
-        <div class="flex gap-3 flex-wrap pt-2">
-          <a href="{% url 'cart-view' %}"
-             class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
-            Back to Cart
-          </a>
+            <div class="mt-8 bg-gray-800 border border-gray-700 rounded-2xl p-4">
+              <div class="text-sm text-gray-400 mb-2">Secure Checkout Notice</div>
+              <p class="text-sm text-gray-300 leading-relaxed">
+                Your selected payment method will be used to complete your order securely.
+                Promo discounts are reflected in the final total above.
+              </p>
+            </div>
 
-          {% if payment_methods %}
-            <button type="submit"
-                    class="px-5 py-3 bg-yellow-400 text-black rounded-xl font-semibold hover:opacity-90">
-              Pay Now
-            </button>
-          {% endif %}
+            <div class="mt-6 flex flex-col gap-3">
+              {% if store.slug %}
+                <a href="{% url 'storefront' store.slug %}"
+                   class="w-full text-center px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+                  Continue This Store
+                </a>
+              {% endif %}
+
+              <a href="{% url 'mall-directory' %}"
+                 class="w-full text-center px-5 py-3 bg-purple-700 text-white rounded-xl hover:bg-purple-800">
+                Browse More Stores
+              </a>
+            </div>
+          </div>
         </div>
-      </form>
-    {% else %}
-      <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 text-gray-300">
-        Your cart is empty.
       </div>
+    {% else %}
+      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 text-center shadow-2xl">
+        <div class="text-5xl mb-4">🛒</div>
+        <h2 class="text-2xl font-black text-yellow-400 mb-3">Your cart is empty</h2>
+        <p class="text-gray-300 mb-6">Add something special from Majic Mall to begin checkout.</p>
 
-      <div class="mt-8">
         <a href="{% url 'mall-directory' %}"
-           class="px-5 py-3 bg-purple-700 text-white rounded-xl hover:bg-purple-800">
+           class="inline-block px-5 py-3 bg-purple-700 text-white rounded-xl hover:bg-purple-800">
           Browse More Stores
         </a>
       </div>

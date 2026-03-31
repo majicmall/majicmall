@@ -7,6 +7,7 @@ import io
 import json
 
 import qrcode
+import stripe
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -224,6 +225,83 @@ def _calculate_checkout_context(request):
         "payment_methods": payment_methods,
         "promo_code": promo_code,
     }
+
+
+def _build_success_context_from_order(order: Order, session, payment_label: str):
+    promo_code = ""
+    customer_name = ""
+    customer_email = ""
+
+    metadata = getattr(session, "metadata", {}) or {}
+    if metadata:
+        promo_code = metadata.get("promo_code", "") or ""
+        customer_name = metadata.get("customer_name", "") or ""
+        customer_email = metadata.get("customer_email", "") or ""
+
+    items = []
+    subtotal = Decimal("0.00")
+
+    for item in order.items.all():
+        unit_price = item.unit_price or Decimal("0.00")
+        quantity = int(item.quantity or 0)
+        line_total = unit_price * quantity
+        subtotal += line_total
+
+        items.append({
+            "name": item.name or (item.product.name if getattr(item, "product_id", None) else "Item"),
+            "quantity": quantity,
+            "price": f"{unit_price:.2f}",
+            "line_total": f"{line_total:.2f}",
+        })
+
+    discount = Decimal("0.00")
+    total = order.total if order.total is not None else subtotal
+
+    if subtotal > total:
+        discount = (subtotal - total).quantize(Decimal("0.01"))
+
+    return {
+        "customer_name": customer_name,
+        "customer_email": customer_email,
+        "store_name": order.store.store_name if order.store_id else "",
+        "store_slug": getattr(order.store, "slug", "") if order.store_id else "",
+        "items": items,
+        "subtotal": f"{subtotal:.2f}",
+        "discount": f"{discount:.2f}",
+        "total": f"{total:.2f}",
+        "promo_code": promo_code,
+        "payment_label": payment_label,
+    }
+
+
+def _mark_order_paid_from_checkout_session(session):
+    """
+    Lock payment to the exact order using Stripe metadata/client_reference_id.
+    Safe to call from both the success page and webhook.
+    """
+    if not session:
+        return None
+
+    metadata = getattr(session, "metadata", {}) or {}
+    order_id = metadata.get("order_id") or getattr(session, "client_reference_id", None)
+
+    if not order_id:
+        return None
+
+    try:
+        order = Order.objects.get(pk=int(order_id))
+    except (ValueError, Order.DoesNotExist):
+        return None
+
+    payment_status = getattr(session, "payment_status", "") or ""
+    status = getattr(session, "status", "") or ""
+
+    if payment_status == "paid" or status == "complete":
+        if order.status != "paid":
+            order.status = "paid"
+            order.save(update_fields=["status"])
+
+    return order
 
 
 @login_required
@@ -530,33 +608,27 @@ def public_checkout_submit(request):
         messages.error(request, "Invalid payment method selected.")
         return redirect("public-checkout")
 
-    if payment_method.provider == "stripe":
-        payment_label = "Credit / Debit Card"
-    elif payment_method.provider == "paypal":
-        payment_label = "PayPal"
-    else:
-        payment_label = payment_method.provider.title()
+    # Create exact order record before redirecting to Stripe
+    order = Order.objects.create(
+        store=store,
+        total=total,
+        status="pending",
+    )
 
-    request.session["checkout_success_data"] = {
-        "customer_name": customer_name,
-        "customer_email": customer_email,
-        "store_name": store.store_name,
-        "store_slug": getattr(store, "slug", ""),
-        "items": [
-            {
-                "name": item["name"],
-                "quantity": item["quantity"],
-                "price": str(item["price"]),
-                "line_total": str(item["line_total"]),
-            }
-            for item in context["items"]
-        ],
-        "subtotal": str(context["subtotal"]),
-        "discount": str(context["discount"]),
-        "total": str(context["total"]),
-        "promo_code": context.get("promo_code", ""),
-        "payment_label": payment_label,
-    }
+    for item in context["items"]:
+        product_obj = None
+        try:
+            product_obj = Product.objects.get(pk=int(item["product_id"]))
+        except (ValueError, Product.DoesNotExist):
+            product_obj = None
+
+        OrderItem.objects.create(
+            order=order,
+            product=product_obj,
+            name=item["name"],
+            quantity=item["quantity"],
+            unit_price=item["price"],
+        )
 
     success_url = request.build_absolute_uri(reverse("public-checkout-success"))
     cancel_url = request.build_absolute_uri(reverse("public-checkout-cancel"))
@@ -572,7 +644,8 @@ def public_checkout_submit(request):
         amount_cents=int(total * 100),
         currency="usd",
         metadata={
-            "store_id": store.id,
+            "order_id": str(order.id),
+            "store_id": str(store.id),
             "customer_name": customer_name,
             "customer_email": customer_email,
             "promo_code": context.get("promo_code", ""),
@@ -588,21 +661,40 @@ def public_checkout_submit(request):
 
 
 def public_checkout_success(request):
-    success_data = request.session.get("checkout_success_data")
-
-    if not success_data:
-        messages.info(request, "Your checkout session has already been completed.")
+    session_id = (request.GET.get("session_id") or "").strip()
+    if not session_id:
+        messages.warning(request, "Missing checkout session. We could not confirm your payment.")
         return redirect("mall-directory")
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+    except Exception as e:
+        print("STRIPE SESSION RETRIEVE ERROR:", repr(e))
+        messages.error(request, "We could not verify your payment session.")
+        return redirect("mall-directory")
+
+    order = _mark_order_paid_from_checkout_session(session)
+    if not order:
+        messages.error(request, "We could not match this payment to an order.")
+        return redirect("mall-directory")
+
+    payment_label = "Card"
+    if getattr(session, "payment_method_types", None):
+        types = session.payment_method_types or []
+        if "card" in types:
+            payment_label = "Credit / Debit Card"
 
     request.session["cart"] = {}
     request.session.pop("last_store_slug", None)
     request.session.pop("promo_code", None)
     request.session.pop("checkout_customer_name", None)
     request.session.pop("checkout_customer_email", None)
-    request.session.pop("checkout_success_data", None)
     request.session.modified = True
 
-    return render(request, "merchant/checkout_success.html", success_data)
+    context = _build_success_context_from_order(order, session, payment_label)
+    return render(request, "merchant/checkout_success.html", context)
 
 
 def public_checkout_cancel(request):
@@ -822,8 +914,31 @@ def order_list(request):
     if guard:
         return guard
 
-    orders = store.orders.all().order_by("-created_at")
-    return render(request, "merchant/orders.html", {"orders": orders, "page_obj": None})
+    orders = (
+        store.orders
+        .prefetch_related("items")
+        .all()
+        .order_by("-created_at")
+    )
+
+    total_orders = orders.count()
+    paid_orders = orders.filter(status__in=["paid", "completed"]).count()
+    pending_orders = orders.filter(status="pending").count()
+    total_revenue = orders.filter(status__in=["paid", "completed"]).aggregate(
+        total=Sum("total")
+    )["total"] or Decimal("0.00")
+
+    context = {
+        "store": store,
+        "orders": orders,
+        "page_obj": None,
+        "total_orders": total_orders,
+        "paid_orders": paid_orders,
+        "pending_orders": pending_orders,
+        "total_revenue": total_revenue,
+    }
+
+    return render(request, "merchant/orders.html", context)
 
 
 @login_required
@@ -833,8 +948,28 @@ def order_detail(request, order_id: int):
         messages.info(request, "Create your store to view orders.")
         return redirect("merchant-profile")
 
-    order = get_object_or_404(Order, pk=order_id, store=store)
-    return render(request, "merchant/order_detail.html", {"order": order})
+    order = get_object_or_404(
+        Order.objects.prefetch_related("items"),
+        pk=order_id,
+        store=store,
+    )
+
+    item_count = order.items.count()
+    subtotal = Decimal("0.00")
+    for it in order.items.all():
+        try:
+            subtotal += (it.unit_price or Decimal("0.00")) * int(it.quantity or 0)
+        except Exception:
+            pass
+
+    context = {
+        "store": store,
+        "order": order,
+        "item_count": item_count,
+        "subtotal": subtotal,
+    }
+
+    return render(request, "merchant/order_detail.html", context)
 
 
 # ===== Merchant self-service archive/restore ===================================
@@ -1375,9 +1510,27 @@ def _json(request):
 def webhook_stripe(request):
     if request.method != "POST":
         return HttpResponseBadRequest("POST required")
-    event = _json(request)
-    if event is None:
-        return HttpResponseBadRequest("Invalid JSON")
+
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE", "")
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload=payload,
+            sig_header=sig_header,
+            secret=settings.STRIPE_WEBHOOK_SECRET,
+        )
+    except ValueError:
+        return HttpResponseBadRequest("Invalid payload")
+    except stripe.error.SignatureVerificationError:
+        return HttpResponseBadRequest("Invalid signature")
+
+    event_type = event.get("type", "")
+    data_object = event.get("data", {}).get("object", {})
+
+    if event_type in {"checkout.session.completed", "checkout.session.async_payment_succeeded"}:
+        _mark_order_paid_from_checkout_session(data_object)
+
     return HttpResponse(status=200)
 
 

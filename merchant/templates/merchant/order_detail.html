@@ -133,13 +133,13 @@
       <!-- Right Column -->
       <div class="lg:col-span-1 space-y-8">
 
-        <!-- Customer / Order Summary -->
+        <!-- Status Control -->
         <section class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-2xl sticky top-6">
-          <h2 class="text-2xl font-black text-yellow-400 mb-6">Summary</h2>
+          <h2 class="text-2xl font-black text-yellow-400 mb-6">Order Control</h2>
 
           <div class="space-y-4">
             <div class="bg-gray-800 rounded-2xl p-4 border border-gray-700">
-              <div class="text-gray-400 uppercase tracking-wide text-xs mb-1">Payment Status</div>
+              <div class="text-gray-400 uppercase tracking-wide text-xs mb-1">Current Status</div>
               {% with s=order.status %}
                 <div class="font-semibold
                             {% if s == 'paid' or s == 'completed' %}text-green-300
@@ -154,7 +154,12 @@
 
             <div class="bg-gray-800 rounded-2xl p-4 border border-gray-700">
               <div class="text-gray-400 uppercase tracking-wide text-xs mb-1">Items Count</div>
-              <div class="text-white font-semibold">{{ order.items.count }} item{{ order.items.count|pluralize }}</div>
+              <div class="text-white font-semibold">{{ item_count }} item{{ item_count|pluralize }}</div>
+            </div>
+
+            <div class="bg-gray-800 rounded-2xl p-4 border border-gray-700">
+              <div class="text-gray-400 uppercase tracking-wide text-xs mb-1">Subtotal</div>
+              <div class="text-white font-semibold">${{ subtotal|floatformat:2 }}</div>
             </div>
 
             <div class="bg-gray-800 rounded-2xl p-4 border border-gray-700">
@@ -163,10 +168,31 @@
             </div>
           </div>
 
+          <form method="post" action="{% url 'order-update-status' order.id %}" class="mt-6 space-y-4">
+            {% csrf_token %}
+
+            <div>
+              <label for="status" class="block text-sm text-gray-300 mb-2">Update Status</label>
+              <select name="status" id="status"
+                      class="w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white">
+                {% for status in allowed_statuses %}
+                  <option value="{{ status }}" {% if order.status == status %}selected{% endif %}>
+                    {{ status|title }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <button type="submit"
+                    class="w-full px-5 py-3 bg-yellow-400 text-black rounded-xl font-bold hover:opacity-90">
+              Save Status
+            </button>
+          </form>
+
           <div class="mt-8 bg-gray-800 border border-gray-700 rounded-2xl p-4">
             <div class="text-sm text-gray-400 mb-2">Merchant Note</div>
             <p class="text-sm text-gray-300 leading-relaxed">
-              Use this page to review paid orders, confirm order contents, and keep track of merchant activity.
+              Use this panel to move the order through your workflow: paid, shipped, completed, canceled, or refunded.
             </p>
           </div>
 

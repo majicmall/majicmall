@@ -282,15 +282,28 @@ def _mark_order_paid_from_checkout_session(session):
     if not session:
         return None
 
-    metadata = getattr(session, "metadata", {}) or {}
-    order_id = metadata.get("order_id") or getattr(session, "client_reference_id", None)
+    metadata = getattr(session, "metadata", None)
+
+    order_id = None
+
+    if metadata:
+        try:
+            order_id = metadata["order_id"]
+        except Exception:
+            order_id = None
+
+    if not order_id:
+        try:
+            order_id = getattr(session, "client_reference_id", None)
+        except Exception:
+            order_id = None
 
     if not order_id:
         return None
 
     try:
         order = Order.objects.get(pk=int(order_id))
-    except (ValueError, Order.DoesNotExist):
+    except (ValueError, TypeError, Order.DoesNotExist):
         return None
 
     payment_status = getattr(session, "payment_status", "") or ""
@@ -681,10 +694,12 @@ def public_checkout_success(request):
         return redirect("mall-directory")
 
     payment_label = "Card"
-    if getattr(session, "payment_method_types", None):
-        types = session.payment_method_types or []
+    try:
+        types = getattr(session, "payment_method_types", []) or []
         if "card" in types:
             payment_label = "Credit / Debit Card"
+    except Exception:
+        pass
 
     request.session["cart"] = {}
     request.session.pop("last_store_slug", None)

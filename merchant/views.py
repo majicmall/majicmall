@@ -232,11 +232,26 @@ def _build_success_context_from_order(order: Order, session, payment_label: str)
     customer_name = ""
     customer_email = ""
 
-    metadata = getattr(session, "metadata", {}) or {}
+    try:
+        metadata = session["metadata"]
+    except Exception:
+        metadata = None
+
     if metadata:
-        promo_code = metadata.get("promo_code", "") or ""
-        customer_name = metadata.get("customer_name", "") or ""
-        customer_email = metadata.get("customer_email", "") or ""
+        try:
+            promo_code = metadata["promo_code"] or ""
+        except Exception:
+            promo_code = ""
+
+        try:
+            customer_name = metadata["customer_name"] or ""
+        except Exception:
+            customer_name = ""
+
+        try:
+            customer_email = metadata["customer_email"] or ""
+        except Exception:
+            customer_email = ""
 
     items = []
     subtotal = Decimal("0.00")
@@ -273,7 +288,6 @@ def _build_success_context_from_order(order: Order, session, payment_label: str)
         "payment_label": payment_label,
     }
 
-
 def _mark_order_paid_from_checkout_session(session):
     """
     Lock payment to the exact order using Stripe metadata/client_reference_id.
@@ -282,9 +296,12 @@ def _mark_order_paid_from_checkout_session(session):
     if not session:
         return None
 
-    metadata = getattr(session, "metadata", None)
-
     order_id = None
+
+    try:
+        metadata = session["metadata"]
+    except Exception:
+        metadata = None
 
     if metadata:
         try:
@@ -294,7 +311,7 @@ def _mark_order_paid_from_checkout_session(session):
 
     if not order_id:
         try:
-            order_id = getattr(session, "client_reference_id", None)
+            order_id = session["client_reference_id"]
         except Exception:
             order_id = None
 
@@ -306,8 +323,18 @@ def _mark_order_paid_from_checkout_session(session):
     except (ValueError, TypeError, Order.DoesNotExist):
         return None
 
-    payment_status = getattr(session, "payment_status", "") or ""
-    status = getattr(session, "status", "") or ""
+    payment_status = ""
+    status = ""
+
+    try:
+        payment_status = session["payment_status"] or ""
+    except Exception:
+        payment_status = ""
+
+    try:
+        status = session["status"] or ""
+    except Exception:
+        status = ""
 
     if payment_status == "paid" or status == "complete":
         if order.status != "paid":
@@ -315,7 +342,6 @@ def _mark_order_paid_from_checkout_session(session):
             order.save(update_fields=["status"])
 
     return order
-
 
 @login_required
 def switch_store(request, store_id: int):
@@ -977,15 +1003,54 @@ def order_detail(request, order_id: int):
         except Exception:
             pass
 
+    allowed_statuses = ["pending", "paid", "shipped", "completed", "canceled", "refunded"]
+
     context = {
         "store": store,
         "order": order,
         "item_count": item_count,
         "subtotal": subtotal,
+        "allowed_statuses": allowed_statuses,
     }
 
     return render(request, "merchant/order_detail.html", context)
 
+@login_required
+def order_update_status(request, order_id: int):
+    if request.method != "POST":
+        return redirect("order-detail", order_id=order_id)
+
+    store = get_current_store(request)
+    if not store:
+        messages.info(request, "Create your store to view orders.")
+        return redirect("merchant-profile")
+
+    guard = _redirect_if_archived(request, store)
+    if guard:
+        return guard
+
+    order = get_object_or_404(Order, pk=order_id, store=store)
+
+    allowed_statuses = {"pending", "paid", "shipped", "completed", "canceled", "refunded"}
+    new_status = (request.POST.get("status") or "").strip().lower()
+
+    if new_status not in allowed_statuses:
+        messages.error(request, "Invalid order status selected.")
+        return redirect("order-detail", order_id=order.id)
+
+    old_status = order.status
+    if old_status == new_status:
+        messages.info(request, f"Order #{order.id} is already marked as {new_status}.")
+        return redirect("order-detail", order_id=order.id)
+
+    order.status = new_status
+    order.save(update_fields=["status"])
+
+    messages.success(
+        request,
+        f"Order #{order.id} status updated from {old_status} to {new_status}."
+    )
+    return redirect("order-detail", order_id=order.id)
 
 # ===== Merchant self-service archive/restore ===================================
 @login_required

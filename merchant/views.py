@@ -18,7 +18,6 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-# ----- Models ------------------------------------------------------------------
 from .models import (
     MerchantStore,
     StoreCategory,
@@ -27,19 +26,13 @@ from .models import (
     OrderItem,
     MerchantPaymentMethod,
 )
-
-# ----- Forms -------------------------------------------------------------------
 from .forms import StoreForm, MerchantPaymentMethodForm
-
-# ----- Payments adapters -------------------------------------------------------
 from .payments.adapters import build_adapter
 
-Store = MerchantStore  # alias to keep older references working
+Store = MerchantStore
 
 
-# ===== Helpers =================================================================
 def staff_required(view_func):
-    """Require logged-in staff/superuser."""
     return login_required(
         user_passes_test(lambda u: u.is_staff or u.is_superuser)(view_func)
     )
@@ -59,7 +52,6 @@ def merchant_nav_context(request):
 
 
 def _get_user_store_or_none(request):
-    """Legacy helper (kept for compatibility). Prefer get_current_store()."""
     try:
         return Store.objects.select_related("owner").get(owner=request.user)
     except Store.DoesNotExist:
@@ -67,7 +59,6 @@ def _get_user_store_or_none(request):
 
 
 def _redirect_if_archived(request, store: Store | None):
-    """Redirect archived stores to the profile page with a message."""
     if store and getattr(store, "is_archived", False):
         messages.warning(
             request,
@@ -78,12 +69,6 @@ def _redirect_if_archived(request, store: Store | None):
 
 
 def get_current_store(request):
-    """
-    Active-store resolver for logged-in merchants:
-    - ?store=<id> overrides and is persisted in session
-    - else session 'active_store_id'
-    - else the user's first (non-archived) store
-    """
     if not request.user.is_authenticated:
         return None
 
@@ -112,10 +97,6 @@ def get_current_store(request):
 
 
 def ensure_default_payment_methods(store: MerchantStore):
-    """
-    Make sure every store has default active payment methods.
-    Safe to call multiple times.
-    """
     stripe_method, _ = MerchantPaymentMethod.objects.get_or_create(
         store=store,
         provider="stripe",
@@ -155,7 +136,6 @@ def ensure_default_payment_methods(store: MerchantStore):
         paypal_method.save()
 
 
-# ===== Promo Codes =============================================================
 PROMO_CODES = {
     "SAVE10": {"kind": "percent", "value": Decimal("10.00"), "label": "10% off"},
     "WELCOME5": {"kind": "fixed", "value": Decimal("5.00"), "label": "$5 off"},
@@ -181,9 +161,7 @@ def _calculate_checkout_context(request):
         if store_id is None:
             store_id = item_store_id
         elif item_store_id != store_id:
-            return {
-                "error": "Your cart contains items from multiple stores. Please use one store at a time."
-            }
+            return {"error": "Your cart contains items from multiple stores. Please use one store at a time."}
 
         price = Decimal(str(item.get("price", "0.00")))
         quantity = int(item.get("quantity", 0))
@@ -288,11 +266,8 @@ def _build_success_context_from_order(order: Order, session, payment_label: str)
         "payment_label": payment_label,
     }
 
+
 def _mark_order_paid_from_checkout_session(session):
-    """
-    Lock payment to the exact order using Stripe metadata/client_reference_id.
-    Safe to call from both the success page and webhook.
-    """
     if not session:
         return None
 
@@ -343,9 +318,9 @@ def _mark_order_paid_from_checkout_session(session):
 
     return order
 
+
 @login_required
 def switch_store(request, store_id: int):
-    """Switch the active store and bounce back."""
     try:
         store = Store.objects.get(pk=store_id, owner=request.user, is_archived=False)
     except Store.DoesNotExist:
@@ -367,12 +342,7 @@ def admin_payment_methods(request):
     return render(request, "merchant/admin_payment_methods.html", {"methods": methods})
 
 
-# ===== Public Storefront ========================================================
 def storefront(request, slug: str):
-    """
-    Public storefront page at /s/<slug>/
-    Shows store info and product grid if the store is public & not archived.
-    """
     store = get_object_or_404(
         Store.objects.prefetch_related("products"),
         slug=slug,
@@ -400,10 +370,6 @@ def storefront(request, slug: str):
 
 
 def product_detail(request, slug: str, product_id: int):
-    """
-    Public product detail page within a storefront.
-    URL: /s/<slug>/products/<product_id>/
-    """
     store = get_object_or_404(
         Store.objects.prefetch_related("products"),
         slug=slug,
@@ -429,13 +395,6 @@ def product_detail(request, slug: str, product_id: int):
 
 
 def storefront_qr(request, slug: str):
-    """
-    PNG QR code to the public storefront URL (/s/<slug>/).
-    Query params:
-      - size: 2..20 (default 6)
-      - box:  1/true/yes/on => larger white border for printing
-      - download: truthy => force download
-    """
     store = get_object_or_404(Store, slug=slug)
 
     if store.is_archived or not store.is_public:
@@ -475,7 +434,6 @@ def storefront_qr(request, slug: str):
     return resp
 
 
-# ===== Public Cart / Checkout ==================================================
 def cart_add(request, product_id: int):
     if request.method != "POST":
         return redirect("mall-directory")
@@ -647,7 +605,6 @@ def public_checkout_submit(request):
         messages.error(request, "Invalid payment method selected.")
         return redirect("public-checkout")
 
-    # Create exact order record before redirecting to Stripe
     order = Order.objects.create(
         store=store,
         total=total,
@@ -702,7 +659,7 @@ def public_checkout_submit(request):
 def public_checkout_success(request):
     session_id = (request.GET.get("session_id") or "").strip()
     if not session_id:
-        messages.warning(request, "Missing checkout session. We could not confirm your payment.")
+        messages.warning(request, "Missing checkout session.")
         return redirect("mall-directory")
 
     stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -711,12 +668,12 @@ def public_checkout_success(request):
         session = stripe.checkout.Session.retrieve(session_id)
     except Exception as e:
         print("STRIPE SESSION RETRIEVE ERROR:", repr(e))
-        messages.error(request, "We could not verify your payment session.")
+        messages.error(request, "Payment verification failed.")
         return redirect("mall-directory")
 
     order = _mark_order_paid_from_checkout_session(session)
     if not order:
-        messages.error(request, "We could not match this payment to an order.")
+        messages.error(request, "Order not found.")
         return redirect("mall-directory")
 
     payment_label = "Card"
@@ -743,7 +700,6 @@ def public_checkout_cancel(request):
     return redirect("cart-view")
 
 
-# ===== Categories ===============================================================
 @login_required
 def category_list(request):
     store = get_current_store(request)
@@ -784,10 +740,8 @@ def add_category(request):
     return render(request, "merchant/add_category.html", {"store": store})
 
 
-# ===== Merchant dashboard / profile / reports ==================================
 @login_required
 def dashboard(request):
-    """Merchant dashboard."""
     store = get_current_store(request)
     if not store:
         messages.info(request, "Create your first store to continue.")
@@ -828,10 +782,6 @@ def dashboard(request):
 
 @login_required
 def profile(request):
-    """
-    Store Profile: bind a ModelForm to the active store (create one if missing).
-    Also exposes a public URL built with PUBLIC_BASE_URL for easy sharing.
-    """
     store = get_current_store(request)
     if not store:
         store = MerchantStore.objects.create(
@@ -871,7 +821,6 @@ def profile(request):
 
 @login_required
 def reports(request):
-    """Reports & Analytics (lite vs Chart.js via ?charts=pro)."""
     store = get_current_store(request)
     if not store:
         messages.info(request, "Create your store to view reports.")
@@ -943,7 +892,6 @@ def reports(request):
     return render(request, "merchant/reports.html", context)
 
 
-# ===== Orders ===================================================================
 @login_required
 def order_list(request):
     store = get_current_store(request)
@@ -1015,6 +963,7 @@ def order_detail(request, order_id: int):
 
     return render(request, "merchant/order_detail.html", context)
 
+
 @login_required
 def order_update_status(request, order_id: int):
     if request.method != "POST":
@@ -1052,7 +1001,7 @@ def order_update_status(request, order_id: int):
     )
     return redirect("order-detail", order_id=order.id)
 
-# ===== Merchant self-service archive/restore ===================================
+
 @login_required
 def merchant_store_archive(request):
     store = get_current_store(request)
@@ -1089,7 +1038,6 @@ def merchant_store_restore(request):
     return redirect("merchant-profile")
 
 
-# ===== Products: create / edit / delete ========================================
 @login_required
 def add_product(request):
     store = get_current_store(request)
@@ -1268,7 +1216,6 @@ def delete_product(request, product_id: int):
     return render(request, "merchant/confirm_delete.html", {"product": product})
 
 
-# ===== CSV export for reports ===================================================
 @login_required
 def reports_export(request):
     store = get_current_store(request)
@@ -1301,7 +1248,6 @@ def reports_export(request):
     return response
 
 
-# ===== Payment Settings & simple Checkout demo =================================
 @login_required
 def payment_settings(request):
     store = get_current_store(request)
@@ -1420,7 +1366,6 @@ def checkout_cancel(request):
     return redirect("merchant-dashboard")
 
 
-# ===== Plans (pricing + checkout) ==============================================
 PLAN_PRICES = {
     "starter": 900,
     "pro": 2900,
@@ -1516,7 +1461,6 @@ def plan_checkout_cancel(request):
     return redirect("merchant-plans")
 
 
-# ===== Admin: stores ============================================================
 @staff_required
 def admin_store_list(request):
     stores = (
@@ -1578,7 +1522,6 @@ def admin_store_purge(request, store_id: int):
     return redirect("admin-store-list")
 
 
-# ===== Webhook stubs (Stripe / PayPal) =========================================
 def _json(request):
     try:
         return json.loads(request.body.decode("utf-8") or "{}")

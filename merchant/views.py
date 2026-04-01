@@ -206,7 +206,7 @@ def _calculate_checkout_context(request):
 
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from .forms import MerchantProfileForm
+
 
 @login_required
 def profile(request):
@@ -825,44 +825,6 @@ def dashboard(request):
     }
     return render(request, "merchant/dashboard.html", context)
 
-
-@login_required
-def profile(request):
-    store = get_current_store(request)
-    if not store:
-        store = MerchantStore.objects.create(
-            owner=request.user,
-            store_name="",
-            category="",
-            plan="starter",
-        )
-        request.session["active_store_id"] = store.id
-        ensure_default_payment_methods(store)
-
-    if request.method == "POST":
-        form = StoreForm(request.POST, request.FILES, instance=store)
-        if form.is_valid():
-            form.save()
-            ensure_default_payment_methods(store)
-            messages.success(request, "Store profile saved.")
-            return redirect("merchant-profile")
-    else:
-        form = StoreForm(instance=store)
-
-    ensure_default_payment_methods(store)
-
-    public_url = None
-    qr_url = None
-    if store and getattr(store, "slug", None):
-        base = (getattr(settings, "PUBLIC_BASE_URL", "") or request.build_absolute_uri("/")).rstrip("/")
-        public_url = f"{base}{reverse('storefront', args=[store.slug])}"
-        qr_url = reverse("storefront-qr", args=[store.slug])
-
-    return render(
-        request,
-        "merchant/profile.html",
-        {"store": store, "form": form, "public_url": public_url, "qr_url": qr_url},
-    )
 
 
 @login_required

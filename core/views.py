@@ -1,22 +1,29 @@
+from collections import defaultdict
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-from merchant.models import MallZone
+from django.db.models import Case, When, Value, IntegerField
+
+from merchant.models import MallZone, MerchantStore
 from .forms import MerchantSignupForm
 from .models import Movie, Ticket
+
 
 # ---------------------------
 # 🌍 Global Pages
 # ---------------------------
 
 def homepage(request):
-    return render(request, 'home.html')
+    return render(request, "home.html")
+
 
 def mall_home(request):
-    return render(request, 'mall/majic_home.html')
+    return render(request, "mall/majic_home.html")
+
 
 def launch_splash(request):
-    return render(request, 'launch_splash.html')
+    return render(request, "launch_splash.html")
 
 
 # ---------------------------
@@ -24,25 +31,31 @@ def launch_splash(request):
 # ---------------------------
 
 def merchant_onboard(request):
-    selected_plan = request.GET.get('plan', '')
+    selected_plan = request.GET.get("plan", "")
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = MerchantSignupForm(request.POST, request.FILES)
         if form.is_valid():
             merchant = form.save(commit=False)
             merchant.plan = selected_plan
             merchant.save()
-            return redirect('merchant-thank-you')
+            return redirect("merchant-thank-you")
     else:
         form = MerchantSignupForm()
 
-    return render(request, 'merchant/onboard.html', {
-        'form': form,
-        'selected_plan': selected_plan,
-    })
+    return render(
+        request,
+        "merchant/onboard.html",
+        {
+            "form": form,
+            "selected_plan": selected_plan,
+        },
+    )
+
 
 def merchant_thank_you(request):
-    return render(request, 'thank_you.html')
+    return render(request, "thank_you.html")
+
 
 @login_required
 def merchant_dashboard(request):
@@ -55,32 +68,44 @@ def merchant_dashboard(request):
     if not store:
         return redirect("merchant-setup")
 
-    return render(request, "merchant/dashboard.html", {
-        "store": store,
-        "merchant": store,
-    })
+    return render(
+        request,
+        "merchant/dashboard.html",
+        {
+            "store": store,
+            "merchant": store,
+        },
+    )
 
 
 def merchant_invite(request):
-    return render(request, 'merchant/invite.html')
+    return render(request, "merchant/invite.html")
+
 
 def merchant_tiers(request):
-    return render(request, 'merchant/tiers.html')
+    return render(request, "merchant/tiers.html")
+
 
 def business_zone(request):
     zone = get_object_or_404(MallZone, slug="business-services-zone")
     stores = zone.stores.filter(is_public=True, is_archived=False).order_by("store_name")
 
-    return render(request, "mall/zone_live.html", {
-        "zone": zone,
-        "stores": stores,
-    })
+    return render(
+        request,
+        "mall/zone_live.html",
+        {
+            "zone": zone,
+            "stores": stores,
+        },
+    )
+
 
 def music_zone(request):
-    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Music'})
+    return render(request, "mall/zone_placeholder.html", {"zone_name": "Music"})
+
 
 class MerchantLoginView(LoginView):
-    template_name = 'merchant/login.html'
+    template_name = "merchant/login.html"
 
 
 # ---------------------------
@@ -88,14 +113,59 @@ class MerchantLoginView(LoginView):
 # ---------------------------
 
 def mall_directory(request):
-    zones = (
+    active_zone = request.GET.get("zone", "").strip()
+
+    zones = list(
         MallZone.objects
         .filter(is_active=True)
         .order_by("sort_order", "name")
-        .prefetch_related("stores")
     )
 
-    active_zone = request.GET.get("zone", "").strip()
+    live_stores_qs = (
+        MerchantStore.objects
+        .select_related("zone")
+        .filter(
+            is_public=True,
+            is_archived=False,
+            zone__isnull=False,
+            zone__is_active=True,
+        )
+        .annotate(
+            plan_rank=Case(
+                When(plan="elite", then=Value(0)),
+                When(plan="pro", then=Value(1)),
+                default=Value(2),
+                output_field=IntegerField(),
+            )
+        )
+        .order_by("zone__sort_order", "zone__name", "plan_rank", "-created_at", "store_name")
+    )
+
+    if active_zone:
+        live_stores_qs = live_stores_qs.filter(zone__slug=active_zone)
+
+    live_stores = list(live_stores_qs)
+
+    stores_by_zone = defaultdict(list)
+    for store in live_stores:
+        if store.zone_id:
+            stores_by_zone[store.zone_id].append(store)
+
+    zone_sections = []
+    for zone in zones:
+        if active_zone and zone.slug != active_zone:
+            continue
+
+        featured_stores = stores_by_zone.get(zone.id, [])[:5]
+        empty_slots_count = max(0, 5 - len(featured_stores))
+
+        zone_sections.append({
+            "zone": zone,
+            "stores": featured_stores,
+            "empty_slots": range(empty_slots_count),
+            "store_count": len(stores_by_zone.get(zone.id, [])),
+            "has_stores": bool(featured_stores),
+        })
 
     return render(
         request,
@@ -103,38 +173,50 @@ def mall_directory(request):
         {
             "zones": zones,
             "active_zone": active_zone,
+            "live_stores": live_stores,
+            "zone_sections": zone_sections,
         },
     )
 
+
 def fashion_zone(request):
-    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Fashion'})
+    return render(request, "mall/zone_placeholder.html", {"zone_name": "Fashion"})
+
 
 def entertainment_zone(request):
-    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Entertainment'})
+    return render(request, "mall/zone_placeholder.html", {"zone_name": "Entertainment"})
+
 
 def tech_zone(request):
-    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Tech'})
+    return render(request, "mall/zone_placeholder.html", {"zone_name": "Tech"})
+
 
 def home_zone(request):
-    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Home'})
+    return render(request, "mall/zone_placeholder.html", {"zone_name": "Home"})
+
 
 def family_zone(request):
-    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Family'})
+    return render(request, "mall/zone_placeholder.html", {"zone_name": "Family"})
+
 
 def creators_zone(request):
-    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Creators'})
+    return render(request, "mall/zone_placeholder.html", {"zone_name": "Creators"})
+
 
 def luxury_zone(request):
-    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Luxury'})
+    return render(request, "mall/zone_placeholder.html", {"zone_name": "Luxury"})
+
 
 def atls_hottest_zone(request):
-    return render(request, 'mall/zone_placeholder.html', {'zone_name': "ATL's Hottest"})
+    return render(request, "mall/zone_placeholder.html", {"zone_name": "ATL's Hottest"})
+
 
 def food_court_zone(request):
-    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Food Court'})
+    return render(request, "mall/zone_placeholder.html", {"zone_name": "Food Court"})
+
 
 def learning_zone(request):
-    return render(request, 'mall/zone_placeholder.html', {'zone_name': 'Learning'})
+    return render(request, "mall/zone_placeholder.html", {"zone_name": "Learning"})
 
 
 # ---------------------------
@@ -142,7 +224,7 @@ def learning_zone(request):
 # ---------------------------
 
 def tv_home(request):
-    return render(request, 'tv/tv_home.html')
+    return render(request, "tv/tv_home.html")
 
 
 # ---------------------------
@@ -150,28 +232,34 @@ def tv_home(request):
 # ---------------------------
 
 def theater_zone(request):
-    return render(request, 'theater/theater_home.html', {'zone_name': 'Theater'})
+    return render(request, "theater/theater_home.html", {"zone_name": "Theater"})
+
 
 def theater_entrance(request):
-    return render(request, 'theater/theater_entrance.html')
+    return render(request, "theater/theater_entrance.html")
+
 
 def theater_lobby(request):
-    return render(request, 'theater/theaterlobby.html')
+    return render(request, "theater/theaterlobby.html")
+
 
 def box_office(request):
     movies = Movie.objects.all()
-    return render(request, 'theater/box_office.html', {"movies": movies})
+    return render(request, "theater/box_office.html", {"movies": movies})
+
 
 def trailer_view(request):
-    return render(request, 'theater/trailer_view.html')
+    return render(request, "theater/trailer_view.html")
+
 
 def coming_soon(request):
-    return render(request, 'theater/coming_soon.html')
+    return render(request, "theater/coming_soon.html")
+
 
 def theater_stream(request):
-    movie_id = request.GET.get('id')
+    movie_id = request.GET.get("id")
     if not movie_id:
-        return redirect('box-office')
+        return redirect("box-office")
 
     user = request.user if request.user.is_authenticated else None
 
@@ -188,14 +276,19 @@ def theater_stream(request):
     ).exists()
 
     if not has_ticket:
-        return redirect('box-office')
+        return redirect("box-office")
 
     movie = get_object_or_404(Movie, id=movie_id)
-    return render(request, 'theater/theater_stream.html', {
-        'poster': movie.image.url if getattr(movie, 'image', None) else 'default_poster.jpg',
-        'video': movie.video.url if getattr(movie, 'video', None) else 'default_video.mp4',
-        'movie': movie,
-    })
+    return render(
+        request,
+        "theater/theater_stream.html",
+        {
+            "poster": movie.image.url if getattr(movie, "image", None) else "default_poster.jpg",
+            "video": movie.video.url if getattr(movie, "video", None) else "default_video.mp4",
+            "movie": movie,
+        },
+    )
+
 
 def buy_ticket(request, movie_id):
     movie = get_object_or_404(Movie, id=movie_id)
@@ -219,4 +312,4 @@ def buy_ticket(request, movie_id):
             session_key=None if user else session_key,
         )
 
-    return redirect(f'/theater/stream/?id={movie.id}')
+    return redirect(f"/theater/stream/?id={movie.id}")

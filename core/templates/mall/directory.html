@@ -5,162 +5,132 @@
   <meta charset="UTF-8">
   <title>Majic Mall Directory</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
     body {
       background-color: black;
-      margin: 0;
-      padding: 0;
       font-family: 'Arial', sans-serif;
-      animation: directoryFadeIn 2s ease-in-out;
+      animation: fadeIn 1.5s ease-in-out;
     }
 
-    @keyframes directoryFadeIn {
+    @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.98); }
       to   { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes welcomeFade {
-      0%   { opacity: 0; transform: translateY(-20px); }
-      10%  { opacity: 1; transform: translateY(0); }
-      90%  { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-20px); }
-    }
-
-    .animate-welcome {
-      animation: welcomeFade 4s ease-in-out forwards;
     }
   </style>
 </head>
 <body>
 
-  <!-- Welcome Message -->
-  <div id="welcome-message" class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-yellow-300 text-black text-xl font-bold px-6 py-3 rounded-xl shadow-2xl z-50 opacity-0 animate-welcome">
-    👋 Welcome to Majic Mall
+<div class="flex flex-col items-center min-h-screen p-6">
+
+  <!-- HEADER IMAGE -->
+  <img src="{% static 'img/majic_directory.png' %}" class="w-full max-w-6xl mb-8">
+
+  <!-- ZONE BUTTONS -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
+    {% for zone in zones %}
+      <a href="#zone-{{ zone.slug }}"
+         class="px-4 py-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition">
+        {{ zone.name|upper }}
+      </a>
+    {% endfor %}
+
+    <a href="{% url 'merchant-invite' %}" class="px-4 py-2 bg-yellow-400 text-black font-bold rounded-xl">
+      🛍️ Become a Merchant
+    </a>
+
+    <a href="/merchant/login/" class="px-4 py-2 bg-gray-700 text-white rounded-xl">
+      🔐 Merchant Login
+    </a>
   </div>
 
-  <div class="flex flex-col items-center justify-center min-h-screen p-6">
-    <img src="{% static 'img/majic_directory.png' %}"
-         alt="Majic Mall Directory"
-         class="w-full h-auto mb-6">
+  <!-- LIVE STORES BY ZONE -->
+  <div class="w-full max-w-6xl">
 
-    {% if active_zone %}
-      <div class="mb-4 text-yellow-300 font-semibold">
-        Showing zone: {{ active_zone }}
-      </div>
-    {% endif %}
-
-    <!-- 🔥 ZONE BUTTONS (FIXED) -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
-  {% for zone in zones %}
-
-    {% if "atls-hottest" in zone.slug %}
-      <a href="{% url 'atls-hottest-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "business" in zone.slug %}
-      <a href="{% url 'business-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "fashion" in zone.slug %}
-      <a href="{% url 'fashion-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "food" in zone.slug %}
-      <a href="{% url 'food-court-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "music" in zone.slug %}
-      <a href="{% url 'music-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "tech" in zone.slug %}
-      <a href="{% url 'tech-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% elif "theater" in zone.slug %}
-      <a href="{% url 'theater-zone' %}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-
-    {% else %}
-      <a href="#zone-{{ zone.slug }}" class="px-4 py-2 m-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition duration-300">{{ zone.name|upper }}</a>
-    {% endif %}
-
-  {% empty %}
-    <div class="col-span-full text-gray-400">
-      No active zones available.
+    <div class="text-center mb-10">
+      <h2 class="text-3xl font-bold text-yellow-400">Live Stores by Zone</h2>
+      <p class="text-gray-300 mt-2">
+        Only 5 premium placements per zone
+      </p>
     </div>
-  {% endfor %}
 
-  <a href="{% url 'merchant-invite' %}" class="px-4 py-2 m-2 bg-yellow-400 text-black font-bold rounded-xl shadow-lg hover:bg-yellow-500 transition duration-300">
-    🛍️ Become a Merchant
-  </a>
+    <div class="space-y-10">
 
-  <a href="/merchant/login/" class="px-4 py-2 m-2 bg-gray-700 text-white rounded-xl shadow-lg hover:bg-gray-900 transition duration-300">
-    🔐 Merchant Login
-  </a>
-</div>
+      {% for section in zone_sections %}
+        <div id="zone-{{ section.zone.slug }}" class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
 
-    <!-- Live zones + stores -->
-    <div class="w-full max-w-6xl mt-4">
-      <div class="text-center mb-8">
-        <h2 class="text-3xl font-bold text-yellow-400">Live Stores by Zone</h2>
-        <p class="text-gray-300 mt-2">Explore the real Majic Mall layout powered by active merchant zones.</p>
-      </div>
+          <!-- Zone Header -->
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-2xl font-bold text-yellow-400">{{ section.zone.name }}</h3>
+            <span class="text-sm text-gray-400">5 Premium Slots</span>
+          </div>
 
-      {% if zones %}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {% for zone in zones %}
-            <div id="zone-{{ zone.slug }}" class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl">
-              <div class="flex items-center justify-between mb-3">
-                <h3 class="text-2xl font-bold text-yellow-400">{{ zone.name }}</h3>
-                <span class="text-xs uppercase tracking-wide text-gray-400">
-                  {{ zone.stores.count }} store{{ zone.stores.count|pluralize }}
-                </span>
-              </div>
+          {% if section.zone.description %}
+            <p class="text-gray-400 mb-4">{{ section.zone.description }}</p>
+          {% endif %}
 
-              {% if zone.description %}
-                <p class="text-gray-400 mb-4">{{ zone.description }}</p>
-              {% endif %}
+          <!-- STORES GRID -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
 
-              {% with stores=zone.stores.all %}
-                {% if stores %}
-                  <div class="space-y-3">
-                    {% for store in stores %}
-                      <div class="bg-gray-800 rounded-xl p-4 flex items-center justify-between">
-                        <div>
-                          <div class="text-white font-semibold">{{ store.store_name }}</div>
-                          {% if store.slogan %}
-                            <div class="text-sm text-gray-400">{{ store.slogan }}</div>
-                          {% elif store.description %}
-                            <div class="text-sm text-gray-400">{{ store.description|truncatewords:12 }}</div>
-                          {% endif %}
-                        </div>
+            <!-- STORES -->
+            {% for store in section.stores %}
+              <div class="bg-gray-800 rounded-xl p-4 flex flex-col">
 
-                        {% if store.slug and store.is_public and not store.is_archived %}
-                          <a href="{% url 'storefront' store.slug %}"
-                             class="px-4 py-2 bg-yellow-400 text-black rounded-xl hover:opacity-90 font-medium">
-                            Visit Store
-                          </a>
-                        {% else %}
-                          <span class="px-4 py-2 bg-gray-700 text-gray-300 rounded-xl text-sm">
-                            Coming Soon
-                          </span>
-                        {% endif %}
-                      </div>
-                    {% endfor %}
-                  </div>
+                <!-- LOGO -->
+                {% if store.logo %}
+                  <img src="{{ store.logo.url }}"
+                       class="h-20 w-20 object-cover rounded-lg mb-3 bg-white">
                 {% else %}
-                  <div class="bg-gray-800 rounded-xl p-4 text-gray-400">
-                    No stores assigned to this zone yet.
+                  <div class="h-20 w-20 bg-gray-700 rounded-lg mb-3 flex items-center justify-center">
+                    🏬
                   </div>
                 {% endif %}
-              {% endwith %}
-            </div>
-          {% endfor %}
+
+                <div class="text-white font-bold">{{ store.store_name }}</div>
+
+                {% if store.slogan %}
+                  <div class="text-sm text-gray-400">{{ store.slogan }}</div>
+                {% endif %}
+
+                <div class="mt-auto pt-3">
+                  <a href="{% url 'storefront' store.slug %}"
+                     class="block text-center px-3 py-2 bg-yellow-400 text-black rounded-lg">
+                    Visit
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+
+            <!-- EMPTY PREMIUM SLOTS -->
+            {% for _ in section.empty_slots %}
+              <div class="bg-gray-800 border-2 border-dashed border-yellow-400 rounded-xl p-4 flex flex-col justify-center items-center text-center">
+
+                <div class="text-yellow-400 text-2xl mb-2">★</div>
+
+                <div class="text-yellow-400 font-bold">
+                  Premium Slot
+                </div>
+
+                <div class="text-sm text-gray-400 mt-2">
+                  Available for upgrade or bid
+                </div>
+
+              </div>
+            {% endfor %}
+
+          </div>
+
         </div>
-      {% else %}
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 text-center text-gray-400">
-          No active zones yet.
-        </div>
-      {% endif %}
+      {% endfor %}
+
     </div>
 
-    <p class="text-white mt-8 italic">🧭 You Are Here: Main Entrance</p>
   </div>
+
+  <p class="text-white mt-10 italic">🧭 You Are Here: Main Entrance</p>
+
+</div>
 
 </body>
 </html>

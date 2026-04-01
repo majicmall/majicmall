@@ -204,6 +204,52 @@ def _calculate_checkout_context(request):
         "promo_code": promo_code,
     }
 
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from .forms import MerchantProfileForm
+
+@login_required
+def profile(request):
+    store = get_current_store(request)
+    if not store:
+        store = MerchantStore.objects.create(
+            owner=request.user,
+            store_name="",
+            category="",
+            plan="starter",
+        )
+        request.session["active_store_id"] = store.id
+        ensure_default_payment_methods(store)
+
+    if request.method == "POST":
+        form = StoreForm(request.POST, request.FILES, instance=store)
+        if form.is_valid():
+            store = form.save()
+            ensure_default_payment_methods(store)
+            messages.success(request, "Store profile saved.")
+            return redirect("merchant-profile")
+    else:
+        form = StoreForm(instance=store)
+
+    ensure_default_payment_methods(store)
+
+    public_url = None
+    qr_url = None
+    if store and getattr(store, "slug", None):
+        base = (getattr(settings, "PUBLIC_BASE_URL", "") or request.build_absolute_uri("/")).rstrip("/")
+        public_url = f"{base}{reverse('storefront', args=[store.slug])}"
+        qr_url = reverse("storefront-qr", args=[store.slug])
+
+    return render(
+        request,
+        "merchant/profile.html",
+        {
+            "store": store,
+            "form": form,
+            "public_url": public_url,
+            "qr_url": qr_url,
+        },
+    )
 
 def _build_success_context_from_order(order: Order, session, payment_label: str):
     promo_code = ""
@@ -1038,6 +1084,8 @@ def merchant_store_restore(request):
     return redirect("merchant-profile")
 
 
+from decimal import Decimal, InvalidOperation
+
 @login_required
 def add_product(request):
     store = get_current_store(request)
@@ -1055,28 +1103,25 @@ def add_product(request):
         name = (request.POST.get("name") or "").strip()
         description = (request.POST.get("description") or "").strip()
         image = request.FILES.get("image")
+        digital_file = request.FILES.get("digital_file")
         category_id = (request.POST.get("category") or "").strip()
+        product_type = (request.POST.get("product_type") or "physical").strip().lower()
 
-        price_val: Decimal | None = None
+        if product_type not in {"physical", "digital"}:
+            product_type = "physical"
+
+        price_val = Decimal("0.00")
         price_raw = (request.POST.get("price") or "").strip()
         if price_raw:
             try:
                 price_val = Decimal(price_raw)
             except (InvalidOperation, ValueError):
                 messages.error(request, "Price must be a valid number.")
-                return render(
-                    request,
-                    "merchant/add_product.html",
-                    {"categories": categories},
-                )
+                return render(request, "merchant/add_product.html", {"categories": categories})
 
         if not name:
             messages.error(request, "Please provide a product name.")
-            return render(
-                request,
-                "merchant/add_product.html",
-                {"categories": categories},
-            )
+            return render(request, "merchant/add_product.html", {"categories": categories})
 
         selected_category = None
         if category_id:
@@ -1084,32 +1129,28 @@ def add_product(request):
                 selected_category = store.categories.get(pk=int(category_id))
             except (ValueError, StoreCategory.DoesNotExist):
                 messages.error(request, "Invalid category selected.")
-                return render(
-                    request,
-                    "merchant/add_product.html",
-                    {"categories": categories},
-                )
+                return render(request, "merchant/add_product.html", {"categories": categories})
 
-        product = Product(store=store, name=name)
-        product.category = selected_category
+        product = Product(
+            store=store,
+            name=name,
+            category=selected_category,
+            product_type=product_type,
+            price=price_val,
+            description=description,
+        )
 
-        if hasattr(Product, "price") and price_val is not None:
-            product.price = price_val
-        if hasattr(Product, "description"):
-            product.description = description or ""
-        if hasattr(Product, "image") and image:
+        if image:
             product.image = image
+
+        if product_type == "digital" and digital_file:
+            product.digital_file = digital_file
 
         product.save()
         messages.success(request, "Product created successfully.")
         return redirect("merchant-dashboard")
 
-    return render(
-        request,
-        "merchant/add_product.html",
-        {"categories": categories},
-    )
-
+    return render(request, "merchant/add_product.html", {"categories": categories})
 
 @login_required
 def edit_product(request, product_id: int):

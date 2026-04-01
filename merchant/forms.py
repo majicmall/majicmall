@@ -1,4 +1,3 @@
-# merchant/forms.py
 from __future__ import annotations
 
 from django import forms
@@ -18,7 +17,7 @@ class StoreForm(forms.ModelForm):
             "slogan",
             "description",
             "category",
-            "zone",        # ✅ NEW — mall zone selection
+            "zone",
             "plan",
             "is_public",
         ]
@@ -36,17 +35,13 @@ class StoreForm(forms.ModelForm):
             "category": forms.TextInput(
                 attrs={"class": "w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2"}
             ),
-
-            # ✅ NEW zone dropdown
             "zone": forms.Select(
                 attrs={"class": "w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2"}
             ),
-
             "plan": forms.Select(
                 attrs={"class": "w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2"}
             ),
             "logo": ClearableFileInput(attrs={"class": "text-sm"}),
-
             "is_public": forms.CheckboxInput(
                 attrs={"class": "h-4 w-4 rounded border-gray-600 bg-gray-800"}
             ),
@@ -55,7 +50,6 @@ class StoreForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # ✅ Only show active zones in the dropdown
         if "zone" in self.fields:
             self.fields["zone"].queryset = (
                 self.fields["zone"]
@@ -68,7 +62,6 @@ class StoreForm(forms.ModelForm):
     def save(self, commit: bool = True) -> MerchantStore:
         instance: MerchantStore = super().save(commit=False)
 
-        # Handle optional removal of logo
         if self.cleaned_data.get("remove_logo"):
             if instance.logo:
                 instance.logo.delete(save=False)
@@ -81,7 +74,6 @@ class StoreForm(forms.ModelForm):
 
 
 class MerchantPaymentMethodForm(forms.ModelForm):
-
     credentials = forms.JSONField(
         required=False,
         widget=forms.Textarea(

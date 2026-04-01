@@ -1,4 +1,3 @@
-# merchant/models.py
 from datetime import timedelta
 from decimal import Decimal
 
@@ -8,9 +7,6 @@ from django.utils.timezone import now
 from django.utils.text import slugify
 
 
-# -----------------------------
-# 🏬 Mall Zone Model
-# -----------------------------
 class MallZone(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
@@ -36,9 +32,6 @@ class MallZone(models.Model):
         super().save(*args, **kwargs)
 
 
-# -----------------------------
-# 💼 Merchant Store Model
-# -----------------------------
 class MerchantStore(models.Model):
     PLAN_CHOICES = [
         ("starter", "Starter"),
@@ -109,9 +102,6 @@ class MerchantStore(models.Model):
         self.save(update_fields=["is_archived", "archived_at"])
 
 
-# -----------------------------
-# 🗂️ Store Category Model
-# -----------------------------
 class StoreCategory(models.Model):
     store = models.ForeignKey(
         MerchantStore,
@@ -140,9 +130,6 @@ class StoreCategory(models.Model):
         super().save(*args, **kwargs)
 
 
-# -----------------------------
-# 🛍️ Product Model
-# -----------------------------
 class Product(models.Model):
     PRODUCT_TYPE_CHOICES = [
         ("physical", "Physical"),
@@ -188,9 +175,6 @@ class Product(models.Model):
         return self.product_type == "physical"
 
 
-# -----------------------------
-# 🧾 Order Model
-# -----------------------------
 class Order(models.Model):
     STATUS_CHOICES = [
         ("pending", "Pending"),
@@ -229,9 +213,6 @@ class Order(models.Model):
         return f"Order #{self.pk} — {self.store.store_name}"
 
 
-# -----------------------------
-# 🧾 Order Item Model
-# -----------------------------
 class OrderItem(models.Model):
     order = models.ForeignKey(
         Order,
@@ -261,7 +242,6 @@ class OrderItem(models.Model):
         return f"{self.name} x{self.quantity}"
 
 
-# --- Payment models -------------------------------------------------------------
 class MerchantPaymentMethod(models.Model):
     MODE_CHOICES = [
         ("test", "Test"),

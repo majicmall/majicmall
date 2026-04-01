@@ -73,7 +73,21 @@
               If OFF, your storefront link will show “Store not available”.
             </p>
           </div>
+{% if store.logo %}
+  <div class="mt-4">
+    <p class="text-sm text-gray-300 mb-2">Current Logo</p>
+    <img src="{{ store.logo.url }}"
+         alt="{{ store.store_name }} logo"
+         class="h-24 w-24 object-cover rounded-xl bg-gray-800 border border-gray-700">
+  </div>
 
+  <div class="mt-3">
+    <label class="inline-flex items-center gap-2 text-sm text-red-300">
+      {{ form.remove_logo }}
+      <span>Remove current logo</span>
+    </label>
+  </div>
+{% endif %}
           <button class="px-5 py-3 bg-yellow-400 text-black rounded-xl hover:opacity-90">
             Save Profile
           </button>

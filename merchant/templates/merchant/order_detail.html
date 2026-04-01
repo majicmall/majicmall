@@ -162,7 +162,7 @@
             </div>
           </div>
 
-          <form method="post" action="{% url 'order-update-status' order.id %}" class="mt-6 space-y-4">
+          <form method="post" action="{% url 'merchant:order-update-status' order.id %}" class="mt-6 space-y-4">
             {% csrf_token %}
             <div>
               <label for="status" class="block text-sm text-gray-300 mb-2">Update Status</label>

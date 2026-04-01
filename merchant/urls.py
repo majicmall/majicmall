@@ -41,6 +41,7 @@ urlpatterns = [
     # =========================
     path("orders/", views.order_list, name="order-list"),
     path("orders/<int:order_id>/", views.order_detail, name="order-detail"),
+    path("orders/<int:order_id>/status/", views.order_update_status, name="order-update-status"),
 
     # =========================
     # Cart (Public)

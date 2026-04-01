@@ -48,6 +48,8 @@ class StripeAdapterImpl:
         try:
             stripe.api_key = settings.STRIPE_SECRET_KEY
 
+            order_id = str(metadata.get("order_id", "")).strip()
+
             session = stripe.checkout.Session.create(
                 payment_method_types=["card"],
                 line_items=[
@@ -66,6 +68,7 @@ class StripeAdapterImpl:
                 success_url=f"{self.success_url}?session_id={{CHECKOUT_SESSION_ID}}",
                 cancel_url=self.cancel_url,
                 metadata=metadata,
+                client_reference_id=order_id or None,
             )
 
             return {

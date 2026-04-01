@@ -1530,6 +1530,7 @@ def _json(request):
 
 
 @csrf_exempt
+@csrf_exempt
 def webhook_stripe(request):
     if request.method != "POST":
         return HttpResponseBadRequest("POST required")
@@ -1548,10 +1549,17 @@ def webhook_stripe(request):
     except stripe.error.SignatureVerificationError:
         return HttpResponseBadRequest("Invalid signature")
 
-    event_type = event.get("type", "")
-    data_object = event.get("data", {}).get("object", {})
+    try:
+        event_type = event["type"]
+    except Exception:
+        event_type = ""
 
-    if event_type in {"checkout.session.completed", "checkout.session.async_payment_succeeded"}:
+    try:
+        data_object = event["data"]["object"]
+    except Exception:
+        data_object = None
+
+    if event_type in {"checkout.session.completed", "checkout.session.async_payment_succeeded"} and data_object:
         _mark_order_paid_from_checkout_session(data_object)
 
     return HttpResponse(status=200)

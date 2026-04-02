@@ -90,45 +90,62 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
 
             {% for store in section.stores %}
-              <div class="bg-gray-800 rounded-xl p-5 flex flex-col items-center text-center shadow-lg hover:scale-105 transition">
+              <<div class="bg-gray-800 rounded-xl p-5 flex flex-col items-center text-center shadow-lg hover:scale-105 transition
+    {% if store.plan == 'elite' %}border-2 border-yellow-400{% endif %}">
 
-                {% if store.logo %}
-                  <img
-                    src="{{ store.logo.url }}"
-                    alt="{{ store.store_name }} logo"
-                    class="h-32 w-32 object-cover rounded-2xl mb-4 bg-white border border-gray-700 shadow-md"
-                  >
-                {% else %}
-                  <div class="h-32 w-32 bg-gray-700 rounded-2xl mb-4 flex items-center justify-center text-3xl">
-                    🏬
-                  </div>
-                {% endif %}
+    {% if store.plan == "elite" %}
+  <div class="text-xs bg-yellow-400 text-black px-2 py-1 rounded-full mb-2 font-bold">
+    ELITE
+  </div>
+{% endif %}
 
-                <div class="text-white font-bold text-lg">{{ store.store_name }}</div>
+                {% for store in section.stores %}
+  <div class="bg-gray-800 rounded-xl p-5 flex flex-col items-center text-center shadow-lg hover:scale-105 transition
+      {% if store.plan == 'elite' %}border-2 border-yellow-400{% endif %}">
 
-                {% if store.slogan %}
-                  <div class="text-sm text-gray-400 mt-1">{{ store.slogan }}</div>
-                {% elif store.description %}
-                  <div class="text-sm text-gray-400 mt-1">{{ store.description|truncatewords:10 }}</div>
-                {% endif %}
+    {% if store.plan == "elite" %}
+      <div class="text-xs bg-yellow-400 text-black px-2 py-1 rounded-full mb-2 font-bold">
+        ELITE
+      </div>
+    {% endif %}
 
-                {% if store.zone %}
-                  <div class="mt-2 text-xs px-2 py-1 rounded-full bg-gray-700 text-gray-300">
-                    {{ store.zone.name }}
-                  </div>
-                {% endif %}
+    {% if store.logo %}
+      <img
+        src="{{ store.logo.url }}"
+        alt="{{ store.store_name }} logo"
+        class="h-32 w-32 object-cover rounded-2xl mb-4 bg-white border border-gray-700 shadow-md"
+      >
+    {% else %}
+      <div class="h-32 w-32 bg-gray-700 rounded-2xl mb-4 flex items-center justify-center text-3xl">
+        🏬
+      </div>
+    {% endif %}
 
-                <div class="mt-4 w-full">
-                  <a href="{% url 'storefront' store.slug %}"
-                     class="block w-full px-4 py-2 bg-yellow-400 text-black rounded-xl font-semibold hover:opacity-90">
-                    Visit Store
-                  </a>
-                </div>
-              </div>
-            {% endfor %}
+    <div class="text-white font-bold text-lg">{{ store.store_name }}</div>
+
+    {% if store.slogan %}
+      <div class="text-sm text-gray-400 mt-1">{{ store.slogan }}</div>
+    {% elif store.description %}
+      <div class="text-sm text-gray-400 mt-1">{{ store.description|truncatewords:10 }}</div>
+    {% endif %}
+
+    {% if store.zone %}
+      <div class="mt-2 text-xs px-2 py-1 rounded-full bg-gray-700 text-gray-300">
+        {{ store.zone.name }}
+      </div>
+    {% endif %}
+
+    <div class="mt-4 w-full">
+      <a href="{% url 'storefront' store.slug %}"
+         class="block w-full px-4 py-2 bg-yellow-400 text-black rounded-xl font-semibold hover:opacity-90">
+        Visit Store
+      </a>
+    </div>
+  </div>
+{% endfor %}
 
             {% for _ in section.empty_slots %}
-              <div class="bg-gray-800 border-2 border-dashed border-yellow-400 rounded-xl p-5 flex flex-col justify-center items-center text-center shadow-lg">
+            <div class="bg-gray-800 border-2 border-dashed border-yellow-400 rounded-xl p-5 flex flex-col justify-center items-center text-center shadow-lg">
 
                 <div class="h-32 w-32 flex items-center justify-center text-yellow-400 text-3xl mb-3 border border-gray-700 rounded-2xl">
                   ★

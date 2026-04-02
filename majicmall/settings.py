@@ -132,19 +132,25 @@ WSGI_APPLICATION = "majicmall.wsgi.application"
 # DB
 # ==============================================================================
 
+# ==============================================================================
+# Database
+# ==============================================================================
+import os
+import dj_database_url
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if not DATABASE_URL:
-    raise Exception("DATABASE_URL is not set. This app requires PostgreSQL.")
+    raise Exception("DATABASE_URL is not set.")
 
 DATABASES = {
     "default": dj_database_url.parse(
         DATABASE_URL,
         conn_max_age=600,
-        ssl_require=True
+        ssl_require=not DEBUG,
     )
 }
+
 # ==============================================================================
 # Passwords
 # ==============================================================================

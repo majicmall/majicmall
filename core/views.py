@@ -138,7 +138,15 @@ def mall_directory(request):
                 output_field=IntegerField(),
             )
         )
-        .order_by("zone__sort_order", "zone__name", "plan_rank", "-created_at", "store_name")
+        .order_by(
+            "zone__sort_order",
+            "zone__name",
+            "-is_featured",
+            "featured_slot",
+            "plan_rank",
+            "-created_at",
+            "store_name",
+        )
     )
 
     if active_zone:
@@ -156,14 +164,40 @@ def mall_directory(request):
         if active_zone and zone.slug != active_zone:
             continue
 
-        featured_stores = stores_by_zone.get(zone.id, [])[:5]
+        zone_store_pool = stores_by_zone.get(zone.id, [])
+
+        manual_featured = [
+            s for s in zone_store_pool
+            if s.is_featured and s.featured_slot in [1, 2, 3, 4, 5]
+        ]
+        manual_featured = sorted(
+            manual_featured,
+            key=lambda s: (
+                s.featured_slot if s.featured_slot is not None else 999,
+                s.plan_rank,
+                s.store_name.lower(),
+            )
+        )
+
+        used_ids = {s.id for s in manual_featured}
+
+        fallback_stores = [
+            s for s in zone_store_pool
+            if s.id not in used_ids
+        ]
+        fallback_stores = sorted(
+            fallback_stores,
+            key=lambda s: (s.plan_rank, -s.id, s.store_name.lower())
+        )
+
+        featured_stores = (manual_featured + fallback_stores)[:5]
         empty_slots_count = max(0, 5 - len(featured_stores))
 
         zone_sections.append({
             "zone": zone,
             "stores": featured_stores,
             "empty_slots": range(empty_slots_count),
-            "store_count": len(stores_by_zone.get(zone.id, [])),
+            "store_count": len(zone_store_pool),
             "has_stores": bool(featured_stores),
         })
 

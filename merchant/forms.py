@@ -19,29 +19,44 @@ class StoreForm(forms.ModelForm):
             "category",
             "zone",
             "plan",
+            "contact_person",
+            "contact_email",
+            "contact_phone",
             "is_public",
         ]
 
         widgets = {
             "store_name": forms.TextInput(
-                attrs={"class": "w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2"}
+                attrs={"class": "w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"}
             ),
             "slogan": forms.TextInput(
-                attrs={"class": "w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2"}
+                attrs={"class": "w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"}
             ),
             "description": forms.Textarea(
-                attrs={"class": "w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2", "rows": 4}
+                attrs={
+                    "class": "w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white",
+                    "rows": 4,
+                }
             ),
             "category": forms.TextInput(
-                attrs={"class": "w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2"}
+                attrs={"class": "w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"}
             ),
             "zone": forms.Select(
-                attrs={"class": "w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2"}
+                attrs={"class": "w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"}
             ),
             "plan": forms.Select(
-                attrs={"class": "w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2"}
+                attrs={"class": "w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"}
             ),
-            "logo": ClearableFileInput(attrs={"class": "text-sm"}),
+            "contact_person": forms.TextInput(
+                attrs={"class": "w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"}
+            ),
+            "contact_email": forms.EmailInput(
+                attrs={"class": "w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"}
+            ),
+            "contact_phone": forms.TextInput(
+                attrs={"class": "w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"}
+            ),
+            "logo": ClearableFileInput(attrs={"class": "text-sm text-white"}),
             "is_public": forms.CheckboxInput(
                 attrs={"class": "h-4 w-4 rounded border-gray-600 bg-gray-800"}
             ),
@@ -59,6 +74,12 @@ class StoreForm(forms.ModelForm):
             )
             self.fields["zone"].required = False
 
+        # Auto-fill contact email from account owner if store field is blank
+        if self.instance and getattr(self.instance, "pk", None):
+            owner = getattr(self.instance, "owner", None)
+            if owner and not self.initial.get("contact_email"):
+                self.initial["contact_email"] = getattr(owner, "email", "") or ""
+
     def save(self, commit: bool = True) -> MerchantStore:
         instance: MerchantStore = super().save(commit=False)
 
@@ -66,6 +87,10 @@ class StoreForm(forms.ModelForm):
             if instance.logo:
                 instance.logo.delete(save=False)
             instance.logo = None
+
+        # If contact email still blank, fall back to owner email
+        if not instance.contact_email and getattr(instance, "owner", None):
+            instance.contact_email = getattr(instance.owner, "email", "") or ""
 
         if commit:
             instance.save()

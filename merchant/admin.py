@@ -1,5 +1,13 @@
 from django.contrib import admin
-from .models import MallZone, MerchantStore, StoreCategory, Product, Order, OrderItem, MerchantPaymentMethod
+from .models import (
+    MallZone,
+    MerchantStore,
+    StoreCategory,
+    Product,
+    Order,
+    OrderItem,
+    MerchantPaymentMethod,
+)
 
 
 @admin.register(MallZone)
@@ -12,9 +20,73 @@ class MallZoneAdmin(admin.ModelAdmin):
 
 @admin.register(MerchantStore)
 class MerchantStoreAdmin(admin.ModelAdmin):
-    list_display = ("store_name", "owner", "zone", "plan", "is_public", "is_archived")
-    list_filter = ("zone", "plan", "is_public", "is_archived")
-    search_fields = ("store_name", "owner__username", "owner__email")
+    list_display = (
+        "store_name",
+        "owner",
+        "contact_person",
+        "contact_email",
+        "contact_phone",
+        "zone",
+        "plan",
+        "is_featured",
+        "featured_slot",
+        "is_public",
+        "is_archived",
+    )
+    list_filter = (
+        "zone",
+        "plan",
+        "is_featured",
+        "is_public",
+        "is_archived",
+    )
+    search_fields = (
+        "store_name",
+        "owner__username",
+        "owner__email",
+        "contact_person",
+        "contact_email",
+        "contact_phone",
+    )
+    list_editable = (
+        "is_featured",
+        "featured_slot",
+        "is_public",
+        "is_archived",
+    )
+    fieldsets = (
+        ("Store Basics", {
+            "fields": (
+                "owner",
+                "store_name",
+                "slug",
+                "logo",
+                "slogan",
+                "description",
+                "category",
+                "zone",
+                "plan",
+            )
+        }),
+        ("Vendor Contact", {
+            "fields": (
+                "contact_person",
+                "contact_email",
+                "contact_phone",
+            )
+        }),
+        ("Visibility & Featured Placement", {
+            "fields": (
+                "is_public",
+                "is_archived",
+                "is_featured",
+                "featured_slot",
+            )
+        }),
+        ("Admin Notes", {
+            "fields": ("admin_notes",)
+        }),
+    )
 
 
 @admin.register(StoreCategory)

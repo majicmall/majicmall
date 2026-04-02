@@ -17,7 +17,7 @@ PyJWT==2.10.1
 qrcode==8.2
 requests==2.32.4
 sqlparse==0.5.3
-stripe==15.0.0
 typing_extensions==4.15.0
 urllib3==2.5.0
 whitenoise==6.11.0
+stripe==15.0.1

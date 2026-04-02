@@ -51,11 +51,13 @@ class MerchantStore(models.Model):
         blank=True,
         related_name="stores",
     )
+
     store_name = models.CharField(max_length=255)
     slogan = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
     category = models.CharField(max_length=100)
     logo = models.ImageField(upload_to="merchant_logos/", blank=True, null=True)
+
     plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default="starter")
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -66,6 +68,22 @@ class MerchantStore(models.Model):
 
     is_archived = models.BooleanField(default=False)
     archived_at = models.DateTimeField(blank=True, null=True)
+
+    # --- Admin / vendor contact info ---
+    contact_person = models.CharField(max_length=255, blank=True)
+    contact_email = models.EmailField(blank=True)
+    contact_phone = models.CharField(max_length=50, blank=True)
+
+    # --- Featured slot controls ---
+    is_featured = models.BooleanField(default=False)
+    featured_slot = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        help_text="Optional manual featured slot position within the zone (1-5).",
+    )
+
+    # --- Internal admin notes ---
+    admin_notes = models.TextField(blank=True)
 
     def __str__(self):
         return self.store_name

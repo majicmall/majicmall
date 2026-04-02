@@ -11,7 +11,7 @@
   {% include "merchant/_nav.html" %}
 
   {% if messages %}
-    <div class="max-w-4xl mx-auto px-6 mt-4 space-y-2">
+    <div class="max-w-5xl mx-auto px-6 mt-4 space-y-2">
       {% for message in messages %}
         <div class="rounded-xl px-4 py-3
                     {% if message.tags == 'success' %}bg-green-900/40 text-green-200
@@ -23,97 +23,128 @@
     </div>
   {% endif %}
 
-  <main class="max-w-4xl mx-auto px-6 py-8">
+  <main class="max-w-5xl mx-auto px-6 py-8">
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-3xl font-bold text-yellow-400">Store Profile</h1>
+      <div>
+        <h1 class="text-3xl font-bold text-yellow-400">Store Profile</h1>
+        <p class="text-gray-400 mt-1">Update your storefront, contact details, and publishing settings.</p>
+      </div>
       <a href="/" class="px-4 py-2 rounded-xl bg-gray-800 text-yellow-400 hover:bg-gray-700">
         ← Back to Mall
       </a>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-6">
-
-      <!-- LEFT COLUMN -->
-      <div class="md:col-span-2 bg-gray-900 rounded-2xl p-6">
-        <form method="post" enctype="multipart/form-data" class="space-y-4">
+    <div class="grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 bg-gray-900 rounded-2xl p-6">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
           {% csrf_token %}
           {{ form.non_field_errors }}
 
-          {% for field in form.visible_fields %}
-            {% if field.name != "is_public" %}
+          <!-- Branding -->
+          <div>
+            <h2 class="text-xl font-semibold text-white mb-4">Branding</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-sm text-gray-300 mb-1" for="{{ form.store_name.id_for_label }}">Store Name</label>
+                {{ form.store_name }}
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-sm text-gray-300 mb-1" for="{{ form.slogan.id_for_label }}">Slogan</label>
+                {{ form.slogan }}
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-sm text-gray-300 mb-1" for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+              </div>
+
               <div>
-                <label class="block text-sm text-gray-300 mb-1" for="{{ field.id_for_label }}">
-                  {{ field.label }}
+                <label class="block text-sm text-gray-300 mb-1" for="{{ form.category.id_for_label }}">Category</label>
+                {{ form.category }}
+              </div>
+
+              <div>
+                <label class="block text-sm text-gray-300 mb-1" for="{{ form.zone.id_for_label }}">Zone</label>
+                {{ form.zone }}
+              </div>
+
+              <div>
+                <label class="block text-sm text-gray-300 mb-1" for="{{ form.plan.id_for_label }}">Plan</label>
+                {{ form.plan }}
+              </div>
+
+              <div>
+                <label class="block text-sm text-gray-300 mb-1" for="{{ form.logo.id_for_label }}">Logo</label>
+                {{ form.logo }}
+              </div>
+            </div>
+
+            {% if store.logo %}
+              <div class="mt-4">
+                <p class="text-sm text-gray-300 mb-2">Current Logo</p>
+                <img
+                  src="{{ store.logo.url }}"
+                  alt="{{ store.store_name }} logo"
+                  class="h-24 w-24 object-cover rounded-xl bg-gray-800 border border-gray-700"
+                >
+              </div>
+
+              <div class="mt-3">
+                <label class="inline-flex items-center gap-2 text-sm text-red-300">
+                  {{ form.remove_logo }}
+                  <span>Remove current logo</span>
                 </label>
-
-                <div class="bg-gray-800 rounded-xl px-3 py-2">
-                  {{ field }}
-                </div>
-
-                {% if field.help_text %}
-                  <p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>
-                {% endif %}
-
-                {% for error in field.errors %}
-                  <p class="text-sm text-red-400 mt-1">{{ error }}</p>
-                {% endfor %}
               </div>
             {% endif %}
-          {% endfor %}
+          </div>
 
-          <!-- Public Toggle -->
-          <div class="mt-6 p-4 rounded-2xl bg-zinc-900 border border-zinc-800">
-            <label class="flex items-center gap-3 cursor-pointer">
-              {{ form.is_public }}
-              <span class="text-sm text-zinc-200">
-                Public Storefront (turn ON to publish your store)
-              </span>
-            </label>
-            <p class="text-xs text-zinc-400 mt-2">
-              If OFF, your storefront link will show “Store not available”.
+          <!-- Contact -->
+          <div class="border-t border-gray-800 pt-6">
+            <h2 class="text-xl font-semibold text-white mb-4">Vendor Contact Info</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm text-gray-300 mb-1" for="{{ form.contact_person.id_for_label }}">Contact Person</label>
+                {{ form.contact_person }}
+              </div>
+
+              <div>
+                <label class="block text-sm text-gray-300 mb-1" for="{{ form.contact_email.id_for_label }}">Contact Email</label>
+                {{ form.contact_email }}
+              </div>
+
+              <div>
+                <label class="block text-sm text-gray-300 mb-1" for="{{ form.contact_phone.id_for_label }}">Contact Phone</label>
+                {{ form.contact_phone }}
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">
+              This information helps Majic Mall management contact you about your store, promotions, and opportunities.
             </p>
           </div>
-{% if store.logo %}
-  <div class="mt-4">
-    <p class="text-sm text-gray-300 mb-2">Current Logo</p>
-    <img src="{{ store.logo.url }}"
-         alt="{{ store.store_name }} logo"
-         class="h-24 w-24 object-cover rounded-xl bg-gray-800 border border-gray-700">
-  </div>
 
-  <div class="mt-3">
-    <label class="inline-flex items-center gap-2 text-sm text-red-300">
-      {{ form.remove_logo }}
-      <span>Remove current logo</span>
-    </label>
-  </div>
-{% endif %}
+          <!-- Public toggle -->
+          <div class="border-t border-gray-800 pt-6">
+            <div class="p-4 rounded-2xl bg-zinc-900 border border-zinc-800">
+              <label class="flex items-center gap-3 cursor-pointer">
+                {{ form.is_public }}
+                <span class="text-sm text-zinc-200">
+                  Public Storefront (turn ON to publish your store)
+                </span>
+              </label>
+              <p class="text-xs text-zinc-400 mt-2">
+                If OFF, your storefront link will show “Store not available”.
+              </p>
+            </div>
+          </div>
 
-{% if store.logo %}
-  <div class="mt-4">
-    <p class="text-sm text-gray-300 mb-2">Current Logo</p>
-    <img
-      src="{{ store.logo.url }}"
-      alt="{{ store.store_name }} logo"
-      class="h-24 w-24 object-cover rounded-xl bg-gray-800 border border-gray-700"
-    >
-  </div>
-
-  <div class="mt-3">
-    <label class="inline-flex items-center gap-2 text-sm text-red-300">
-      {{ form.remove_logo }}
-      <span>Remove current logo</span>
-    </label>
-  </div>
-{% endif %}
-
-          <button class="px-5 py-3 bg-yellow-400 text-black rounded-xl hover:opacity-90">
+          <button class="px-5 py-3 bg-yellow-400 text-black rounded-xl hover:opacity-90 font-semibold">
             Save Profile
           </button>
         </form>
       </div>
 
-      <!-- RIGHT COLUMN -->
+      <!-- Right column -->
       <div class="bg-gray-900 rounded-2xl p-6 space-y-4">
         <h2 class="font-semibold text-lg">Public Storefront</h2>
 
@@ -168,7 +199,6 @@
           </p>
         {% endif %}
       </div>
-
     </div>
   </main>
 

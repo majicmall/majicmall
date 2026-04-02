@@ -11,6 +11,7 @@ import stripe
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db import models
 from django.db.models import Sum
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
@@ -19,6 +20,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import (
+    MallZone,
     MerchantStore,
     StoreCategory,
     Product,
@@ -26,6 +28,7 @@ from .models import (
     OrderItem,
     MerchantPaymentMethod,
 )
+
 from .forms import StoreForm, MerchantPaymentMethodForm
 from .payments.adapters import build_adapter
 
@@ -1466,12 +1469,60 @@ def plan_checkout_cancel(request):
 
 @staff_required
 def admin_store_list(request):
-    stores = (
-        Store.objects.select_related("owner")
-        .prefetch_related("products", "orders")
-        .order_by("-created_at")
-    )
-    return render(request, "merchant/stores_admin.html", {"stores": stores})
+    q = (request.GET.get("q") or "").strip()
+    zone_slug = (request.GET.get("zone") or "").strip()
+    plan = (request.GET.get("plan") or "").strip()
+    status = (request.GET.get("status") or "").strip()
+
+    stores = Store.objects.select_related("owner", "zone").prefetch_related("products", "orders")
+
+    if q:
+        stores = stores.filter(
+            models.Q(store_name__icontains=q)
+            | models.Q(owner__username__icontains=q)
+            | models.Q(owner__email__icontains=q)
+            | models.Q(contact_person__icontains=q)
+            | models.Q(contact_email__icontains=q)
+            | models.Q(contact_phone__icontains=q)
+            | models.Q(zone__name__icontains=q)
+        )
+
+    if zone_slug:
+        stores = stores.filter(zone__slug=zone_slug)
+
+    if plan:
+        stores = stores.filter(plan=plan)
+
+    if status == "live":
+        stores = stores.filter(is_public=True, is_archived=False)
+    elif status == "archived":
+        stores = stores.filter(is_archived=True)
+    elif status == "hidden":
+        stores = stores.filter(is_public=False, is_archived=False)
+    elif status == "featured":
+        stores = stores.filter(is_featured=True, is_archived=False)
+
+    stores = stores.order_by("-created_at")
+
+    zones = MallZone.objects.filter(is_active=True).order_by("sort_order", "name")
+
+    stats = {
+        "total": Store.objects.count(),
+        "live": Store.objects.filter(is_public=True, is_archived=False).count(),
+        "archived": Store.objects.filter(is_archived=True).count(),
+        "featured": Store.objects.filter(is_featured=True, is_archived=False).count(),
+    }
+
+    context = {
+        "stores": stores,
+        "zones": zones,
+        "q": q,
+        "selected_zone": zone_slug,
+        "selected_plan": plan,
+        "selected_status": status,
+        "stats": stats,
+    }
+    return render(request, "merchant/stores_admin.html", context)
 
 
 @staff_required

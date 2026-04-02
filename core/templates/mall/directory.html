@@ -214,8 +214,8 @@
 
     if (!input) return;
 
-    input.addEventListener("input", function () {
-      const q = this.value.trim().toLowerCase();
+    function applyFilter() {
+      const q = input.value.trim().toLowerCase();
 
       cards.forEach((card) => {
         const name = card.dataset.storeName || "";
@@ -235,6 +235,15 @@
         const visibleCards = zoneBlock.querySelectorAll(".directory-store-card:not([style*='display: none'])");
         zoneBlock.style.display = visibleCards.length ? "" : "none";
       });
+    }
+
+    input.addEventListener("input", applyFilter);
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        applyFilter();
+      }
     });
   })();
 </script>

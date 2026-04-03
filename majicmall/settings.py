@@ -112,7 +112,10 @@ ROOT_URLCONF = "majicmall.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "core" / "templates"],
+        "DIRS": [
+            BASE_DIR / "templates",
+            BASE_DIR / "core" / "templates",
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -125,6 +128,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = "majicmall.wsgi.application"
 

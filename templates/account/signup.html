@@ -9,6 +9,8 @@
 </head>
 <body class="min-h-screen bg-black text-white">
   <div class="min-h-screen grid lg:grid-cols-2">
+
+    <!-- Desktop promo panel -->
     <div class="hidden lg:flex items-center justify-center bg-gradient-to-br from-black via-gray-950 to-yellow-900/30 p-12">
       <div class="max-w-xl">
         <h1 class="text-5xl font-black text-yellow-400 leading-tight">Open your store in Majic Mall</h1>
@@ -24,38 +26,58 @@
       </div>
     </div>
 
+    <!-- Form column -->
     <div class="flex items-center justify-center p-6">
-      <div class="w-full max-w-md bg-gray-900 border border-gray-800 rounded-3xl p-8 shadow-2xl">
-        <div class="mb-6 text-center">
-          <h2 class="text-3xl font-bold text-yellow-400">Create Your Account</h2>
-          <p class="text-gray-400 mt-2">Start your Majic Mall merchant journey</p>
+      <div class="w-full max-w-md">
+
+        <!-- Mobile promo panel -->
+        <div class="lg:hidden w-full mb-6 bg-gradient-to-br from-black via-gray-950 to-yellow-900/30 border border-yellow-500/20 rounded-3xl p-6">
+          <h1 class="text-2xl font-black text-yellow-400 leading-tight">Open your store in Majic Mall</h1>
+          <p class="mt-3 text-sm text-gray-300">
+            Join the Majic Mall Megaverse and position your brand in a premium digital shopping destination.
+          </p>
+
+          <div class="mt-4 grid gap-3 text-sm">
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-3">🏬 Build your branded storefront</div>
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-3">⭐ Compete for premium featured placement</div>
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-3">📦 Sell products, media, and experiences</div>
+          </div>
         </div>
 
-        <form method="post" action="" class="space-y-5">
-          {% csrf_token %}
-          {{ form.non_field_errors }}
+        <!-- Sign up card -->
+        <div class="w-full bg-gray-900 border border-gray-800 rounded-3xl p-8 shadow-2xl">
+          <div class="mb-6 text-center">
+            <h2 class="text-3xl font-bold text-yellow-400">Create Your Account</h2>
+            <p class="text-gray-400 mt-2">Start your Majic Mall merchant journey</p>
+          </div>
 
-          {% for field in form %}
-            <div>
-              <label class="block text-sm text-gray-300 mb-1" for="{{ field.id_for_label }}">{{ field.label }}</label>
-              {{ field }}
-              {% if field.errors %}
-                <div class="mt-1 text-sm text-red-400">{{ field.errors|striptags }}</div>
-              {% endif %}
-            </div>
-          {% endfor %}
+          <form method="post" action="" class="space-y-5">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
 
-          <button type="submit" class="w-full px-5 py-3 bg-yellow-400 text-black rounded-xl font-semibold hover:opacity-90">
-            Sign Up
-          </button>
-        </form>
+            {% for field in form %}
+              <div>
+                <label class="block text-sm text-gray-300 mb-1" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                  <div class="mt-1 text-sm text-red-400">{{ field.errors|striptags }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
 
-        <div class="mt-6 text-center text-sm text-gray-400">
-          Already have an account?
-          <a href="{% url 'account_login' %}" class="text-yellow-400 hover:underline">Sign in</a>
+            <button type="submit" class="w-full px-5 py-3 bg-yellow-400 text-black rounded-xl font-semibold hover:opacity-90">
+              Sign Up
+            </button>
+          </form>
+
+          <div class="mt-6 text-center text-sm text-gray-400">
+            Already have an account?
+            <a href="{% url 'account_login' %}" class="text-yellow-400 hover:underline">Sign in</a>
+          </div>
         </div>
       </div>
     </div>
+
   </div>
 </body>
 </html>

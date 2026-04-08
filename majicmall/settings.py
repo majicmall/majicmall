@@ -30,12 +30,20 @@ PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "").rstrip("/")
 # ==============================================================================
 # Hosts / CSRF
 # ==============================================================================
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com",
+    ".app.github.dev",
+]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "http://localhost:8001",
+    "http://127.0.0.1:8001",
     "https://*.onrender.com",
+    "https://*.app.github.dev",
 ]
 
 if PUBLIC_BASE_URL:
@@ -43,10 +51,9 @@ if PUBLIC_BASE_URL:
     if _u.hostname and _u.hostname not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(_u.hostname)
 
-    origin = f"{_u.scheme}://{_u.hostname}"
+    origin = f"{_u.scheme}://{_u.netloc}"
     if origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(origin)
-
 # ==============================================================================
 # Security (Render / proxies / HTTPS)
 # ==============================================================================

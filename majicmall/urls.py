@@ -22,9 +22,10 @@ urlpatterns = [
     path("theater/", include("theater.urls")),
     path("", include("core.urls")),
 
-    path("s/<slug:slug>/", storefront, name="storefront"),
-    path("s/<slug:slug>/products/<int:product_id>/", product_detail, name="product-detail"),
-    path("s/<slug:slug>/qr.png", storefront_qr, name="storefront-qr"),
+    # Public storefront URLs
+    path("store/<slug:slug>/", storefront, name="storefront"),
+    path("store/<slug:slug>/products/<int:product_id>/", product_detail, name="product-detail"),
+    path("store/<slug:slug>/qr.png", storefront_qr, name="storefront-qr"),
 ]
 
 if settings.DEBUG:

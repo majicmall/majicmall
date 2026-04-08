@@ -210,6 +210,50 @@ def _calculate_checkout_context(request):
 from django.contrib import messages
 from django.shortcuts import render, redirect
 
+def build_onboarding_checklist(store):
+    has_logo = bool(getattr(store, "logo", None))
+    has_contact_person = bool((getattr(store, "contact_person", "") or "").strip())
+    has_contact_email = bool((getattr(store, "contact_email", "") or "").strip())
+    has_contact_phone = bool((getattr(store, "contact_phone", "") or "").strip())
+    has_contact_info = has_contact_person and has_contact_email and has_contact_phone
+    has_product = store.products.exists() if hasattr(store, "products") else False
+    is_live = bool(getattr(store, "is_public", False))
+
+    items = [
+        {
+            "label": "Upload your logo",
+            "done": has_logo,
+            "hint": "Add a logo so your storefront stands out in the directory and on your store page.",
+        },
+        {
+            "label": "Add vendor contact info",
+            "done": has_contact_info,
+            "hint": "Add contact person, email, and phone so mall management can reach you quickly.",
+        },
+        {
+            "label": "Add your first product",
+            "done": has_product,
+            "hint": "Create at least one product so your store is ready for visitors.",
+        },
+        {
+            "label": "Publish your storefront",
+            "done": is_live,
+            "hint": "Turn on Public Storefront so shoppers can visit your store.",
+        },
+    ]
+
+    completed = sum(1 for item in items if item["done"])
+    total = len(items)
+    percent = int((completed / total) * 100) if total else 0
+
+    return {
+        "items": items,
+        "completed": completed,
+        "total": total,
+        "percent": percent,
+        "all_done": completed == total,
+    }
+
 
 @login_required
 def profile(request):
@@ -243,6 +287,8 @@ def profile(request):
         public_url = f"{base}{reverse('storefront', args=[store.slug])}"
         qr_url = reverse("storefront-qr", args=[store.slug])
 
+    onboarding = build_onboarding_checklist(store)
+
     return render(
         request,
         "merchant/profile.html",
@@ -251,6 +297,7 @@ def profile(request):
             "form": form,
             "public_url": public_url,
             "qr_url": qr_url,
+            "onboarding": onboarding,
         },
     )
 

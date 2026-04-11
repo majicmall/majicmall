@@ -3,9 +3,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title></title>
+  <title>Entering Majic Mall...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
   <style>
     html, body {
       margin: 0;
@@ -13,47 +14,60 @@
       height: 100%;
       width: 100%;
       background-color: black;
+      overflow: hidden;
     }
 
-    .enter-button {
-      animation: bounceIn 1.5s ease forwards, glowPulse 2s ease-in-out infinite;
+    /* Fade out animation */
+    .fade-out {
+      animation: fadeOut 1.5s ease forwards;
     }
 
-    @keyframes bounceIn {
-      0% { transform: scale(0.8); opacity: 0; }
-      60% { transform: scale(1.1); opacity: 1; }
-      80% { transform: scale(0.95); }
-      100% { transform: scale(1); }
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
     }
 
-    @keyframes glowPulse {
-      0%, 100% {
-        box-shadow: 0 0 10px #facc15, 0 0 20px #facc15;
-      }
-      50% {
-        box-shadow: 0 0 20px #fde047, 0 0 40px #fde047;
-      }
+    /* Text entrance */
+    .fade-in {
+      animation: fadeIn 2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
-<body>
 
-  <!-- Full-screen background image with no alt text -->
+<body id="entrance">
+
+  <!-- Background doors image -->
   <img 
     src="{% static 'img/majicmall_front_view.png' %}" 
     alt="" 
     style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
   >
 
-  <!-- Overlayed welcome text and button -->
-  <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+  <!-- Welcome overlay -->
+  <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4 fade-in">
     <h1 class="text-white text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
       Welcome To Majic Mall
     </h1>
-    <a href="/mall/" class="mt-4 px-6 py-3 bg-yellow-400 text-black rounded-xl shadow-lg hover:scale-105 transition enter-button">
-      🛍️ Enter the Mall
-    </a>
+    <p class="text-yellow-300 text-lg md:text-2xl mt-2">
+      Preparing Your Experience...
+    </p>
   </div>
+
+  <script>
+    // Wait a moment → fade out → redirect to mall
+    setTimeout(() => {
+      document.getElementById("entrance").classList.add("fade-out");
+    }, 2500);
+
+    setTimeout(() => {
+      window.location.href = "/mall/";
+    }, 4000);
+  </script>
 
 </body>
 </html>

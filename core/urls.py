@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     # Homepage & splash
     path("", views.homepage, name="home"),
+    path("enter/", views.mall_entrance, name="mall-entrance"),
     path("mall/", views.mall_home, name="mall-home"),
     path("splash/", views.launch_splash, name="launch-splash"),
 

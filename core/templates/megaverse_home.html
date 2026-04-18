@@ -1,4 +1,4 @@
-;{% load static %}
+{% load static %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,26 +6,74 @@
   <title>MajicMall Megaverse</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .spotlight-left,
+    .spotlight-right {
+      position: absolute;
+      top: -10%;
+      width: 36rem;
+      height: 120%;
+      pointer-events: none;
+      filter: blur(10px);
+      opacity: 0.28;
+      mix-blend-mode: screen;
+    }
+
+    .spotlight-left {
+      left: -8rem;
+      background: linear-gradient(
+        160deg,
+        rgba(212, 175, 55, 0.28) 0%,
+        rgba(212, 175, 55, 0.12) 22%,
+        rgba(212, 175, 55, 0.03) 42%,
+        rgba(212, 175, 55, 0) 58%
+      );
+      transform: rotate(-12deg);
+    }
+
+    .spotlight-right {
+      right: -8rem;
+      background: linear-gradient(
+        200deg,
+        rgba(185, 28, 28, 0.26) 0%,
+        rgba(185, 28, 28, 0.12) 22%,
+        rgba(185, 28, 28, 0.03) 42%,
+        rgba(185, 28, 28, 0) 58%
+      );
+      transform: rotate(12deg);
+    }
+
+    .gold-shimmer {
+      box-shadow:
+        0 0 18px rgba(201, 162, 39, 0.22),
+        0 0 42px rgba(201, 162, 39, 0.10);
+    }
+  </style>
 </head>
 <body class="min-h-screen bg-black text-white overflow-x-hidden">
   <div class="relative min-h-screen">
     <!-- Background glow -->
-    <div class="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-red-950/20"></div>
+    <div class="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-red-950/25"></div>
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(184,134,11,0.24),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(127,29,29,0.22),transparent_30%),radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_35%)]"></div>
+
+    <!-- Spotlights -->
+    <div class="spotlight-left"></div>
+    <div class="spotlight-right"></div>
 
     <div class="relative max-w-7xl mx-auto px-5 md:px-6 py-6 md:py-8 min-h-screen flex flex-col">
       <header class="flex items-center justify-between rounded-2xl border border-[#b08d57]/25 bg-white/5 px-4 md:px-5 py-4 backdrop-blur">
-        <div class="text-3xl md:text-5xl font-extrabold tracking-tight text-[#c9a227] drop-shadow-[0_0_18px_rgba(201,162,39,0.22)]">
+        <div class="text-4xl md:text-5xl font-extrabold tracking-tight text-[#c9a227] gold-shimmer">
           MajicMall Megaverse
         </div>
 
         <div class="hidden md:flex items-center gap-3">
           <a href="{% url 'account_login' %}?next={% url 'merchant-profile' %}"
-             class="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-base border border-white/10">
+             class="px-5 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-base border border-white/10">
             Sign In
           </a>
           <a href="{% url 'account_signup' %}?next={% url 'merchant-profile' %}"
-             class="px-5 py-2.5 rounded-xl bg-[#c9a227] hover:brightness-110 text-black font-bold text-base shadow-[0_0_20px_rgba(201,162,39,0.25)]">
+             class="px-5 py-3 rounded-xl bg-[#c9a227] hover:brightness-110 text-black font-bold text-base gold-shimmer">
             Sign Up
           </a>
         </div>
@@ -33,38 +81,38 @@
 
       <main class="flex-1 grid lg:grid-cols-2 gap-10 md:gap-12 items-center py-8 md:py-10">
         <div>
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37] text-sm md:text-base font-bold mb-6">
-            Upgrade! Experience The MajicMall UltraVerse!
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37] text-base md:text-lg font-extrabold mb-6">
+            Enter The MajicMall Megaverse
           </div>
 
           <h1 class="text-5xl sm:text-6xl md:text-8xl font-extrabold leading-[0.95] tracking-tight text-white">
             The Mega
-            <span class="block text-[#c9a227] drop-shadow-[0_0_24px_rgba(201,162,39,0.25)]">
+            <span class="block text-[#c9a227] gold-shimmer">
               Shopping Experience
             </span>
           </h1>
 
-          <p class="mt-5 md:mt-6 text-2xl md:text-4xl text-white font-extrabold tracking-wide">
+          <p class="mt-5 md:mt-6 text-2xl md:text-4xl text-white font-extrabold tracking-wide leading-tight">
             Shop, Play, Build, Be Entertained
           </p>
 
-          <p class="mt-5 text-base sm:text-lg md:text-2xl text-zinc-200 max-w-2xl leading-relaxed font-medium">
+          <p class="mt-5 text-lg sm:text-xl md:text-2xl text-zinc-100 max-w-2xl leading-relaxed font-semibold">
             Enter an innovative online shopping mall where brands shine, shoppers explore, and ideas come alive.
           </p>
 
           <div class="mt-8 flex flex-col sm:flex-row gap-4">
             <a href="{% url 'mall-entrance' %}"
-               class="px-7 py-4 rounded-2xl bg-[#c9a227] text-black font-extrabold text-lg text-center hover:brightness-110 shadow-[0_0_30px_rgba(201,162,39,0.28)]">
+               class="px-7 py-4 rounded-2xl bg-[#c9a227] text-black font-extrabold text-lg text-center hover:brightness-110 gold-shimmer">
               MajicMall Entrance
             </a>
 
             <a href="{% url 'account_signup' %}?next={% url 'merchant-profile' %}"
-               class="px-7 py-4 rounded-2xl bg-gradient-to-r from-red-900 to-red-700 text-white font-bold text-lg text-center hover:brightness-110 border border-red-400/20 shadow-[0_0_22px_rgba(127,29,29,0.25)]">
+               class="px-7 py-4 rounded-2xl bg-gradient-to-r from-red-900 to-red-700 text-white font-extrabold text-lg text-center hover:brightness-110 border border-red-400/20 shadow-[0_0_22px_rgba(127,29,29,0.25)]">
               Create Your Store
             </a>
           </div>
 
-          <div class="mt-5 flex flex-wrap gap-5 text-sm md:text-base text-zinc-300 font-semibold">
+          <div class="mt-5 flex flex-wrap gap-5 text-base md:text-lg text-zinc-200 font-bold">
             <a href="{% url 'account_login' %}?next={% url 'merchant-profile' %}" class="hover:text-[#d4af37]">Sign In</a>
             <span class="text-zinc-500">•</span>
             <a href="{% url 'account_signup' %}?next={% url 'merchant-profile' %}" class="hover:text-[#d4af37]">Sign Up</a>
@@ -72,22 +120,22 @@
 
           <div class="mt-8 grid gap-4 sm:grid-cols-3">
             <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-              <div class="text-sm font-extrabold uppercase tracking-wide text-[#c9a227]">Shop</div>
-              <p class="mt-2 text-sm md:text-base text-zinc-200 font-medium">
-                WATCH A MOVIE AT THE MajicMall Megaverse Theater, ORDER DELICIOUS FOOD AT THE Food Court, PLAY GAMES IN THE Arcade, WIN PRIZES AND HAVE FUN.
+              <div class="text-base md:text-lg font-extrabold uppercase tracking-wide text-[#c9a227]">Shop</div>
+              <p class="mt-2 text-base md:text-lg text-zinc-100 font-semibold leading-relaxed">
+                Explore movies, food, games, and more—all inside one unforgettable experience.
               </p>
             </div>
 
             <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-              <div class="text-sm font-extrabold uppercase tracking-wide text-[#c9a227]">Build</div>
-              <p class="mt-2 text-sm md:text-base text-zinc-200 font-medium">
+              <div class="text-base md:text-lg font-extrabold uppercase tracking-wide text-[#c9a227]">Build</div>
+              <p class="mt-2 text-base md:text-lg text-zinc-100 font-semibold leading-relaxed">
                 Create your store and expand your brand.
               </p>
             </div>
 
             <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-              <div class="text-sm font-extrabold uppercase tracking-wide text-[#c9a227]">Shine</div>
-              <p class="mt-2 text-sm md:text-base text-zinc-200 font-medium">
+              <div class="text-base md:text-lg font-extrabold uppercase tracking-wide text-[#c9a227]">Shine</div>
+              <p class="mt-2 text-base md:text-lg text-zinc-100 font-semibold leading-relaxed">
                 Unlock visibility and stand out in the mall.
               </p>
             </div>
@@ -110,42 +158,42 @@
               <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
 
               <div class="relative p-6 md:p-10">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/15 border border-[#b08d57]/20 text-[#d4af37] text-sm font-bold mb-5">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/15 border border-[#b08d57]/20 text-[#d4af37] text-base md:text-lg font-extrabold mb-5">
                   Bold. Brilliant. Worth Exploring.
                 </div>
 
-                <h2 class="text-3xl md:text-5xl font-extrabold leading-tight text-white max-w-xl">
+                <h2 class="text-4xl md:text-5xl font-extrabold leading-tight text-white max-w-xl">
                   Join The MajicMall Megaverse Community.
                 </h2>
 
-                <p class="mt-4 text-base md:text-xl text-zinc-200 max-w-2xl font-medium leading-relaxed">
+                <p class="mt-4 text-lg md:text-2xl text-zinc-100 max-w-2xl font-semibold leading-relaxed">
                   Built for discovery, excitement, visibility, and the feeling that there is always something special inside.
                 </p>
 
                 <div class="mt-7 grid gap-4 sm:grid-cols-2">
                   <div class="rounded-2xl border border-white/10 bg-white/10 backdrop-blur p-5">
-                    <div class="text-base md:text-lg font-extrabold text-[#c9a227]">For Visitors</div>
-                    <p class="mt-2 text-sm md:text-base text-zinc-100 font-medium">
-                      Explore, shop, enjoy the experience, WIN!
+                    <div class="text-lg md:text-xl font-extrabold text-[#c9a227]">For Visitors</div>
+                    <p class="mt-2 text-base md:text-lg text-zinc-100 font-semibold leading-relaxed">
+                      Explore, shop, enjoy the experience, win.
                     </p>
                   </div>
 
                   <div class="rounded-2xl border border-white/10 bg-white/10 backdrop-blur p-5">
-                    <div class="text-base md:text-lg font-extrabold text-[#c9a227]">For Merchants</div>
-                    <p class="mt-2 text-sm md:text-base text-zinc-100 font-medium">
-                      Sign up, build beautifully, and thrive
+                    <div class="text-lg md:text-xl font-extrabold text-[#c9a227]">For Merchants</div>
+                    <p class="mt-2 text-base md:text-lg text-zinc-100 font-semibold leading-relaxed">
+                      Sign up, build beautifully, and thrive.
                     </p>
                   </div>
                 </div>
 
                 <div class="mt-6 flex flex-wrap items-center gap-4">
-                  <div class="rounded-2xl bg-[#c9a227] px-5 py-4 text-center text-black shadow-[0_0_20px_rgba(201,162,39,0.25)]">
-                    <div class="text-2xl md:text-3xl font-extrabold">Majic</div>
-                    <div class="text-xs font-extrabold uppercase tracking-wide">Awaits Inside</div>
+                  <div class="rounded-2xl bg-[#c9a227] px-5 py-4 text-center text-black gold-shimmer">
+                    <div class="text-3xl font-extrabold">Majic</div>
+                    <div class="text-sm font-extrabold uppercase tracking-wide">Awaits Inside</div>
                   </div>
 
-                  <div class="text-zinc-200 text-base md:text-lg font-semibold">
-                    
+                  <div class="text-zinc-100 text-lg md:text-xl font-bold">
+                    Step inside and see what everyone will be talking about.
                   </div>
                 </div>
               </div>

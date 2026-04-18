@@ -51,21 +51,21 @@
     }
 
     .hero-shimmer {
-  background: linear-gradient(
-    90deg,
-    #8f6b18 0%,
-    #d4af37 25%,
-    #f4e08a 50%,
-    #d4af37 75%,
-    #8f6b18 100%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  background-size: 200% auto;
-  animation: shimmer 5s linear infinite;
-}
+      background: linear-gradient(
+        90deg,
+        #8f6b18 0%,
+        #d4af37 25%,
+        #f4e08a 50%,
+        #d4af37 75%,
+        #8f6b18 100%
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% auto;
+      animation: shimmer 5s linear infinite;
+    }
 
     @keyframes shimmer {
       to { background-position: 200% center; }
@@ -205,7 +205,9 @@
         <section class="grid lg:grid-cols-2 gap-10 md:gap-12 items-center">
           <div class="w-full text-center lg:text-left flex flex-col items-center lg:items-start">
             <div class="hero-kicker inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37] text-base md:text-lg font-extrabold mb-6">
-              Enter The MajicMall Megaverse
+              <span class="text-red-400">Grand Opening</span>
+              <span class="text-[#d4af37]">•</span>
+              <span>Enter The MajicMall Megaverse</span>
             </div>
 
             <h1 class="w-full max-w-3xl hero-line-1 text-5xl sm:text-6xl md:text-8xl font-extrabold leading-[0.92] tracking-tight text-white">
@@ -216,11 +218,15 @@
             </h1>
 
             <h2 class="w-full max-w-3xl hero-line-2 text-5xl sm:text-6xl md:text-8xl font-extrabold leading-[0.92] tracking-tight text-white mt-1">
-              Experience
+              <span class="border-b-4 border-red-700/70 pb-1">Experience</span>
             </h2>
 
             <p class="hero-tagline mt-6 text-2xl sm:text-3xl md:text-5xl text-white font-extrabold tracking-wide leading-tight max-w-4xl">
-              Shop. Work. Play. Build. Imagine.
+              <span class="text-[#d4af37]">Shop.</span>
+              <span class="text-white"> Work.</span>
+              <span class="text-red-400"> Play.</span>
+              <span class="text-white"> Build.</span>
+              <span class="text-[#d4af37]"> Imagine.</span>
             </p>
 
             <p class="hero-copy mt-6 text-lg sm:text-xl md:text-3xl text-zinc-100 max-w-3xl leading-relaxed font-semibold">
@@ -229,7 +235,7 @@
 
             <div class="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <a href="{% url 'mall-entrance' %}"
-                 class="cta-magical px-8 py-5 rounded-2xl bg-[#c9a227] text-black font-extrabold text-xl md:text-2xl text-center hover:brightness-110 gold-shimmer shadow-[0_0_36px_rgba(201,162,39,0.30)] border border-[#f4e08a]/30">
+                 class="cta-magical px-8 py-5 rounded-2xl bg-[#c9a227] text-black font-extrabold text-xl md:text-2xl text-center hover:brightness-110 gold-shimmer shadow-[0_0_36px_rgba(201,162,39,0.30)] border-2 border-[#f4e08a]/40">
                 Explore MajicMall Metaverse
               </a>
 
@@ -246,13 +252,13 @@
             </div>
           </div>
 
-          <div class="relative w-full max-w-2xl mx-auto lg:max-w-none hero-card-float">
+          <div class="relative w-full -mx-2 sm:mx-0 max-w-none mx-auto lg:max-w-none hero-card-float">
             <div class="absolute -inset-6 rounded-[2rem] bg-[#b08d57]/10 blur-3xl"></div>
 
-            <div class="relative rounded-[2rem] border border-[#b08d57]/20 bg-gradient-to-br from-zinc-950 via-zinc-900 to-black p-5 md:p-6 shadow-2xl overflow-hidden">
+            <div class="relative rounded-[2rem] border border-[#b08d57]/20 bg-gradient-to-br from-zinc-950 via-zinc-900 to-black p-3 sm:p-4 md:p-6 shadow-2xl overflow-hidden">
               <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(201,162,39,0.10),transparent_25%),radial-gradient(circle_at_bottom,rgba(127,29,29,0.12),transparent_35%)]"></div>
 
-              <div class="relative rounded-3xl overflow-hidden border border-white/10 bg-black min-h-[540px] md:min-h-[680px] flex flex-col justify-end">
+              <div class="relative rounded-3xl overflow-hidden border border-white/10 bg-black min-h-[620px] sm:min-h-[700px] md:min-h-[760px] lg:min-h-[680px] flex flex-col justify-end">
                 <img
                   src="{% static 'img/majic_directory.png' %}"
                   alt="MajicMall Megaverse"
@@ -261,13 +267,15 @@
 
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
 
-                <div class="relative p-6 md:p-10 text-center md:text-left">
+                <div class="relative p-5 sm:p-6 md:p-10 text-center md:text-left">
                   <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/15 border border-[#b08d57]/20 text-[#d4af37] text-base md:text-lg font-extrabold mb-5">
-                    Bigger. Bolder. Worth Exploring.
+                    <span class="text-red-400">Bold.</span>
+                    <span class="text-white"> Brilliant.</span>
+                    <span class="text-[#d4af37]"> Worth Exploring.</span>
                   </div>
 
                   <h2 class="text-4xl md:text-6xl font-extrabold leading-tight text-white max-w-2xl mx-auto md:mx-0">
-                    Join The MajicMall Megaverse Community.
+                    Join The <span class="text-red-400">MajicMall</span> Megaverse Community.
                   </h2>
 
                   <p class="mt-4 text-lg md:text-2xl text-zinc-100 max-w-2xl font-semibold leading-relaxed mx-auto md:mx-0">
@@ -275,14 +283,14 @@
                   </p>
 
                   <div class="mt-7 grid gap-4 sm:grid-cols-2">
-                    <div class="rounded-2xl border border-white/10 bg-white/10 backdrop-blur p-5">
+                    <div class="rounded-2xl border border-red-500/20 bg-white/10 backdrop-blur p-5">
                       <div class="text-xl md:text-2xl font-extrabold text-[#c9a227]">For Visitors</div>
                       <p class="mt-2 text-base md:text-lg text-zinc-100 font-semibold leading-relaxed">
                         Explore, shop, enjoy the experience, win.
                       </p>
                     </div>
 
-                    <div class="rounded-2xl border border-white/10 bg-white/10 backdrop-blur p-5">
+                    <div class="rounded-2xl border border-[#b08d57]/20 bg-white/10 backdrop-blur p-5">
                       <div class="text-xl md:text-2xl font-extrabold text-[#c9a227]">For Merchants</div>
                       <p class="mt-2 text-base md:text-lg text-zinc-100 font-semibold leading-relaxed">
                         Sign up, build beautifully, and thrive.
@@ -300,6 +308,81 @@
                       Step inside and see what everyone will be talking about.
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CAROUSEL -->
+        <section>
+          <div class="mb-6 text-center md:text-left">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37] text-base md:text-lg font-extrabold mb-4">
+              <span class="text-red-400">Grand Opening</span>
+              <span class="text-[#d4af37]">Highlights</span>
+            </div>
+
+            <h2 class="text-4xl md:text-6xl font-extrabold text-white">
+              There’s Something Here For <span class="text-red-400">Everyone</span>
+            </h2>
+
+            <p class="mt-4 text-xl md:text-2xl text-zinc-100 font-semibold max-w-4xl mx-auto md:mx-0">
+              Explore the world of MajicMall through shopping, work, entertainment, creativity, and imagination.
+            </p>
+          </div>
+
+          <div class="carousel-track">
+            <div class="carousel-card rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl">
+              <div class="relative h-[420px]">
+                <img src="{% static 'img/majic_directory.png' %}" alt="Shop at MajicMall" class="absolute inset-0 w-full h-full object-cover opacity-55">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
+                <div class="absolute bottom-0 p-6">
+                  <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Shop</div>
+                  <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Discover brands, products, deals, gifts, and unforgettable finds.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="carousel-card rounded-3xl overflow-hidden border border-red-500/20 bg-zinc-950 shadow-2xl">
+              <div class="relative h-[420px]">
+                <img src="{% static 'img/majic_directory.png' %}" alt="Work in MajicMall" class="absolute inset-0 w-full h-full object-cover opacity-55">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
+                <div class="absolute bottom-0 p-6">
+                  <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Work</div>
+                  <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Build your store, grow your brand, and create real opportunity.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="carousel-card rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl">
+              <div class="relative h-[420px]">
+                <img src="{% static 'img/majic_directory.png' %}" alt="Play in MajicMall" class="absolute inset-0 w-full h-full object-cover opacity-55">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
+                <div class="absolute bottom-0 p-6">
+                  <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Play</div>
+                  <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Enjoy games, prizes, entertainment, movies, and immersive fun.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="carousel-card rounded-3xl overflow-hidden border border-red-500/20 bg-zinc-950 shadow-2xl">
+              <div class="relative h-[420px]">
+                <img src="{% static 'img/majic_directory.png' %}" alt="Build in MajicMall" class="absolute inset-0 w-full h-full object-cover opacity-55">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
+                <div class="absolute bottom-0 p-6">
+                  <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Build</div>
+                  <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Create stores, ideas, experiences, and a world customers will remember.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="carousel-card rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl">
+              <div class="relative h-[420px]">
+                <img src="{% static 'img/majic_directory.png' %}" alt="Imagine in MajicMall" class="absolute inset-0 w-full h-full object-cover opacity-55">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
+                <div class="absolute bottom-0 p-6">
+                  <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Imagine</div>
+                  <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Step into a place where the future of shopping feels alive and limitless.</p>
                 </div>
               </div>
             </div>

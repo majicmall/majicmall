@@ -3,81 +3,157 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Sign Up | Majic Mall</title>
+  <title>Sign Up | MajicMall Megaverse</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .gold-shimmer {
+      box-shadow:
+        0 0 18px rgba(201, 162, 39, 0.22),
+        0 0 42px rgba(201, 162, 39, 0.10);
+    }
+
+    .spotlight-left,
+    .spotlight-right {
+      position: absolute;
+      top: -10%;
+      width: 30rem;
+      height: 120%;
+      pointer-events: none;
+      filter: blur(10px);
+      opacity: 0.25;
+      mix-blend-mode: screen;
+    }
+
+    .spotlight-left {
+      left: -8rem;
+      background: linear-gradient(
+        160deg,
+        rgba(212, 175, 55, 0.24) 0%,
+        rgba(212, 175, 55, 0.10) 22%,
+        rgba(212, 175, 55, 0.02) 42%,
+        rgba(212, 175, 55, 0) 58%
+      );
+      transform: rotate(-12deg);
+    }
+
+    .spotlight-right {
+      right: -8rem;
+      background: linear-gradient(
+        200deg,
+        rgba(220, 38, 38, 0.24) 0%,
+        rgba(220, 38, 38, 0.10) 22%,
+        rgba(220, 38, 38, 0.02) 42%,
+        rgba(220, 38, 38, 0) 58%
+      );
+      transform: rotate(12deg);
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-black text-white">
-  <div class="min-h-screen grid lg:grid-cols-2">
+<body class="min-h-screen bg-black text-white overflow-x-hidden">
+  <div class="relative min-h-screen overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-red-950/25"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(184,134,11,0.20),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(220,38,38,0.16),transparent_30%),radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_35%)]"></div>
+    <div class="spotlight-left"></div>
+    <div class="spotlight-right"></div>
 
-    <!-- Desktop promo panel -->
-    <div class="hidden lg:flex items-center justify-center bg-gradient-to-br from-black via-gray-950 to-yellow-900/30 p-12">
-      <div class="max-w-xl">
-        <h1 class="text-5xl font-black text-yellow-400 leading-tight">Open your store in Majic Mall</h1>
-        <p class="mt-5 text-lg text-gray-300">
-          Join the Majic Mall Megaverse and position your brand in a premium digital shopping destination.
-        </p>
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
+      <div class="rounded-3xl border border-[#b08d57]/20 bg-white/5 backdrop-blur shadow-2xl overflow-hidden">
+        <div class="grid lg:grid-cols-[1.1fr_1.2fr] min-h-[88vh]">
 
-        <div class="mt-8 grid gap-4">
-          <div class="bg-white/5 border border-white/10 rounded-2xl p-4">🏬 Build your branded storefront</div>
-          <div class="bg-white/5 border border-white/10 rounded-2xl p-4">⭐ Compete for premium featured placement</div>
-          <div class="bg-white/5 border border-white/10 rounded-2xl p-4">📦 Sell products, media, and experiences</div>
-        </div>
-      </div>
-    </div>
+          <!-- Left content panel -->
+          <div class="p-8 md:p-12 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/10">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37] text-sm md:text-base font-extrabold mb-6 w-fit">
+              Join The MajicMall Megaverse
+            </div>
 
-    <!-- Form column -->
-    <div class="flex flex-col lg:flex-row min-h-screen w-full">
-  <div class="w-full lg:max-w-md lg:mx-auto p-6">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black leading-[0.95] tracking-tight text-white">
+              Sign Up.
+              <span class="block text-[#c9a227] gold-shimmer">
+                Create Your Store.
+              </span>
+            </h1>
 
-        <!-- Mobile promo panel -->
-        <<div class="lg:hidden w-full mb-4 bg-gradient-to-br from-black via-gray-950 to-yellow-900/30 border-b border-yellow-500/20 p-6">
-          <h1 class="text-2xl font-black text-yellow-400 leading-tight">Open your store in Majic Mall</h1>
-          <p class="mt-3 text-sm text-gray-300">
-            Join the Majic Mall Megaverse and position your brand in a premium digital shopping destination.
-          </p>
+            <p class="mt-6 text-lg md:text-2xl text-zinc-100 font-semibold leading-relaxed max-w-2xl">
+              Step into a world where your brand can shine, your store can grow, and your customers can discover something unforgettable.
+            </p>
 
-          <div class="mt-4 grid gap-3 text-sm">
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-3">🏬 Build your branded storefront</div>
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-3">⭐ Compete for premium featured placement</div>
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-3">📦 Sell products, media, and experiences</div>
-          </div>
-        </div>
-
-        <!-- Sign up card -->
-        <div class="w-full bg-gray-900 border-t border-gray-800 lg:border lg:rounded-3xl p-6 lg:p-8 shadow-2xl min-h-[60vh] flex flex-col justify-center"></div>
-          <div class="mb-6 text-center">
-            <h2 class="text-3xl font-bold text-yellow-400">Create Your Account</h2>
-            <p class="text-gray-400 mt-2">Start your Majic Mall merchant journey</p>
-          </div>
-
-          <form method="post" action="" class="space-y-5">
-            {% csrf_token %}
-            {{ form.non_field_errors }}
-
-            {% for field in form %}
-              <div>
-                <label class="block text-sm text-gray-300 mb-1" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field }}
-                {% if field.errors %}
-                  <div class="mt-1 text-sm text-red-400">{{ field.errors|striptags }}</div>
-                {% endif %}
+            <div class="mt-8 grid gap-4">
+              <div class="rounded-2xl border border-red-600/30 bg-red-950/20 p-4">
+                <div class="text-lg font-extrabold text-[#c9a227]">Start Free</div>
+                <p class="mt-1 text-base md:text-lg text-zinc-100 font-medium">
+                  Launch your Starter store and begin building right away.
+                </p>
               </div>
-            {% endfor %}
 
-            <button type="submit" class="w-full px-5 py-3 bg-yellow-400 text-black rounded-xl font-semibold hover:opacity-90">
-              Sign Up
-            </button>
-          </form>
+              <div class="rounded-2xl border border-[#b08d57]/20 bg-white/5 p-4">
+                <div class="text-lg font-extrabold text-[#c9a227]">Build Beautifully</div>
+                <p class="mt-1 text-base md:text-lg text-zinc-100 font-medium">
+                  Add products, shape your storefront, and become part of the mall experience.
+                </p>
+              </div>
 
-          <div class="mt-6 text-center text-sm text-gray-400">
-            Already have an account?
-            <a href="{% url 'account_login' %}" class="text-yellow-400 hover:underline">Sign in</a>
+              <div class="rounded-2xl border border-red-600/30 bg-red-950/20 p-4">
+                <div class="text-lg font-extrabold text-[#c9a227]">Grow Your Presence</div>
+                <p class="mt-1 text-base md:text-lg text-zinc-100 font-medium">
+                  Unlock visibility, connect with shoppers, and rise in the MajicMall Megaverse.
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-8 text-base md:text-lg text-zinc-300 font-semibold">
+              Already have an account?
+              <a href="{% url 'account_login' %}" class="text-[#d4af37] hover:underline">Sign in</a>
+            </div>
           </div>
+
+          <!-- Form panel -->
+          <div class="p-6 sm:p-8 md:p-12 flex items-center justify-center">
+            <div class="w-full max-w-2xl">
+              <div class="mb-8 text-center lg:text-left">
+                <h2 class="text-3xl md:text-4xl font-black text-white">
+                  Open Your Place In The
+                  <span class="text-[#c9a227]">MajicMall Megaverse</span>
+                </h2>
+                <p class="mt-3 text-lg md:text-xl text-zinc-200 font-medium">
+                  Complete the form below to create your account and start building your store.
+                </p>
+              </div>
+
+              <form method="post" action="" class="space-y-5">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                {% for field in form %}
+                  <div>
+                    <label class="block text-base md:text-lg text-zinc-100 font-bold mb-2" for="{{ field.id_for_label }}">
+                      {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                      <div class="mt-2 text-sm md:text-base text-red-400 font-semibold">
+                        {{ field.errors|striptags }}
+                      </div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+
+                <button type="submit"
+                        class="w-full px-6 py-4 rounded-2xl bg-gradient-to-r from-red-800 to-red-600 text-white font-extrabold text-xl hover:brightness-110 border border-white/20 shadow-[0_0_24px_rgba(127,29,29,0.28)]">
+                  Sign Up & Start Building
+                </button>
+              </form>
+
+              <div class="mt-6 text-center text-base md:text-lg text-zinc-300 font-semibold lg:text-left">
+                By joining, you’re stepping into a bigger shopping world built for brands, customers, and opportunity.
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
-
   </div>
 </body>
 </html>

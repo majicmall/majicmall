@@ -74,12 +74,12 @@
     @keyframes materializeUp {
       0% {
         opacity: 0;
-        transform: translateY(38px) scale(0.96);
-        filter: blur(10px);
+        transform: translateY(46px) scale(0.94);
+        filter: blur(14px);
       }
       60% {
         opacity: 1;
-        transform: translateY(-4px) scale(1.01);
+        transform: translateY(-6px) scale(1.02);
         filter: blur(0);
       }
       100% {
@@ -96,14 +96,16 @@
 
     @keyframes buttonPulse {
       0%, 100% {
+        transform: scale(1);
         box-shadow:
-          0 0 22px rgba(201,162,39,0.26),
-          0 0 42px rgba(201,162,39,0.10);
+          0 0 30px rgba(201,162,39,0.35),
+          0 0 50px rgba(201,162,39,0.12);
       }
       50% {
+        transform: scale(1.04);
         box-shadow:
-          0 0 34px rgba(244,224,138,0.38),
-          0 0 56px rgba(201,162,39,0.18);
+          0 0 60px rgba(244,224,138,0.55),
+          0 0 80px rgba(201,162,39,0.18);
       }
     }
 
@@ -113,22 +115,22 @@
 
     .hero-line-1 {
       animation: materializeUp 1.2s ease-out both;
-      animation-delay: 0.08s;
+      animation-delay: 0.10s;
     }
 
     .hero-line-2 {
       animation: materializeUp 1.3s ease-out both;
-      animation-delay: 0.18s;
+      animation-delay: 0.30s;
     }
 
     .hero-tagline {
       animation: materializeUp 1.25s ease-out both;
-      animation-delay: 0.28s;
+      animation-delay: 0.50s;
     }
 
     .hero-copy {
       animation: materializeUp 1.35s ease-out both;
-      animation-delay: 0.38s;
+      animation-delay: 0.70s;
     }
 
     .hero-card-float {
@@ -159,6 +161,12 @@
     .carousel-card {
       scroll-snap-align: start;
       flex: 0 0 85%;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .carousel-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
     }
 
     @media (min-width: 768px) {
@@ -210,18 +218,18 @@
               <span>Enter The MajicMall Megaverse</span>
             </div>
 
-            <h1 class="w-full max-w-3xl hero-line-1 text-5xl sm:text-6xl md:text-8xl font-extrabold leading-[0.92] tracking-tight text-white">
+            <h1 class="w-full max-w-4xl hero-line-1 text-5xl sm:text-7xl md:text-8xl lg:text-[6.5rem] font-black leading-[0.88] tracking-tight text-white">
               The
-              <span class="block hero-shimmer">
+              <span class="block hero-shimmer drop-shadow-[0_0_28px_rgba(201,162,39,0.24)]">
                 Mega Shopping
               </span>
             </h1>
 
-            <h2 class="w-full max-w-3xl hero-line-2 text-5xl sm:text-6xl md:text-8xl font-extrabold leading-[0.92] tracking-tight text-white mt-1">
+            <h2 class="w-full max-w-4xl hero-line-2 text-5xl sm:text-7xl md:text-8xl lg:text-[6.5rem] font-black leading-[0.88] tracking-tight text-white mt-1">
               <span class="border-b-4 border-red-700/70 pb-1">Experience</span>
             </h2>
 
-            <p class="hero-tagline mt-6 text-2xl sm:text-3xl md:text-5xl text-white font-extrabold tracking-wide leading-tight max-w-4xl">
+            <p class="hero-tagline mt-6 text-2xl sm:text-4xl md:text-5xl text-white font-extrabold tracking-wide leading-tight max-w-4xl">
               <span class="text-[#d4af37]">Shop.</span>
               <span class="text-white"> Work.</span>
               <span class="text-red-400"> Play.</span>
@@ -235,7 +243,7 @@
 
             <div class="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <a href="{% url 'mall-entrance' %}"
-                 class="cta-magical px-8 py-5 rounded-2xl bg-[#c9a227] text-black font-extrabold text-xl md:text-2xl text-center hover:brightness-110 gold-shimmer shadow-[0_0_36px_rgba(201,162,39,0.30)] border-2 border-[#f4e08a]/40">
+                 class="cta-magical px-8 py-5 rounded-2xl bg-[#c9a227] text-black font-extrabold text-xl md:text-2xl text-center hover:brightness-110 gold-shimmer shadow-[0_0_40px_rgba(201,162,39,0.45)] border-2 border-[#f4e08a]/50 tracking-wide">
                 Explore MajicMall Metaverse
               </a>
 
@@ -258,7 +266,7 @@
             <div class="relative rounded-[2rem] border border-[#b08d57]/20 bg-gradient-to-br from-zinc-950 via-zinc-900 to-black p-3 sm:p-4 md:p-6 shadow-2xl overflow-hidden">
               <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(201,162,39,0.10),transparent_25%),radial-gradient(circle_at_bottom,rgba(127,29,29,0.12),transparent_35%)]"></div>
 
-              <div class="relative rounded-3xl overflow-hidden border border-white/10 bg-black min-h-[620px] sm:min-h-[700px] md:min-h-[760px] lg:min-h-[680px] flex flex-col justify-end">
+              <div class="relative rounded-3xl overflow-hidden border border-white/10 bg-black min-h-[75vh] sm:min-h-[85vh] md:min-h-[760px] lg:min-h-[680px] flex flex-col justify-end">
                 <img
                   src="{% static 'img/majic_directory.png' %}"
                   alt="MajicMall Megaverse"
@@ -314,7 +322,7 @@
           </div>
         </section>
 
-        <!-- CAROUSEL -->
+        <!-- CAROUSEL IN THE MIDDLE -->
         <section>
           <div class="mb-6 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37] text-base md:text-lg font-extrabold mb-4">

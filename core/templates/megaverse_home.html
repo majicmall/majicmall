@@ -77,6 +77,24 @@
       to { background-position: 200% center; }
     }
 
+    @keyframes materializeLeft {
+      0% {
+        opacity: 0;
+        transform: translateX(-60px) scale(0.96);
+        filter: blur(14px);
+      }
+      65% {
+        opacity: 1;
+        transform: translateX(6px) scale(1.01);
+        filter: blur(0);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
     @keyframes materializeUp {
       0% {
         opacity: 0;
@@ -118,18 +136,25 @@
     @keyframes titlePulse {
       0%, 100% {
         text-shadow:
-          0 0 10px rgba(201,162,39,0.20),
-          0 0 24px rgba(201,162,39,0.12);
+          0 0 12px rgba(201,162,39,0.22),
+          0 0 24px rgba(220,38,38,0.12);
       }
       50% {
         text-shadow:
-          0 0 18px rgba(244,224,138,0.34),
-          0 0 34px rgba(201,162,39,0.18);
+          0 0 22px rgba(244,224,138,0.32),
+          0 0 42px rgba(220,38,38,0.18);
       }
     }
 
     .site-title {
-      animation: materializeUp 1.15s ease-out both, titlePulse 3.8s ease-in-out infinite;
+      animation: materializeLeft 1.15s ease-out both, titlePulse 3.8s ease-in-out infinite;
+    }
+
+    .title-trim {
+      text-shadow:
+        -1px 0 rgba(220,38,38,0.55),
+        1px 0 rgba(255,255,255,0.25),
+        0 1px rgba(220,38,38,0.28);
     }
 
     .hero-kicker {
@@ -215,18 +240,18 @@
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-5 md:px-6 py-6 md:py-8">
       <header class="flex items-center justify-between rounded-2xl border border-[#b08d57]/25 bg-white/5 px-4 md:px-5 py-4 backdrop-blur">
-        <div class="site-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-[#c9a227] gold-shimmer text-center md:text-left">
+        <div class="site-title title-trim text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-[#c9a227] gold-shimmer text-center md:text-left">
           MajicMall Megaverse
         </div>
 
         <div class="hidden md:flex items-center gap-3">
           <a href="{% url 'account_login' %}?next={% url 'merchant-profile' %}"
-             class="px-5 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-base border border-white/10">
-            Sign In
+             class="px-6 py-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-lg border border-white/10">
+            Merchant Sign In
           </a>
           <a href="{% url 'account_signup' %}?next={% url 'merchant-profile' %}"
-             class="px-5 py-3 rounded-xl bg-[#c9a227] hover:brightness-110 text-black font-bold text-base gold-shimmer">
-            Sign Up
+             class="px-6 py-3.5 rounded-xl bg-[#c9a227] hover:brightness-110 text-black font-bold text-lg gold-shimmer">
+            Create Store
           </a>
         </div>
       </header>
@@ -236,7 +261,7 @@
         <section class="grid lg:grid-cols-2 gap-10 md:gap-12 items-center">
           <div class="w-full text-center lg:text-left flex flex-col items-center lg:items-start">
             <div class="hero-kicker inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37] text-base md:text-lg font-extrabold mb-6">
-              <span class="text-red-1000">Grand Opening</span>
+              <span class="text-red-600">Grand Opening</span>
               <span class="text-[#d4af37]">•</span>
               <span>Enter The MajicMall Megaverse</span>
             </div>
@@ -252,22 +277,17 @@
               <span class="border-b-4 border-red-700 pb-1">Experience</span>
             </h2>
 
-
             <p class="hero-tagline mt-6 text-2xl sm:text-4xl md:text-5xl text-white font-extrabold tracking-wide leading-tight max-w-4xl">
               <span class="text-[#d4af37]">Shop.</span>
               <span class="text-white"> Work.</span>
               <span class="text-red-600"> Play.</span>
-              <span class="text-white"> Create.</span>
+              <span class="text-white"> Build.</span>
               <span class="text-[#d4af37]"> Imagine.</span>
             </p>
-
-
 
             <p class="hero-copy mt-6 text-lg sm:text-xl md:text-3xl text-zinc-100 max-w-3xl leading-relaxed font-semibold">
               A world of discovery, entertainment, opportunity, and unforgettable experiences — all in one place.
             </p>
-
-            
 
             <div class="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <a href="{% url 'mall-entrance' %}"
@@ -280,16 +300,10 @@
                 Create Your Store
               </a>
             </div>
-
-            <div class="mt-6 flex flex-wrap justify-center lg:justify-start gap-5 text-lg md:text-xl text-zinc-100 font-bold">
-              <a href="{% url 'account_login' %}?next={% url 'merchant-profile' %}" class="hover:text-[#d4af37]">Sign In</a>
-              <span class="text-zinc-500">•</span>
-              <a href="{% url 'account_signup' %}?next={% url 'merchant-profile' %}" class="hover:text-[#d4af37]">Sign Up</a>
-            </div>
           </div>
         </section>
 
-        <!-- CAROUSEL MOVED UP -->
+        <!-- CAROUSEL -->
         <section>
           <div class="mb-6 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37] text-base md:text-lg font-extrabold mb-4">
@@ -345,7 +359,7 @@
                 <img src="{% static 'img/majic_directory.png' %}" alt="Build in MajicMall" class="absolute inset-0 w-full h-full object-cover opacity-55">
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
                 <div class="absolute bottom-0 p-6">
-                  <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Create</div>
+                  <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Build</div>
                   <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Create stores, ideas, experiences, and a world customers will remember.</p>
                 </div>
               </div>
@@ -357,14 +371,14 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
                 <div class="absolute bottom-0 p-6">
                   <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Imagine</div>
-                  <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Step into a world where the future of shopping feels alive and limitless.</p>
+                  <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Step into a place where the future of shopping feels alive and limitless.</p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- COMMUNITY BLOCK MOVED BELOW CAROUSEL -->
+        <!-- COMMUNITY BLOCK -->
         <section>
           <div class="relative w-full -mx-2 sm:mx-0 max-w-none mx-auto lg:max-w-none hero-card-float">
             <div class="absolute -inset-6 rounded-[2rem] bg-[#b08d57]/10 blur-3xl"></div>
@@ -413,14 +427,10 @@
                   </div>
 
                   <div class="mt-6 flex flex-wrap items-center justify-center md:justify-start gap-4">
-                    <div class="rounded-2xl bg-[#c9a227] px-5 py-4 text-center text-black gold-shimmer">
-                      <div class="text-3xl md:text-4xl font-extrabold">Majic</div>
-                      <div class="text-base font-extrabold uppercase tracking-wide">Awaits Inside</div>
-                    </div>
-
-                    <div class="text-zinc-100 text-lg md:text-2xl font-bold">
-                      Step inside and see what everyone will be talking about.
-                    </div>
+                    <a href="{% url 'community-signup' %}"
+                       class="px-8 py-5 rounded-2xl bg-gradient-to-r from-red-800 to-red-600 text-white font-extrabold text-xl md:text-2xl text-center hover:brightness-110 border border-white/20 red-glow">
+                      Join MajicMall Megaverse Community
+                    </a>
                   </div>
                 </div>
               </div>

@@ -94,3 +94,32 @@ class MerchantSignupForm(forms.ModelForm):
         if qs.exists():
             raise forms.ValidationError("That slug is taken. Try another.")
         return slug
+    
+    from django import forms
+from .models import CommunityMember
+
+
+class CommunityMemberForm(forms.ModelForm):
+    class Meta:
+        model = CommunityMember
+        fields = ["name", "email", "phone"]
+        widgets = {
+            "name": forms.TextInput(
+                attrs={
+                    "class": "w-full rounded-2xl bg-zinc-900 border border-white/10 px-5 py-4 text-white text-lg",
+                    "placeholder": "Full Name",
+                }
+            ),
+            "email": forms.EmailInput(
+                attrs={
+                    "class": "w-full rounded-2xl bg-zinc-900 border border-white/10 px-5 py-4 text-white text-lg",
+                    "placeholder": "Email Address",
+                }
+            ),
+            "phone": forms.TextInput(
+                attrs={
+                    "class": "w-full rounded-2xl bg-zinc-900 border border-white/10 px-5 py-4 text-white text-lg",
+                    "placeholder": "Phone Number (Optional)",
+                }
+            ),
+        }

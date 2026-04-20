@@ -8,6 +8,7 @@ urlpatterns = [
     path("enter/", views.mall_entrance, name="mall-entrance"),
     path("mall/", views.mall_home, name="mall-home"),
     path("splash/", views.launch_splash, name="launch-splash"),
+    path("community/signup/", views.community_signup, name="community-signup"),
 
     # Directory & invites
     path("directory/", views.mall_directory, name="mall-directory"),

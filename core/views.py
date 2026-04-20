@@ -9,6 +9,10 @@ from merchant.models import MallZone, MerchantStore
 from .forms import MerchantSignupForm
 from .models import Movie, Ticket
 
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from .forms import CommunityMemberForm
+
 
 # ---------------------------
 # 🌍 Global Pages
@@ -109,6 +113,18 @@ def music_zone(request):
 
 class MerchantLoginView(LoginView):
     template_name = "merchant/login.html"
+
+def community_signup(request):
+    if request.method == "POST":
+        form = CommunityMemberForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Welcome to the MajicMall Megaverse Community!")
+            return redirect("community-signup")
+    else:
+        form = CommunityMemberForm()
+
+    return render(request, "community_signup.html", {"form": form})
 
 
 # ---------------------------

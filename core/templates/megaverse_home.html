@@ -77,28 +77,29 @@
       background: linear-gradient(
         90deg,
         #7f1d1d 0%,
-        #dc2626 25%,
-        #ffffff 45%,
-        #dc2626 60%,
+        #dc2626 18%,
+        #ffffff 34%,
+        #dc2626 50%,
+        #ffffff 66%,
+        #dc2626 82%,
         #7f1d1d 100%
       );
+      background-size: 250% auto;
+      background-position: 0% center;
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
       -webkit-text-fill-color: transparent;
-      background-size: 220% auto;
-      animation: redShimmer 3.8s linear infinite;
-      text-shadow:
-        0 0 12px rgba(220,38,38,0.35),
-        0 0 24px rgba(220,38,38,0.18);
+      animation: titleShimmerMove 3.2s linear infinite;
     }
 
     @keyframes shimmer {
       to { background-position: 220% center; }
     }
 
-    @keyframes redShimmer {
-      to { background-position: 220% center; }
+    @keyframes titleShimmerMove {
+      0% { background-position: 0% center; }
+      100% { background-position: 250% center; }
     }
 
     @keyframes materializeLeft {
@@ -157,21 +158,10 @@
       }
     }
 
-    @keyframes titlePulse {
-      0%, 100% {
-        text-shadow:
-          0 0 12px rgba(220,38,38,0.20),
-          0 0 24px rgba(255,255,255,0.08);
-      }
-      50% {
-        text-shadow:
-          0 0 24px rgba(239,68,68,0.34),
-          0 0 42px rgba(255,255,255,0.14);
-      }
-    }
-
     .site-title {
-      animation: materializeLeft 1.2s ease-out both, titlePulse 3.8s ease-in-out infinite;
+      animation: materializeLeft 1.2s ease-out both;
+      filter: drop-shadow(0 0 12px rgba(220, 38, 38, 0.28))
+              drop-shadow(0 0 24px rgba(255, 255, 255, 0.10));
     }
 
     .hero-kicker {
@@ -226,8 +216,8 @@
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-5 md:px-6 py-6 md:py-10">
       <header class="flex items-center justify-between gap-4 rounded-2xl border border-[#b08d57]/25 bg-white/5 px-4 md:px-5 py-4 md:py-5 backdrop-blur">
-        <div class="site-title title-shimmer-red text-[1.7rem] sm:text-[2.3rem] md:text-[3.5rem] lg:text-[4.4rem] font-black tracking-tight text-center md:text-left whitespace-nowrap leading-none">
-          MajicMall Megaverse
+        <div class="site-title text-[1.7rem] sm:text-[2.3rem] md:text-[3.5rem] lg:text-[4.4rem] font-black tracking-tight text-center md:text-left whitespace-nowrap leading-none">
+          <span class="title-shimmer-red">MajicMall Megaverse</span>
         </div>
 
         <div class="hidden md:flex items-center gap-3">
@@ -246,14 +236,10 @@
         <!-- HERO -->
         <section class="grid lg:grid-cols-2 gap-12 md:gap-14 items-center">
           <div class="w-full text-center lg:text-left flex flex-col items-center lg:items-start">
-            <div class="hero-kicker mb-7">
-              <div class="inline-flex items-center gap-3 px-5 py-3 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37]">
-                <span class="text-red-600 text-xl md:text-2xl font-black tracking-[0.08em] uppercase leading-none">
+            <div class="hero-kicker mb-8 w-full flex justify-center lg:justify-start">
+              <div class="inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20">
+                <span class="text-red-600 text-2xl sm:text-3xl md:text-4xl font-black tracking-[0.08em] uppercase leading-none text-center">
                   Grand Opening
-                </span>
-                <span class="text-[#d4af37] text-xl md:text-2xl font-black leading-none">•</span>
-                <span class="text-base md:text-lg font-extrabold leading-none">
-                  Enter The MajicMall Megaverse
                 </span>
               </div>
             </div>
@@ -304,7 +290,7 @@
             </div>
 
             <h2 class="text-4xl md:text-6xl font-extrabold text-white">
-              There’s Something Here For <span class="text-red-600 border-b-4 border-white/80 pb-1">Everyone</span>
+              There's Something Here For <span class="text-red-600 border-b-4 border-white/80 pb-1">Everyone</span>
             </h2>
 
             <p class="mt-4 text-xl md:text-2xl text-zinc-100 font-semibold max-w-4xl mx-auto md:mx-0">

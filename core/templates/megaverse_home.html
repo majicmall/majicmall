@@ -73,27 +73,31 @@
       animation: shimmer 5s linear infinite;
     }
 
-    .title-shimmer {
+    .title-shimmer-red {
       background: linear-gradient(
         90deg,
-        #8f6b18 0%,
-        #d4af37 20%,
-        #fff2b3 45%,
-        #d4af37 70%,
-        #8f6b18 100%
+        #7f1d1d 0%,
+        #dc2626 25%,
+        #ffffff 45%,
+        #dc2626 60%,
+        #7f1d1d 100%
       );
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
       -webkit-text-fill-color: transparent;
       background-size: 220% auto;
-      animation: shimmer 4.6s linear infinite;
+      animation: redShimmer 3.8s linear infinite;
       text-shadow:
-        0 0 16px rgba(201,162,39,0.15),
-        0 0 30px rgba(220,38,38,0.10);
+        0 0 12px rgba(220,38,38,0.35),
+        0 0 24px rgba(220,38,38,0.18);
     }
 
     @keyframes shimmer {
+      to { background-position: 220% center; }
+    }
+
+    @keyframes redShimmer {
       to { background-position: 220% center; }
     }
 
@@ -156,25 +160,18 @@
     @keyframes titlePulse {
       0%, 100% {
         text-shadow:
-          0 0 12px rgba(201,162,39,0.20),
-          0 0 24px rgba(220,38,38,0.10);
+          0 0 12px rgba(220,38,38,0.20),
+          0 0 24px rgba(255,255,255,0.08);
       }
       50% {
         text-shadow:
-          0 0 24px rgba(244,224,138,0.32),
-          0 0 42px rgba(220,38,38,0.16);
+          0 0 24px rgba(239,68,68,0.34),
+          0 0 42px rgba(255,255,255,0.14);
       }
     }
 
     .site-title {
       animation: materializeLeft 1.2s ease-out both, titlePulse 3.8s ease-in-out infinite;
-    }
-
-    .title-trim {
-      text-shadow:
-        -1px 0 rgba(220,38,38,0.60),
-        1px 0 rgba(255,255,255,0.18),
-        0 1px rgba(220,38,38,0.28);
     }
 
     .hero-kicker {
@@ -227,9 +224,9 @@
     <div class="spotlight-left"></div>
     <div class="spotlight-right"></div>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-5 md:px-6 py-6 md:py-8">
-      <header class="flex items-center justify-between gap-4 rounded-2xl border border-[#b08d57]/25 bg-white/5 px-4 md:px-5 py-4 backdrop-blur">
-        <div class="site-title title-trim title-shimmer text-[1.7rem] sm:text-[2.3rem] md:text-[3.5rem] lg:text-[4.4rem] font-black tracking-tight text-center md:text-left whitespace-nowrap leading-none">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-5 md:px-6 py-6 md:py-10">
+      <header class="flex items-center justify-between gap-4 rounded-2xl border border-[#b08d57]/25 bg-white/5 px-4 md:px-5 py-4 md:py-5 backdrop-blur">
+        <div class="site-title title-shimmer-red text-[1.7rem] sm:text-[2.3rem] md:text-[3.5rem] lg:text-[4.4rem] font-black tracking-tight text-center md:text-left whitespace-nowrap leading-none">
           MajicMall Megaverse
         </div>
 
@@ -245,14 +242,20 @@
         </div>
       </header>
 
-      <main class="py-8 md:py-12 space-y-14 md:space-y-20">
+      <main class="py-10 md:py-14 space-y-16 md:space-y-24">
         <!-- HERO -->
-        <section class="grid lg:grid-cols-2 gap-10 md:gap-12 items-center">
+        <section class="grid lg:grid-cols-2 gap-12 md:gap-14 items-center">
           <div class="w-full text-center lg:text-left flex flex-col items-center lg:items-start">
-            <div class="hero-kicker inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37] text-base md:text-lg font-extrabold mb-6">
-              <span class="text-red-600">Grand Opening</span>
-              <span class="text-[#d4af37]">•</span>
-              <span>Enter The MajicMall Megaverse</span>
+            <div class="hero-kicker mb-7">
+              <div class="inline-flex items-center gap-3 px-5 py-3 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37]">
+                <span class="text-red-600 text-xl md:text-2xl font-black tracking-[0.08em] uppercase leading-none">
+                  Grand Opening
+                </span>
+                <span class="text-[#d4af37] text-xl md:text-2xl font-black leading-none">•</span>
+                <span class="text-base md:text-lg font-extrabold leading-none">
+                  Enter The MajicMall Megaverse
+                </span>
+              </div>
             </div>
 
             <h1 class="w-full max-w-4xl hero-line-1 text-5xl sm:text-7xl md:text-8xl lg:text-[6.6rem] font-black leading-[0.88] tracking-tight text-white">
@@ -262,11 +265,11 @@
               </span>
             </h1>
 
-            <h2 class="w-full max-w-4xl hero-line-2 text-5xl sm:text-7xl md:text-8xl lg:text-[6.6rem] font-black leading-[0.88] tracking-tight text-white mt-1">
+            <h2 class="w-full max-w-4xl hero-line-2 text-5xl sm:text-7xl md:text-8xl lg:text-[6.6rem] font-black leading-[0.88] tracking-tight text-white mt-2">
               <span class="border-b-4 border-red-700 pb-1">Experience</span>
             </h2>
 
-            <p class="hero-tagline mt-6 text-2xl sm:text-4xl md:text-5xl text-white font-extrabold tracking-wide leading-tight max-w-4xl">
+            <p class="hero-tagline mt-7 text-2xl sm:text-4xl md:text-5xl text-white font-extrabold tracking-wide leading-tight max-w-4xl">
               <span class="text-[#d4af37]">Shop.</span>
               <span class="text-white"> Work.</span>
               <span class="text-red-600"> Play.</span>
@@ -274,11 +277,11 @@
               <span class="text-[#d4af37]"> Create.</span>
             </p>
 
-            <p class="hero-copy mt-6 text-lg sm:text-xl md:text-3xl text-zinc-100 max-w-3xl leading-relaxed font-semibold">
+            <p class="hero-copy mt-7 text-lg sm:text-xl md:text-3xl text-zinc-100 max-w-3xl leading-relaxed font-semibold">
               A world of discovery, entertainment, opportunity, and unforgettable experiences — all in one place.
             </p>
 
-            <div class="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <div class="mt-9 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <a href="{% url 'mall-entrance' %}"
                  class="cta-magical px-8 py-5 rounded-2xl bg-gradient-to-r from-red-800 to-red-600 text-white font-extrabold text-xl md:text-2xl text-center hover:brightness-110 red-glow border-2 border-white/20 tracking-wide">
                 Explore MajicMall Megaverse
@@ -294,7 +297,7 @@
 
         <!-- FEATURE GRID -->
         <section>
-          <div class="mb-6 text-center md:text-left">
+          <div class="mb-7 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37] text-base md:text-lg font-extrabold mb-4">
               <span class="text-red-600">Grand Opening</span>
               <span class="text-[#d4af37]">Highlights</span>

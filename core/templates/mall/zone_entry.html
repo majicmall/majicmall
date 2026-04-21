@@ -57,8 +57,12 @@
                     Step into {{ zone_name }} and explore the stores, brands, and experiences waiting inside this part of MajicMall.
                 </p>
 
-                <div class="text-gray-400 mt-6 text-sm md:text-base animate-pulse mb-8">
+                <div class="text-gray-400 mt-6 text-sm md:text-base animate-pulse mb-3">
                     Entering {{ zone_name }}...
+                </div>
+
+                <div id="pauseMessage" class="text-yellow-400 text-sm opacity-0 transition-opacity duration-500 mb-8">
+                    Navigation paused — click Enter when you're ready
                 </div>
 
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
@@ -86,16 +90,52 @@
     </div>
 
     <script>
-      setTimeout(function () {
+      const transitionDelay = 4500;
+      const fadeDuration = 900;
+
+      let transitionTimer = null;
+      let transitionPaused = false;
+
+      function showPausedMessage() {
+        const msg = document.getElementById("pauseMessage");
+        if (msg) {
+          msg.style.opacity = "1";
+        }
+      }
+
+      function beginTransition() {
         const nextUrl = "{% url 'zone-interior' zone_slug=zone_slug %}";
 
-        document.body.style.transition = "opacity 0.8s ease";
+        document.body.style.transition = `opacity ${fadeDuration}ms ease`;
         document.body.style.opacity = "0";
 
         setTimeout(function () {
           window.location.href = nextUrl;
-        }, 800);
-      }, 2200);
+        }, fadeDuration);
+      }
+
+      function startTransitionTimer() {
+        transitionTimer = setTimeout(function () {
+          if (!transitionPaused) {
+            beginTransition();
+          }
+        }, transitionDelay);
+      }
+
+      function pauseTransition() {
+        if (transitionTimer) {
+          clearTimeout(transitionTimer);
+          transitionTimer = null;
+        }
+        transitionPaused = true;
+        showPausedMessage();
+      }
+
+      startTransitionTimer();
+
+      ["mousemove", "touchstart", "keydown", "scroll"].forEach(function (eventName) {
+        window.addEventListener(eventName, pauseTransition, { once: true });
+      });
     </script>
 
 </body>

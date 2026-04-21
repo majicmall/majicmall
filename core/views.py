@@ -1,17 +1,14 @@
 from collections import defaultdict
 
-from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.db.models import Case, When, Value, IntegerField
+from django.shortcuts import render, redirect, get_object_or_404
 
 from merchant.models import MallZone, MerchantStore
-from .forms import MerchantSignupForm
+from .forms import MerchantSignupForm, CommunityMemberForm
 from .models import Movie, Ticket
-
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from .forms import CommunityMemberForm
 
 
 # ---------------------------
@@ -20,6 +17,7 @@ from .forms import CommunityMemberForm
 
 def homepage(request):
     return render(request, "megaverse_home.html")
+
 
 def mall_entrance(request):
     return render(request, "home.html")
@@ -94,7 +92,7 @@ def merchant_tiers(request):
 
 
 def business_zone(request):
-    zone = get_object_or_404(MallZone, slug="business-services-zone")
+    zone = get_object_or_404(MallZone, slug="business-services-zone", is_active=True)
     stores = zone.stores.filter(is_public=True, is_archived=False).order_by("store_name")
 
     return render(
@@ -114,6 +112,7 @@ def music_zone(request):
 class MerchantLoginView(LoginView):
     template_name = "merchant/login.html"
 
+
 def community_signup(request):
     if request.method == "POST":
         form = CommunityMemberForm(request.POST)
@@ -128,7 +127,7 @@ def community_signup(request):
 
 
 # ---------------------------
-# 🗺️ Mall Zones
+# 🗺️ Mall Directory + Zones
 # ---------------------------
 
 def mall_directory(request):
@@ -232,44 +231,109 @@ def mall_directory(request):
     )
 
 
+def zone_entry(request, zone_slug):
+    """
+    Experience layer:
+    /zones/<slug>/
+    Shows the branded entrance page for a real MallZone.
+    """
+    zone = get_object_or_404(MallZone, slug=zone_slug, is_active=True)
+
+    return render(
+        request,
+        "mall/zone_entry.html",
+        {
+            "zone": zone,
+            "zone_name": zone.name,
+            "zone_slug": zone.slug,
+        },
+    )
+
+
+def zone_interior(request, zone_slug):
+    """
+    Functional layer:
+    /zones/<slug>/inside/
+    Shows all public stores assigned to this zone.
+    """
+    zone = get_object_or_404(MallZone, slug=zone_slug, is_active=True)
+
+    stores = (
+        MerchantStore.objects
+        .filter(
+            zone=zone,
+            is_public=True,
+            is_archived=False,
+        )
+        .annotate(
+            plan_rank=Case(
+                When(plan="elite", then=Value(0)),
+                When(plan="pro", then=Value(1)),
+                default=Value(2),
+                output_field=IntegerField(),
+            )
+        )
+        .order_by(
+            "-is_featured",
+            "featured_slot",
+            "plan_rank",
+            "-created_at",
+            "store_name",
+        )
+    )
+
+    return render(
+        request,
+        "mall/zone_interior.html",
+        {
+            "zone": zone,
+            "zone_name": zone.name,
+            "zone_slug": zone.slug,
+            "stores": stores,
+            "store_count": stores.count(),
+        },
+    )
+
+
+# Optional backward-compatible placeholders
 def fashion_zone(request):
-    return render(request, "mall/zone_placeholder.html", {"zone_name": "Fashion"})
+    return redirect("zone-entry", zone_slug="fashion-zone")
 
 
 def entertainment_zone(request):
-    return render(request, "mall/zone_placeholder.html", {"zone_name": "Entertainment"})
+    return redirect("zone-entry", zone_slug="entertainment-zone")
 
 
 def tech_zone(request):
-    return render(request, "mall/zone_placeholder.html", {"zone_name": "Tech"})
+    return redirect("zone-entry", zone_slug="tech-zone")
 
 
 def home_zone(request):
-    return render(request, "mall/zone_placeholder.html", {"zone_name": "Home"})
+    return redirect("zone-entry", zone_slug="home-zone")
 
 
 def family_zone(request):
-    return render(request, "mall/zone_placeholder.html", {"zone_name": "Family"})
+    return redirect("zone-entry", zone_slug="family-zone")
 
 
 def creators_zone(request):
-    return render(request, "mall/zone_placeholder.html", {"zone_name": "Creators"})
+    return redirect("zone-entry", zone_slug="creators-zone")
 
 
 def luxury_zone(request):
-    return render(request, "mall/zone_placeholder.html", {"zone_name": "Luxury"})
+    return redirect("zone-entry", zone_slug="luxury-zone")
 
 
 def atls_hottest_zone(request):
-    return render(request, "mall/zone_placeholder.html", {"zone_name": "ATL's Hottest"})
+    return redirect("zone-entry", zone_slug="atls-hottest-zone")
 
 
 def food_court_zone(request):
-    return render(request, "mall/zone_placeholder.html", {"zone_name": "Food Court"})
+    return redirect("zone-entry", zone_slug="food-court-zone")
 
 
 def learning_zone(request):
-    return render(request, "mall/zone_placeholder.html", {"zone_name": "Learning"})
+    return redirect("zone-entry", zone_slug="learning-zone")
 
 
 # ---------------------------
@@ -316,12 +380,10 @@ def theater_stream(request):
 
     user = request.user if request.user.is_authenticated else None
 
-    # Ensure session exists for guest tickets
     if not request.session.session_key:
         request.session.create()
     session_key = request.session.session_key
 
-    # Validate access (ticket tied to user or guest session)
     has_ticket = Ticket.objects.filter(
         movie_id=movie_id,
         user=user if user else None,
@@ -351,7 +413,6 @@ def buy_ticket(request, movie_id):
         request.session.create()
     session_key = request.session.session_key
 
-    # Create a ticket only if one doesn't already exist for this viewer
     exists = Ticket.objects.filter(
         movie=movie,
         user=user if user else None,

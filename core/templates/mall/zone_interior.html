@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ zone_name }} | MajicMall</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background-color: #050505;
+            font-family: Arial, sans-serif;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+
+        <div class="mb-8">
+            <a
+                href="{% url 'mall-directory' %}"
+                class="inline-block text-yellow-400 font-bold text-base md:text-lg hover:text-yellow-300 transition"
+            >
+                ← Back to Directory
+            </a>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-10 shadow-2xl mb-10">
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                <div>
+                    <div class="uppercase tracking-[0.25em] text-yellow-400 font-bold text-sm md:text-base mb-3">
+                        MajicMall Zone
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-black leading-tight text-white mb-3">
+                        {{ zone_name }}
+                    </h1>
+
+                    <p class="text-lg md:text-2xl text-gray-300 leading-relaxed">
+                        Explore merchants currently inside this zone.
+                    </p>
+                </div>
+
+                <div class="text-left lg:text-right">
+                    <div class="text-yellow-400 font-black text-3xl md:text-4xl">
+                        {{ store_count }}
+                    </div>
+                    <div class="text-gray-400 text-base md:text-lg">
+                        Store{{ store_count|pluralize }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if stores %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {% for store in stores %}
+                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl flex flex-col h-full hover:scale-[1.02] transition">
+
+                        {% if store.plan == "elite" %}
+                            <div class="mb-3">
+                                <span class="inline-block text-xs bg-yellow-400 text-black px-3 py-1 rounded-full font-black tracking-wide">
+                                    ELITE
+                                </span>
+                            </div>
+                        {% endif %}
+
+                        {% if store.logo %}
+                            <img
+                                src="{{ store.logo.url }}"
+                                alt="{{ store.store_name }} logo"
+                                class="h-32 w-32 object-cover rounded-2xl mb-5 bg-white border border-gray-700 shadow-md"
+                            >
+                        {% else %}
+                            <div class="h-32 w-32 bg-gray-800 rounded-2xl mb-5 flex items-center justify-center text-4xl border border-gray-700">
+                                🏬
+                            </div>
+                        {% endif %}
+
+                        <h2 class="text-2xl font-black text-white mb-2">
+                            {{ store.store_name }}
+                        </h2>
+
+                        {% if store.slogan %}
+                            <p class="text-gray-300 text-base leading-relaxed mb-3">
+                                {{ store.slogan }}
+                            </p>
+                        {% elif store.description %}
+                            <p class="text-gray-400 text-base leading-relaxed mb-3">
+                                {{ store.description|truncatewords:20 }}
+                            </p>
+                        {% else %}
+                            <p class="text-gray-400 text-base leading-relaxed mb-3">
+                                Explore this merchant inside {{ zone_name }}.
+                            </p>
+                        {% endif %}
+
+                        <div class="mt-auto pt-4">
+                            <a
+                                href="{% url 'storefront' store.slug %}"
+                                class="block w-full text-center px-4 py-3 bg-yellow-400 text-black rounded-2xl font-black text-lg hover:bg-yellow-300 transition"
+                            >
+                                Visit Store
+                            </a>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 md:p-12 text-center shadow-xl">
+                <div class="text-4xl mb-4">✨</div>
+                <h2 class="text-2xl md:text-3xl font-black text-yellow-400 mb-3">
+                    This Zone Is Ready
+                </h2>
+                <p class="text-gray-300 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-6">
+                    No public stores are showing in {{ zone_name }} yet, but this space is prepared for merchants and experiences to arrive.
+                </p>
+                <a
+                    href="{% url 'mall-directory' %}"
+                    class="inline-flex items-center justify-center px-8 py-4 bg-yellow-400 text-black font-black text-lg rounded-2xl hover:bg-yellow-300 transition"
+                >
+                    Return to Directory
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

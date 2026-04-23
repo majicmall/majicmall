@@ -3,67 +3,395 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Entering Majic Mall...</title>
+  <title>Enter MajicMall Megaverse</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
+      background: #000;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      opacity: 1;
+      transition: opacity 1s ease;
+    }
+
+    .scene {
+      position: relative;
       width: 100%;
-      background-color: black;
+      height: 100vh;
+      background:
+        radial-gradient(circle at top center, rgba(255, 215, 0, 0.12), transparent 28%),
+        linear-gradient(to bottom, #030303 0%, #0a0a0a 45%, #000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
     }
 
-    /* Fade out animation */
-    .fade-out {
-      animation: fadeOut 1.5s ease forwards;
+    .entrance-frame {
+      position: relative;
+      width: min(94vw, 1300px);
+      height: min(88vh, 780px);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 2px rgba(212, 175, 55, 0.28),
+        0 24px 60px rgba(0, 0, 0, 0.65),
+        0 0 40px rgba(212, 175, 55, 0.10);
+      background: #040404;
     }
 
-    @keyframes fadeOut {
-      0% { opacity: 1; }
+    .interior-view {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,0.08), transparent 18%),
+        linear-gradient(to top, rgba(0,0,0,0.32), transparent 22%),
+        url("{% static 'img/inside_majic_mall.png' %}") center center / cover no-repeat;
+      filter: brightness(0.78) saturate(1.02);
+      transform: scale(1.03);
+      z-index: 0;
+    }
+
+    .interior-glow {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at center, rgba(255, 214, 102, 0.56), rgba(255, 214, 102, 0.14) 34%, transparent 62%),
+        linear-gradient(to bottom, rgba(255, 230, 160, 0.22), rgba(0, 0, 0, 0.08) 35%, rgba(0, 0, 0, 0.18) 100%);
+      opacity: 0.72;
+      z-index: 1;
+      animation: interiorPulse 4s ease-in-out infinite;
+    }
+
+    .burst-flash {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at center, rgba(255, 239, 170, 0.95) 0%, rgba(255, 224, 120, 0.60) 16%, rgba(255, 215, 0, 0.18) 34%, transparent 58%);
+      opacity: 0;
+      animation: burstFlash 1.25s ease-out 0.2s forwards;
+      mix-blend-mode: screen;
+    }
+
+    .particles {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .particles span {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 215, 0, 0.9);
+      border-radius: 999px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+      animation: floatParticle 2.5s ease-out forwards;
+    }
+
+    .door {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background:
+        linear-gradient(to bottom, rgba(20,20,20,0.95), rgba(6,6,6,0.98)),
+        linear-gradient(to right, rgba(212,175,55,0.06), rgba(212,175,55,0.02));
+      z-index: 4;
+      box-shadow: inset 0 0 0 3px rgba(212, 175, 55, 0.20);
+    }
+
+    .door.left {
+      left: 0;
+      border-right: 2px solid rgba(212, 175, 55, 0.34);
+      animation: openLeftDoor 2.6s ease-in-out 1.2s forwards;
+    }
+
+    .door.right {
+      right: 0;
+      border-left: 2px solid rgba(212, 175, 55, 0.34);
+      animation: openRightDoor 2.6s ease-in-out 1.2s forwards;
+    }
+
+    .door::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 2px solid rgba(212, 175, 55, 0.24);
+      border-radius: 18px;
+    }
+
+    .door::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      background: rgba(212, 175, 55, 0.95);
+      border-radius: 999px;
+      transform: translateY(-50%);
+      box-shadow: 0 0 18px rgba(212, 175, 55, 0.45);
+    }
+
+    .door.left::after {
+      right: 28px;
+    }
+
+    .door.right::after {
+      left: 28px;
+    }
+
+    .center-seam-glow {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 10px;
+      transform: translateX(-50%);
+      background:
+        linear-gradient(to bottom, transparent, rgba(255, 223, 128, 0.98), transparent);
+      z-index: 6;
+      opacity: 0.95;
+      box-shadow:
+        0 0 20px rgba(255, 223, 128, 0.70),
+        0 0 50px rgba(255, 223, 128, 0.42);
+      animation: seamGlow 1.8s ease-in-out 0s 2, seamFlash 0.9s ease-out 0.25s forwards;
+    }
+
+    .headline-wrap {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 7;
+      pointer-events: none;
+    }
+
+    .headline-panel {
+      text-align: center;
+      max-width: 980px;
+      padding: 28px 28px 22px;
+      border-radius: 24px;
+      background: rgba(0, 0, 0, 0.36);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.42);
+      animation: fadeUp 1.2s ease 0.2s both;
+    }
+
+    .eyebrow {
+      color: #f3d56a;
+      font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+      font-weight: 800;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      color: #fff;
+      font-size: clamp(2.2rem, 6vw, 5.3rem);
+      font-weight: 900;
+      line-height: 0.96;
+      margin: 0;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.12);
+    }
+
+    .subtitle {
+      color: #f0f0f0;
+      font-size: clamp(1rem, 2.2vw, 1.55rem);
+      font-weight: 700;
+      line-height: 1.45;
+      max-width: 780px;
+      margin: 18px auto 0;
+    }
+
+    .status-line {
+      position: absolute;
+      bottom: 42px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 8;
+      color: #f3d56a;
+      font-size: clamp(0.95rem, 1.8vw, 1.08rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(243, 213, 106, 0.22);
+      animation: pulseText 1.8s ease-in-out infinite;
+    }
+
+    @keyframes openLeftDoor {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-102%); }
+    }
+
+    @keyframes openRightDoor {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(102%); }
+    }
+
+    @keyframes seamGlow {
+      0%   { opacity: 0.18; }
+      50%  { opacity: 1; }
       100% { opacity: 0; }
     }
 
-    /* Text entrance */
-    .fade-in {
-      animation: fadeIn 2s ease forwards;
+    @keyframes seamFlash {
+      0%   { width: 10px; opacity: 0.9; }
+      40%  { width: 24px; opacity: 1; }
+      100% { width: 14px; opacity: 0; }
     }
 
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
+    @keyframes burstFlash {
+      0%   { opacity: 0; transform: scale(0.86); }
+      35%  { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(1.10); }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulseText {
+      0%, 100% { opacity: 0.72; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes interiorPulse {
+      0%, 100% { opacity: 0.72; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes floatParticle {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-120px) scale(0.6);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .entrance-frame {
+        height: 100vh;
+        width: 100vw;
+        border-radius: 0;
+      }
+
+      .headline-panel {
+        padding: 24px 18px 20px;
+      }
+
+      .status-line {
+        bottom: 28px;
+        width: calc(100% - 32px);
+        text-align: center;
+      }
     }
   </style>
 </head>
+<body>
 
-<body id="entrance">
+  <audio id="doorSound" preload="auto">
+    <source src="{% static 'audio/door_whoosh.mp3' %}" type="audio/mpeg">
+  </audio>
 
-  <!-- Background doors image -->
-  <img 
-    src="{% static 'img/majicmall_front_view.png' %}" 
-    alt="" 
-    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
-  >
+  <div class="scene">
+    <div class="entrance-frame">
 
-  <!-- Welcome overlay -->
- <div class="absolute inset-0 flex items-end justify-center pb-12 fade-in">
-  <p class="text-yellow-300 text-sm tracking-widest uppercase opacity-80">
-    Entering...
-  </p>
-</div>
+      <div class="interior-view"></div>
+      <div class="interior-glow"></div>
+      <div class="burst-flash"></div>
+      <div class="particles"></div>
+
+      <div class="door left"></div>
+      <div class="door right"></div>
+      <div class="center-seam-glow"></div>
+
+      <div class="headline-wrap">
+        <div class="headline-panel">
+          <div class="eyebrow">Welcome To</div>
+          <h1 class="title">MajicMall<br>Megaverse</h1>
+          <p class="subtitle">
+            Step through the doors into a world of merchants, zones, experiences, and discovery.
+          </p>
+        </div>
+      </div>
+
+      <div class="status-line">
+        Opening the doors to MajicMall Megaverse...
+      </div>
+
+    </div>
+  </div>
 
   <script>
-    // Wait a moment → fade out → redirect to mall
-    setTimeout(() => {
-      document.getElementById("entrance").classList.add("fade-out");
-    }, 2500);
+    const transitionDelay = 5200;
+    const fadeDuration = 1000;
+    const nextUrl = "{% url 'mall-home' %}";
 
-    setTimeout(() => {
-      window.location.href = "/mall/";
-    }, 4000);
+    function spawnParticles() {
+      const container = document.querySelector(".particles");
+      if (!container) return;
+
+      for (let i = 0; i < 14; i++) {
+        const p = document.createElement("span");
+        p.style.left = (48 + Math.random() * 4) + "%";
+        p.style.top = "55%";
+        container.appendChild(p);
+
+        setTimeout(function () {
+          p.remove();
+        }, 2500);
+      }
+    }
+
+    function playDoorSound() {
+      const audio = document.getElementById("doorSound");
+      if (!audio) return;
+
+      audio.volume = 0.25;
+      audio.play().catch(function () {});
+    }
+
+    setTimeout(function () {
+      spawnParticles();
+      playDoorSound();
+    }, 1200);
+
+    setTimeout(function () {
+      document.body.style.opacity = "0";
+
+      setTimeout(function () {
+        window.location.href = nextUrl;
+      }, fadeDuration);
+    }, transitionDelay);
   </script>
 
 </body>

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Inside Majic Mall</title>
+  <title>Inside MajicMall</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
@@ -12,55 +12,106 @@
       margin: 0;
       padding: 0;
       background-color: black;
-      font-family: 'Arial', sans-serif;
-      animation: fadeOut 3s ease-in-out 3s forwards; /* fade out after 3 sec delay */
+      font-family: Arial, sans-serif;
+      animation: fadeIn 1.2s ease-in-out;
+      overflow: hidden;
     }
 
     .mall-background {
       background-image: url("{% static 'img/inside_majic_mall.png' %}");
       background-size: cover;
       background-position: center;
-      height: 100vh;
+      min-height: 100vh;
       width: 100%;
-      transition: opacity 1.5s ease-in-out;
+      position: relative;
     }
 
-    @keyframes fadeOut {
-      to {
+    .mall-background::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0.55)),
+        radial-gradient(circle at center, rgba(255, 215, 0, 0.08), transparent 45%);
+      pointer-events: none;
+    }
+
+    @keyframes fadeIn {
+      from {
         opacity: 0;
+        transform: scale(1.01);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
       }
     }
 
     @keyframes welcomeFade {
-      0%   { opacity: 0; transform: translateY(-20px); }
-      10%  { opacity: 1; transform: translateY(0); }
-      90%  { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-20px); }
+      0%   { opacity: 0; transform: translateY(-18px); }
+      15%  { opacity: 1; transform: translateY(0); }
+      85%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
     .animate-welcome {
-      animation: welcomeFade 4s ease-in-out forwards;
+      animation: welcomeFade 1.6s ease-out forwards;
+    }
+
+    .glass-panel {
+      background: rgba(0, 0, 0, 0.58);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 215, 0, 0.22);
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
     }
   </style>
-
-  <script>
-    // Redirect to the directory after 5 seconds
-    setTimeout(function() {
-      window.location.href = "/directory/";
-    }, 5000);
-  </script>
 </head>
 <body>
-  <div class="mall-background"></div>
 
-  <!-- ✨ Centered Welcome Message -->
-  <div class="fixed inset-0 flex items-center justify-center z-50">
-    <div id="welcome-message" class="bg-yellow-300 text-black text-xl font-bold px-6 py-3 rounded-xl shadow-2xl opacity-0 animate-welcome">
-      ✨ Welcome to Majic Mall – Shop, Browse, Play & Experience the Majic!
+  <div class="mall-background flex items-center justify-center px-4 sm:px-6">
+    <div class="relative z-10 w-full max-w-3xl text-center">
+
+      <div class="glass-panel rounded-3xl px-6 py-8 sm:px-10 sm:py-10 animate-welcome">
+        <div class="text-yellow-400 text-sm sm:text-base font-bold tracking-widest uppercase mb-3">
+          You Are Here
+        </div>
+
+        <h1 class="text-white text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-4">
+          Welcome to MajicMall
+        </h1>
+
+        <p class="text-yellow-300 text-lg sm:text-xl md:text-2xl font-semibold mb-4">
+          Shop • Browse • Play • Experience the Majic
+        </p>
+
+        <p class="text-gray-200 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-8">
+          You’ve stepped inside the mall. Look around, explore the atmosphere, and continue when you're ready.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href="{% url 'mall-directory' %}"
+            class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-yellow-400 text-black font-extrabold text-lg md:text-xl rounded-2xl shadow-xl hover:bg-yellow-300 transition"
+          >
+            Open Directory
+          </a>
+
+          <a
+            href="{% url 'mall-entrance' %}"
+            class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-gray-900 text-white font-bold text-lg md:text-xl rounded-2xl border border-gray-700 hover:bg-gray-800 transition"
+          >
+            Back to Entrance
+          </a>
+        </div>
+
+        <div class="mt-8 text-gray-300 italic text-sm sm:text-base">
+          Food Court • Zones • Merchants • Experiences
+        </div>
+      </div>
+
     </div>
   </div>
+
 </body>
 </html>
-
-
-

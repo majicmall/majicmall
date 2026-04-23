@@ -4,13 +4,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Enter MajicMall Megaverse</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
       height: 100%;
       background: #000;
       overflow: hidden;
@@ -22,41 +23,32 @@
       transition: opacity 1s ease;
     }
 
-    /* ✅ FIXED MOBILE HEIGHT */
     .scene {
-      position: relative;
-      width: 100%;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100svh;
       height: 100dvh;
       background:
         radial-gradient(circle at top center, rgba(255, 215, 0, 0.12), transparent 28%),
         linear-gradient(to bottom, #030303 0%, #0a0a0a 45%, #000 100%);
       display: flex;
-      align-items: center;
-      justify-content: center;
+      align-items: stretch;
+      justify-content: stretch;
       overflow: hidden;
     }
 
-    /* ✅ FULLSCREEN ON MOBILE */
     .entrance-frame {
-      position: relative;
+      position: absolute;
+      inset: 0;
       width: 100vw;
+      height: 100vh;
+      height: 100svh;
       height: 100dvh;
       border-radius: 0;
       overflow: hidden;
       background: #040404;
-    }
-
-    /* ✅ DESKTOP FRAME RESTORED */
-    @media (min-width: 768px) {
-      .entrance-frame {
-        width: min(94vw, 1300px);
-        height: min(88vh, 780px);
-        border-radius: 28px;
-        box-shadow:
-          0 0 0 2px rgba(212, 175, 55, 0.28),
-          0 24px 60px rgba(0, 0, 0, 0.65),
-          0 0 40px rgba(212, 175, 55, 0.10);
-      }
     }
 
     .interior-view {
@@ -75,7 +67,8 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(circle at center, rgba(255, 214, 102, 0.56), rgba(255, 214, 102, 0.14) 34%, transparent 62%);
+        radial-gradient(circle at center, rgba(255, 214, 102, 0.56), rgba(255, 214, 102, 0.14) 34%, transparent 62%),
+        linear-gradient(to bottom, rgba(255, 230, 160, 0.22), rgba(0, 0, 0, 0.08) 35%, rgba(0, 0, 0, 0.18) 100%);
       opacity: 0.72;
       z-index: 1;
       animation: interiorPulse 4s ease-in-out infinite;
@@ -87,7 +80,7 @@
       z-index: 3;
       pointer-events: none;
       background:
-        radial-gradient(circle at center, rgba(255, 239, 170, 0.95), transparent 60%);
+        radial-gradient(circle at center, rgba(255, 239, 170, 0.95) 0%, rgba(255, 224, 120, 0.60) 16%, rgba(255, 215, 0, 0.18) 34%, transparent 58%);
       opacity: 0;
       animation: burstFlash 1.25s ease-out 0.2s forwards;
       mix-blend-mode: screen;
@@ -98,14 +91,16 @@
       inset: 0;
       z-index: 5;
       pointer-events: none;
+      overflow: hidden;
     }
 
     .particles span {
       position: absolute;
       width: 6px;
       height: 6px;
-      background: gold;
+      background: rgba(255, 215, 0, 0.9);
       border-radius: 999px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
       animation: floatParticle 2.5s ease-out forwards;
     }
 
@@ -114,29 +109,68 @@
       top: 0;
       width: 50%;
       height: 100%;
-      background: #111;
+      background:
+        linear-gradient(to bottom, rgba(20,20,20,0.95), rgba(6,6,6,0.98)),
+        linear-gradient(to right, rgba(212,175,55,0.06), rgba(212,175,55,0.02));
       z-index: 4;
+      box-shadow: inset 0 0 0 3px rgba(212, 175, 55, 0.20);
     }
 
     .door.left {
       left: 0;
+      border-right: 2px solid rgba(212, 175, 55, 0.34);
       animation: openLeftDoor 2.6s ease-in-out 1.2s forwards;
     }
 
     .door.right {
       right: 0;
+      border-left: 2px solid rgba(212, 175, 55, 0.34);
       animation: openRightDoor 2.6s ease-in-out 1.2s forwards;
+    }
+
+    .door::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 2px solid rgba(212, 175, 55, 0.24);
+      border-radius: 18px;
+    }
+
+    .door::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      background: rgba(212, 175, 55, 0.95);
+      border-radius: 999px;
+      transform: translateY(-50%);
+      box-shadow: 0 0 18px rgba(212, 175, 55, 0.45);
+    }
+
+    .door.left::after {
+      right: 28px;
+    }
+
+    .door.right::after {
+      left: 28px;
     }
 
     .center-seam-glow {
       position: absolute;
+      top: 0;
+      bottom: 0;
       left: 50%;
       width: 10px;
-      height: 100%;
       transform: translateX(-50%);
-      background: gold;
+      background:
+        linear-gradient(to bottom, transparent, rgba(255, 223, 128, 0.98), transparent);
       z-index: 6;
-      animation: seamFlash 1s ease-out forwards;
+      opacity: 0.95;
+      box-shadow:
+        0 0 20px rgba(255, 223, 128, 0.70),
+        0 0 50px rgba(255, 223, 128, 0.42);
+      animation: seamGlow 1.8s ease-in-out 0s 2, seamFlash 0.9s ease-out 0.25s forwards;
     }
 
     .headline-wrap {
@@ -145,58 +179,173 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 24px;
       z-index: 7;
+      pointer-events: none;
+    }
+
+    .headline-panel {
+      text-align: center;
+      max-width: 980px;
+      padding: 28px 28px 22px;
+      border-radius: 24px;
+      background: rgba(0, 0, 0, 0.36);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.42);
+      animation: fadeUp 1.2s ease 0.2s both;
+    }
+
+    .eyebrow {
+      color: #f3d56a;
+      font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+      font-weight: 800;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
     }
 
     .title {
-      font-size: clamp(2.2rem, 6vw, 5rem);
+      color: #fff;
+      font-size: clamp(2.2rem, 6vw, 5.3rem);
       font-weight: 900;
-      color: white;
-      text-align: center;
+      line-height: 0.96;
+      margin: 0;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.12);
+    }
+
+    .subtitle {
+      color: #f0f0f0;
+      font-size: clamp(1rem, 2.2vw, 1.55rem);
+      font-weight: 700;
+      line-height: 1.45;
+      max-width: 780px;
+      margin: 18px auto 0;
     }
 
     .status-line {
       position: absolute;
-      bottom: 30px;
-      width: 100%;
-      text-align: center;
-      color: gold;
-      font-weight: bold;
+      left: 50%;
+      bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      transform: translateX(-50%);
       z-index: 8;
+      color: #f3d56a;
+      font-size: clamp(0.95rem, 1.8vw, 1.08rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(243, 213, 106, 0.22);
+      animation: pulseText 1.8s ease-in-out infinite;
+      max-width: calc(100vw - 32px);
+      text-align: center;
     }
 
     @keyframes openLeftDoor {
-      to { transform: translateX(-100%); }
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-102%); }
     }
 
     @keyframes openRightDoor {
-      to { transform: translateX(100%); }
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(102%); }
     }
 
-    @keyframes burstFlash {
-      0% { opacity: 0; }
-      50% { opacity: 1; }
+    @keyframes seamGlow {
+      0%   { opacity: 0.18; }
+      50%  { opacity: 1; }
       100% { opacity: 0; }
     }
 
     @keyframes seamFlash {
-      0% { opacity: 1; }
-      100% { opacity: 0; }
+      0%   { width: 10px; opacity: 0.9; }
+      40%  { width: 24px; opacity: 1; }
+      100% { width: 14px; opacity: 0; }
+    }
+
+    @keyframes burstFlash {
+      0%   { opacity: 0; transform: scale(0.86); }
+      35%  { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(1.10); }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulseText {
+      0%, 100% { opacity: 0.72; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes interiorPulse {
+      0%, 100% { opacity: 0.72; }
+      50% { opacity: 1; }
     }
 
     @keyframes floatParticle {
-      to {
-        transform: translateY(-120px);
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-120px) scale(0.6);
         opacity: 0;
       }
     }
 
-    @keyframes interiorPulse {
-      50% { opacity: 1; }
+    @media (min-width: 768px) {
+      .entrance-frame {
+        top: 50%;
+        left: 50%;
+        inset: auto;
+        width: min(94vw, 1300px);
+        height: min(88vh, 780px);
+        transform: translate(-50%, -50%);
+        border-radius: 28px;
+        box-shadow:
+          0 0 0 2px rgba(212, 175, 55, 0.28),
+          0 24px 60px rgba(0, 0, 0, 0.65),
+          0 0 40px rgba(212, 175, 55, 0.10);
+      }
+
+      .headline-panel {
+        padding: 28px 28px 22px;
+      }
+
+      .status-line {
+        bottom: 42px;
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .headline-panel {
+        width: calc(100vw - 24px);
+        max-width: none;
+        padding: 22px 16px 18px;
+        border-radius: 18px;
+      }
+
+      .title {
+        font-size: clamp(2rem, 10vw, 3.2rem);
+      }
+
+      .subtitle {
+        font-size: clamp(0.95rem, 4vw, 1.1rem);
+        margin-top: 14px;
+      }
     }
   </style>
 </head>
-
 <body>
 
   <div class="scene">
@@ -212,38 +361,54 @@
       <div class="center-seam-glow"></div>
 
       <div class="headline-wrap">
-        <h1 class="title">MajicMall<br>Megaverse</h1>
+        <div class="headline-panel">
+          <div class="eyebrow">Welcome To</div>
+          <h1 class="title">MajicMall<br>Megaverse</h1>
+          <p class="subtitle">
+            Step through the doors into a world of merchants, zones, experiences, and discovery.
+          </p>
+        </div>
       </div>
 
       <div class="status-line">
-        Opening the doors...
+        Opening the doors to MajicMall Megaverse...
       </div>
 
     </div>
   </div>
 
   <script>
+    const transitionDelay = 5200;
+    const fadeDuration = 1000;
     const nextUrl = "{% url 'mall-home' %}";
 
     function spawnParticles() {
       const container = document.querySelector(".particles");
+      if (!container) return;
+
       for (let i = 0; i < 14; i++) {
         const p = document.createElement("span");
         p.style.left = (48 + Math.random() * 4) + "%";
         p.style.top = "55%";
         container.appendChild(p);
-        setTimeout(() => p.remove(), 2500);
+
+        setTimeout(function () {
+          p.remove();
+        }, 2500);
       }
     }
 
-    setTimeout(spawnParticles, 1200);
+    setTimeout(function () {
+      spawnParticles();
+    }, 1200);
 
-    setTimeout(() => {
+    setTimeout(function () {
       document.body.style.opacity = "0";
-      setTimeout(() => {
+
+      setTimeout(function () {
         window.location.href = nextUrl;
-      }, 1000);
-    }, 5200);
+      }, fadeDuration);
+    }, transitionDelay);
   </script>
 
 </body>

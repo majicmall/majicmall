@@ -318,10 +318,6 @@
 </head>
 <body>
 
-  <audio id="doorSound" preload="auto">
-    <source src="{% static 'audio/door_whoosh.mp3' %}" type="audio/mpeg">
-  </audio>
-
   <div class="scene">
     <div class="entrance-frame">
 
@@ -372,17 +368,8 @@
       }
     }
 
-    function playDoorSound() {
-      const audio = document.getElementById("doorSound");
-      if (!audio) return;
-
-      audio.volume = 0.25;
-      audio.play().catch(function () {});
-    }
-
     setTimeout(function () {
       spawnParticles();
-      playDoorSound();
     }, 1200);
 
     setTimeout(function () {

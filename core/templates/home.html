@@ -12,7 +12,7 @@
       margin: 0;
       padding: 0;
       width: 100%;
-      min-height: 100%;
+      height: 100%;
       background: #000;
       overflow: hidden;
       font-family: Arial, sans-serif;
@@ -24,7 +24,8 @@
     }
 
     .scene {
-      position: relative;
+      position: fixed;
+      inset: 0;
       width: 100vw;
       height: 100vh;
       height: 100svh;
@@ -37,9 +38,11 @@
 
     .entrance-frame {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      inset: -8px;
+      width: calc(100vw + 16px);
+      height: calc(100vh + 16px);
+      height: calc(100svh + 16px);
+      height: calc(100dvh + 16px);
       overflow: hidden;
       background: #050505;
     }
@@ -51,7 +54,7 @@
         linear-gradient(to bottom, rgba(255,255,255,0.08), transparent 20%),
         linear-gradient(to top, rgba(0,0,0,0.28), transparent 26%),
         url("{% static 'img/inside_majic_mall.png' %}") center center / cover no-repeat;
-      transform: scale(1.02);
+      transform: scale(1.08);
       filter: brightness(0.82) saturate(1.04);
       z-index: 1;
     }
@@ -358,6 +361,10 @@
           0 0 0 2px rgba(212, 175, 55, 0.28),
           0 24px 60px rgba(0, 0, 0, 0.65),
           0 0 40px rgba(212, 175, 55, 0.10);
+      }
+
+      .interior-view {
+        transform: scale(1.03);
       }
 
       .headline-panel {

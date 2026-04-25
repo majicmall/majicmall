@@ -41,19 +41,68 @@
       object-position: center center;
       z-index: 1;
       transform: scale(1.03);
-      filter: brightness(0.82) saturate(1.04);
+      filter: brightness(0.82) saturate(1.08);
     }
 
-    .scene::before {
-      content: "";
+    .luxury-overlay {
       position: absolute;
       inset: 0;
       z-index: 2;
-      background:
-        radial-gradient(circle at center, rgba(255, 224, 140, 0.16), transparent 42%),
-        linear-gradient(to bottom, rgba(255,255,255,0.06), transparent 18%),
-        linear-gradient(to bottom, rgba(0,0,0,0.12), rgba(0,0,0,0.22));
       pointer-events: none;
+      background:
+        radial-gradient(circle at center, rgba(255, 224, 140, 0.18), transparent 42%),
+        linear-gradient(to bottom, rgba(0,0,0,0.06), rgba(0,0,0,0.24));
+    }
+
+    .spotlight {
+      position: absolute;
+      top: -20%;
+      width: 44vw;
+      height: 145%;
+      z-index: 3;
+      pointer-events: none;
+      filter: blur(18px);
+      opacity: 0.72;
+      mix-blend-mode: screen;
+      transform-origin: top center;
+    }
+
+    .spotlight.gold-left {
+      left: -18vw;
+      background: linear-gradient(
+        160deg,
+        rgba(255, 215, 80, 0.72) 0%,
+        rgba(212, 175, 55, 0.40) 24%,
+        rgba(212, 175, 55, 0.12) 52%,
+        transparent 76%
+      );
+      animation: sweepLeft 5.8s ease-in-out infinite alternate;
+    }
+
+    .spotlight.red-right {
+      right: -18vw;
+      background: linear-gradient(
+        200deg,
+        rgba(255, 70, 70, 0.58) 0%,
+        rgba(220, 38, 38, 0.34) 24%,
+        rgba(220, 38, 38, 0.10) 52%,
+        transparent 76%
+      );
+      animation: sweepRight 6.4s ease-in-out infinite alternate;
+    }
+
+    .spotlight.gold-center {
+      left: 35vw;
+      top: -28%;
+      width: 32vw;
+      opacity: 0.42;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 237, 160, 0.65) 0%,
+        rgba(212, 175, 55, 0.22) 38%,
+        transparent 72%
+      );
+      animation: centerGlowMove 7s ease-in-out infinite alternate;
     }
 
     .burst-flash {
@@ -112,26 +161,26 @@
       backdrop-filter: blur(3px);
       -webkit-backdrop-filter: blur(3px);
       background:
-        linear-gradient(to bottom, rgba(255,255,255,0.14), rgba(255,255,255,0.04) 20%, rgba(255,255,255,0.02) 45%, rgba(0,0,0,0.08) 100%),
-        linear-gradient(to right, rgba(255,255,255,0.12), rgba(255,255,255,0.02));
-      border-top: 2px solid rgba(212, 175, 55, 0.30);
-      border-bottom: 2px solid rgba(212, 175, 55, 0.30);
+        linear-gradient(to bottom, rgba(255,255,255,0.16), rgba(255,255,255,0.05) 20%, rgba(255,255,255,0.025) 45%, rgba(0,0,0,0.08) 100%),
+        linear-gradient(to right, rgba(255,255,255,0.13), rgba(255,255,255,0.025));
+      border-top: 2px solid rgba(212, 175, 55, 0.34);
+      border-bottom: 2px solid rgba(212, 175, 55, 0.34);
       box-shadow:
-        inset 0 0 0 2px rgba(212, 175, 55, 0.20),
-        inset 0 0 36px rgba(255,255,255,0.06);
+        inset 0 0 0 2px rgba(212, 175, 55, 0.22),
+        inset 0 0 42px rgba(255,255,255,0.08);
     }
 
     .door.left {
       left: 0;
-      border-left: 2px solid rgba(212, 175, 55, 0.34);
-      border-right: 1px solid rgba(212, 175, 55, 0.26);
+      border-left: 2px solid rgba(212, 175, 55, 0.38);
+      border-right: 1px solid rgba(212, 175, 55, 0.28);
       animation: openLeftDoor 2.6s ease-in-out 1.2s forwards;
     }
 
     .door.right {
       right: 0;
-      border-right: 2px solid rgba(212, 175, 55, 0.34);
-      border-left: 1px solid rgba(212, 175, 55, 0.26);
+      border-right: 2px solid rgba(212, 175, 55, 0.38);
+      border-left: 1px solid rgba(212, 175, 55, 0.28);
       animation: openRightDoor 2.6s ease-in-out 1.2s forwards;
     }
 
@@ -139,7 +188,7 @@
       content: "";
       position: absolute;
       inset: 18px;
-      border: 2px solid rgba(212, 175, 55, 0.28);
+      border: 2px solid rgba(212, 175, 55, 0.30);
       pointer-events: none;
     }
 
@@ -149,8 +198,8 @@
       top: 15%;
       bottom: 15%;
       width: 2px;
-      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.7), transparent);
-      opacity: 0.7;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.78), transparent);
+      opacity: 0.72;
       pointer-events: none;
     }
 
@@ -169,8 +218,8 @@
       height: 130%;
       background: linear-gradient(
         to bottom,
-        rgba(255,255,255,0.22),
-        rgba(255,255,255,0.06) 24%,
+        rgba(255,255,255,0.26),
+        rgba(255,255,255,0.08) 24%,
         rgba(255,255,255,0.00) 54%
       );
       transform: skewX(-14deg);
@@ -194,9 +243,9 @@
       height: 90px;
       transform: translateY(-50%);
       border-radius: 999px;
-      background: linear-gradient(to bottom, #f3d56a, #c9a227, #f3d56a);
+      background: linear-gradient(to bottom, #fff1a8, #c9a227, #fff1a8);
       box-shadow:
-        0 0 10px rgba(243, 213, 106, 0.45),
+        0 0 14px rgba(243, 213, 106, 0.55),
         inset 0 0 2px rgba(0,0,0,0.25);
     }
 
@@ -212,22 +261,28 @@
       position: absolute;
       inset: 0;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 18px;
+      padding-top: 14vh;
+      padding-left: 16px;
+      padding-right: 16px;
       z-index: 10;
       pointer-events: none;
     }
 
     .headline-panel {
-      width: min(980px, calc(100vw - 28px));
+      width: 100%;
+      max-width: 540px;
       text-align: center;
-      padding: 24px 18px 18px;
-      border-radius: 22px;
-      background: rgba(0, 0, 0, 0.34);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.42);
+      padding: 20px 16px 16px;
+      border-radius: 18px;
+      background: rgba(0, 0, 0, 0.58);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(243, 213, 106, 0.20);
+      box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.65),
+        0 0 40px rgba(212, 175, 55, 0.10);
       animation: fadeUp 1.15s ease 0.2s both;
     }
 
@@ -243,38 +298,59 @@
     .title {
       margin: 0;
       color: #fff;
-      font-size: clamp(2rem, 9vw, 5.1rem);
+      font-size: clamp(2.4rem, 11vw, 3.4rem);
       line-height: 0.95;
       font-weight: 900;
-      text-shadow: 0 0 20px rgba(255, 215, 0, 0.12);
+      text-shadow:
+        0 0 20px rgba(255, 215, 0, 0.16),
+        0 6px 24px rgba(0, 0, 0, 0.60);
     }
 
     .subtitle {
-      margin: 16px auto 0;
-      max-width: 760px;
-      color: #f0f0f0;
-      font-size: clamp(0.95rem, 4vw, 1.5rem);
-      font-weight: 700;
-      line-height: 1.4;
+      margin: 14px auto 0;
+      max-width: 430px;
+      color: #f5f5f5;
+      font-size: clamp(0.95rem, 4vw, 1.15rem);
+      font-weight: 650;
+      line-height: 1.45;
     }
 
     .status-line {
       position: absolute;
       left: 50%;
-      bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      bottom: calc(18px + env(safe-area-inset-bottom, 0px));
       transform: translateX(-50%);
       z-index: 11;
       max-width: calc(100vw - 24px);
       text-align: center;
       color: #f3d56a;
-      font-size: clamp(0.92rem, 3.6vw, 1.08rem);
-      font-weight: 700;
+      font-size: clamp(0.85rem, 3.5vw, 1rem);
+      font-weight: 800;
       letter-spacing: 0.03em;
-      background: rgba(0, 0, 0, 0.42);
-      padding: 10px 16px;
+      background: rgba(0, 0, 0, 0.62);
+      padding: 8px 14px;
       border-radius: 999px;
-      border: 1px solid rgba(243, 213, 106, 0.22);
+      border: 1px solid rgba(243, 213, 106, 0.28);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.60);
       animation: pulseText 1.8s ease-in-out infinite;
+    }
+
+    @keyframes sweepLeft {
+      0% { transform: translateX(-10px) rotate(-18deg); opacity: 0.45; }
+      50% { transform: translateX(70px) rotate(-6deg); opacity: 0.85; }
+      100% { transform: translateX(130px) rotate(5deg); opacity: 0.60; }
+    }
+
+    @keyframes sweepRight {
+      0% { transform: translateX(10px) rotate(18deg); opacity: 0.42; }
+      50% { transform: translateX(-70px) rotate(7deg); opacity: 0.80; }
+      100% { transform: translateX(-130px) rotate(-5deg); opacity: 0.58; }
+    }
+
+    @keyframes centerGlowMove {
+      0% { transform: translateX(-20px) rotate(-4deg); opacity: 0.25; }
+      50% { transform: translateX(10px) rotate(2deg); opacity: 0.55; }
+      100% { transform: translateX(34px) rotate(6deg); opacity: 0.35; }
     }
 
     @keyframes openLeftDoor {
@@ -337,14 +413,28 @@
         transform: scale(1.02);
       }
 
+      .headline-wrap {
+        align-items: center;
+        padding-top: 0;
+      }
+
       .headline-panel {
-        width: min(980px, calc(100% - 80px));
+        max-width: 980px;
         padding: 28px 28px 22px;
         border-radius: 24px;
       }
 
       .eyebrow {
         letter-spacing: 0.34em;
+      }
+
+      .title {
+        font-size: clamp(2.8rem, 6vw, 5.3rem);
+      }
+
+      .subtitle {
+        max-width: 760px;
+        font-size: clamp(1rem, 2.2vw, 1.55rem);
       }
 
       .status-line {
@@ -363,6 +453,12 @@
       class="entrance-bg"
     >
 
+    <div class="luxury-overlay"></div>
+
+    <div class="spotlight gold-left"></div>
+    <div class="spotlight red-right"></div>
+    <div class="spotlight gold-center"></div>
+
     <div class="burst-flash"></div>
     <div class="particles"></div>
 
@@ -380,10 +476,10 @@
 
     <div class="headline-wrap">
       <div class="headline-panel">
-        <div class="eyebrow">Welcome To</div>
+        <div class="eyebrow">Grand Opening</div>
         <h1 class="title">MajicMall<br>Megaverse</h1>
         <p class="subtitle">
-          Step through the glass doors into a world of merchants, zones, experiences, and discovery.
+          Step through the glass doors into an upscale world of merchants, zones, experiences, and discovery.
         </p>
       </div>
     </div>
@@ -402,7 +498,7 @@
       const container = document.querySelector(".particles");
       if (!container) return;
 
-      for (let i = 0; i < 16; i++) {
+      for (let i = 0; i < 18; i++) {
         const p = document.createElement("span");
         p.style.left = (48 + Math.random() * 4) + "%";
         p.style.top = "56%";

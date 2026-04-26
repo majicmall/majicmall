@@ -31,6 +31,7 @@
       background: #000;
     }
 
+    /* BACKGROUND FILL (removes black space) */
     .bg-fill {
       position: absolute;
       inset: 0;
@@ -43,16 +44,27 @@
       animation: bgPulse 4.6s ease forwards;
     }
 
+    /* MAIN IMAGE */
     .bg-main {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain;
+
+      /* 🔥 MOBILE FIX */
+      object-fit: cover;
+
       object-position: center center;
       z-index: 2;
       filter: brightness(1.04) contrast(1.06) saturate(1.12);
       animation: slowZoom 4.6s ease forwards;
+    }
+
+    /* DESKTOP SHOW FULL IMAGE */
+    @media (min-width: 768px) {
+      .bg-main {
+        object-fit: contain;
+      }
     }
 
     .glow {
@@ -113,9 +125,11 @@
 <script>
   setTimeout(() => {
     document.body.style.opacity = "0.96";
+
     setTimeout(() => {
       window.location.href = "/mall/";
     }, 650);
+
   }, 4300);
 </script>
 

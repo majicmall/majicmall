@@ -4,36 +4,154 @@
 <head>
   <meta charset="UTF-8">
   <title>Inside MajicMall</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
-      background-color: black;
+      min-height: 100%;
+      background: #000;
       font-family: Arial, sans-serif;
-      animation: fadeIn 1.2s ease-in-out;
-      overflow: hidden;
     }
 
-    .mall-background {
-      background-image: url("{% static 'img/inside_majic_mall.png' %}");
-      background-size: cover;
-      background-position: center;
+    body {
+      color: white;
+      overflow-x: hidden;
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    .mall-scene {
+      position: relative;
       min-height: 100vh;
       width: 100%;
-      position: relative;
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.65)),
+        url("{% static 'img/inside_majic_mall.png' %}") center center / cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 16px;
     }
 
-    .mall-background::before {
+    .mall-scene::before {
       content: "";
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0.55)),
-        radial-gradient(circle at center, rgba(255, 215, 0, 0.08), transparent 45%);
+        radial-gradient(circle at center, rgba(255, 215, 120, 0.12), transparent 45%),
+        linear-gradient(to top, rgba(0,0,0,0.58), transparent 48%);
       pointer-events: none;
+    }
+
+    .arrival-card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 760px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.58);
+      border: 1px solid rgba(243, 213, 106, 0.25);
+      border-radius: 28px;
+      padding: 28px 20px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.65),
+        0 0 40px rgba(212,175,55,0.10);
+    }
+
+    .kicker {
+      color: #f3d56a;
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      font-size: clamp(2.4rem, 10vw, 5rem);
+      line-height: 0.95;
+      font-weight: 900;
+      margin: 0;
+      text-shadow:
+        0 0 22px rgba(255, 215, 0, 0.16),
+        0 8px 28px rgba(0,0,0,0.75);
+    }
+
+    .subtitle {
+      margin: 18px auto 0;
+      max-width: 620px;
+      color: #f5f5f5;
+      font-size: clamp(1rem, 4vw, 1.35rem);
+      line-height: 1.55;
+      font-weight: 650;
+    }
+
+    .you-are-here {
+      margin-top: 18px;
+      color: #f3d56a;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .button-row {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 16px 22px;
+      border-radius: 18px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      text-decoration: none;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, #f3d56a, #d4af37);
+      color: #111;
+      box-shadow: 0 12px 32px rgba(212,175,55,0.25);
+    }
+
+    .secondary-btn {
+      background: rgba(20,20,20,0.9);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .primary-btn:hover,
+    .secondary-btn:hover {
+      transform: translateY(-2px);
+      opacity: 0.95;
+    }
+
+    .mall-hints {
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(243,213,106,0.12);
+      color: #eee;
+      font-size: 0.9rem;
+      font-weight: 700;
     }
 
     @keyframes fadeIn {
@@ -47,71 +165,60 @@
       }
     }
 
-    @keyframes welcomeFade {
-      0%   { opacity: 0; transform: translateY(-18px); }
-      15%  { opacity: 1; transform: translateY(0); }
-      85%  { opacity: 1; transform: translateY(0); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
+    @media (min-width: 640px) {
+      .arrival-card {
+        padding: 38px 34px;
+      }
 
-    .animate-welcome {
-      animation: welcomeFade 1.6s ease-out forwards;
-    }
+      .button-row {
+        flex-direction: row;
+        justify-content: center;
+      }
 
-    .glass-panel {
-      background: rgba(0, 0, 0, 0.58);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 215, 0, 0.22);
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
+      .primary-btn,
+      .secondary-btn {
+        width: auto;
+        min-width: 220px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="mall-background flex items-center justify-center px-4 sm:px-6">
-    <div class="relative z-10 w-full max-w-3xl text-center">
+  <main class="mall-scene">
+    <section class="arrival-card">
+      <div class="kicker">You Are Here</div>
 
-      <div class="glass-panel rounded-3xl px-6 py-8 sm:px-10 sm:py-10 animate-welcome">
-        <div class="text-yellow-400 text-sm sm:text-base font-bold tracking-widest uppercase mb-3">
-          You Are Here
-        </div>
+      <h1 class="title">
+        Inside<br>MajicMall
+      </h1>
 
-        <h1 class="text-white text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-4">
-          Welcome to MajicMall
-        </h1>
+      <p class="subtitle">
+        You’ve arrived inside the mall. From here, explore the directory, discover zones, visit merchants, and continue your journey through the MajicMall Megaverse.
+      </p>
 
-        <p class="text-yellow-300 text-lg sm:text-xl md:text-2xl font-semibold mb-4">
-          Shop • Browse • Play • Experience the Majic
-        </p>
-
-        <p class="text-gray-200 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-8">
-          You’ve stepped inside the mall. Look around, explore the atmosphere, and continue when you're ready.
-        </p>
-
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a
-            href="{% url 'mall-directory' %}"
-            class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-yellow-400 text-black font-extrabold text-lg md:text-xl rounded-2xl shadow-xl hover:bg-yellow-300 transition"
-          >
-            Open Directory
-          </a>
-
-          <a
-            href="{% url 'mall-entrance' %}"
-            class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-gray-900 text-white font-bold text-lg md:text-xl rounded-2xl border border-gray-700 hover:bg-gray-800 transition"
-          >
-            Back to Entrance
-          </a>
-        </div>
-
-        <div class="mt-8 text-gray-300 italic text-sm sm:text-base">
-          Food Court • Zones • Merchants • Experiences
-        </div>
+      <div class="you-are-here">
+        Food Court • Zones • Stores • Experiences
       </div>
 
-    </div>
-  </div>
+      <div class="button-row">
+        <a href="{% url 'mall-directory' %}" class="primary-btn">
+          Open Directory
+        </a>
+
+        <a href="{% url 'mall-entrance' %}" class="secondary-btn">
+          Back to Entrance
+        </a>
+      </div>
+
+      <div class="mall-hints">
+        <span class="pill">Food Court</span>
+        <span class="pill">Fashion Zone</span>
+        <span class="pill">Entertainment</span>
+        <span class="pill">Merchants</span>
+      </div>
+    </section>
+  </main>
 
 </body>
 </html>

@@ -2,84 +2,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>MajicMall Megaverse</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Inside MajicMall Megaverse</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<style>
-html, body {
-  margin:0;
-  padding:0;
-  background:#000;
-  height:100%;
-}
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: #000;
+      font-family: Arial, sans-serif;
+    }
 
-.scene {
-  position:relative;
-  height:100vh;
-}
+    body {
+      color: #fff;
+      overflow-x: hidden;
+    }
 
-/* FULL IMAGE FIRST */
-.bg {
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
+    .scene {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      background: #000;
+    }
 
-/* OVERLAY APPEARS LATER */
-.overlay {
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  opacity:0;
-  transition:opacity 1.5s ease;
-}
+    .inside-bg {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      z-index: 1;
+      filter: brightness(0.88) contrast(1.05) saturate(1.08);
+      animation: settleIn 3s ease forwards;
+    }
 
-.card {
-  background:rgba(0,0,0,.6);
-  padding:20px;
-  border-radius:20px;
-  color:white;
-  text-align:center;
-  border:1px solid gold;
-}
+    .inside-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      background:
+        radial-gradient(circle at center, rgba(255, 215, 120, 0.12), transparent 45%),
+        linear-gradient(to bottom, rgba(0,0,0,0.06), rgba(0,0,0,0.48));
+      pointer-events: none;
+    }
 
-.btn {
-  display:inline-block;
-  margin-top:15px;
-  padding:12px 20px;
-  background:gold;
-  color:black;
-  font-weight:bold;
-  border-radius:10px;
-  text-decoration:none;
-}
-</style>
+    .arrival-layer {
+      position: relative;
+      z-index: 3;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 24px 16px calc(26px + env(safe-area-inset-bottom, 0px));
+      opacity: 0;
+      animation: showControls 1.4s ease 2.2s forwards;
+    }
+
+    .arrival-card {
+      width: 100%;
+      max-width: 760px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.58);
+      border: 1px solid rgba(243, 213, 106, 0.25);
+      border-radius: 26px;
+      padding: 24px 18px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.65),
+        0 0 40px rgba(212,175,55,0.10);
+    }
+
+    .kicker {
+      color: #f3d56a;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 0.82rem;
+      margin-bottom: 10px;
+    }
+
+    .title {
+      font-size: clamp(2rem, 8vw, 4.4rem);
+      line-height: 0.95;
+      font-weight: 900;
+      margin: 0;
+      text-shadow:
+        0 0 22px rgba(255, 215, 0, 0.16),
+        0 8px 28px rgba(0,0,0,0.75);
+    }
+
+    .subtitle {
+      margin: 14px auto 0;
+      max-width: 620px;
+      color: #f5f5f5;
+      font-size: clamp(0.95rem, 3.5vw, 1.22rem);
+      line-height: 1.5;
+      font-weight: 650;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+      width: 100%;
+      max-width: 280px;
+      padding: 15px 22px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #fff1a8, #d4af37);
+      color: #111;
+      font-size: 1.05rem;
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: 0 12px 30px rgba(212,175,55,0.24);
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(243,213,106,0.12);
+      color: #eee;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    @keyframes settleIn {
+      from { transform: scale(1.04); }
+      to { transform: scale(1); }
+    }
+
+    @keyframes showControls {
+      to { opacity: 1; }
+    }
+
+    @media (min-width: 768px) {
+      .arrival-layer {
+        align-items: center;
+      }
+
+      .arrival-card {
+        padding: 34px 32px;
+      }
+
+      .btn {
+        width: auto;
+        min-width: 240px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="scene">
-  <img src="{% static 'img/inside_majic_mall.png' %}" class="bg">
+<main class="scene">
+  <img src="{% static 'img/inside_majic_mall.png' %}" class="inside-bg" alt="Inside MajicMall Megaverse">
+  <div class="inside-overlay"></div>
 
-  <div class="overlay" id="overlay">
-    <div class="card">
-      <h2>You Are Inside MajicMall Megaverse</h2>
-      <p>Explore the mall, discover zones, and experience the Majic.</p>
+  <section class="arrival-layer">
+    <div class="arrival-card">
+      <div class="kicker">You Are Here</div>
+
+      <h1 class="title">Inside<br>MajicMall Megaverse</h1>
+
+      <p class="subtitle">
+        You’ve arrived inside the mall. Take in the view, then continue to the directory when you’re ready.
+      </p>
+
       <a href="{% url 'mall-directory' %}" class="btn">Enter Directory</a>
-    </div>
-  </div>
-</div>
 
-<script>
-setTimeout(()=>{
-  document.getElementById("overlay").style.opacity="1";
-},2000); // 👈 delay so image is seen FIRST
-</script>
+      <div class="pills">
+        <span class="pill">Food Court</span>
+        <span class="pill">Zones</span>
+        <span class="pill">Stores</span>
+        <span class="pill">Experiences</span>
+      </div>
+    </div>
+  </section>
+</main>
 
 </body>
 </html>

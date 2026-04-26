@@ -2,114 +2,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Enter MajicMall Megaverse</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta charset="UTF-8">
+  <title>Enter MajicMall Megaverse</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<style>
-html, body {
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#000;
-}
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: Arial, sans-serif;
+    }
 
-body { opacity:1; transition:opacity .8s ease; }
+    body {
+      opacity: 1;
+      transition: opacity 0.8s ease;
+    }
 
-.scene {
-  position:fixed;
-  inset:0;
-}
+    .scene {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #000;
+    }
 
-/* FULL IMAGE (NO CROPPING) */
-.bg {
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:contain; /* 👈 shows full image */
-  background:#000;
-}
+    /* blurred full-screen fill — removes black space */
+    .bg-fill {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: blur(22px) brightness(0.48) saturate(1.35);
+      transform: scale(1.16);
+      z-index: 1;
+      animation: breathe 5s ease-in-out infinite alternate;
+    }
 
-/* DOORS */
-.door {
-  position:absolute;
-  top:0;
-  width:50%;
-  height:100%;
-  backdrop-filter:blur(3px);
-  background:rgba(255,255,255,0.05);
-  border:2px solid rgba(212,175,55,.4);
-  z-index:2;
-}
+    /* full grand image — no side cropping */
+    .bg-main {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      z-index: 2;
+      filter: brightness(1.02) contrast(1.05) saturate(1.12);
+    }
 
-.door.left { left:0; animation:openLeft 2.6s ease 1.2s forwards; }
-.door.right { right:0; animation:openRight 2.6s ease 1.2s forwards; }
+    .luxury-glow {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at center, rgba(255, 215, 120, 0.22), transparent 42%),
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.10), transparent 25%),
+        linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.28));
+      mix-blend-mode: screen;
+    }
 
-@keyframes openLeft { to { transform:translateX(-105%); } }
-@keyframes openRight { to { transform:translateX(105%); } }
+    .edge-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      background:
+        linear-gradient(to right, rgba(0,0,0,0.32), transparent 18%, transparent 82%, rgba(0,0,0,0.32)),
+        linear-gradient(to bottom, rgba(0,0,0,0.16), transparent 28%, rgba(0,0,0,0.24));
+    }
 
-/* HANDLE */
-.handle {
-  position:absolute;
-  top:50%;
-  width:10px;
-  height:90px;
-  transform:translateY(-50%);
-  border-radius:999px;
-  background:linear-gradient(to bottom,#fff1a8,#c9a227,#fff1a8);
-  box-shadow:0 0 14px rgba(243,213,106,.7);
-}
+    .door {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      z-index: 7;
+      overflow: hidden;
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.06) 22%, rgba(255,255,255,0.025) 48%, rgba(0,0,0,0.08)),
+        linear-gradient(to right, rgba(255,255,255,0.14), rgba(255,255,255,0.025));
+      border: 2px solid rgba(212,175,55,0.42);
+      box-shadow:
+        inset 0 0 0 2px rgba(255,255,255,0.08),
+        inset 0 0 45px rgba(255,255,255,0.08),
+        0 0 30px rgba(212,175,55,0.18);
+    }
 
-.left .handle { right:20px; }
-.right .handle { left:20px; }
+    .door.left {
+      left: 0;
+      animation: openLeft 2.7s ease-in-out 1.2s forwards;
+    }
 
-/* LIGHT SWEEP */
-.handle::after {
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(to bottom,transparent,white,transparent);
-  opacity:0;
-  animation:sweep 1.5s ease 1.3s forwards;
-}
+    .door.right {
+      right: 0;
+      animation: openRight 2.7s ease-in-out 1.2s forwards;
+    }
 
-@keyframes sweep {
-  0% {opacity:0; transform:translateY(-40px);}
-  40% {opacity:1;}
-  100% {opacity:0; transform:translateY(60px);}
-}
+    .reflection {
+      position: absolute;
+      top: -25%;
+      width: 42%;
+      height: 150%;
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.36),
+        rgba(255,255,255,0.10) 24%,
+        transparent 58%
+      );
+      opacity: 0;
+      pointer-events: none;
+      animation: reflectMove 2.4s ease 1.2s forwards;
+    }
 
-/* REFLECTION */
-.reflection {
-  position:absolute;
-  top:-20%;
-  width:40%;
-  height:140%;
-  background:linear-gradient(to bottom,rgba(255,255,255,.3),transparent);
-  transform:skewX(-15deg);
-  opacity:0;
-  animation:reflect 2s ease 1.2s forwards;
-}
+    .door.left .reflection {
+      right: 10%;
+      transform: skewX(-15deg);
+    }
 
-.left .reflection { right:12%; }
-.right .reflection { left:12%; transform:skewX(15deg); }
+    .door.right .reflection {
+      left: 10%;
+      transform: skewX(15deg);
+    }
 
-@keyframes reflect {
-  0% {opacity:0; transform:translateX(-60px);}
-  30% {opacity:.6;}
-  100% {opacity:0; transform:translateX(120px);}
-}
+    .handle {
+      position: absolute;
+      top: 50%;
+      width: 11px;
+      height: 98px;
+      transform: translateY(-50%);
+      border-radius: 999px;
+      background: linear-gradient(to bottom, #fff5bd, #d4af37 48%, #fff1a8);
+      box-shadow:
+        0 0 18px rgba(243,213,106,0.72),
+        inset 0 0 3px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
 
-</style>
+    .door.left .handle { right: 24px; }
+    .door.right .handle { left: 24px; }
+
+    .handle::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.95), transparent);
+      opacity: 0;
+      animation: handleSweep 1.6s ease 1.35s forwards;
+    }
+
+    .seam-light {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 10px;
+      transform: translateX(-50%);
+      z-index: 8;
+      background: linear-gradient(to bottom, transparent, rgba(255, 240, 180, 1), transparent);
+      box-shadow:
+        0 0 20px rgba(255, 223, 128, 0.85),
+        0 0 60px rgba(255, 223, 128, 0.45);
+      animation: seamFade 1.8s ease forwards;
+      pointer-events: none;
+    }
+
+    .particles span {
+      position: absolute;
+      z-index: 9;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: gold;
+      box-shadow: 0 0 12px gold;
+      animation: float 2.2s ease-out forwards;
+    }
+
+    @keyframes breathe {
+      from { transform: scale(1.13); }
+      to { transform: scale(1.19); }
+    }
+
+    @keyframes openLeft {
+      to { transform: translateX(-105%); }
+    }
+
+    @keyframes openRight {
+      to { transform: translateX(105%); }
+    }
+
+    @keyframes reflectMove {
+      0% { opacity: 0; transform: translateX(-70px) skewX(-15deg); }
+      35% { opacity: 0.62; }
+      100% { opacity: 0; transform: translateX(130px) skewX(-15deg); }
+    }
+
+    @keyframes handleSweep {
+      0% { opacity: 0; transform: translateY(-45px); }
+      40% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(70px); }
+    }
+
+    @keyframes seamFade {
+      0% { opacity: 0.15; width: 8px; }
+      45% { opacity: 1; width: 24px; }
+      100% { opacity: 0; width: 12px; }
+    }
+
+    @keyframes float {
+      to {
+        transform: translateY(-130px) scale(0.55);
+        opacity: 0;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
 <div class="scene">
-  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="bg">
+  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="bg-fill" alt="">
+  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="bg-main" alt="MajicMall Megaverse Grand Entrance">
+
+  <div class="luxury-glow"></div>
+  <div class="edge-vignette"></div>
 
   <div class="door left">
     <div class="reflection"></div>
@@ -120,15 +244,29 @@ body { opacity:1; transition:opacity .8s ease; }
     <div class="reflection"></div>
     <div class="handle"></div>
   </div>
+
+  <div class="seam-light"></div>
 </div>
 
 <script>
-setTimeout(()=>{
-  document.body.style.opacity="0.95"; // 👈 NO BLACK FLASH
-  setTimeout(()=>{
-    window.location.href="/grand-reveal/";
-  },600);
-},4800);
+  function particles() {
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement("span");
+      p.style.left = (48 + Math.random() * 4) + "%";
+      p.style.top = "58%";
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 2200);
+    }
+  }
+
+  setTimeout(particles, 1200);
+
+  setTimeout(() => {
+    document.body.style.opacity = "0.96";
+    setTimeout(() => {
+      window.location.href = "/grand-reveal/";
+    }, 650);
+  }, 5000);
 </script>
 
 </body>

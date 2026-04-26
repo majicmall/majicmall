@@ -2,223 +2,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Inside MajicMall</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<title>MajicMall Megaverse</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      background: #000;
-      font-family: Arial, sans-serif;
-    }
+<style>
+html, body {
+  margin:0;
+  padding:0;
+  background:#000;
+  height:100%;
+}
 
-    body {
-      color: white;
-      overflow-x: hidden;
-      animation: fadeIn 1.2s ease-in-out;
-    }
+.scene {
+  position:relative;
+  height:100vh;
+}
 
-    .mall-scene {
-      position: relative;
-      min-height: 100vh;
-      width: 100%;
-      background:
-        linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.65)),
-        url("{% static 'img/inside_majic_mall.png' %}") center center / cover no-repeat;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 28px 16px;
-    }
+/* FULL IMAGE FIRST */
+.bg {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
 
-    .mall-scene::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at center, rgba(255, 215, 120, 0.12), transparent 45%),
-        linear-gradient(to top, rgba(0,0,0,0.58), transparent 48%);
-      pointer-events: none;
-    }
+/* OVERLAY APPEARS LATER */
+.overlay {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transition:opacity 1.5s ease;
+}
 
-    .arrival-card {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      max-width: 760px;
-      text-align: center;
-      background: rgba(0, 0, 0, 0.58);
-      border: 1px solid rgba(243, 213, 106, 0.25);
-      border-radius: 28px;
-      padding: 28px 20px;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow:
-        0 20px 60px rgba(0,0,0,0.65),
-        0 0 40px rgba(212,175,55,0.10);
-    }
+.card {
+  background:rgba(0,0,0,.6);
+  padding:20px;
+  border-radius:20px;
+  color:white;
+  text-align:center;
+  border:1px solid gold;
+}
 
-    .kicker {
-      color: #f3d56a;
-      font-weight: 900;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      margin-bottom: 12px;
-    }
-
-    .title {
-      font-size: clamp(2.4rem, 10vw, 5rem);
-      line-height: 0.95;
-      font-weight: 900;
-      margin: 0;
-      text-shadow:
-        0 0 22px rgba(255, 215, 0, 0.16),
-        0 8px 28px rgba(0,0,0,0.75);
-    }
-
-    .subtitle {
-      margin: 18px auto 0;
-      max-width: 620px;
-      color: #f5f5f5;
-      font-size: clamp(1rem, 4vw, 1.35rem);
-      line-height: 1.55;
-      font-weight: 650;
-    }
-
-    .you-are-here {
-      margin-top: 18px;
-      color: #f3d56a;
-      font-size: 1rem;
-      font-weight: 800;
-    }
-
-    .button-row {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-top: 28px;
-    }
-
-    .primary-btn,
-    .secondary-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      padding: 16px 22px;
-      border-radius: 18px;
-      font-size: 1.1rem;
-      font-weight: 900;
-      text-decoration: none;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-    }
-
-    .primary-btn {
-      background: linear-gradient(135deg, #f3d56a, #d4af37);
-      color: #111;
-      box-shadow: 0 12px 32px rgba(212,175,55,0.25);
-    }
-
-    .secondary-btn {
-      background: rgba(20,20,20,0.9);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.14);
-    }
-
-    .primary-btn:hover,
-    .secondary-btn:hover {
-      transform: translateY(-2px);
-      opacity: 0.95;
-    }
-
-    .mall-hints {
-      margin-top: 22px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-
-    .pill {
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(243,213,106,0.12);
-      color: #eee;
-      font-size: 0.9rem;
-      font-weight: 700;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: scale(1.01);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    @media (min-width: 640px) {
-      .arrival-card {
-        padding: 38px 34px;
-      }
-
-      .button-row {
-        flex-direction: row;
-        justify-content: center;
-      }
-
-      .primary-btn,
-      .secondary-btn {
-        width: auto;
-        min-width: 220px;
-      }
-    }
-  </style>
+.btn {
+  display:inline-block;
+  margin-top:15px;
+  padding:12px 20px;
+  background:gold;
+  color:black;
+  font-weight:bold;
+  border-radius:10px;
+  text-decoration:none;
+}
+</style>
 </head>
+
 <body>
 
-  <main class="mall-scene">
-    <section class="arrival-card">
-      <div class="kicker">You Are Here</div>
+<div class="scene">
+  <img src="{% static 'img/inside_majic_mall.png' %}" class="bg">
 
-      <h1 class="title">
-        Inside<br>MajicMall
-      </h1>
+  <div class="overlay" id="overlay">
+    <div class="card">
+      <h2>You Are Inside MajicMall Megaverse</h2>
+      <p>Explore the mall, discover zones, and experience the Majic.</p>
+      <a href="{% url 'mall-directory' %}" class="btn">Enter Directory</a>
+    </div>
+  </div>
+</div>
 
-      <p class="subtitle">
-        You’ve arrived inside the mall. From here, explore the directory, discover zones, visit merchants, and continue your journey through the MajicMall Megaverse.
-      </p>
-
-      <div class="you-are-here">
-        Food Court • Zones • Stores • Experiences
-      </div>
-
-      <div class="button-row">
-        <a href="{% url 'mall-directory' %}" class="primary-btn">
-          Open Directory
-        </a>
-
-        <a href="{% url 'mall-entrance' %}" class="secondary-btn">
-          Back to Entrance
-        </a>
-      </div>
-
-      <div class="mall-hints">
-        <span class="pill">Food Court</span>
-        <span class="pill">Fashion Zone</span>
-        <span class="pill">Entertainment</span>
-        <span class="pill">Merchants</span>
-      </div>
-    </section>
-  </main>
+<script>
+setTimeout(()=>{
+  document.getElementById("overlay").style.opacity="1";
+},2000); // 👈 delay so image is seen FIRST
+</script>
 
 </body>
 </html>

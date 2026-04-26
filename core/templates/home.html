@@ -37,8 +37,9 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center 70%;
       filter: blur(22px) brightness(0.48) saturate(1.35);
-      transform: scale(1.16);
+      transform: scale(1.12);
       z-index: 1;
       animation: breathe 5s ease-in-out infinite alternate;
     }
@@ -49,15 +50,18 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center 58%;
+      object-position: center 72%;
       z-index: 2;
       filter: brightness(1.04) contrast(1.06) saturate(1.12);
+      transform: scale(0.96);
       transition: transform 0.8s ease, filter 0.8s ease;
     }
 
     @media (min-width: 768px) {
       .bg-main {
         object-fit: contain;
+        object-position: center center;
+        transform: scale(1);
       }
     }
 
@@ -79,8 +83,8 @@
       z-index: 4;
       pointer-events: none;
       background:
-        linear-gradient(to right, rgba(0,0,0,0.24), transparent 18%, transparent 82%, rgba(0,0,0,0.24)),
-        linear-gradient(to bottom, rgba(0,0,0,0.12), transparent 28%, rgba(0,0,0,0.22));
+        linear-gradient(to right, rgba(0,0,0,0.20), transparent 18%, transparent 82%, rgba(0,0,0,0.20)),
+        linear-gradient(to bottom, rgba(0,0,0,0.08), transparent 30%, rgba(0,0,0,0.12));
     }
 
     .door {
@@ -192,8 +196,8 @@
     }
 
     @keyframes breathe {
-      from { transform: scale(1.13); }
-      to { transform: scale(1.19); }
+      from { transform: scale(1.10); }
+      to { transform: scale(1.16); }
     }
 
     @keyframes openLeft {
@@ -268,8 +272,15 @@
 
   setTimeout(() => {
     const mainImage = document.querySelector(".bg-main");
+
     if (mainImage) {
-      mainImage.style.transform = "scale(1.02)";
+      if (window.innerWidth < 768) {
+        mainImage.style.transform = "scale(0.99)";
+        mainImage.style.objectPosition = "center 74%";
+      } else {
+        mainImage.style.transform = "scale(1.02)";
+      }
+
       mainImage.style.filter = "brightness(0.98) contrast(1.06) saturate(1.12)";
     }
 

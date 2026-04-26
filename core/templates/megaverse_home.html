@@ -1,422 +1,192 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>MajicMall Megaverse</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<title>MajicMall Megaverse</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-  <style>
-    .spotlight-left,
-    .spotlight-right {
-      position: absolute;
-      top: -10%;
-      width: 36rem;
-      height: 120%;
-      pointer-events: none;
-      filter: blur(10px);
-      opacity: 0.30;
-      mix-blend-mode: screen;
-    }
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
 
-    .spotlight-left {
-      left: -8rem;
-      background: linear-gradient(
-        160deg,
-        rgba(212, 175, 55, 0.30) 0%,
-        rgba(212, 175, 55, 0.14) 22%,
-        rgba(212, 175, 55, 0.03) 42%,
-        rgba(212, 175, 55, 0) 58%
-      );
-      transform: rotate(-12deg);
-    }
+<style>
+html, body {
+  margin:0;
+  padding:0;
+  height:100%;
+  background:#000;
+  overflow:hidden;
+  font-family:'Montserrat', sans-serif;
+  color:#fff;
+}
 
-    .spotlight-right {
-      right: -8rem;
-      background: linear-gradient(
-        200deg,
-        rgba(220, 38, 38, 0.30) 0%,
-        rgba(220, 38, 38, 0.14) 22%,
-        rgba(220, 38, 38, 0.03) 42%,
-        rgba(220, 38, 38, 0) 58%
-      );
-      transform: rotate(12deg);
-    }
+/* MAIN CONTAINER */
+.scene {
+  position:relative;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  overflow:hidden;
+}
 
-    .gold-shimmer {
-      box-shadow:
-        0 0 18px rgba(201, 162, 39, 0.22),
-        0 0 42px rgba(201, 162, 39, 0.12);
-    }
+/* 🎥 MOVING SPOTLIGHTS */
+.spotlight {
+  position:absolute;
+  width:300px;
+  height:900px;
+  background:radial-gradient(circle, rgba(255,255,255,0.35), transparent 60%);
+  filter:blur(80px);
+  opacity:0.5;
+  animation:moveLight 8s linear infinite;
+}
 
-    .red-glow {
-      box-shadow:
-        0 0 22px rgba(185, 28, 28, 0.28),
-        0 0 46px rgba(220, 38, 38, 0.14);
-    }
+.spotlight.left {
+  left:-100px;
+  animation-direction:alternate;
+}
 
-    .hero-shimmer {
-      background: linear-gradient(
-        90deg,
-        #8f6b18 0%,
-        #d4af37 25%,
-        #f4e08a 50%,
-        #d4af37 75%,
-        #8f6b18 100%
-      );
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-      background-size: 200% auto;
-      animation: shimmer 5s linear infinite;
-    }
+.spotlight.right {
+  right:-100px;
+  animation-direction:alternate-reverse;
+}
 
-    .title-shimmer-red {
-      background: linear-gradient(
-        90deg,
-        #7f1d1d 0%,
-        #dc2626 18%,
-        #ffffff 34%,
-        #dc2626 50%,
-        #ffffff 66%,
-        #dc2626 82%,
-        #7f1d1d 100%
-      );
-      background-size: 250% auto;
-      background-position: 0% center;
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-      animation: titleShimmerMove 3.2s linear infinite;
-    }
+@keyframes moveLight {
+  0% { transform:translateY(-40%) rotate(10deg); }
+  100% { transform:translateY(40%) rotate(-10deg); }
+}
 
-    @keyframes shimmer {
-      to { background-position: 220% center; }
-    }
+/* BACKGROUND GRADIENT */
+.bg-gradient {
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at top, rgba(255,215,0,0.15), transparent 40%),
+    linear-gradient(to bottom, #000 20%, #111 60%, #000);
+  z-index:1;
+}
 
-    @keyframes titleShimmerMove {
-      0% { background-position: 0% center; }
-      100% { background-position: 250% center; }
-    }
+/* CONTENT */
+.content {
+  position:relative;
+  z-index:3;
+  max-width:600px;
+  padding:20px;
+}
 
-    @keyframes materializeLeft {
-      0% {
-        opacity: 0;
-        transform: translateX(-60px) scale(0.96);
-        filter: blur(14px);
-      }
-      65% {
-        opacity: 1;
-        transform: translateX(6px) scale(1.01);
-        filter: blur(0);
-      }
-      100% {
-        opacity: 1;
-        transform: translateX(0) scale(1);
-        filter: blur(0);
-      }
-    }
+/* TITLE */
+.title {
+  font-family:'Playfair Display', serif;
+  font-size:clamp(2.8rem,10vw,4.5rem);
+  font-weight:800;
+  line-height:1;
 
-    @keyframes materializeUp {
-      0% {
-        opacity: 0;
-        transform: translateY(46px) scale(0.94);
-        filter: blur(14px);
-      }
-      60% {
-        opacity: 1;
-        transform: translateY(-6px) scale(1.02);
-        filter: blur(0);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0);
-      }
-    }
+  background:linear-gradient(90deg,#fff1a8,#d4af37,#fff1a8);
 
-    @keyframes softFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-    }
+  /* ✅ compatibility fix */
+  background-clip: text;
+  -webkit-background-clip: text;
 
-    @keyframes buttonPulse {
-      0%, 100% {
-        transform: scale(1);
-        box-shadow:
-          0 0 28px rgba(220,38,38,0.32),
-          0 0 52px rgba(185,28,28,0.14);
-      }
-      50% {
-        transform: scale(1.04);
-        box-shadow:
-          0 0 52px rgba(239,68,68,0.42),
-          0 0 82px rgba(185,28,28,0.20);
-      }
-    }
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 
-    .site-title {
-      animation: materializeLeft 1.2s ease-out both;
-      filter: drop-shadow(0 0 12px rgba(220, 38, 38, 0.28))
-              drop-shadow(0 0 24px rgba(255, 255, 255, 0.10));
-    }
+  text-shadow:
+    0 0 20px rgba(255,215,0,0.25),
+    0 8px 30px rgba(0,0,0,0.8);
+}
 
-    .hero-kicker {
-      animation: materializeUp 1.1s ease-out both;
-    }
+/* MEGAVERSE (slightly larger emphasis) */
+.megaverse {
+  display:block;
+  font-size:clamp(3rem,11vw,5rem);
+  margin-top:8px;
+}
 
-    .hero-line-1 {
-      animation: materializeUp 1.2s ease-out both;
-      animation-delay: 0.10s;
-    }
+/* SUBTEXT */
+.subtitle {
+  margin-top:18px;
+  font-size:clamp(1rem,4vw,1.3rem);
+  color:#eee;
+  font-weight:500;
+  line-height:1.5;
+}
 
-    .hero-line-2 {
-      animation: materializeUp 1.3s ease-out both;
-      animation-delay: 0.30s;
-    }
+/* BUTTON */
+.cta {
+  margin-top:28px;
+  display:inline-block;
+  padding:16px 28px;
+  border-radius:30px;
+  font-weight:800;
+  font-size:1.1rem;
+  text-decoration:none;
+  color:#111;
 
-    .hero-tagline {
-      animation: materializeUp 1.25s ease-out both;
-      animation-delay: 0.50s;
-    }
+  background:linear-gradient(135deg,#fff1a8,#d4af37);
+  box-shadow:
+    0 12px 30px rgba(212,175,55,0.4),
+    0 0 15px rgba(255,215,0,0.5);
 
-    .hero-copy {
-      animation: materializeUp 1.35s ease-out both;
-      animation-delay: 0.70s;
-    }
+  transition:all 0.25s ease;
+}
 
-    .hero-card-float {
-      animation: softFloat 5s ease-in-out infinite;
-    }
+.cta:hover {
+  transform:translateY(-2px);
+  box-shadow:
+    0 18px 40px rgba(212,175,55,0.6),
+    0 0 25px rgba(255,215,0,0.7);
+}
 
-    .cta-magical {
-      animation: buttonPulse 2.6s ease-in-out infinite;
-    }
+/* RED SHIMMER LINE */
+.red-accent {
+  margin:20px auto 0;
+  width:120px;
+  height:4px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#8b0000,#ff2d2d,#8b0000);
+  box-shadow:0 0 10px rgba(255,0,0,0.6);
+  animation:glowRed 2s ease-in-out infinite alternate;
+}
 
-    .feature-card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+@keyframes glowRed {
+  from { opacity:0.6; }
+  to { opacity:1; }
+}
 
-    .feature-card:hover {
-      transform: translateY(-6px) scale(1.02);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-    }
-  </style>
+</style>
 </head>
-<body class="bg-black text-white overflow-x-hidden">
-  <div class="relative min-h-screen overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-red-950/25"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(184,134,11,0.24),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(220,38,38,0.24),transparent_30%),radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_35%)]"></div>
 
-    <div class="spotlight-left"></div>
-    <div class="spotlight-right"></div>
+<body>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-5 md:px-6 py-6 md:py-10">
-      <header class="flex items-center justify-between gap-4 rounded-2xl border border-[#b08d57]/25 bg-white/5 px-4 md:px-5 py-4 md:py-5 backdrop-blur">
-        <div class="site-title text-[1.7rem] sm:text-[2.3rem] md:text-[3.5rem] lg:text-[4.4rem] font-black tracking-tight text-center md:text-left whitespace-nowrap leading-none">
-          <span class="title-shimmer-red">MajicMall Megaverse</span>
-        </div>
+<div class="scene">
 
-        <div class="hidden md:flex items-center gap-3">
-          <a href="{% url 'account_login' %}?next={% url 'merchant-profile' %}"
-             class="px-6 py-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-lg border border-white/10 whitespace-nowrap leading-none">
-            Merchant Sign In
-          </a>
-          <a href="{% url 'account_signup' %}?next={% url 'merchant-profile' %}"
-             class="px-6 py-3.5 rounded-xl bg-[#c9a227] hover:brightness-110 text-black font-bold text-lg gold-shimmer whitespace-nowrap leading-none">
-            Create Store
-          </a>
-        </div>
-      </header>
+  <div class="bg-gradient"></div>
 
-      <main class="py-10 md:py-14 space-y-16 md:space-y-24">
-        <!-- HERO -->
-        <section class="grid lg:grid-cols-2 gap-12 md:gap-14 items-center">
-          <div class="w-full text-center lg:text-left flex flex-col items-center lg:items-start">
-            <div class="hero-kicker mb-8 w-full flex justify-center lg:justify-start">
-              <div class="inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20">
-                <span class="text-red-600 text-2xl sm:text-3xl md:text-4xl font-black tracking-[0.08em] uppercase leading-none text-center">
-                  Grand Opening
-                </span>
-              </div>
-            </div>
+  <!-- moving spotlights -->
+  <div class="spotlight left"></div>
+  <div class="spotlight right"></div>
 
-            <h1 class="w-full max-w-4xl hero-line-1 text-5xl sm:text-7xl md:text-8xl lg:text-[6.6rem] font-black leading-[0.88] tracking-tight text-white">
-              The
-              <span class="block hero-shimmer drop-shadow-[0_0_28px_rgba(201,162,39,0.24)]">
-                Mega Shopping
-              </span>
-            </h1>
+  <div class="content">
 
-            <h2 class="w-full max-w-4xl hero-line-2 text-5xl sm:text-7xl md:text-8xl lg:text-[6.6rem] font-black leading-[0.88] tracking-tight text-white mt-2">
-              <span class="border-b-4 border-red-700 pb-1">Experience</span>
-            </h2>
+    <h1 class="title">
+      MajicMall
+      <span class="megaverse">Megaverse</span>
+    </h1>
 
-            <p class="hero-tagline mt-7 text-2xl sm:text-4xl md:text-5xl text-white font-extrabold tracking-wide leading-tight max-w-4xl">
-              <span class="text-[#d4af37]">Shop.</span>
-              <span class="text-white"> Work.</span>
-              <span class="text-red-600"> Play.</span>
-              <span class="text-white"> Imagine.</span>
-              <span class="text-[#d4af37]"> Create.</span>
-            </p>
+    <div class="red-accent"></div>
 
-            <p class="hero-copy mt-7 text-lg sm:text-xl md:text-3xl text-zinc-100 max-w-3xl leading-relaxed font-semibold">
-              A world of discovery, entertainment, opportunity, and unforgettable experiences — all in one place.
-            </p>
+    <p class="subtitle">
+      Step into a world of luxury, discovery, and immersive experiences.
+    </p>
 
-            <div class="mt-9 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-              <a href="{% url 'mall-entrance' %}"
-                 class="cta-magical px-8 py-5 rounded-2xl bg-gradient-to-r from-red-800 to-red-600 text-white font-extrabold text-xl md:text-2xl text-center hover:brightness-110 red-glow border-2 border-white/20 tracking-wide">
-                ENTER MAJICMALL MEGAVERSE
-              </a>
+    <a href="{% url 'mall-entrance' %}" class="cta">
+      Enter MajicMall Megaverse
+    </a>
 
-              <a href="{% url 'account_signup' %}?next={% url 'merchant-profile' %}"
-                 class="px-8 py-5 rounded-2xl bg-gradient-to-r from-red-800 to-red-600 text-white font-extrabold text-xl md:text-2xl text-center hover:brightness-110 border border-white/20 red-glow">
-                Create Your Store
-              </a>
-            </div>
-          </div>
-        </section>
-
-        <!-- FEATURE GRID -->
-        <section>
-          <div class="mb-7 text-center md:text-left">
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/10 border border-[#b08d57]/20 text-[#d4af37] text-base md:text-lg font-extrabold mb-4">
-              <span class="text-red-600">Grand Opening</span>
-              <span class="text-[#d4af37]">Highlights</span>
-            </div>
-
-            <h2 class="text-4xl md:text-6xl font-extrabold text-white">
-              There’s Something Here For <span class="text-red-600 border-b-4 border-white/80 pb-1">Everyone</span>
-            </h2>
-
-            <p class="mt-4 text-xl md:text-2xl text-zinc-100 font-semibold max-w-4xl mx-auto md:mx-0">
-              Explore the world of MajicMall through shopping, work, entertainment, creativity, and imagination.
-            </p>
-          </div>
-
-          <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            <div class="feature-card rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl">
-              <div class="relative h-[380px]">
-                <img src="{% static 'img/majic_directory.png' %}" alt="Shop at MajicMall" class="absolute inset-0 w-full h-full object-cover opacity-55">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
-                <div class="absolute bottom-0 p-6">
-                  <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Shop</div>
-                  <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Discover brands, products, deals, gifts, and unforgettable finds.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="feature-card rounded-3xl overflow-hidden border border-red-600/40 bg-zinc-950 shadow-2xl">
-              <div class="relative h-[380px]">
-                <img src="{% static 'img/majic_directory.png' %}" alt="Work in MajicMall" class="absolute inset-0 w-full h-full object-cover opacity-55">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
-                <div class="absolute bottom-0 p-6">
-                  <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Work</div>
-                  <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Build your store, grow your brand, and create real opportunity.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="feature-card rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl">
-              <div class="relative h-[380px]">
-                <img src="{% static 'img/majic_directory.png' %}" alt="Play in MajicMall" class="absolute inset-0 w-full h-full object-cover opacity-55">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
-                <div class="absolute bottom-0 p-6">
-                  <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Play</div>
-                  <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Enjoy games, prizes, entertainment, movies, and immersive fun.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="feature-card rounded-3xl overflow-hidden border border-red-600/40 bg-zinc-950 shadow-2xl">
-              <div class="relative h-[380px]">
-                <img src="{% static 'img/majic_directory.png' %}" alt="Imagine in MajicMall" class="absolute inset-0 w-full h-full object-cover opacity-55">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
-                <div class="absolute bottom-0 p-6">
-                  <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Imagine</div>
-                  <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Step into a place where the future of shopping feels alive and limitless.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="feature-card rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl">
-              <div class="relative h-[380px]">
-                <img src="{% static 'img/majic_directory.png' %}" alt="Create in MajicMall" class="absolute inset-0 w-full h-full object-cover opacity-55">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
-                <div class="absolute bottom-0 p-6">
-                  <div class="text-3xl md:text-4xl font-extrabold text-[#c9a227]">Create</div>
-                  <p class="mt-2 text-lg md:text-xl text-zinc-100 font-semibold">Create stores, ideas, experiences, and a world customers will remember.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- COMMUNITY BLOCK -->
-        <section>
-          <div class="relative w-full -mx-2 sm:mx-0 max-w-none mx-auto lg:max-w-none hero-card-float">
-            <div class="absolute -inset-6 rounded-[2rem] bg-[#b08d57]/10 blur-3xl"></div>
-
-            <div class="relative rounded-[2rem] border border-[#b08d57]/20 bg-gradient-to-br from-zinc-950 via-zinc-900 to-black p-3 sm:p-4 md:p-6 shadow-2xl overflow-hidden">
-              <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(201,162,39,0.10),transparent_25%),radial-gradient(circle_at_bottom,rgba(220,38,38,0.12),transparent_35%)]"></div>
-
-              <div class="relative rounded-3xl overflow-hidden border border-white/10 bg-black min-h-[75vh] sm:min-h-[85vh] md:min-h-[760px] lg:min-h-[680px] flex flex-col justify-end">
-                <img
-                  src="{% static 'img/majic_directory.png' %}"
-                  alt="MajicMall Megaverse"
-                  class="absolute inset-0 w-full h-full object-cover opacity-45"
-                >
-
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-
-                <div class="relative p-5 sm:p-6 md:p-10 text-center md:text-left">
-                  <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b08d57]/15 border border-[#b08d57]/20 text-[#d4af37] text-base md:text-lg font-extrabold mb-5">
-                    <span class="text-red-600">Bold.</span>
-                    <span class="text-white"> Brilliant.</span>
-                    <span class="text-[#d4af37]"> Worth Exploring.</span>
-                  </div>
-
-                  <h2 class="text-4xl md:text-6xl font-extrabold leading-tight text-white max-w-2xl mx-auto md:mx-0">
-                    Join The <span class="text-red-600 border-b-4 border-white/80 pb-1">MajicMall</span> Megaverse Community.
-                  </h2>
-
-                  <p class="mt-4 text-lg md:text-2xl text-zinc-100 max-w-2xl font-semibold leading-relaxed mx-auto md:mx-0">
-                    Built for discovery, excitement, visibility, and the feeling that there is always something special inside.
-                  </p>
-
-                  <div class="mt-7 grid gap-4 sm:grid-cols-2">
-                    <div class="rounded-2xl border border-red-600/40 bg-white/10 backdrop-blur p-5">
-                      <div class="text-xl md:text-2xl font-extrabold text-[#c9a227]">For Visitors</div>
-                      <p class="mt-2 text-base md:text-lg text-zinc-100 font-semibold leading-relaxed">
-                        Explore, shop, enjoy the experience, win.
-                      </p>
-                    </div>
-
-                    <div class="rounded-2xl border border-[#b08d57]/20 bg-white/10 backdrop-blur p-5">
-                      <div class="text-xl md:text-2xl font-extrabold text-[#c9a227]">For Merchants</div>
-                      <p class="mt-2 text-base md:text-lg text-zinc-100 font-semibold leading-relaxed">
-                        Sign up, build beautifully, and thrive.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="mt-6 flex flex-wrap items-center justify-center md:justify-start gap-4">
-                    <a href="{% url 'community-signup' %}"
-                       class="px-8 py-5 rounded-2xl bg-gradient-to-r from-red-800 to-red-600 text-white font-extrabold text-xl md:text-2xl text-center hover:brightness-110 border border-white/20 red-glow">
-                      Join MajicMall Megaverse Community
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
   </div>
+
+</div>
+
 </body>
 </html>

@@ -18,6 +18,9 @@ from .models import Movie, Ticket
 def homepage(request):
     return render(request, "megaverse_home.html")
 
+def grand_reveal(request):
+    return render(request, "grand_reveal.html")
+
 
 def mall_entrance(request):
     return render(request, "home.html")

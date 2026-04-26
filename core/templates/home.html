@@ -41,7 +41,7 @@
       object-position: center center;
       z-index: 1;
       transform: scale(1.03);
-      filter: brightness(0.74) saturate(1.14) contrast(1.08);
+      filter: brightness(0.86) saturate(1.12) contrast(1.05);
     }
 
     .luxury-overlay {
@@ -50,64 +50,8 @@
       z-index: 2;
       pointer-events: none;
       background:
-        radial-gradient(circle at center, rgba(255, 224, 140, 0.22), transparent 42%),
-        linear-gradient(to bottom, rgba(0,0,0,0.10), rgba(0,0,0,0.34));
-    }
-
-    .spotlight {
-      position: absolute;
-      top: -32%;
-      width: 78vw;
-      height: 172%;
-      z-index: 6;
-      pointer-events: none;
-      filter: blur(8px);
-      opacity: 1;
-      mix-blend-mode: screen;
-      transform-origin: top center;
-      will-change: transform, opacity;
-    }
-
-    .spotlight.gold-left {
-      left: -42vw;
-      background: linear-gradient(
-        160deg,
-        rgba(255, 242, 168, 1) 0%,
-        rgba(255, 211, 72, 0.92) 18%,
-        rgba(212, 175, 55, 0.55) 42%,
-        rgba(212, 175, 55, 0.16) 66%,
-        transparent 82%
-      );
-      animation: sweepLeft 2.9s ease-in-out infinite alternate;
-    }
-
-    .spotlight.red-right {
-      right: -42vw;
-      background: linear-gradient(
-        200deg,
-        rgba(255, 120, 120, 0.98) 0%,
-        rgba(255, 40, 40, 0.78) 20%,
-        rgba(220, 38, 38, 0.46) 44%,
-        rgba(220, 38, 38, 0.14) 66%,
-        transparent 82%
-      );
-      animation: sweepRight 3.2s ease-in-out infinite alternate;
-    }
-
-    .spotlight.gold-center {
-      left: 20vw;
-      top: -38%;
-      width: 62vw;
-      height: 168%;
-      opacity: 0.95;
-      background: linear-gradient(
-        180deg,
-        rgba(255, 250, 205, 1) 0%,
-        rgba(255, 220, 95, 0.72) 30%,
-        rgba(212, 175, 55, 0.28) 58%,
-        transparent 78%
-      );
-      animation: centerGlowMove 3.6s ease-in-out infinite alternate;
+        radial-gradient(circle at center, rgba(255, 224, 140, 0.12), transparent 42%),
+        linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.25));
     }
 
     .burst-flash {
@@ -340,24 +284,6 @@
       animation: pulseText 1.8s ease-in-out infinite;
     }
 
-    @keyframes sweepLeft {
-      0% { transform: translateX(-28px) rotate(-24deg); opacity: 0.72; }
-      45% { transform: translateX(110px) rotate(-4deg); opacity: 1; }
-      100% { transform: translateX(220px) rotate(11deg); opacity: 0.78; }
-    }
-
-    @keyframes sweepRight {
-      0% { transform: translateX(28px) rotate(24deg); opacity: 0.68; }
-      45% { transform: translateX(-110px) rotate(5deg); opacity: 1; }
-      100% { transform: translateX(-220px) rotate(-11deg); opacity: 0.76; }
-    }
-
-    @keyframes centerGlowMove {
-      0% { transform: translateX(-70px) rotate(-7deg); opacity: 0.70; }
-      50% { transform: translateX(0) rotate(1deg); opacity: 1; }
-      100% { transform: translateX(70px) rotate(7deg); opacity: 0.74; }
-    }
-
     @keyframes openLeftDoor {
       0%   { transform: translateX(0); }
       100% { transform: translateX(-102%); }
@@ -453,16 +379,12 @@
 
   <div class="scene">
     <img
-      src="{% static 'img/inside_majic_mall.png' %}"
-      alt="MajicMall entrance"
+      src="{% static 'img/majicmall_grand_entrance.png' %}"
+      alt="MajicMall Megaverse Grand Entrance"
       class="entrance-bg"
     >
 
     <div class="luxury-overlay"></div>
-
-    <div class="spotlight gold-left"></div>
-    <div class="spotlight red-right"></div>
-    <div class="spotlight gold-center"></div>
 
     <div class="burst-flash"></div>
     <div class="particles"></div>
@@ -495,9 +417,9 @@
   </div>
 
   <script>
-    const transitionDelay = 5200;
+    const transitionDelay = 5600;
     const fadeDuration = 1000;
-    const nextUrl = "{% url 'mall-home' %}";
+    const nextUrl = "{% url 'grand-reveal' %}";
 
     function spawnParticles() {
       const container = document.querySelector(".particles");

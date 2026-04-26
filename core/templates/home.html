@@ -261,12 +261,21 @@
 
   setTimeout(particles, 1200);
 
+  // 🔑 smoother transition (no black flash)
   setTimeout(() => {
-    document.body.style.opacity = "0.96";
+
+    // instead of fading body → slightly dim + zoom forward
+    document.querySelector('.bg-main').style.transform = "scale(1.05)";
+    document.querySelector('.bg-main').style.transition = "transform 0.8s ease";
+
+    // optional slight brightness shift
+    document.querySelector('.bg-main').style.filter += " brightness(0.95)";
+
     setTimeout(() => {
       window.location.href = "/grand-reveal/";
-    }, 650);
-  }, 5000);
+    }, 700);
+
+  }, 5500); // 👈 slightly longer so users take in the scene
 </script>
 
 </body>

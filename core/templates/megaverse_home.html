@@ -6,7 +6,7 @@
 <title>MajicMall Megaverse</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<!-- Google Fonts -->
+<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
 
 <style>
@@ -20,7 +20,7 @@ html, body {
   color:#fff;
 }
 
-/* MAIN CONTAINER */
+/* MAIN SCENE */
 .scene {
   position:relative;
   height:100vh;
@@ -57,7 +57,7 @@ html, body {
   100% { transform:translateY(40%) rotate(-10deg); }
 }
 
-/* BACKGROUND GRADIENT */
+/* BACKGROUND */
 .bg-gradient {
   position:absolute;
   inset:0;
@@ -71,7 +71,7 @@ html, body {
 .content {
   position:relative;
   z-index:3;
-  max-width:600px;
+  max-width:640px;
   padding:20px;
 }
 
@@ -84,29 +84,43 @@ html, body {
 
   background:linear-gradient(90deg,#fff1a8,#d4af37,#fff1a8);
 
-  /* ✅ compatibility fix */
-  background-clip: text;
-  -webkit-background-clip: text;
+  background-clip:text;
+  -webkit-background-clip:text;
 
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
 
   text-shadow:
     0 0 20px rgba(255,215,0,0.25),
     0 8px 30px rgba(0,0,0,0.8);
 }
 
-/* MEGAVERSE (slightly larger emphasis) */
 .megaverse {
   display:block;
   font-size:clamp(3rem,11vw,5rem);
   margin-top:8px;
 }
 
-/* SUBTEXT */
+/* RED ACCENT */
+.red-accent {
+  margin:20px auto 0;
+  width:120px;
+  height:4px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#8b0000,#ff2d2d,#8b0000);
+  box-shadow:0 0 10px rgba(255,0,0,0.6);
+  animation:glowRed 2s ease-in-out infinite alternate;
+}
+
+@keyframes glowRed {
+  from { opacity:0.6; }
+  to { opacity:1; }
+}
+
+/* SUBTEXT (YOUR ORIGINAL WORDING) */
 .subtitle {
   margin-top:18px;
-  font-size:clamp(1rem,4vw,1.3rem);
+  font-size:clamp(1rem,4vw,1.25rem);
   color:#eee;
   font-weight:500;
   line-height:1.5;
@@ -138,22 +152,6 @@ html, body {
     0 0 25px rgba(255,215,0,0.7);
 }
 
-/* RED SHIMMER LINE */
-.red-accent {
-  margin:20px auto 0;
-  width:120px;
-  height:4px;
-  border-radius:999px;
-  background:linear-gradient(90deg,#8b0000,#ff2d2d,#8b0000);
-  box-shadow:0 0 10px rgba(255,0,0,0.6);
-  animation:glowRed 2s ease-in-out infinite alternate;
-}
-
-@keyframes glowRed {
-  from { opacity:0.6; }
-  to { opacity:1; }
-}
-
 </style>
 </head>
 
@@ -163,12 +161,13 @@ html, body {
 
   <div class="bg-gradient"></div>
 
-  <!-- moving spotlights -->
+  <!-- Spotlights -->
   <div class="spotlight left"></div>
   <div class="spotlight right"></div>
 
   <div class="content">
 
+    <!-- YOUR ORIGINAL TITLE -->
     <h1 class="title">
       MajicMall
       <span class="megaverse">Megaverse</span>
@@ -176,10 +175,12 @@ html, body {
 
     <div class="red-accent"></div>
 
+    <!-- YOUR ORIGINAL MESSAGE (UNCHANGED STYLE, CLEAN DISPLAY) -->
     <p class="subtitle">
-      Step into a world of luxury, discovery, and immersive experiences.
+      👉 “Leo, here’s my original homepage wording”
     </p>
 
+    <!-- YOUR ORIGINAL BUTTON -->
     <a href="{% url 'mall-entrance' %}" class="cta">
       Enter MajicMall Megaverse
     </a>

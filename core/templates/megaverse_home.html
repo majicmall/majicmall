@@ -6,8 +6,7 @@
 <title>MajicMall Megaverse</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
 html, body {
@@ -20,7 +19,6 @@ html, body {
   color:#fff;
 }
 
-/* MAIN SCENE */
 .scene {
   position:relative;
   height:100vh;
@@ -31,30 +29,23 @@ html, body {
   overflow:hidden;
 }
 
-/* 🎥 MOVING SPOTLIGHTS */
+/* WHITE MOVING SPOTLIGHTS */
 .spotlight {
   position:absolute;
-  width:300px;
+  width:320px;
   height:900px;
-  background:radial-gradient(circle, rgba(255,255,255,0.35), transparent 60%);
-  filter:blur(80px);
-  opacity:0.5;
-  animation:moveLight 8s linear infinite;
+  background:radial-gradient(circle, rgba(255,255,255,0.45), transparent 65%);
+  filter:blur(90px);
+  opacity:0.4;
+  animation:moveLight 8s ease-in-out infinite alternate;
 }
 
-.spotlight.left {
-  left:-100px;
-  animation-direction:alternate;
-}
-
-.spotlight.right {
-  right:-100px;
-  animation-direction:alternate-reverse;
-}
+.spotlight.left { left:-120px; }
+.spotlight.right { right:-120px; animation-delay:2s; }
 
 @keyframes moveLight {
-  0% { transform:translateY(-40%) rotate(10deg); }
-  100% { transform:translateY(40%) rotate(-10deg); }
+  0% { transform:translateY(-40%) rotate(12deg); }
+  100% { transform:translateY(40%) rotate(-12deg); }
 }
 
 /* BACKGROUND */
@@ -62,7 +53,7 @@ html, body {
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at top, rgba(255,215,0,0.15), transparent 40%),
+    radial-gradient(circle at top, rgba(255,215,0,0.18), transparent 40%),
     linear-gradient(to bottom, #000 20%, #111 60%, #000);
   z-index:1;
 }
@@ -71,19 +62,18 @@ html, body {
 .content {
   position:relative;
   z-index:3;
-  max-width:640px;
+  max-width:650px;
   padding:20px;
 }
 
 /* TITLE */
 .title {
-  font-family:'Playfair Display', serif;
+  font-family:'Cinzel', serif;
   font-size:clamp(2.8rem,10vw,4.5rem);
-  font-weight:800;
+  font-weight:900;
   line-height:1;
 
   background:linear-gradient(90deg,#fff1a8,#d4af37,#fff1a8);
-
   background-clip:text;
   -webkit-background-clip:text;
 
@@ -91,14 +81,14 @@ html, body {
   -webkit-text-fill-color:transparent;
 
   text-shadow:
-    0 0 20px rgba(255,215,0,0.25),
-    0 8px 30px rgba(0,0,0,0.8);
+    0 0 25px rgba(255,215,0,0.3),
+    0 10px 40px rgba(0,0,0,0.9);
 }
 
 .megaverse {
   display:block;
   font-size:clamp(3rem,11vw,5rem);
-  margin-top:8px;
+  margin-top:6px;
 }
 
 /* RED ACCENT */
@@ -108,7 +98,7 @@ html, body {
   height:4px;
   border-radius:999px;
   background:linear-gradient(90deg,#8b0000,#ff2d2d,#8b0000);
-  box-shadow:0 0 10px rgba(255,0,0,0.6);
+  box-shadow:0 0 14px rgba(255,0,0,0.7);
   animation:glowRed 2s ease-in-out infinite alternate;
 }
 
@@ -117,41 +107,40 @@ html, body {
   to { opacity:1; }
 }
 
-/* SUBTEXT (YOUR ORIGINAL WORDING) */
+/* TEXT */
 .subtitle {
-  margin-top:18px;
-  font-size:clamp(1rem,4vw,1.25rem);
+  margin-top:22px;
+  font-size:clamp(1rem,4vw,1.3rem);
   color:#eee;
-  font-weight:500;
-  line-height:1.5;
+  font-weight:600;
+  line-height:1.6;
 }
 
-/* BUTTON */
+/* CTA BUTTON */
 .cta {
-  margin-top:28px;
+  margin-top:30px;
   display:inline-block;
-  padding:16px 28px;
+  padding:18px 30px;
   border-radius:30px;
-  font-weight:800;
-  font-size:1.1rem;
+  font-weight:900;
+  font-size:1.15rem;
   text-decoration:none;
-  color:#111;
+  color:#fff;
 
-  background:linear-gradient(135deg,#fff1a8,#d4af37);
+  background:linear-gradient(135deg,#8b0000,#dc2626);
   box-shadow:
-    0 12px 30px rgba(212,175,55,0.4),
-    0 0 15px rgba(255,215,0,0.5);
+    0 12px 35px rgba(220,38,38,0.45),
+    0 0 20px rgba(255,0,0,0.6);
 
   transition:all 0.25s ease;
 }
 
 .cta:hover {
-  transform:translateY(-2px);
+  transform:translateY(-3px);
   box-shadow:
-    0 18px 40px rgba(212,175,55,0.6),
-    0 0 25px rgba(255,215,0,0.7);
+    0 18px 45px rgba(220,38,38,0.6),
+    0 0 30px rgba(255,0,0,0.8);
 }
-
 </style>
 </head>
 
@@ -161,13 +150,11 @@ html, body {
 
   <div class="bg-gradient"></div>
 
-  <!-- Spotlights -->
   <div class="spotlight left"></div>
   <div class="spotlight right"></div>
 
   <div class="content">
 
-    <!-- YOUR ORIGINAL TITLE -->
     <h1 class="title">
       MajicMall
       <span class="megaverse">Megaverse</span>
@@ -175,12 +162,18 @@ html, body {
 
     <div class="red-accent"></div>
 
-    <!-- YOUR ORIGINAL MESSAGE (UNCHANGED STYLE, CLEAN DISPLAY) -->
     <p class="subtitle">
-      👉 “Leo, here’s my original homepage wording”
+      The Mega Shopping Experience<br><br>
+
+      <strong style="color:#d4af37;">Shop.</strong>
+      <strong> Work.</strong>
+      <strong style="color:#dc2626;"> Play.</strong>
+      <strong> Imagine.</strong>
+      <strong style="color:#d4af37;"> Create.</strong><br><br>
+
+      A world of discovery, entertainment, opportunity, and unforgettable experiences — all in one place.
     </p>
 
-    <!-- YOUR ORIGINAL BUTTON -->
     <a href="{% url 'mall-entrance' %}" class="cta">
       Enter MajicMall Megaverse
     </a>

@@ -23,7 +23,7 @@ def grand_reveal(request):
 
 
 def mall_entrance(request):
-    return render(request, "home.html")
+    return render(request, "mall_entrance.html")
 
 
 def mall_home(request):

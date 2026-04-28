@@ -10,6 +10,7 @@ urlpatterns = [
     path("mall/", views.mall_home, name="mall-home"),
     path("splash/", views.launch_splash, name="launch-splash"),
     path("community/signup/", views.community_signup, name="community-signup"),
+    path("grand-entrance-city-view/", views.grand_entrance_city_view, name="grand-entrance-city-view"),
     path("grand-reveal/", views.grand_reveal, name="grand-reveal"),
 
     # ---------------------------

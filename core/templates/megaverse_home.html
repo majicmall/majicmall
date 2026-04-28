@@ -18,89 +18,94 @@ html, body {
   overflow-x:hidden;
 }
 
-/* PAGE BASE */
 .page {
   position:relative;
   min-height:100vh;
   overflow:hidden;
+  background:#000;
 }
 
-/* 🌆 CITY BACKGROUND */
+/* CITY SKYLINE BACKGROUND */
 .city-bg {
   position:fixed;
   inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
-  object-position:center;
+  object-position:center top;
   z-index:0;
-  filter: brightness(0.35) contrast(1.1) saturate(1.2);
+  filter:brightness(0.55) contrast(1.12) saturate(1.18);
 }
 
-/* DARK OVERLAY FOR READABILITY */
+/* READABILITY OVERLAY */
 .overlay {
   position:fixed;
   inset:0;
   z-index:1;
   background:
-    linear-gradient(to bottom, rgba(0,0,0,0.65), rgba(0,0,0,0.85)),
-    radial-gradient(circle at top, rgba(255,215,0,0.12), transparent 40%);
+    linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.58) 42%, rgba(0,0,0,0.92) 100%),
+    radial-gradient(circle at top, rgba(212,175,55,0.18), transparent 38%),
+    radial-gradient(circle at bottom right, rgba(220,38,38,0.20), transparent 36%);
 }
 
-/* 🎥 SHARPER SPOTLIGHTS */
+/* VISIBLE WHITE SPOTLIGHTS */
 .spotlight {
   position:fixed;
-  top:-20%;
-  width:40vw;
-  height:140vh;
-  z-index:2;
+  top:-28%;
+  width:50vw;
+  height:160vh;
   pointer-events:none;
-  opacity:0.65;
+  z-index:2;
+  opacity:0.72;
+  filter:blur(18px);
   mix-blend-mode:screen;
-  filter: blur(14px);
-
-  background:linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.9),
-    rgba(255,255,255,0.25) 40%,
-    transparent 70%
-  );
 }
 
 .spotlight.left {
-  left:-20vw;
-  transform:rotate(-18deg);
+  left:-26vw;
+  background:linear-gradient(
+    145deg,
+    rgba(255,255,255,0.95) 0%,
+    rgba(255,255,255,0.45) 28%,
+    rgba(255,255,255,0.14) 54%,
+    transparent 78%
+  );
   animation:swayLeft 6s ease-in-out infinite alternate;
 }
 
 .spotlight.right {
-  right:-20vw;
-  transform:rotate(18deg);
-  animation:swayRight 6.5s ease-in-out infinite alternate;
+  right:-26vw;
+  background:linear-gradient(
+    215deg,
+    rgba(255,255,255,0.95) 0%,
+    rgba(255,255,255,0.45) 28%,
+    rgba(255,255,255,0.14) 54%,
+    transparent 78%
+  );
+  animation:swayRight 6.4s ease-in-out infinite alternate;
 }
 
 @keyframes swayLeft {
-  from { transform:translateX(-40px) rotate(-18deg); }
-  to { transform:translateX(140px) rotate(-8deg); }
+  from { transform:translateX(-25px) rotate(-18deg); opacity:0.48; }
+  to { transform:translateX(160px) rotate(7deg); opacity:0.82; }
 }
 
 @keyframes swayRight {
-  from { transform:translateX(40px) rotate(18deg); }
-  to { transform:translateX(-140px) rotate(8deg); }
+  from { transform:translateX(25px) rotate(18deg); opacity:0.48; }
+  to { transform:translateX(-160px) rotate(-7deg); opacity:0.82; }
 }
 
-/* CONTENT */
 .content-wrap {
   position:relative;
   z-index:3;
   max-width:1200px;
   margin:0 auto;
-  padding:28px 18px 60px;
+  padding:28px 18px 70px;
 }
 
 /* HERO */
 .hero {
-  min-height:90vh;
+  min-height:92vh;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -108,91 +113,278 @@ html, body {
 }
 
 .hero-inner {
-  max-width:720px;
-  padding:28px;
-  border-radius:28px;
-  background:rgba(0,0,0,0.5);
+  width:100%;
+  max-width:780px;
+  padding:30px 20px;
+  border-radius:30px;
+  background:rgba(0,0,0,0.46);
+  border:1px solid rgba(212,175,55,0.24);
   backdrop-filter:blur(8px);
-  border:1px solid rgba(212,175,55,0.2);
+  -webkit-backdrop-filter:blur(8px);
+  box-shadow:
+    0 24px 80px rgba(0,0,0,0.70),
+    0 0 65px rgba(212,175,55,0.12);
 }
 
-/* TITLE */
 .title {
   font-family:'Cinzel', serif;
-  font-size:clamp(2.8rem,10vw,4.5rem);
+  font-size:clamp(2.8rem,10vw,4.7rem);
   font-weight:900;
-
+  line-height:1;
+  margin:0;
   background:linear-gradient(90deg,#fff1a8,#d4af37,#fff1a8);
   background-clip:text;
   -webkit-background-clip:text;
-
   color:transparent;
   -webkit-text-fill-color:transparent;
+  text-shadow:
+    0 0 25px rgba(255,215,0,0.30),
+    0 10px 40px rgba(0,0,0,0.90);
 }
 
 .megaverse {
   display:block;
-  font-size:clamp(3rem,11vw,5rem);
+  font-size:clamp(3rem,11vw,5.2rem);
+  margin-top:6px;
 }
 
-/* ACCENT */
 .red-accent {
-  margin:20px auto;
-  width:120px;
+  margin:22px auto 0;
+  width:140px;
   height:4px;
   border-radius:999px;
   background:linear-gradient(90deg,#8b0000,#ff2d2d,#8b0000);
+  box-shadow:0 0 16px rgba(255,0,0,0.75);
+  animation:glowRed 2s ease-in-out infinite alternate;
 }
 
-/* TEXT */
+@keyframes glowRed {
+  from { opacity:0.55; }
+  to { opacity:1; }
+}
+
 .subtitle {
-  font-size:clamp(1rem,4vw,1.3rem);
+  margin-top:24px;
+  font-size:clamp(1rem,4vw,1.35rem);
+  color:#f2f2f2;
   font-weight:600;
   line-height:1.6;
 }
 
-/* BUTTON */
-.cta {
-  margin-top:26px;
-  display:inline-block;
-  padding:16px 28px;
-  border-radius:30px;
-  font-weight:900;
-  text-decoration:none;
-  color:#fff;
-  background:linear-gradient(135deg,#7f1010,#dc2626);
+.gold-text {
+  background:linear-gradient(90deg,#8f6b18,#d4af37,#fff2a8,#d4af37);
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
 }
 
-/* CAROUSEL */
+.cta-row {
+  margin-top:32px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  align-items:center;
+}
+
+.cta,
+.cta-secondary {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  max-width:330px;
+  padding:17px 28px;
+  border-radius:28px;
+  font-weight:900;
+  font-size:1.08rem;
+  text-decoration:none;
+  transition:all 0.25s ease;
+}
+
+.cta {
+  color:#fff;
+  background:linear-gradient(135deg,#7f1010,#dc2626,#9f1515);
+  box-shadow:
+    0 12px 35px rgba(220,38,38,0.45),
+    0 0 22px rgba(255,0,0,0.55);
+}
+
+.cta-secondary {
+  color:#111;
+  background:linear-gradient(135deg,#fff1a8,#d4af37);
+  box-shadow:
+    0 12px 35px rgba(212,175,55,0.36),
+    0 0 20px rgba(255,215,0,0.38);
+}
+
+.cta:hover,
+.cta-secondary:hover {
+  transform:translateY(-3px);
+}
+
+/* SECTION */
+.section-title {
+  font-size:clamp(2rem,7vw,4rem);
+  line-height:1;
+  font-weight:900;
+  margin:0;
+  text-align:center;
+}
+
+.section-copy {
+  margin:16px auto 0;
+  max-width:760px;
+  color:#eee;
+  text-align:center;
+  font-size:clamp(1rem,3.5vw,1.25rem);
+  line-height:1.6;
+  font-weight:600;
+}
+
+/* RESTORED FULL CAROUSEL BOXES */
 .carousel-wrap {
-  margin-top:40px;
+  margin-top:34px;
   overflow:hidden;
+  border-radius:28px;
+  border:1px solid rgba(212,175,55,0.24);
+  background:rgba(0,0,0,0.46);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  box-shadow:
+    0 22px 70px rgba(0,0,0,0.65),
+    0 0 45px rgba(212,175,55,0.10);
 }
 
 .carousel-track {
   display:flex;
   gap:18px;
-  animation:slide 30s linear infinite;
+  padding:18px;
+  width:max-content;
+  animation:slideLeft 30s linear infinite;
 }
 
 .carousel-card {
-  width:300px;
+  width:280px;
+  min-width:280px;
   height:380px;
-  background:#111;
-  border-radius:20px;
+  position:relative;
   overflow:hidden;
+  border-radius:26px;
+  background:#111;
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow:0 16px 40px rgba(0,0,0,0.62);
 }
 
 .carousel-card img {
+  position:absolute;
+  inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
-  opacity:0.7;
+  opacity:0.68;
 }
 
-@keyframes slide {
+.carousel-card::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(to top, rgba(0,0,0,0.88), rgba(0,0,0,0.30) 52%, transparent 100%);
+}
+
+.card-text {
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:18px;
+  z-index:2;
+}
+
+.card-text h3 {
+  margin:0;
+  font-size:1.65rem;
+  font-weight:900;
+  color:#d4af37;
+}
+
+.card-text p {
+  margin:8px 0 0;
+  color:#f5f5f5;
+  font-size:1rem;
+  line-height:1.35;
+  font-weight:600;
+}
+
+@keyframes slideLeft {
   from { transform:translateX(0); }
   to { transform:translateX(-50%); }
+}
+
+/* COMMUNITY */
+.community {
+  margin-top:64px;
+  border-radius:32px;
+  border:1px solid rgba(212,175,55,0.24);
+  background:
+    radial-gradient(circle at top, rgba(212,175,55,0.12), transparent 32%),
+    linear-gradient(135deg, rgba(20,20,20,0.88), rgba(0,0,0,0.96));
+  padding:32px 20px;
+  text-align:center;
+  box-shadow:0 20px 70px rgba(0,0,0,0.62);
+}
+
+.community h2 {
+  margin:0;
+  font-size:clamp(2rem,7vw,4rem);
+  line-height:1;
+  font-weight:900;
+}
+
+.community p {
+  max-width:760px;
+  margin:18px auto 0;
+  color:#eee;
+  font-size:clamp(1rem,3.5vw,1.25rem);
+  line-height:1.6;
+  font-weight:600;
+}
+
+@media (min-width:700px) {
+  .cta-row {
+    flex-direction:row;
+    justify-content:center;
+  }
+
+  .carousel-card {
+    width:340px;
+    min-width:340px;
+    height:440px;
+  }
+
+  .community {
+    padding:48px 32px;
+  }
+}
+
+@media (max-width:640px) {
+  .city-bg {
+    object-position:center top;
+  }
+
+  .hero {
+    min-height:90vh;
+  }
+
+  .hero-inner {
+    padding:26px 16px;
+  }
+
+  .carousel-card {
+    width:285px;
+    min-width:285px;
+    height:400px;
+  }
 }
 </style>
 </head>
@@ -200,12 +392,9 @@ html, body {
 <body>
 
 <div class="page">
-
-  <!-- 🌆 ADD YOUR SKYLINE IMAGE HERE -->
-  <img src="{% static 'img/city_skyline.jpg' %}" class="city-bg" alt="City Skyline">
+  <img src="{% static 'img/city_skyline.jpg' %}" class="city-bg" alt="MajicMall Megaverse city skyline">
 
   <div class="overlay"></div>
-
   <div class="spotlight left"></div>
   <div class="spotlight right"></div>
 
@@ -213,7 +402,6 @@ html, body {
 
     <section class="hero">
       <div class="hero-inner">
-
         <h1 class="title">
           MajicMall
           <span class="megaverse">Megaverse</span>
@@ -222,45 +410,139 @@ html, body {
         <div class="red-accent"></div>
 
         <p class="subtitle">
-          The Mega Shopping Experience<br><br>
-
+          <strong style="color:#dc2626;">Grand Opening</strong><br><br>
+          <span class="gold-text" style="font-weight:900;">The Mega Shopping Experience</span><br><br>
           <strong style="color:#d4af37;">Shop.</strong>
-          Work.
+          <strong> Work.</strong>
           <strong style="color:#dc2626;"> Play.</strong>
-          Imagine.
+          <strong> Imagine.</strong>
           <strong style="color:#d4af37;"> Create.</strong><br><br>
-
           A world of discovery, entertainment, opportunity, and unforgettable experiences — all in one place.
         </p>
 
-        <a href="{% url 'mall-entrance' %}" class="cta">
-          Enter MajicMall Megaverse
-        </a>
+        <div class="cta-row">
+          <a href="{% url 'mall-entrance' %}" class="cta">
+            Explore MajicMall Megaverse
+          </a>
 
+          <a href="{% url 'account_signup' %}?next={% url 'merchant-profile' %}" class="cta-secondary">
+            Create Your Store
+          </a>
+        </div>
       </div>
     </section>
 
-    <div class="carousel-wrap">
-      <div class="carousel-track">
+    <section>
+      <h2 class="section-title">
+        <span class="gold-text">There’s Something Here For Everyone</span>
+      </h2>
 
-        <div class="carousel-card">
-          <img src="{% static 'img/majic_directory.png' %}">
+      <p class="section-copy">
+        Explore the world of MajicMall Megaverse through shopping, work, entertainment, creativity, and imagination.
+      </p>
+
+      <div class="carousel-wrap">
+        <div class="carousel-track">
+
+          <div class="carousel-card">
+            <img src="{% static 'img/majic_directory.png' %}" alt="Shop at MajicMall Megaverse">
+            <div class="card-text">
+              <h3>Shop</h3>
+              <p>Discover brands, products, deals, gifts, and unforgettable finds.</p>
+            </div>
+          </div>
+
+          <div class="carousel-card">
+            <img src="{% static 'img/majic_directory.png' %}" alt="Work in MajicMall Megaverse">
+            <div class="card-text">
+              <h3>Work</h3>
+              <p>Build your store, grow your brand, and create real opportunity.</p>
+            </div>
+          </div>
+
+          <div class="carousel-card">
+            <img src="{% static 'img/majic_directory.png' %}" alt="Play in MajicMall Megaverse">
+            <div class="card-text">
+              <h3>Play</h3>
+              <p>Enjoy games, prizes, entertainment, movies, and immersive fun.</p>
+            </div>
+          </div>
+
+          <div class="carousel-card">
+            <img src="{% static 'img/majic_directory.png' %}" alt="Imagine in MajicMall Megaverse">
+            <div class="card-text">
+              <h3>Imagine</h3>
+              <p>Step into a place where the future of shopping feels alive and limitless.</p>
+            </div>
+          </div>
+
+          <div class="carousel-card">
+            <img src="{% static 'img/majic_directory.png' %}" alt="Create in MajicMall Megaverse">
+            <div class="card-text">
+              <h3>Create</h3>
+              <p>Create stores, ideas, experiences, and a world customers will remember.</p>
+            </div>
+          </div>
+
+          <div class="carousel-card">
+            <img src="{% static 'img/majic_directory.png' %}" alt="Shop at MajicMall Megaverse">
+            <div class="card-text">
+              <h3>Shop</h3>
+              <p>Discover brands, products, deals, gifts, and unforgettable finds.</p>
+            </div>
+          </div>
+
+          <div class="carousel-card">
+            <img src="{% static 'img/majic_directory.png' %}" alt="Work in MajicMall Megaverse">
+            <div class="card-text">
+              <h3>Work</h3>
+              <p>Build your store, grow your brand, and create real opportunity.</p>
+            </div>
+          </div>
+
+          <div class="carousel-card">
+            <img src="{% static 'img/majic_directory.png' %}" alt="Play in MajicMall Megaverse">
+            <div class="card-text">
+              <h3>Play</h3>
+              <p>Enjoy games, prizes, entertainment, movies, and immersive fun.</p>
+            </div>
+          </div>
+
+          <div class="carousel-card">
+            <img src="{% static 'img/majic_directory.png' %}" alt="Imagine in MajicMall Megaverse">
+            <div class="card-text">
+              <h3>Imagine</h3>
+              <p>Step into a place where the future of shopping feels alive and limitless.</p>
+            </div>
+          </div>
+
+          <div class="carousel-card">
+            <img src="{% static 'img/majic_directory.png' %}" alt="Create in MajicMall Megaverse">
+            <div class="card-text">
+              <h3>Create</h3>
+              <p>Create stores, ideas, experiences, and a world customers will remember.</p>
+            </div>
+          </div>
+
         </div>
-
-        <div class="carousel-card">
-          <img src="{% static 'img/majic_directory.png' %}">
-        </div>
-
-        <div class="carousel-card">
-          <img src="{% static 'img/majic_directory.png' %}">
-        </div>
-
-        <div class="carousel-card">
-          <img src="{% static 'img/majic_directory.png' %}">
-        </div>
-
       </div>
-    </div>
+    </section>
+
+    <section class="community">
+      <h2>
+        Join The <span class="gold-text">MajicMall Megaverse</span> Community.
+      </h2>
+
+      <p>
+        Built for discovery, excitement, visibility, and the feeling that there is always something special inside.
+      </p>
+
+      <div class="cta-row">
+        <a href="{% url 'community-signup' %}" class="cta">
+          Join MajicMall Megaverse Community
+        </a>
+      </div>
+    </section>
 
   </div>
 </div>

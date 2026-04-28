@@ -128,6 +128,11 @@ def community_signup(request):
 
     return render(request, "community_signup.html", {"form": form})
 
+from django.shortcuts import render
+
+def grand_entrance_city_view(request):
+    return render(request, "grand_entrance_city_view.html")
+
 
 # ---------------------------
 # 🗺️ Mall Directory + Zones

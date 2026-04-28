@@ -17,6 +17,12 @@
       font-family: Arial, sans-serif;
     }
 
+    body {
+      opacity: 0;
+      animation: pageIn 0.9s ease forwards;
+      transition: opacity 0.9s ease;
+    }
+
     .scene {
       position: fixed;
       inset: 0;
@@ -32,8 +38,8 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: blur(14px) brightness(0.52) contrast(1.1) saturate(1.2);
-      transform: scale(1.10);
+      filter: blur(12px) brightness(0.52) contrast(1.1) saturate(1.2);
+      transform: scale(1.08);
       z-index: 1;
     }
 
@@ -46,7 +52,7 @@
       object-position: center center;
       z-index: 2;
       filter: brightness(1.06) contrast(1.14) saturate(1.12);
-      animation: slowZoom 4.6s ease forwards;
+      animation: slowZoom 4.8s ease forwards;
       image-rendering: -webkit-optimize-contrast;
     }
 
@@ -57,12 +63,32 @@
       pointer-events: none;
       background:
         radial-gradient(circle at center, rgba(255,215,120,0.16), transparent 45%),
-        linear-gradient(to bottom, rgba(0,0,0,0.04), rgba(0,0,0,0.22));
+        linear-gradient(to bottom, rgba(0,0,0,0.02), rgba(0,0,0,0.18));
+    }
+
+    .soft-flash {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(255, 238, 180, 0.22), transparent 55%);
+      animation: flashFade 1.4s ease forwards;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes pageIn {
+      from { opacity: 0.78; }
+      to { opacity: 1; }
     }
 
     @keyframes slowZoom {
       from { transform: scale(1); }
-      to { transform: scale(1.045); }
+      to { transform: scale(1.04); }
+    }
+
+    @keyframes flashFade {
+      from { opacity: 0.55; }
+      to { opacity: 0; }
     }
   </style>
 </head>
@@ -74,12 +100,18 @@
   <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="bg-main" alt="MajicMall Megaverse Grand Reveal Entrance">
 
   <div class="glow"></div>
+  <div class="soft-flash"></div>
 </div>
 
 <script>
   setTimeout(() => {
-    window.location.href = "{% url 'mall-home' %}";
-  }, 4300);
+    document.body.style.opacity = "0.92";
+
+    setTimeout(() => {
+      window.location.href = "{% url 'mall-home' %}";
+    }, 500);
+
+  }, 4500);
 </script>
 
 </body>

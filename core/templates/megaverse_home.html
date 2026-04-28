@@ -18,7 +18,6 @@ html, body {
   overflow-x:hidden;
 }
 
-/* BACKGROUND */
 .city-bg {
   position:fixed;
   inset:0;
@@ -27,19 +26,16 @@ html, body {
   object-fit:cover;
   object-position:center top;
   z-index:0;
-  filter:brightness(0.55) contrast(1.1);
+  filter:brightness(0.65) contrast(1.15) saturate(1.2);
 }
 
-/* SKY OVERLAY */
 .overlay {
   position:fixed;
   inset:0;
   z-index:1;
-  background:
-    linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 70%, #000 100%);
+  background:linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.64) 68%, #000 100%);
 }
 
-/* STAR FIELD */
 .stars {
   position:fixed;
   inset:0;
@@ -53,7 +49,6 @@ html, body {
   height:2px;
   background:white;
   border-radius:50%;
-  opacity:0.7;
   box-shadow:0 0 8px rgba(255,255,255,0.8);
   animation:twinkle 3s infinite ease-in-out;
 }
@@ -63,14 +58,13 @@ html, body {
   50% { opacity:1; transform:scale(1.55); }
 }
 
-/* CROSSING SPOTLIGHTS */
 .spotlight {
   position:fixed;
   top:-20%;
   width:40vw;
   height:140vh;
   z-index:3;
-  opacity:0.62;
+  opacity:0.55;
   filter:blur(18px);
   mix-blend-mode:screen;
   pointer-events:none;
@@ -78,13 +72,13 @@ html, body {
 
 .spotlight.left {
   left:-15vw;
-  background:linear-gradient(to bottom, rgba(255,255,255,0.9), transparent);
+  background:linear-gradient(to bottom, rgba(255,255,255,0.85), transparent);
   animation:swayLeft 6s ease-in-out infinite alternate;
 }
 
 .spotlight.right {
   right:-15vw;
-  background:linear-gradient(to bottom, rgba(255,255,255,0.9), transparent);
+  background:linear-gradient(to bottom, rgba(255,255,255,0.85), transparent);
   animation:swayRight 6s ease-in-out infinite alternate;
 }
 
@@ -98,7 +92,6 @@ html, body {
   to { transform:rotate(5deg) translateX(-140px); }
 }
 
-/* CONTENT */
 .wrapper {
   position:relative;
   z-index:4;
@@ -107,15 +100,13 @@ html, body {
   padding:40px 20px 80px;
 }
 
-/* BILLBOARD AD SPACE */
 .billboard {
   width:100%;
   max-width:900px;
   margin:0 auto 30px;
   padding:16px 18px;
   border-radius:16px;
-  background:
-    linear-gradient(135deg, rgba(0,0,0,0.58), rgba(40,20,20,0.42));
+  background:linear-gradient(135deg, rgba(0,0,0,0.58), rgba(40,20,20,0.42));
   border:1px solid rgba(212,175,55,0.34);
   text-align:center;
   font-weight:800;
@@ -127,7 +118,6 @@ html, body {
     inset 0 0 24px rgba(255,255,255,0.04);
 }
 
-/* HERO */
 .hero {
   display:flex;
   justify-content:center;
@@ -136,7 +126,6 @@ html, body {
   text-align:center;
 }
 
-/* GLASS PANEL */
 .panel {
   width:100%;
   max-width:720px;
@@ -149,7 +138,6 @@ html, body {
   box-shadow:0 0 40px rgba(0,0,0,0.6);
 }
 
-/* TITLE */
 .title {
   font-family:'Cinzel', serif;
   font-size:clamp(2.8rem,10vw,4.5rem);
@@ -167,7 +155,6 @@ html, body {
   font-size:clamp(3rem,11vw,5rem);
 }
 
-/* RED LINE */
 .red-line {
   margin:16px auto;
   width:120px;
@@ -177,7 +164,6 @@ html, body {
   box-shadow:0 0 14px rgba(255,0,0,0.7);
 }
 
-/* TAGLINE */
 .tagline {
   font-size:1.2rem;
   margin-top:10px;
@@ -193,7 +179,6 @@ html, body {
 .gold { color:#d4af37; }
 .red { color:#ff3b3b; }
 
-/* CTA */
 .cta {
   margin-top:20px;
   display:inline-block;
@@ -206,7 +191,6 @@ html, body {
   box-shadow:0 12px 30px rgba(220,38,38,0.35);
 }
 
-/* CAROUSEL */
 .carousel {
   margin-top:60px;
   overflow:hidden;
@@ -244,7 +228,7 @@ html, body {
 
 <body>
 
-<img src="{% static 'img/grand_entrance_city_view.png' %}" class="city-bg" alt="MajicMall Megaverse city view">
+<img src="{% static 'img/city_skyline_night.png' %}" class="city-bg" alt="MajicMall Megaverse city skyline">
 
 <div class="overlay"></div>
 <div class="stars" id="stars"></div>
@@ -260,7 +244,6 @@ html, body {
 
   <section class="hero">
     <div class="panel">
-
       <h1 class="title">
         MajicMall
         <span class="megaverse">Megaverse</span>
@@ -279,7 +262,6 @@ html, body {
       <a href="{% url 'mall-entrance' %}" class="cta">
         Enter MajicMall Megaverse
       </a>
-
     </div>
   </section>
 

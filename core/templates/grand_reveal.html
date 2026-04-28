@@ -17,11 +17,6 @@
       font-family: Arial, sans-serif;
     }
 
-    body {
-      opacity: 1;
-      transition: opacity 0.9s ease;
-    }
-
     .scene {
       position: fixed;
       inset: 0;
@@ -31,40 +26,28 @@
       background: #000;
     }
 
-    /* BACKGROUND FILL (removes black space) */
     .bg-fill {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: blur(24px) brightness(0.50) saturate(1.35);
-      transform: scale(1.18);
+      filter: blur(18px) brightness(0.50) saturate(1.25);
+      transform: scale(1.12);
       z-index: 1;
-      animation: bgPulse 4.6s ease forwards;
     }
 
-    /* MAIN IMAGE */
     .bg-main {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-
-      /* 🔥 MOBILE FIX */
       object-fit: cover;
-
       object-position: center center;
       z-index: 2;
-      filter: brightness(1.04) contrast(1.06) saturate(1.12);
+      filter: brightness(1.04) contrast(1.10) saturate(1.10);
       animation: slowZoom 4.6s ease forwards;
-    }
-
-    /* DESKTOP SHOW FULL IMAGE */
-    @media (min-width: 768px) {
-      .bg-main {
-        object-fit: contain;
-      }
+      image-rendering: -webkit-optimize-contrast;
     }
 
     .glow {
@@ -73,41 +56,13 @@
       z-index: 3;
       pointer-events: none;
       background:
-        radial-gradient(circle at center, rgba(255,215,120,0.20), transparent 45%),
+        radial-gradient(circle at center, rgba(255,215,120,0.16), transparent 45%),
         linear-gradient(to bottom, rgba(0,0,0,0.03), rgba(0,0,0,0.20));
-    }
-
-    .soft-gold-wash {
-      position: absolute;
-      inset: 0;
-      z-index: 4;
-      pointer-events: none;
-      background: linear-gradient(
-        120deg,
-        transparent 0%,
-        rgba(255, 235, 160, 0.10) 35%,
-        rgba(255, 235, 160, 0.22) 50%,
-        rgba(255, 235, 160, 0.10) 65%,
-        transparent 100%
-      );
-      mix-blend-mode: screen;
-      animation: goldWash 3.8s ease-in-out forwards;
     }
 
     @keyframes slowZoom {
       from { transform: scale(1); }
-      to { transform: scale(1.065); }
-    }
-
-    @keyframes bgPulse {
-      from { transform: scale(1.14); }
-      to { transform: scale(1.22); }
-    }
-
-    @keyframes goldWash {
-      from { transform: translateX(-40%); opacity: 0; }
-      35% { opacity: 1; }
-      to { transform: translateX(40%); opacity: 0; }
+      to { transform: scale(1.045); }
     }
   </style>
 </head>
@@ -115,21 +70,15 @@
 <body>
 
 <div class="scene">
-  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="bg-fill" alt="">
-  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="bg-main" alt="MajicMall Megaverse Grand Entrance">
+  <img src="{% static 'img/grand_reveal_entrance.png' %}" class="bg-fill" alt="">
+  <img src="{% static 'img/grand_reveal_entrance.png' %}" class="bg-main" alt="MajicMall Megaverse Grand Reveal Entrance">
 
   <div class="glow"></div>
-  <div class="soft-gold-wash"></div>
 </div>
 
 <script>
   setTimeout(() => {
-    document.body.style.opacity = "0.96";
-
-    setTimeout(() => {
-      window.location.href = "/mall/";
-    }, 650);
-
+    window.location.href = "{% url 'mall-home' %}";
   }, 4300);
 </script>
 

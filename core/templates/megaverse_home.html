@@ -18,6 +18,7 @@ html, body {
   overflow-x:hidden;
 }
 
+/* CITY BACKGROUND */
 .city-bg {
   position:fixed;
   inset:0;
@@ -26,17 +27,21 @@ html, body {
   object-fit:cover;
   object-position:center top;
   z-index:0;
-  filter:brightness(0.65) contrast(1.15) saturate(1.2);
+  filter:brightness(0.56) contrast(1.08) saturate(1.05);
+  transform:scale(0.96);
 }
 
+/* OVERLAY */
 .overlay {
   position:fixed;
   inset:0;
   z-index:1;
-  background:linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.7));
+  background:
+    radial-gradient(circle at center top, rgba(255,215,120,0.08), transparent 35%),
+    linear-gradient(to bottom, rgba(0,0,0,0.22), rgba(0,0,0,0.68) 72%, #000 100%);
 }
 
-/* TWINKLING STARS RESTORED */
+/* TWINKLING STARS */
 .stars {
   position:fixed;
   inset:0;
@@ -66,7 +71,7 @@ html, body {
   width:40vw;
   height:140vh;
   z-index:2;
-  opacity:0.55;
+  opacity:0.5;
   filter:blur(18px);
   mix-blend-mode:screen;
   pointer-events:none;
@@ -99,30 +104,84 @@ html, body {
   z-index:3;
   max-width:1200px;
   margin:0 auto;
-  padding:60px 20px 80px;
+  padding:42px 20px 80px;
 }
 
-/* BILLBOARD */
-.billboard {
+/* SKY BILLBOARD */
+.billboard-wrap {
   width:100%;
-  max-width:900px;
-  margin:0 auto 30px;
-  padding:16px;
-  border-radius:16px;
-  background:linear-gradient(135deg, rgba(0,0,0,0.6), rgba(40,20,20,0.4));
-  border:1px solid rgba(212,175,55,0.3);
-  text-align:center;
-  font-weight:800;
-  color:#fff1a8;
-  box-shadow:0 0 25px rgba(212,175,55,0.15);
+  display:flex;
+  justify-content:center;
+  margin:0 auto 22px;
+  padding:0 12px;
+  box-sizing:border-box;
 }
 
+.billboard {
+  position:relative;
+  width:min(92vw, 780px);
+  padding:14px 20px;
+  border-radius:10px;
+  background:
+    linear-gradient(135deg, rgba(20,12,4,0.92), rgba(80,50,10,0.72)),
+    linear-gradient(90deg, rgba(255,255,255,0.08), transparent);
+  border:2px solid rgba(212,175,55,0.68);
+  text-align:center;
+  font-weight:900;
+  font-size:clamp(0.78rem, 2.6vw, 1rem);
+  letter-spacing:1px;
+  color:#fff1a8;
+  box-shadow:
+    0 0 18px rgba(212,175,55,0.38),
+    0 12px 35px rgba(0,0,0,0.7),
+    inset 0 0 22px rgba(255,255,255,0.06);
+}
+
+.billboard::before,
+.billboard::after {
+  content:"";
+  position:absolute;
+  top:100%;
+  width:7px;
+  height:36px;
+  background:linear-gradient(to bottom, rgba(212,175,55,0.9), rgba(70,50,20,0.4));
+  box-shadow:0 0 12px rgba(212,175,55,0.35);
+}
+
+.billboard::before {
+  left:18%;
+}
+
+.billboard::after {
+  right:18%;
+}
+
+.billboard-lights {
+  position:absolute;
+  inset:-8px 16px auto;
+  height:8px;
+  display:flex;
+  justify-content:space-between;
+  pointer-events:none;
+}
+
+.billboard-lights span {
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#fff1a8;
+  box-shadow:0 0 10px rgba(255,241,168,0.9);
+}
+
+/* HERO */
 .hero {
   display:flex;
   justify-content:center;
-  align-items:flex-end;
-  min-height:85vh;
+  align-items:flex-start;
+  min-height:72vh;
+  padding-top:28vh;
   text-align:center;
+  box-sizing:border-box;
 }
 
 .panel {
@@ -130,16 +189,21 @@ html, body {
   max-width:720px;
   padding:24px;
   border-radius:24px;
-  background:rgba(0,0,0,0.35);
+  background:rgba(0,0,0,0.38);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
-  border:1px solid rgba(212,175,55,0.25);
+  border:1px solid rgba(212,175,55,0.28);
+  box-shadow:
+    0 0 36px rgba(0,0,0,0.65),
+    inset 0 0 24px rgba(255,255,255,0.04);
 }
 
 .title {
   font-family:'Cinzel', serif;
-  font-size:clamp(3rem,10vw,4.5rem);
+  font-size:clamp(2.8rem,9.5vw,4.5rem);
   font-weight:900;
+  margin:0;
+  line-height:0.95;
   background:linear-gradient(90deg,#fff1a8,#d4af37,#fff1a8);
   background-clip:text;
   -webkit-background-clip:text;
@@ -148,11 +212,11 @@ html, body {
 
 .megaverse {
   display:block;
-  font-size:clamp(3.2rem,11vw,5rem);
+  font-size:clamp(3rem,10.5vw,5rem);
 }
 
 .cta {
-  margin-top:20px;
+  margin-top:22px;
   display:inline-block;
   padding:14px 26px;
   border-radius:30px;
@@ -160,11 +224,12 @@ html, body {
   text-decoration:none;
   color:#fff;
   background:linear-gradient(135deg,#8b0000,#dc2626);
+  box-shadow:0 12px 30px rgba(220,38,38,0.35);
 }
 
-/* MOVING EXPERIENCE BANNERS RESTORED */
+/* MOVING EXPERIENCE BANNERS */
 .experiences {
-  margin-top:60px;
+  margin-top:38px;
   overflow:hidden;
 }
 
@@ -219,11 +284,43 @@ html, body {
   background:linear-gradient(to top, rgba(0,0,0,.9), transparent);
   font-weight:800;
   color:#fff;
+  box-sizing:border-box;
 }
 
 @keyframes scrollExperiences {
   from { transform:translateX(0); }
   to { transform:translateX(-50%); }
+}
+
+/* MOBILE TUNING */
+@media (max-width:640px) {
+  .wrapper {
+    padding-top:34px;
+  }
+
+  .hero {
+    min-height:68vh;
+    padding-top:22vh;
+  }
+
+  .panel {
+    padding:20px 16px;
+  }
+
+  .billboard {
+    width:92vw;
+    padding:13px 14px;
+  }
+
+  .experiences {
+    margin-top:32px;
+  }
+
+  .experience-card {
+    width:245px;
+    min-width:245px;
+    height:300px;
+  }
 }
 </style>
 </head>
@@ -240,8 +337,13 @@ html, body {
 
 <div class="wrapper">
 
-  <div class="billboard">
-    ⭐ PREMIUM BILLBOARD AD SPACE — YOUR BRAND HERE ⭐
+  <div class="billboard-wrap">
+    <div class="billboard">
+      <div class="billboard-lights">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      ⭐ PREMIUM BILLBOARD AD SPACE — YOUR BRAND HERE ⭐
+    </div>
   </div>
 
   <section class="hero">
@@ -288,7 +390,6 @@ html, body {
         <div class="label">Become a Merchant</div>
       </a>
 
-      <!-- duplicated for seamless scroll -->
       <a href="{% url 'mall-entrance' %}" class="experience-card">
         <img src="{% static 'img/majic_directory.png' %}" alt="Shop the Marketplace">
         <div class="label">Shop the Marketplace</div>

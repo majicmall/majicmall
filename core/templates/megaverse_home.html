@@ -18,7 +18,6 @@ html, body {
   overflow-x:hidden;
 }
 
-/* 🌆 CITY */
 .city-bg {
   position:fixed;
   inset:0;
@@ -30,7 +29,6 @@ html, body {
   filter:brightness(0.65) contrast(1.15) saturate(1.2);
 }
 
-/* 🌑 OVERLAY */
 .overlay {
   position:fixed;
   inset:0;
@@ -38,7 +36,30 @@ html, body {
   background:linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.7));
 }
 
-/* ✨ SPOTLIGHTS (RESTORED) */
+/* TWINKLING STARS RESTORED */
+.stars {
+  position:fixed;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+}
+
+.star {
+  position:absolute;
+  width:2px;
+  height:2px;
+  background:white;
+  border-radius:50%;
+  box-shadow:0 0 8px rgba(255,255,255,0.8);
+  animation:twinkle 3s infinite ease-in-out;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity:0.18; transform:scale(0.8); }
+  50% { opacity:1; transform:scale(1.55); }
+}
+
+/* SPOTLIGHTS */
 .spotlight {
   position:fixed;
   top:-20%;
@@ -73,7 +94,6 @@ html, body {
   to { transform:rotate(5deg) translateX(-140px); }
 }
 
-/* 🧠 WRAPPER */
 .wrapper {
   position:relative;
   z-index:3;
@@ -82,7 +102,7 @@ html, body {
   padding:60px 20px 80px;
 }
 
-/* 📣 BILLBOARD (RESTORED) */
+/* BILLBOARD */
 .billboard {
   width:100%;
   max-width:900px;
@@ -97,12 +117,11 @@ html, body {
   box-shadow:0 0 25px rgba(212,175,55,0.15);
 }
 
-/* HERO */
 .hero {
   display:flex;
   justify-content:center;
   align-items:flex-end;
-  min-height:85vh; /* LOWERED VIEW */
+  min-height:85vh;
   text-align:center;
 }
 
@@ -113,15 +132,14 @@ html, body {
   border-radius:24px;
   background:rgba(0,0,0,0.35);
   backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
   border:1px solid rgba(212,175,55,0.25);
 }
 
-/* TITLE */
 .title {
   font-family:'Cinzel', serif;
   font-size:clamp(3rem,10vw,4.5rem);
   font-weight:900;
-
   background:linear-gradient(90deg,#fff1a8,#d4af37,#fff1a8);
   background-clip:text;
   -webkit-background-clip:text;
@@ -133,7 +151,6 @@ html, body {
   font-size:clamp(3.2rem,11vw,5rem);
 }
 
-/* CTA */
 .cta {
   margin-top:20px;
   display:inline-block;
@@ -145,9 +162,10 @@ html, body {
   background:linear-gradient(135deg,#8b0000,#dc2626);
 }
 
-/* 🔥 EXPERIENCES */
+/* MOVING EXPERIENCE BANNERS RESTORED */
 .experiences {
   margin-top:60px;
+  overflow:hidden;
 }
 
 .experience-title {
@@ -161,23 +179,25 @@ html, body {
 .experience-track {
   display:flex;
   gap:20px;
-  overflow-x:auto;
-  padding:20px;
-  scroll-snap-type:x mandatory;
+  width:max-content;
+  animation:scrollExperiences 32s linear infinite;
 }
 
-.experience-track::-webkit-scrollbar { display:none; }
+.experience-track:hover {
+  animation-play-state:paused;
+}
 
 .experience-card {
   position:relative;
-  min-width:260px;
+  width:280px;
+  min-width:280px;
   height:320px;
   border-radius:20px;
   overflow:hidden;
   text-decoration:none;
   border:1px solid rgba(255,255,255,0.15);
   transition:.3s;
-  scroll-snap-align:center;
+  background:#111;
 }
 
 .experience-card:hover {
@@ -188,6 +208,7 @@ html, body {
   width:100%;
   height:100%;
   object-fit:cover;
+  filter:brightness(0.86);
 }
 
 .label {
@@ -195,67 +216,126 @@ html, body {
   bottom:0;
   width:100%;
   padding:14px;
-  background:linear-gradient(to top, rgba(0,0,0,.85), transparent);
-  font-weight:700;
+  background:linear-gradient(to top, rgba(0,0,0,.9), transparent);
+  font-weight:800;
+  color:#fff;
+}
+
+@keyframes scrollExperiences {
+  from { transform:translateX(0); }
+  to { transform:translateX(-50%); }
 }
 </style>
 </head>
 
 <body>
 
-<img src="{% static 'img/city_skyline.jpg' %}" class="city-bg">
+<img src="{% static 'img/city_skyline.jpg' %}" class="city-bg" alt="MajicMall Megaverse city skyline">
 
 <div class="overlay"></div>
+<div class="stars" id="stars"></div>
 
-<!-- ✨ SPOTLIGHTS BACK -->
 <div class="spotlight left"></div>
 <div class="spotlight right"></div>
 
 <div class="wrapper">
 
-<div class="billboard">
-  ⭐ PREMIUM BILLBOARD AD SPACE — YOUR BRAND HERE ⭐
-</div>
-
-<section class="hero">
-  <div class="panel">
-    <h1 class="title">
-      MajicMall
-      <span class="megaverse">Megaverse</span>
-    </h1>
-
-    <a href="{% url 'mall-entrance' %}" class="cta">
-      Enter MajicMall Megaverse
-    </a>
-  </div>
-</section>
-
-<div class="experiences">
-
-  <h2 class="experience-title">Explore the MajicMall Megaverse</h2>
-
-  <div class="experience-track">
-
-    <a href="/directory/" class="experience-card">
-      <img src="{% static 'img/majic_directory.png' %}">
-      <div class="label">Shop the Marketplace</div>
-    </a>
-
-    <a href="/tv/" class="experience-card">
-      <img src="{% static 'img/majictheater_lobby.jpg' %}">
-      <div class="label">Watch MajicMall TV</div>
-    </a>
-
-    <a href="/theater/" class="experience-card">
-      <img src="{% static 'img/majic_mall_theater_front_1920.jpg' %}">
-      <div class="label">Enter the Theater</div>
-    </a>
-
+  <div class="billboard">
+    ⭐ PREMIUM BILLBOARD AD SPACE — YOUR BRAND HERE ⭐
   </div>
 
-</div>
+  <section class="hero">
+    <div class="panel">
+      <h1 class="title">
+        MajicMall
+        <span class="megaverse">Megaverse</span>
+      </h1>
+
+      <a href="{% url 'mall-entrance' %}" class="cta">
+        Enter MajicMall Megaverse
+      </a>
+    </div>
+  </section>
+
+  <div class="experiences">
+
+    <h2 class="experience-title">Explore the MajicMall Megaverse</h2>
+
+    <div class="experience-track">
+
+      <a href="{% url 'mall-entrance' %}" class="experience-card">
+        <img src="{% static 'img/majic_directory.png' %}" alt="Shop the Marketplace">
+        <div class="label">Shop the Marketplace</div>
+      </a>
+
+      <a href="/tv/" class="experience-card">
+        <img src="{% static 'img/majictheater_lobby.jpg' %}" alt="Watch MajicMall TV">
+        <div class="label">Watch MajicMall TV</div>
+      </a>
+
+      <a href="/theater/" class="experience-card">
+        <img src="{% static 'img/majic_mall_theater_front_1920.jpg' %}" alt="Watch a Movie">
+        <div class="label">Watch a Movie</div>
+      </a>
+
+      <a href="#" class="experience-card">
+        <img src="{% static 'img/grand_entrance_city_view.png' %}" alt="Attend Events">
+        <div class="label">Attend Events</div>
+      </a>
+
+      <a href="/merchant/invite/" class="experience-card">
+        <img src="{% static 'img/mall_background.jpg' %}" alt="Become a Merchant">
+        <div class="label">Become a Merchant</div>
+      </a>
+
+      <!-- duplicated for seamless scroll -->
+      <a href="{% url 'mall-entrance' %}" class="experience-card">
+        <img src="{% static 'img/majic_directory.png' %}" alt="Shop the Marketplace">
+        <div class="label">Shop the Marketplace</div>
+      </a>
+
+      <a href="/tv/" class="experience-card">
+        <img src="{% static 'img/majictheater_lobby.jpg' %}" alt="Watch MajicMall TV">
+        <div class="label">Watch MajicMall TV</div>
+      </a>
+
+      <a href="/theater/" class="experience-card">
+        <img src="{% static 'img/majic_mall_theater_front_1920.jpg' %}" alt="Watch a Movie">
+        <div class="label">Watch a Movie</div>
+      </a>
+
+      <a href="#" class="experience-card">
+        <img src="{% static 'img/grand_entrance_city_view.png' %}" alt="Attend Events">
+        <div class="label">Attend Events</div>
+      </a>
+
+      <a href="/merchant/invite/" class="experience-card">
+        <img src="{% static 'img/mall_background.jpg' %}" alt="Become a Merchant">
+        <div class="label">Become a Merchant</div>
+      </a>
+
+    </div>
+  </div>
 
 </div>
+
+<script>
+  const starContainer = document.getElementById("stars");
+
+  if (starContainer) {
+    for (let i = 0; i < 48; i++) {
+      const star = document.createElement("div");
+      star.classList.add("star");
+
+      star.style.top = Math.random() * 42 + "%";
+      star.style.left = Math.random() * 100 + "%";
+      star.style.animationDelay = (Math.random() * 3) + "s";
+      star.style.animationDuration = (2 + Math.random() * 3) + "s";
+
+      starContainer.appendChild(star);
+    }
+  }
+</script>
 
 </body>
 </html>

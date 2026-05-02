@@ -343,6 +343,63 @@ def food_court_zone(request):
 def learning_zone(request):
     return redirect("zone-entry", zone_slug="learning-zone")
 
+from django.shortcuts import render, redirect
+
+ZONE_DATA = {
+    "fashion": {
+        "name": "Fashion Zone",
+        "tagline": "Where style, beauty, luxury, and culture meet.",
+    },
+    "food-court": {
+        "name": "Food Court",
+        "tagline": "Taste the flavor of the MajicMall Megaverse.",
+    },
+    "theater": {
+        "name": "Theater Zone",
+        "tagline": "Movies, premieres, red carpets, and unforgettable shows.",
+    },
+    "music": {
+        "name": "Music Zone",
+        "tagline": "Artists, radio, performances, merch, and media.",
+    },
+    "business": {
+        "name": "Business Zone",
+        "tagline": "Services, tools, creators, entrepreneurs, and opportunity.",
+    },
+    "creator": {
+        "name": "Creator Zone",
+        "tagline": "A home for influencers, filmmakers, artists, and digital products.",
+    },
+}
+
+
+def homepage(request):
+    return render(request, "megaverse_home.html")
+
+
+def zone_entry(request, zone_slug):
+    zone = ZONE_DATA.get(zone_slug)
+
+    if not zone:
+        return redirect("home")
+
+    return render(request, "zone_entry.html", {
+        "zone": zone,
+        "zone_slug": zone_slug,
+    })
+
+
+def zone_interior(request, zone_slug):
+    zone = ZONE_DATA.get(zone_slug)
+
+    if not zone:
+        return redirect("home")
+
+    return render(request, "zone_interior.html", {
+        "zone": zone,
+        "zone_slug": zone_slug,
+    })
+
 
 # ---------------------------
 # 📺 TV Zone

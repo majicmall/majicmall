@@ -116,20 +116,28 @@ html, body {
   position:relative;
   width:min(92vw, 780px);
   padding:14px 20px;
-  border-radius:10px;
+  border-radius:12px;
   background:
-    linear-gradient(135deg, rgba(20,12,4,0.92), rgba(80,50,10,0.72)),
-    linear-gradient(90deg, rgba(255,255,255,0.08), transparent);
-  border:2px solid rgba(212,175,55,0.68);
+    linear-gradient(145deg, rgba(255,255,255,0.13), transparent 18%),
+    linear-gradient(135deg, rgba(2,2,4,0.98), rgba(18,18,24,0.96) 45%, rgba(0,0,0,0.98)),
+    radial-gradient(circle at center top, rgba(255,255,255,0.12), transparent 42%);
+  border:2px solid rgba(210,220,230,0.92);
   text-align:center;
   font-weight:900;
   font-size:clamp(0.78rem, 2.6vw, 1rem);
   letter-spacing:1px;
-  color:#fff1a8;
+  color:#f8fbff;
+  text-shadow:
+    0 0 8px rgba(255,255,255,0.7),
+    0 0 18px rgba(190,210,230,0.65);
   box-shadow:
-    0 0 18px rgba(212,175,55,0.38),
-    0 12px 35px rgba(0,0,0,0.7),
-    inset 0 0 22px rgba(255,255,255,0.06);
+    0 0 18px rgba(235,245,255,0.65),
+    0 0 42px rgba(160,185,210,0.38),
+    0 0 78px rgba(120,150,190,0.22),
+    0 16px 42px rgba(0,0,0,0.78),
+    inset 0 0 18px rgba(255,255,255,0.12),
+    inset 0 -18px 35px rgba(0,0,0,0.65);
+  overflow:visible;
 }
 
 .billboard::before,
@@ -139,8 +147,10 @@ html, body {
   top:100%;
   width:7px;
   height:36px;
-  background:linear-gradient(to bottom, rgba(212,175,55,0.9), rgba(70,50,20,0.4));
-  box-shadow:0 0 12px rgba(212,175,55,0.35);
+  background:linear-gradient(to bottom, rgba(230,238,246,0.95), rgba(80,90,105,0.5));
+  box-shadow:
+    0 0 12px rgba(235,245,255,0.55),
+    inset 0 0 6px rgba(255,255,255,0.45);
 }
 
 .billboard::before { left:18%; }
@@ -159,17 +169,55 @@ html, body {
   width:6px;
   height:6px;
   border-radius:50%;
-  background:#fff1a8;
-  box-shadow:0 0 10px rgba(255,241,168,0.9);
+  background:#f8fbff;
+  box-shadow:
+    0 0 10px rgba(255,255,255,0.95),
+    0 0 22px rgba(190,215,240,0.75);
 }
 
-/* HERO LOWERED JUST A LITTLE */
+.billboard .shine {
+  position:absolute;
+  inset:0;
+  border-radius:12px;
+  pointer-events:none;
+  background:linear-gradient(
+    115deg,
+    transparent 0%,
+    transparent 38%,
+    rgba(255,255,255,0.26) 48%,
+    transparent 60%,
+    transparent 100%
+  );
+  opacity:0;
+  transform:translateX(-120%);
+  animation:billboardSilverShine 6.5s ease-in-out infinite;
+}
+
+@keyframes billboardSilverShine {
+  0%, 50% {
+    opacity:0;
+    transform:translateX(-120%);
+  }
+  62% {
+    opacity:.7;
+  }
+  82% {
+    opacity:.25;
+    transform:translateX(120%);
+  }
+  100% {
+    opacity:0;
+    transform:translateX(120%);
+  }
+}
+
+/* HERO LOWERED */
 .hero {
   display:flex;
   justify-content:center;
   align-items:flex-start;
   min-height:78vh;
-  padding-top:32vh;
+  padding-top:42vh;
   text-align:center;
   box-sizing:border-box;
 }
@@ -194,15 +242,38 @@ html, body {
   font-weight:900;
   margin:0;
   line-height:0.95;
-  background:linear-gradient(90deg,#fff1a8,#d4af37,#fff1a8);
+  background:linear-gradient(90deg,#7a5b16,#fff1a8,#d4af37,#ffffff,#fff1a8,#7a5b16);
+  background-size:260% auto;
   background-clip:text;
   -webkit-background-clip:text;
   color:transparent;
+  text-shadow:
+    0 0 10px rgba(255,215,90,0.25),
+    0 0 28px rgba(255,215,90,0.18);
+  animation:titleIlluminate 7s ease-in-out infinite;
 }
 
 .megaverse {
   display:block;
   font-size:clamp(3rem,10.5vw,5rem);
+}
+
+@keyframes titleIlluminate {
+  0% {
+    background-position:0% center;
+    filter:brightness(0.72);
+  }
+  35% {
+    filter:brightness(1.1);
+  }
+  55% {
+    background-position:100% center;
+    filter:brightness(1.45);
+  }
+  100% {
+    background-position:0% center;
+    filter:brightness(0.88);
+  }
 }
 
 .red-line {
@@ -355,7 +426,7 @@ html, body {
 
   .hero {
     min-height:76vh;
-    padding-top:24vh;
+    padding-top:34vh;
   }
 
   .panel {
@@ -414,6 +485,7 @@ html, body {
       <div class="billboard-lights">
         <span></span><span></span><span></span><span></span><span></span>
       </div>
+      <div class="shine"></div>
       ⭐ PREMIUM BILLBOARD AD SPACE — YOUR BRAND HERE ⭐
     </div>
   </div>
@@ -518,4 +590,3 @@ html, body {
 
 </body>
 </html>
-

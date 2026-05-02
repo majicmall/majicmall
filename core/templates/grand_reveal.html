@@ -18,8 +18,7 @@ html, body {
 }
 
 body {
-  opacity:0;
-  animation:pageIn .45s linear forwards;
+  opacity:1;
 }
 
 .scene {
@@ -44,7 +43,7 @@ body {
   object-fit:cover;
   object-position:center center;
   filter:blur(12px) brightness(.5) contrast(1.12) saturate(1.12);
-  transform:translate3d(0,0,0) scale(1.12);
+  transform:translate3d(0,0,0) scale(1.18);
   z-index:1;
 }
 
@@ -53,10 +52,10 @@ body {
   object-position:center center;
   z-index:2;
   filter:brightness(1.1) contrast(1.14) saturate(1.1);
-  transform:translate3d(0,0,0) scale(1.08);
+  transform:translate3d(0,-2.2%,0) scale(1.28);
   will-change:transform, opacity;
   backface-visibility:hidden;
-  animation:walkIntoEntrance 8.4s linear forwards;
+  animation:continueWalk 7.6s linear forwards;
 }
 
 .inside-main {
@@ -64,11 +63,11 @@ body {
   object-position:center center;
   z-index:4;
   opacity:0;
-  transform:translate3d(0,0,0) scale(1.08);
+  transform:translate3d(0,1.5%,0) scale(1.12);
   filter:brightness(1.04) contrast(1.06) saturate(1.06);
   will-change:transform, opacity;
   backface-visibility:hidden;
-  animation:insideReveal 4.8s linear 4.1s forwards;
+  animation:insideReveal 5.4s linear 2.7s forwards;
 }
 
 .glow {
@@ -80,7 +79,7 @@ body {
     radial-gradient(circle at center, rgba(255,230,150,.24), transparent 43%),
     linear-gradient(to bottom, rgba(0,0,0,.02), rgba(0,0,0,.3));
   mix-blend-mode:screen;
-  animation:glowPulse 8.4s linear forwards;
+  animation:glowPulse 7.6s linear forwards;
 }
 
 .portal-light {
@@ -92,10 +91,10 @@ body {
   transform:translate(-50%, -50%);
   z-index:6;
   border-radius:50%;
-  background:radial-gradient(circle, rgba(255,241,168,.38), rgba(212,175,55,.12), transparent 68%);
+  background:radial-gradient(circle, rgba(255,241,168,.36), rgba(212,175,55,.12), transparent 68%);
   filter:blur(14px);
   opacity:0;
-  animation:portalPulse 6.2s linear 1s forwards;
+  animation:portalPulse 5.8s linear .25s forwards;
   pointer-events:none;
 }
 
@@ -115,32 +114,24 @@ body {
   z-index:10;
   opacity:0;
   pointer-events:none;
-  animation:finalFade 9.2s linear forwards;
+  animation:finalFade 8.4s linear forwards;
 }
 
-@keyframes pageIn {
-  from { opacity:.94; }
-  to { opacity:1; }
-}
-
-@keyframes walkIntoEntrance {
+@keyframes continueWalk {
   0% {
-    transform:translate3d(0,0,0) scale(1.08);
-    opacity:1;
+    transform:translate3d(0,-2.2%,0) scale(1.28);
+    opacity:.95;
   }
-
-  55% {
-    transform:translate3d(0,-1.2%,0) scale(1.25);
-    opacity:1;
+  45% {
+    transform:translate3d(0,-3%,0) scale(1.42);
+    opacity:.82;
   }
-
-  82% {
-    transform:translate3d(0,-2.1%,0) scale(1.38);
-    opacity:.72;
+  72% {
+    transform:translate3d(0,-3.8%,0) scale(1.58);
+    opacity:.48;
   }
-
   100% {
-    transform:translate3d(0,-2.8%,0) scale(1.5);
+    transform:translate3d(0,-4.4%,0) scale(1.72);
     opacity:0;
   }
 }
@@ -148,14 +139,12 @@ body {
 @keyframes insideReveal {
   0% {
     opacity:0;
-    transform:translate3d(0,1.5%,0) scale(1.08);
+    transform:translate3d(0,1.5%,0) scale(1.12);
   }
-
   45% {
-    opacity:.85;
-    transform:translate3d(0,.5%,0) scale(1.035);
+    opacity:.86;
+    transform:translate3d(0,.5%,0) scale(1.045);
   }
-
   100% {
     opacity:1;
     transform:translate3d(0,0,0) scale(1);
@@ -163,7 +152,7 @@ body {
 }
 
 @keyframes glowPulse {
-  0% { opacity:.5; }
+  0% { opacity:.72; }
   55% { opacity:.9; }
   100% { opacity:.28; }
 }
@@ -171,17 +160,15 @@ body {
 @keyframes portalPulse {
   0% {
     opacity:0;
-    transform:translate(-50%, -50%) scale(.8);
+    transform:translate(-50%, -50%) scale(.85);
   }
-
-  42% {
-    opacity:.9;
-    transform:translate(-50%, -50%) scale(1.5);
+  38% {
+    opacity:.88;
+    transform:translate(-50%, -50%) scale(1.55);
   }
-
   100% {
     opacity:0;
-    transform:translate(-50%, -50%) scale(3.2);
+    transform:translate(-50%, -50%) scale(3.15);
   }
 }
 
@@ -209,7 +196,7 @@ body {
 <script>
   setTimeout(() => {
     window.location.href = "{% url 'mall-directory' %}";
-  }, 9200);
+  }, 8400);
 </script>
 
 </body>

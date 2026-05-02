@@ -31,7 +31,7 @@ html, body {
   height:100%;
   object-fit:cover;
   object-position:center 68%;
-  filter:blur(12px) brightness(.48) contrast(1.12) saturate(1.2);
+  filter:blur(4px) brightness(.52) contrast(1.14) saturate(1.15);
   transform:translate3d(0,0,0) scale(1.08);
   z-index:1;
 }
@@ -44,11 +44,11 @@ html, body {
   object-fit:cover;
   object-position:center 72%;
   z-index:2;
-  filter:brightness(1.08) contrast(1.14) saturate(1.1);
+  filter:brightness(1.1) contrast(1.18) saturate(1.12) sharpen(1);
   transform:translate3d(0,0,0) scale(.98);
   will-change:transform, opacity;
   backface-visibility:hidden;
-  animation:walkForward 7.6s linear .65s forwards;
+  animation:walkForward 7.6s linear .35s forwards;
 }
 
 @media (min-width:768px) {

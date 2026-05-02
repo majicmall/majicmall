@@ -17,14 +17,12 @@ html, body {
   font-family:Arial, sans-serif;
 }
 
-/* ✅ Smooth scene continuation */
 body {
-  opacity:1;
-  animation:softSceneIn .45s linear forwards;
+  animation:softSceneIn .7s ease forwards;
 }
 
 @keyframes softSceneIn {
-  from { opacity:.96; }
+  from { opacity:.92; }
   to { opacity:1; }
 }
 
@@ -37,151 +35,298 @@ body {
   background:#000;
 }
 
-.entrance-fill,
-.entrance-main,
-.inside-main {
+.scene img {
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
+  object-fit:cover;
+  object-position:center;
 }
 
+/* Soft luxury background depth */
 .entrance-fill {
-  object-fit:cover;
-  object-position:center center;
-  filter:blur(12px) brightness(.5) contrast(1.12) saturate(1.12);
-  transform:translate3d(0,0,0) scale(1.18);
   z-index:1;
+  filter:blur(7px) brightness(.62) contrast(1.08) saturate(1.1);
+  transform:scale(1.14);
 }
 
+/* Main entrance image — sharper and grander */
 .entrance-main {
-  object-fit:cover;
-  object-position:center center;
   z-index:2;
-  filter:brightness(1.1) contrast(1.14) saturate(1.1);
-  transform:translate3d(0,-2.2%,0) scale(1.28);
-  will-change:transform, opacity;
-  backface-visibility:hidden;
-  animation:continueWalk 7.6s linear forwards;
+  opacity:1;
+  filter:brightness(1.08) contrast(1.16) saturate(1.12);
+  transform:translate3d(0,-2%,0) scale(1.22);
+  will-change:transform, opacity, filter;
+  animation:cinematicWalk 8.8s cubic-bezier(.16,.84,.32,1) forwards;
 }
 
+/* Interior gently fuses in */
 .inside-main {
-  object-fit:cover;
-  object-position:center center;
   z-index:4;
   opacity:0;
-  transform:translate3d(0,1.5%,0) scale(1.12);
-  filter:brightness(1.04) contrast(1.06) saturate(1.06);
-  will-change:transform, opacity;
-  backface-visibility:hidden;
-  animation:insideReveal 5.4s linear 2.7s forwards;
+  filter:brightness(.95) contrast(1.08) saturate(1.08);
+  transform:translate3d(0,2%,0) scale(1.1);
+  will-change:transform, opacity, filter;
+  animation:insideMajicReveal 7s cubic-bezier(.16,.84,.32,1) 2.45s forwards;
 }
 
-.glow {
+/* Prestige gold wash */
+.gold-atmosphere {
   position:absolute;
   inset:0;
   z-index:5;
   pointer-events:none;
   background:
-    radial-gradient(circle at center, rgba(255,230,150,.24), transparent 43%),
-    linear-gradient(to bottom, rgba(0,0,0,.02), rgba(0,0,0,.3));
+    radial-gradient(circle at 50% 48%, rgba(255,232,150,.38), transparent 32%),
+    radial-gradient(circle at 50% 78%, rgba(180,100,20,.22), transparent 42%),
+    linear-gradient(to bottom, rgba(0,0,0,.08), rgba(0,0,0,.38));
   mix-blend-mode:screen;
-  animation:glowPulse 7.6s linear forwards;
+  opacity:.65;
+  animation:goldBreath 8.8s ease forwards;
 }
 
+/* Disney-style portal burst */
 .portal-light {
   position:absolute;
   left:50%;
   top:50%;
-  width:20vw;
+  width:18vw;
   height:24vh;
-  transform:translate(-50%, -50%);
+  transform:translate(-50%, -50%) scale(.75);
   z-index:6;
   border-radius:50%;
-  background:radial-gradient(circle, rgba(255,241,168,.36), rgba(212,175,55,.12), transparent 68%);
-  filter:blur(14px);
+  background:
+    radial-gradient(circle, rgba(255,250,205,.92), rgba(255,215,100,.42), transparent 70%);
+  filter:blur(12px);
   opacity:0;
-  animation:portalPulse 5.8s linear .25s forwards;
   pointer-events:none;
+  animation:royalPortal 6.6s ease .7s forwards;
 }
 
-.walk-shadow {
+/* Door opening illusion */
+.door-left,
+.door-right {
   position:absolute;
-  inset:0;
+  top:0;
+  width:50%;
+  height:100%;
   z-index:7;
   pointer-events:none;
-  background:radial-gradient(circle at center, transparent 32%, rgba(0,0,0,.34) 100%);
-  opacity:.28;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.86), rgba(30,18,4,.55), rgba(0,0,0,.9));
+  box-shadow:inset 0 0 80px rgba(255,215,90,.12);
+  animation:doorsOpen 5.8s cubic-bezier(.18,.82,.22,1) .8s forwards;
 }
 
+.door-left {
+  left:0;
+  transform-origin:left center;
+}
+
+.door-right {
+  right:0;
+  transform-origin:right center;
+}
+
+/* Gold seam between doors */
+.door-seam {
+  position:absolute;
+  left:50%;
+  top:0;
+  width:4px;
+  height:100%;
+  z-index:8;
+  transform:translateX(-50%);
+  background:linear-gradient(to bottom, transparent, rgba(255,230,140,.9), transparent);
+  box-shadow:0 0 28px rgba(255,220,120,.9);
+  opacity:0;
+  animation:seamGlow 5.8s ease .6s forwards;
+}
+
+/* Sparkle accents */
+.sparkles {
+  position:absolute;
+  inset:0;
+  z-index:9;
+  pointer-events:none;
+  background-image:
+    radial-gradient(circle, rgba(255,255,220,.9) 0 1px, transparent 2px),
+    radial-gradient(circle, rgba(255,210,100,.7) 0 1px, transparent 2px);
+  background-size:120px 120px, 180px 180px;
+  background-position:20% 30%, 70% 65%;
+  opacity:0;
+  animation:sparkleRise 7.8s ease 1.2s forwards;
+}
+
+/* Premium vignette */
+.vignette {
+  position:absolute;
+  inset:0;
+  z-index:10;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at center, transparent 38%, rgba(0,0,0,.55) 100%);
+  opacity:.45;
+}
+
+/* Optional title moment */
+.reveal-title {
+  position:absolute;
+  left:50%;
+  bottom:8vh;
+  transform:translateX(-50%);
+  z-index:11;
+  color:#fff7d6;
+  text-align:center;
+  text-shadow:0 0 18px rgba(255,210,80,.75), 0 5px 20px #000;
+  letter-spacing:.08em;
+  font-weight:800;
+  opacity:0;
+  animation:titleReveal 6.2s ease 1.5s forwards;
+}
+
+.reveal-title .small {
+  display:block;
+  font-size:clamp(.8rem, 2.6vw, 1.1rem);
+  color:#f6d879;
+  margin-bottom:.35rem;
+}
+
+.reveal-title .big {
+  display:block;
+  font-size:clamp(1.5rem, 6vw, 3.6rem);
+}
+
+/* Final velvet fade */
 .fade-out {
   position:absolute;
   inset:0;
+  z-index:20;
   background:#000;
-  z-index:10;
   opacity:0;
   pointer-events:none;
-  animation:finalFade 8.4s linear forwards;
+  animation:finalFade 9.6s ease forwards;
 }
 
-/* 🔥 CONTINUOUS WALK (no reset) */
-@keyframes continueWalk {
+@keyframes cinematicWalk {
   0% {
-    transform:translate3d(0,-2.2%,0) scale(1.28);
-    opacity:.95;
+    transform:translate3d(0,-2%,0) scale(1.22);
+    opacity:1;
+    filter:brightness(1.04) contrast(1.1) saturate(1.08);
   }
   45% {
-    transform:translate3d(0,-3%,0) scale(1.42);
-    opacity:.82;
+    transform:translate3d(0,-3%,0) scale(1.38);
+    opacity:.92;
+    filter:brightness(1.12) contrast(1.18) saturate(1.12);
   }
   72% {
-    transform:translate3d(0,-3.8%,0) scale(1.58);
-    opacity:.48;
+    transform:translate3d(0,-4%,0) scale(1.56);
+    opacity:.62;
   }
   100% {
-    transform:translate3d(0,-4.4%,0) scale(1.72);
+    transform:translate3d(0,-5%,0) scale(1.74);
     opacity:0;
   }
 }
 
-@keyframes insideReveal {
+@keyframes insideMajicReveal {
   0% {
     opacity:0;
-    transform:translate3d(0,1.5%,0) scale(1.12);
+    transform:translate3d(0,2%,0) scale(1.1);
+    filter:brightness(.88) blur(1.5px);
   }
-  45% {
-    opacity:.86;
-    transform:translate3d(0,.5%,0) scale(1.045);
+  35% {
+    opacity:.55;
+    transform:translate3d(0,1%,0) scale(1.055);
+    filter:brightness(1.04) blur(.5px);
+  }
+  70% {
+    opacity:.95;
   }
   100% {
     opacity:1;
     transform:translate3d(0,0,0) scale(1);
+    filter:brightness(1.08) blur(0);
   }
 }
 
-@keyframes glowPulse {
-  0% { opacity:.72; }
-  55% { opacity:.9; }
-  100% { opacity:.28; }
+@keyframes doorsOpen {
+  0% {
+    transform:scaleX(1);
+    opacity:.96;
+  }
+  45% {
+    opacity:.8;
+  }
+  100% {
+    transform:scaleX(.02);
+    opacity:0;
+  }
 }
 
-@keyframes portalPulse {
+@keyframes seamGlow {
+  0% { opacity:0; transform:translateX(-50%) scaleY(.2); }
+  35% { opacity:1; transform:translateX(-50%) scaleY(1); }
+  100% { opacity:0; transform:translateX(-50%) scaleY(1.2); }
+}
+
+@keyframes royalPortal {
   0% {
     opacity:0;
-    transform:translate(-50%, -50%) scale(.85);
+    transform:translate(-50%, -50%) scale(.75);
   }
-  38% {
-    opacity:.88;
-    transform:translate(-50%, -50%) scale(1.55);
+  35% {
+    opacity:.95;
+    transform:translate(-50%, -50%) scale(1.45);
+  }
+  70% {
+    opacity:.55;
+    transform:translate(-50%, -50%) scale(2.5);
   }
   100% {
     opacity:0;
-    transform:translate(-50%, -50%) scale(3.15);
+    transform:translate(-50%, -50%) scale(3.6);
+  }
+}
+
+@keyframes goldBreath {
+  0% { opacity:.35; }
+  45% { opacity:.9; }
+  100% { opacity:.36; }
+}
+
+@keyframes sparkleRise {
+  0% {
+    opacity:0;
+    transform:translateY(20px) scale(1);
+  }
+  35% {
+    opacity:.65;
+  }
+  100% {
+    opacity:0;
+    transform:translateY(-80px) scale(1.08);
+  }
+}
+
+@keyframes titleReveal {
+  0%, 12% {
+    opacity:0;
+    transform:translateX(-50%) translateY(18px);
+  }
+  35%, 72% {
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity:0;
+    transform:translateX(-50%) translateY(-10px);
   }
 }
 
 @keyframes finalFade {
-  0%, 93% { opacity:0; }
+  0%, 92% { opacity:0; }
   100% { opacity:1; }
 }
 </style>
@@ -195,16 +340,28 @@ body {
 
   <img src="{% static 'img/inside_majic_mall.png' %}" class="inside-main" alt="Inside MajicMall Megaverse">
 
-  <div class="glow"></div>
+  <div class="gold-atmosphere"></div>
   <div class="portal-light"></div>
-  <div class="walk-shadow"></div>
+
+  <div class="door-left"></div>
+  <div class="door-right"></div>
+  <div class="door-seam"></div>
+
+  <div class="sparkles"></div>
+  <div class="vignette"></div>
+
+  <div class="reveal-title">
+    <span class="small">WELCOME TO</span>
+    <span class="big">MajicMall Megaverse</span>
+  </div>
+
   <div class="fade-out"></div>
 </div>
 
 <script>
   setTimeout(() => {
     window.location.href = "{% url 'mall-directory' %}";
-  }, 8400);
+  }, 9600);
 </script>
 
 </body>

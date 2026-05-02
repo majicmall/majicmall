@@ -66,8 +66,8 @@
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
     {% for zone in zones %}
       <a
-        href="{% url 'zone-entry' zone.slug %}"
-        class="px-4 py-3 bg-purple-700 text-white font-bold rounded-xl shadow-lg hover:bg-purple-900 transition"
+        href="#zone-{{ zone.slug }}"
+        class="px-4 py-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition"
       >
         {{ zone.name|upper }}
       </a>
@@ -79,20 +79,20 @@
 
     <a
       href="{% url 'merchant-invite' %}"
-      class="px-4 py-3 bg-yellow-400 text-black font-bold rounded-xl shadow-lg hover:bg-yellow-500 transition"
+      class="px-4 py-2 bg-yellow-400 text-black font-bold rounded-xl shadow-lg hover:bg-yellow-500 transition"
     >
       🛍️ Become a Merchant
     </a>
 
     <a
       href="/merchant/login/"
-      class="px-4 py-3 bg-gray-700 text-white font-bold rounded-xl shadow-lg hover:bg-gray-900 transition"
+      class="px-4 py-2 bg-gray-700 text-white rounded-xl shadow-lg hover:bg-gray-900 transition"
     >
       🔐 Merchant Login
     </a>
   </div>
 
-  <!-- Featured Stores By Zone -->
+  <!-- Live Stores by Zone -->
   <div class="w-full max-w-6xl">
     <div class="text-center mb-10">
       <h2 class="text-3xl font-bold text-yellow-400">Live Stores by Zone</h2>
@@ -108,25 +108,14 @@
           class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl directory-zone"
           data-zone-name="{{ section.zone.name|lower }}"
         >
-          <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
+          <div class="flex justify-between items-center mb-4">
             <div>
-              <h3 class="text-2xl md:text-3xl font-bold text-yellow-400">
-                {{ section.zone.name }}
-              </h3>
+              <h3 class="text-2xl font-bold text-yellow-400">{{ section.zone.name }}</h3>
               {% if section.zone.description %}
-                <p class="text-gray-400 mt-1 text-base">{{ section.zone.description }}</p>
+                <p class="text-gray-400 mt-1">{{ section.zone.description }}</p>
               {% endif %}
             </div>
-
-            <div class="flex flex-col items-start md:items-end gap-2">
-              <span class="text-sm text-gray-400">5 Premium Slots</span>
-              <a
-                href="{% url 'zone-entry' section.zone.slug %}"
-                class="px-4 py-2 bg-purple-700 text-white font-bold rounded-xl shadow-lg hover:bg-purple-900 transition"
-              >
-                Enter Zone
-              </a>
-            </div>
+            <span class="text-sm text-gray-400">5 Premium Slots</span>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -134,8 +123,8 @@
               <div
                 class="bg-gray-800 rounded-xl p-5 flex flex-col items-center text-center shadow-lg hover:scale-105 transition directory-store-card {% if store.plan == 'elite' %}border-2 border-yellow-400{% endif %}"
                 data-store-name="{{ store.store_name|lower }}"
-                data-store-slogan="{% if store.slogan %}{{ store.slogan|lower }}{% endif %}"
-                data-store-zone="{% if store.zone %}{{ store.zone.name|lower }}{% endif %}"
+                data-store-slogan="{{ store.slogan|lower }}"
+                data-store-zone="{{ store.zone.name|lower }}"
               >
                 {% if store.plan == "elite" %}
                   <div class="text-xs bg-yellow-400 text-black px-2 py-1 rounded-full mb-2 font-bold">
@@ -225,8 +214,8 @@
 
     if (!input) return;
 
-    function applyFilter() {
-      const q = input.value.trim().toLowerCase();
+    input.addEventListener("input", function () {
+      const q = this.value.trim().toLowerCase();
 
       cards.forEach((card) => {
         const name = card.dataset.storeName || "";
@@ -246,15 +235,6 @@
         const visibleCards = zoneBlock.querySelectorAll(".directory-store-card:not([style*='display: none'])");
         zoneBlock.style.display = visibleCards.length ? "" : "none";
       });
-    }
-
-    input.addEventListener("input", applyFilter);
-
-    input.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        applyFilter();
-      }
     });
   })();
 </script>

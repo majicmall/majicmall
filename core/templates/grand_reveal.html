@@ -17,8 +17,15 @@ html, body {
   font-family:Arial, sans-serif;
 }
 
+/* ✅ Smooth scene continuation */
 body {
   opacity:1;
+  animation:softSceneIn .45s linear forwards;
+}
+
+@keyframes softSceneIn {
+  from { opacity:.96; }
+  to { opacity:1; }
 }
 
 .scene {
@@ -117,6 +124,7 @@ body {
   animation:finalFade 8.4s linear forwards;
 }
 
+/* 🔥 CONTINUOUS WALK (no reset) */
 @keyframes continueWalk {
   0% {
     transform:translate3d(0,-2.2%,0) scale(1.28);
@@ -198,14 +206,6 @@ body {
     window.location.href = "{% url 'mall-directory' %}";
   }, 8400);
 </script>
-body {
-  opacity:1;
-  animation:softSceneIn .45s linear forwards;
-}
 
-@keyframes softSceneIn {
-  from { opacity:.96; }
-  to { opacity:1; }
-}
 </body>
 </html>

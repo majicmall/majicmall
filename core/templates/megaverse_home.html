@@ -163,13 +163,13 @@ html, body {
   box-shadow:0 0 10px rgba(255,241,168,0.9);
 }
 
-/* HERO LOWERED */
+/* HERO LOWERED JUST A LITTLE */
 .hero {
   display:flex;
   justify-content:center;
   align-items:flex-start;
   min-height:78vh;
-  padding-top:30vh;
+  padding-top:32vh;
   text-align:center;
   box-sizing:border-box;
 }
@@ -262,10 +262,6 @@ html, body {
   animation:scrollExperiences 32s linear infinite;
 }
 
-.experience-track:hover {
-  animation-play-state:paused;
-}
-
 .experience-card {
   position:relative;
   width:280px;
@@ -274,13 +270,40 @@ html, body {
   border-radius:20px;
   overflow:hidden;
   text-decoration:none;
-  border:1px solid rgba(255,255,255,0.15);
+  border:1px solid rgba(255,241,168,0.72);
   transition:.3s;
   background:#111;
+  box-shadow:
+    0 0 10px rgba(212,175,55,0.32),
+    inset 0 0 12px rgba(255,241,168,0.08);
+}
+
+.experience-card::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  border-radius:20px;
+  background:linear-gradient(
+    115deg,
+    transparent 0%,
+    transparent 38%,
+    rgba(255,241,168,0.55) 48%,
+    transparent 58%,
+    transparent 100%
+  );
+  opacity:0;
+  transform:translateX(-120%);
+  animation:bannerGoldShimmer 5.8s ease-in-out infinite;
 }
 
 .experience-card:hover {
   transform:translateY(-10px) scale(1.04);
+  box-shadow:
+    0 0 16px rgba(212,175,55,0.48),
+    0 18px 36px rgba(0,0,0,0.65),
+    inset 0 0 14px rgba(255,241,168,0.12);
 }
 
 .experience-card img {
@@ -299,11 +322,30 @@ html, body {
   font-weight:800;
   color:#fff;
   box-sizing:border-box;
+  z-index:3;
 }
 
 @keyframes scrollExperiences {
   from { transform:translateX(0); }
   to { transform:translateX(-50%); }
+}
+
+@keyframes bannerGoldShimmer {
+  0%, 55% {
+    opacity:0;
+    transform:translateX(-120%);
+  }
+  65% {
+    opacity:0.75;
+  }
+  82% {
+    opacity:0.45;
+    transform:translateX(120%);
+  }
+  100% {
+    opacity:0;
+    transform:translateX(120%);
+  }
 }
 
 @media (max-width:640px) {

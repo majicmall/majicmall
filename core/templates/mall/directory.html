@@ -10,7 +10,7 @@
   <style>
     body {
       background-color: black;
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       animation: fadeIn 1.5s ease-in-out;
     }
 
@@ -24,76 +24,30 @@
 
 <div class="flex flex-col items-center min-h-screen p-6">
 
-  <!-- Header image -->
-  <img
-    src="{% static 'img/majic_directory.png' %}"
-    alt="Majic Mall Directory"
-    class="w-full max-w-6xl mb-8"
-  >
+  <!-- HEADER IMAGE -->
+  <img src="{% static 'img/majic_directory.png' %}" class="w-full max-w-6xl mb-8">
 
-  {% if active_zone %}
-    <div class="mb-4 text-yellow-300 font-semibold">
-      Showing zone: {{ active_zone }}
-    </div>
-  {% endif %}
-
-  <!-- Search + promo row -->
-  <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
-    <div class="lg:col-span-2">
-      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
-        <label for="directorySearch" class="block text-sm text-gray-300 mb-2">Search Stores</label>
-        <input
-          id="directorySearch"
-          type="text"
-          placeholder="Search by store name, slogan, or zone..."
-          class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-500"
-        >
-      </div>
-    </div>
-
-    <div>
-      <div class="bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 text-black rounded-2xl p-4 shadow-xl">
-        <div class="text-xs font-bold uppercase tracking-wide">Promo Space</div>
-        <div class="text-lg font-black mt-1">Advertise in Majic Mall</div>
-        <p class="text-sm mt-2">
-          Banner space reserved for featured promotions, sponsorships, and premium campaigns.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Zone buttons -->
+  <!-- ZONE BUTTONS -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
     {% for zone in zones %}
-      <a
-        href="#zone-{{ zone.slug }}"
-        class="px-4 py-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition"
-      >
+      <a href="#zone-{{ zone.slug }}"
+         class="px-4 py-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition">
         {{ zone.name|upper }}
       </a>
-    {% empty %}
-      <div class="col-span-full text-gray-400">
-        No active zones available.
-      </div>
     {% endfor %}
 
-    <a
-      href="{% url 'merchant-invite' %}"
-      class="px-4 py-2 bg-yellow-400 text-black font-bold rounded-xl shadow-lg hover:bg-yellow-500 transition"
-    >
+    <a href="{% url 'merchant-invite' %}" class="px-4 py-2 bg-yellow-400 text-black font-bold rounded-xl">
       🛍️ Become a Merchant
     </a>
 
-    <a
-      href="/merchant/login/"
-      class="px-4 py-2 bg-gray-700 text-white rounded-xl shadow-lg hover:bg-gray-900 transition"
-    >
+    <a href="/merchant/login/" class="px-4 py-2 bg-gray-700 text-white rounded-xl">
       🔐 Merchant Login
     </a>
   </div>
 
-  <!-- Live Stores by Zone -->
+  <!-- LIVE STORES BY ZONE -->
   <div class="w-full max-w-6xl">
+
     <div class="text-center mb-10">
       <h2 class="text-3xl font-bold text-yellow-400">Live Stores by Zone</h2>
       <p class="text-gray-300 mt-2">
@@ -102,142 +56,100 @@
     </div>
 
     <div class="space-y-10">
+
       {% for section in zone_sections %}
-        <div
-          id="zone-{{ section.zone.slug }}"
-          class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl directory-zone"
-          data-zone-name="{{ section.zone.name|lower }}"
-        >
+        <div id="zone-{{ section.zone.slug }}" class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+
+          <!-- Zone Header -->
           <div class="flex justify-between items-center mb-4">
-            <div>
-              <h3 class="text-2xl font-bold text-yellow-400">{{ section.zone.name }}</h3>
-              {% if section.zone.description %}
-                <p class="text-gray-400 mt-1">{{ section.zone.description }}</p>
-              {% endif %}
-            </div>
+            <h3 class="text-2xl font-bold text-yellow-400">{{ section.zone.name }}</h3>
             <span class="text-sm text-gray-400">5 Premium Slots</span>
           </div>
 
+          {% if section.zone.description %}
+            <p class="text-gray-400 mb-4">{{ section.zone.description }}</p>
+          {% endif %}
+
+          <!-- STORES GRID -->
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+
+            <!-- STORES -->
             {% for store in section.stores %}
-              <div
-                class="bg-gray-800 rounded-xl p-5 flex flex-col items-center text-center shadow-lg hover:scale-105 transition directory-store-card {% if store.plan == 'elite' %}border-2 border-yellow-400{% endif %}"
-                data-store-name="{{ store.store_name|lower }}"
-                data-store-slogan="{{ store.slogan|lower }}"
-                data-store-zone="{{ store.zone.name|lower }}"
-              >
-                {% if store.plan == "elite" %}
-                  <div class="text-xs bg-yellow-400 text-black px-2 py-1 rounded-full mb-2 font-bold">
-                    ELITE
-                  </div>
-                {% endif %}
+  <div class="bg-gray-800 rounded-xl p-5 flex flex-col items-center text-center shadow-lg hover:scale-105 transition">
 
-                {% if store.logo %}
-                  <img
-                    src="{{ store.logo.url }}"
-                    alt="{{ store.store_name }} logo"
-                    class="h-32 w-32 object-cover rounded-2xl mb-4 bg-white border border-gray-700 shadow-md"
-                  >
-                {% else %}
-                  <div class="h-32 w-32 bg-gray-700 rounded-2xl mb-4 flex items-center justify-center text-3xl">
-                    🏬
-                  </div>
-                {% endif %}
+    <!-- BIGGER LOGO -->
+    {% if store.logo %}
+      <img src="{{ store.logo.url }}"
+           class="h-32 w-32 object-cover rounded-2xl mb-4 bg-white border border-gray-700 shadow-md">
+    {% else %}
+      <div class="h-32 w-32 bg-gray-700 rounded-2xl mb-4 flex items-center justify-center text-3xl">
+        🏬
+      </div>
+    {% endif %}
 
-                <div class="text-white font-bold text-lg">{{ store.store_name }}</div>
+    <div class="text-white font-bold text-lg">{{ store.store_name }}</div>
+
+    {% if store.slogan %}
+      <div class="text-sm text-gray-400 mt-1">{{ store.slogan }}</div>
+    {% endif %}
+
+    <div class="mt-4 w-full">
+      <a href="{% url 'storefront' store.slug %}"
+         class="block w-full px-4 py-2 bg-yellow-400 text-black rounded-xl font-semibold hover:opacity-90">
+        Visit Store
+      </a>
+    </div>
+
+  </div>
+
+                <div class="text-white font-bold">{{ store.store_name }}</div>
 
                 {% if store.slogan %}
-                  <div class="text-sm text-gray-400 mt-1">{{ store.slogan }}</div>
-                {% elif store.description %}
-                  <div class="text-sm text-gray-400 mt-1">{{ store.description|truncatewords:10 }}</div>
+                  <div class="text-sm text-gray-400">{{ store.slogan }}</div>
                 {% endif %}
 
-                {% if store.zone %}
-                  <div class="mt-2 text-xs px-2 py-1 rounded-full bg-gray-700 text-gray-300">
-                    {{ store.zone.name }}
-                  </div>
-                {% endif %}
-
-                <div class="mt-4 w-full">
-                  <a
-                    href="{% url 'storefront' store.slug %}"
-                    class="block w-full px-4 py-2 bg-yellow-400 text-black rounded-xl font-semibold hover:opacity-90"
-                  >
-                    Visit Store
+                <div class="mt-auto pt-3">
+                  <a href="{% url 'storefront' store.slug %}"
+                     class="block text-center px-3 py-2 bg-yellow-400 text-black rounded-lg">
+                    Visit
                   </a>
                 </div>
               </div>
             {% endfor %}
 
+            <!-- EMPTY PREMIUM SLOTS -->
             {% for _ in section.empty_slots %}
-              <div class="bg-gray-800 border-2 border-dashed border-yellow-400 rounded-xl p-5 flex flex-col justify-center items-center text-center shadow-lg">
-                <div class="h-32 w-32 flex items-center justify-center text-yellow-400 text-3xl mb-3 border border-gray-700 rounded-2xl">
-                  ★
-                </div>
+              <div class="bg-gray-800 border-2 border-dashed border-yellow-400 rounded-xl p-5 flex flex-col justify-center items-center text-center">
 
-                <div class="text-yellow-400 font-bold text-lg">
-                  Your Store Here
+  <div class="h-32 w-32 flex items-center justify-center text-yellow-400 text-3xl mb-3 border border-gray-700 rounded-2xl">
+    ★
+  </div>
+
+                <div class="text-yellow-400 text-2xl mb-2">★</div>
+
+                <div class="text-yellow-400 font-bold">
+                  Premium Slot
                 </div>
 
                 <div class="text-sm text-gray-400 mt-2">
-                  Premium placement available
+                  Available for upgrade or bid
                 </div>
 
-                <div class="mt-4 w-full">
-                  <a
-                    href="{% url 'merchant-invite' %}"
-                    class="block w-full px-4 py-2 bg-gray-700 text-white rounded-xl hover:bg-gray-600"
-                  >
-                    Claim This Spot
-                  </a>
-                </div>
               </div>
             {% endfor %}
+
           </div>
-        </div>
-      {% empty %}
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 text-center text-gray-400">
-          No active zones yet.
+
         </div>
       {% endfor %}
+
     </div>
+
   </div>
 
   <p class="text-white mt-10 italic">🧭 You Are Here: Main Entrance</p>
+
 </div>
-
-<script>
-  (function () {
-    const input = document.getElementById("directorySearch");
-    const cards = Array.from(document.querySelectorAll(".directory-store-card"));
-    const zones = Array.from(document.querySelectorAll(".directory-zone"));
-
-    if (!input) return;
-
-    input.addEventListener("input", function () {
-      const q = this.value.trim().toLowerCase();
-
-      cards.forEach((card) => {
-        const name = card.dataset.storeName || "";
-        const slogan = card.dataset.storeSlogan || "";
-        const zone = card.dataset.storeZone || "";
-
-        const match =
-          !q ||
-          name.includes(q) ||
-          slogan.includes(q) ||
-          zone.includes(q);
-
-        card.style.display = match ? "" : "none";
-      });
-
-      zones.forEach((zoneBlock) => {
-        const visibleCards = zoneBlock.querySelectorAll(".directory-store-card:not([style*='display: none'])");
-        zoneBlock.style.display = visibleCards.length ? "" : "none";
-      });
-    });
-  })();
-</script>
 
 </body>
 </html>

@@ -2,133 +2,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Majic Mall Directory</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<title>MajicMall Megaverse Directory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      background-color: black;
-      font-family: 'Arial', sans-serif;
-      animation: fadeIn 1.5s ease-in-out;
-    }
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#000;
+  color:#fff;
+}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.98); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-  </style>
+/* HEADER IMAGE */
+.header {
+  width:100%;
+  height:220px;
+  background:url("{% static 'img/majic_directory.png' %}") center/cover no-repeat;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.header h1 {
+  font-size:32px;
+  font-weight:bold;
+  background:rgba(0,0,0,0.6);
+  padding:12px 20px;
+  border-radius:10px;
+}
+
+/* INTRO */
+.intro {
+  text-align:center;
+  padding:20px;
+  font-size:18px;
+}
+
+/* ZONE GRID */
+.zones {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:20px;
+  padding:20px;
+}
+
+.zone {
+  background:#111;
+  border-radius:12px;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 0 10px rgba(255,215,0,0.2);
+}
+
+.zone h2 {
+  margin-bottom:10px;
+}
+
+.zone p {
+  font-size:14px;
+  margin-bottom:15px;
+}
+
+/* BUTTON */
+.zone a {
+  display:inline-block;
+  padding:10px 18px;
+  background:gold;
+  color:#000;
+  font-weight:bold;
+  border-radius:20px;
+  text-decoration:none;
+}
+
+/* DESKTOP */
+@media (min-width:768px) {
+  .zones {
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+</style>
 </head>
+
 <body>
 
-<div class="flex flex-col items-center min-h-screen p-6">
+<!-- HEADER -->
+<div class="header">
+  <h1>MajicMall Megaverse Directory</h1>
+</div>
 
-  <!-- HEADER IMAGE -->
-  <img src="{% static 'img/majic_directory.png' %}" class="w-full max-w-6xl mb-8">
+<!-- INTRO -->
+<div class="intro">
+  Explore zones filled with shopping, entertainment, services, and opportunity.
+</div>
 
-  <!-- ZONE BUTTONS -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
-    {% for zone in zones %}
-      <a href="#zone-{{ zone.slug }}"
-         class="px-4 py-2 bg-purple-700 text-white rounded-xl shadow-lg hover:bg-purple-900 transition">
-        {{ zone.name|upper }}
-      </a>
-    {% endfor %}
+<!-- ZONES -->
+<div class="zones">
 
-    <a href="{% url 'merchant-invite' %}" class="px-4 py-2 bg-yellow-400 text-black font-bold rounded-xl">
-      🛍️ Become a Merchant
-    </a>
-
-    <a href="/merchant/login/" class="px-4 py-2 bg-gray-700 text-white rounded-xl">
-      🔐 Merchant Login
-    </a>
+  <div class="zone">
+    <h2>🛍️ Shopping Zone</h2>
+    <p>Discover products, brands, and deals.</p>
+    <a href="{% url 'zone-entry' 'shopping' %}">Enter Zone</a>
   </div>
 
-  <!-- LIVE STORES BY ZONE -->
-  <div class="w-full max-w-6xl">
-
-    <div class="text-center mb-10">
-      <h2 class="text-3xl font-bold text-yellow-400">Live Stores by Zone</h2>
-      <p class="text-gray-300 mt-2">
-        Only 5 premium placements per zone
-      </p>
-    </div>
-
-    <div class="space-y-10">
-
-      {% for section in zone_sections %}
-        <div id="zone-{{ section.zone.slug }}" class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-
-          <!-- Zone Header -->
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-bold text-yellow-400">{{ section.zone.name }}</h3>
-            <span class="text-sm text-gray-400">5 Premium Slots</span>
-          </div>
-
-          {% if section.zone.description %}
-            <p class="text-gray-400 mb-4">{{ section.zone.description }}</p>
-          {% endif %}
-
-          <!-- STORES GRID -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-
-            <!-- STORES -->
-            {% for store in section.stores %}
-              <div class="bg-gray-800 rounded-xl p-4 flex flex-col">
-
-                <!-- LOGO -->
-                {% if store.logo %}
-                  <img src="{{ store.logo.url }}"
-                       class="h-20 w-20 object-cover rounded-lg mb-3 bg-white">
-                {% else %}
-                  <div class="h-20 w-20 bg-gray-700 rounded-lg mb-3 flex items-center justify-center">
-                    🏬
-                  </div>
-                {% endif %}
-
-                <div class="text-white font-bold">{{ store.store_name }}</div>
-
-                {% if store.slogan %}
-                  <div class="text-sm text-gray-400">{{ store.slogan }}</div>
-                {% endif %}
-
-                <div class="mt-auto pt-3">
-                  <a href="{% url 'storefront' store.slug %}"
-                     class="block text-center px-3 py-2 bg-yellow-400 text-black rounded-lg">
-                    Visit
-                  </a>
-                </div>
-              </div>
-            {% endfor %}
-
-            <!-- EMPTY PREMIUM SLOTS -->
-            {% for _ in section.empty_slots %}
-              <div class="bg-gray-800 border-2 border-dashed border-yellow-400 rounded-xl p-4 flex flex-col justify-center items-center text-center">
-
-                <div class="text-yellow-400 text-2xl mb-2">★</div>
-
-                <div class="text-yellow-400 font-bold">
-                  Premium Slot
-                </div>
-
-                <div class="text-sm text-gray-400 mt-2">
-                  Available for upgrade or bid
-                </div>
-
-              </div>
-            {% endfor %}
-
-          </div>
-
-        </div>
-      {% endfor %}
-
-    </div>
-
+  <div class="zone">
+    <h2>🎬 Entertainment Zone</h2>
+    <p>Movies, music, live streams, and more.</p>
+    <a href="{% url 'zone-entry' 'entertainment' %}">Enter Zone</a>
   </div>
 
-  <p class="text-white mt-10 italic">🧭 You Are Here: Main Entrance</p>
+  <div class="zone">
+    <h2>🍔 Food Court</h2>
+    <p>Restaurants and local favorites.</p>
+    <a href="{% url 'zone-entry' 'food' %}">Enter Zone</a>
+  </div>
+
+  <div class="zone">
+    <h2>💼 Services Zone</h2>
+    <p>Professional and everyday services.</p>
+    <a href="{% url 'zone-entry' 'services' %}">Enter Zone</a>
+  </div>
 
 </div>
 

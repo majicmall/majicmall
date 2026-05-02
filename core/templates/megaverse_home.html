@@ -39,6 +39,22 @@ html, body {
     linear-gradient(to bottom, rgba(0,0,0,0.18), rgba(0,0,0,0.62) 72%, #000 100%);
 }
 
+.logo-corner {
+  position:fixed;
+  top:18px;
+  left:18px;
+  z-index:6;
+  width:62px;
+  height:62px;
+  border-radius:16px;
+  object-fit:contain;
+  background:rgba(0,0,0,0.36);
+  border:1px solid rgba(212,175,55,0.42);
+  box-shadow:0 0 18px rgba(212,175,55,0.24);
+  padding:6px;
+  box-sizing:border-box;
+}
+
 .stars {
   position:fixed;
   inset:0;
@@ -163,13 +179,13 @@ html, body {
   box-shadow:0 0 10px rgba(255,241,168,0.9);
 }
 
-/* HERO LOWERED JUST A LITTLE */
+/* HERO LOWERED A LITTLE MORE */
 .hero {
   display:flex;
   justify-content:center;
   align-items:flex-start;
   min-height:78vh;
-  padding-top:32vh;
+  padding-top:35vh;
   text-align:center;
   box-sizing:border-box;
 }
@@ -194,10 +210,35 @@ html, body {
   font-weight:900;
   margin:0;
   line-height:0.95;
+  position:relative;
+  overflow:hidden;
   background:linear-gradient(90deg,#fff1a8,#d4af37,#fff1a8);
   background-clip:text;
   -webkit-background-clip:text;
   color:transparent;
+  opacity:0;
+  transform:translateY(12px) scale(0.98);
+  animation:titleMaterialize 1.4s ease-out 0.25s forwards;
+}
+
+.title::after {
+  content:"";
+  position:absolute;
+  top:0;
+  left:-130%;
+  width:85%;
+  height:100%;
+  background:linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255,255,255,0.08) 35%,
+    rgba(255,241,168,0.85) 50%,
+    rgba(255,255,255,0.08) 65%,
+    transparent 100%
+  );
+  animation:titleLightSweep 3.8s ease-in-out 1.2s infinite;
+  pointer-events:none;
+  mix-blend-mode:screen;
 }
 
 .megaverse {
@@ -325,6 +366,30 @@ html, body {
   z-index:3;
 }
 
+@keyframes titleMaterialize {
+  0% {
+    opacity:0;
+    transform:translateY(14px) scale(0.97);
+    filter:blur(8px);
+  }
+  55% {
+    opacity:0.78;
+    filter:blur(2px);
+  }
+  100% {
+    opacity:1;
+    transform:translateY(0) scale(1);
+    filter:blur(0);
+  }
+}
+
+@keyframes titleLightSweep {
+  0%, 35% { left:-130%; opacity:0; }
+  45% { opacity:1; }
+  70% { left:145%; opacity:0.75; }
+  100% { left:145%; opacity:0; }
+}
+
 @keyframes scrollExperiences {
   from { transform:translateX(0); }
   to { transform:translateX(-50%); }
@@ -349,13 +414,21 @@ html, body {
 }
 
 @media (max-width:640px) {
+  .logo-corner {
+    width:52px;
+    height:52px;
+    top:14px;
+    left:14px;
+    border-radius:14px;
+  }
+
   .wrapper {
     padding-top:34px;
   }
 
   .hero {
     min-height:76vh;
-    padding-top:24vh;
+    padding-top:27vh;
   }
 
   .panel {
@@ -400,6 +473,8 @@ html, body {
 <body>
 
 <img src="{% static 'img/city_skyline.jpg' %}" class="city-bg" alt="MajicMall Megaverse city skyline">
+
+<img src="{% static 'img/majicmall_logo.png' %}" class="logo-corner" alt="MajicMall Megaverse logo">
 
 <div class="overlay"></div>
 <div class="stars" id="stars"></div>

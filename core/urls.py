@@ -6,8 +6,6 @@ urlpatterns = [
     # 🌍 Global Pages
     # ---------------------------
     path("", views.homepage, name="home"),
-    path("zone/<slug:zone_slug>/", views.zone_entry, name="zone-entry"),
-    path("zone/<slug:zone_slug>/inside/", views.zone_interior, name="zone-interior"),
     path("enter/", views.mall_entrance, name="mall-entrance"),
     path("mall/", views.mall_home, name="mall-home"),
     path("splash/", views.launch_splash, name="launch-splash"),
@@ -15,19 +13,15 @@ urlpatterns = [
     path("grand-entrance-city-view/", views.grand_entrance_city_view, name="grand-entrance-city-view"),
     path("grand-reveal/", views.grand_reveal, name="grand-reveal"),
 
-
     # ---------------------------
     # 🗺️ Mall Directory
     # ---------------------------
     path("directory/", views.mall_directory, name="mall-directory"),
 
     # ---------------------------
-    # 🏬 ZONES (CLEAN SYSTEM)
+    # 🏬 ZONES
     # ---------------------------
-    # Entry (Experience Layer)
     path("zones/<slug:zone_slug>/", views.zone_entry, name="zone-entry"),
-
-    # Interior (Stores Layer)
     path("zones/<slug:zone_slug>/inside/", views.zone_interior, name="zone-interior"),
 
     # ---------------------------
@@ -43,7 +37,7 @@ urlpatterns = [
     path("tv/", views.tv_home, name="tv-home"),
 
     # ---------------------------
-    # 🎬 Theater (SPECIAL CASE ZONE)
+    # 🎬 Theater
     # ---------------------------
     path("theater/", views.theater_zone, name="theater-zone"),
 ]

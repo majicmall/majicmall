@@ -27,23 +27,25 @@ body {
 
   <img src="{% static 'img/majic_directory.png' %}" class="w-full max-w-6xl mb-8" alt="MajicMall Megaverse Directory">
 
+  <!-- ZONE BUTTONS -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
     {% for zone in zones %}
       <a href="{% url 'zone-entry' zone.slug %}"
-         class="px-4 py-2 bg-red-600 text-white rounded-xl shadow-lg hover:bg-red-800 transition">
+         class="px-4 py-2 bg-red-600 text-white rounded-xl shadow-lg hover:bg-red-800 transition font-bold">
         {{ zone.name|upper }}
       </a>
     {% endfor %}
 
-    <a href="{% url 'merchant-invite' %}" class="px-4 py-2 bg-yellow-400 text-black font-bold rounded-xl">
+    <a href="{% url 'merchant-invite' %}" class="px-4 py-2 bg-yellow-400 text-black font-bold rounded-xl shadow-lg hover:bg-yellow-300 transition">
       🛍️ Become a Merchant
     </a>
 
-    <a href="/merchant/login/" class="px-4 py-2 bg-gray-700 text-white rounded-xl">
+    <a href="/merchant/login/" class="px-4 py-2 bg-gray-700 text-white rounded-xl shadow-lg hover:bg-gray-600 transition">
       🔐 Merchant Login
     </a>
   </div>
 
+  <!-- LIVE STORES BY ZONE -->
   <div class="w-full max-w-6xl">
     <div class="text-center mb-10">
       <h2 class="text-3xl font-bold text-yellow-400">Live Stores by Zone</h2>
@@ -54,9 +56,13 @@ body {
       {% for section in zone_sections %}
         <div id="zone-{{ section.zone.slug }}" class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
 
-          <div class="flex justify-between items-center mb-4">
+          <div class="flex justify-between items-center mb-4 gap-4">
             <h3 class="text-2xl font-bold text-yellow-400">{{ section.zone.name }}</h3>
-            <span class="text-sm text-gray-400">5 Premium Slots</span>
+
+            <a href="{% url 'zone-entry' section.zone.slug %}"
+               class="text-sm bg-red-600 hover:bg-red-800 text-white px-4 py-2 rounded-xl font-bold transition">
+              Enter Zone →
+            </a>
           </div>
 
           {% if section.zone.description %}
@@ -83,19 +89,22 @@ body {
 
                 <div class="mt-auto pt-3">
                   <a href="{% url 'storefront' store.slug %}"
-                     class="block text-center px-3 py-2 bg-yellow-400 text-black rounded-lg">
-                    Visit
+                     class="block text-center px-3 py-2 bg-yellow-400 hover:bg-yellow-300 text-black rounded-lg font-bold transition">
+                    Visit Store
                   </a>
                 </div>
               </div>
             {% endfor %}
 
             {% for _ in section.empty_slots %}
-              <div class="bg-gray-800 border-2 border-dashed border-yellow-400 rounded-xl p-4 flex flex-col justify-center items-center text-center">
+              <a href="{% url 'merchant-invite' %}"
+                 class="bg-gray-800 border-2 border-dashed border-yellow-400 rounded-xl p-4 flex flex-col justify-center items-center text-center hover:bg-gray-700 transition no-underline">
                 <div class="text-yellow-400 text-2xl mb-2">★</div>
-                <div class="text-yellow-400 font-bold">Premium Slot</div>
-                <div class="text-sm text-gray-400 mt-2">Available for upgrade or bid</div>
-              </div>
+                <div class="text-yellow-400 font-bold">Claim This Spot</div>
+                <div class="text-sm text-gray-400 mt-2">
+                  Join MajicMall Megaverse and feature your store here
+                </div>
+              </a>
             {% endfor %}
 
           </div>

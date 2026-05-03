@@ -18,6 +18,7 @@ from .models import Movie, Ticket
 def homepage(request):
     return render(request, "megaverse_home.html")
 
+
 def grand_reveal(request):
     return render(request, "grand_reveal.html")
 
@@ -32,6 +33,23 @@ def mall_home(request):
 
 def launch_splash(request):
     return render(request, "launch_splash.html")
+
+
+def grand_entrance_city_view(request):
+    return render(request, "grand_entrance_city_view.html")
+
+
+def community_signup(request):
+    if request.method == "POST":
+        form = CommunityMemberForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Welcome to the MajicMall Megaverse Community!")
+            return redirect("community-signup")
+    else:
+        form = CommunityMemberForm()
+
+    return render(request, "community_signup.html", {"form": form})
 
 
 # ---------------------------
@@ -67,10 +85,6 @@ def merchant_thank_you(request):
 
 @login_required
 def merchant_dashboard(request):
-    """
-    Multi-store safe dashboard fallback.
-    Uses the user's first non-archived store.
-    """
     store = request.user.stores.filter(is_archived=False).order_by("created_at").first()
 
     if not store:
@@ -94,44 +108,8 @@ def merchant_tiers(request):
     return render(request, "merchant/tiers.html")
 
 
-def business_zone(request):
-    zone = get_object_or_404(MallZone, slug="business-services-zone", is_active=True)
-    stores = zone.stores.filter(is_public=True, is_archived=False).order_by("store_name")
-
-    return render(
-        request,
-        "mall/zone_live.html",
-        {
-            "zone": zone,
-            "stores": stores,
-        },
-    )
-
-
-def music_zone(request):
-    return render(request, "mall/zone_placeholder.html", {"zone_name": "Music"})
-
-
 class MerchantLoginView(LoginView):
     template_name = "merchant/login.html"
-
-
-def community_signup(request):
-    if request.method == "POST":
-        form = CommunityMemberForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Welcome to the MajicMall Megaverse Community!")
-            return redirect("community-signup")
-    else:
-        form = CommunityMemberForm()
-
-    return render(request, "community_signup.html", {"form": form})
-
-from django.shortcuts import render
-
-def grand_entrance_city_view(request):
-    return render(request, "grand_entrance_city_view.html")
 
 
 # ---------------------------
@@ -196,6 +174,7 @@ def mall_directory(request):
             s for s in zone_store_pool
             if s.is_featured and s.featured_slot in [1, 2, 3, 4, 5]
         ]
+
         manual_featured = sorted(
             manual_featured,
             key=lambda s: (
@@ -211,6 +190,7 @@ def mall_directory(request):
             s for s in zone_store_pool
             if s.id not in used_ids
         ]
+
         fallback_stores = sorted(
             fallback_stores,
             key=lambda s: (s.plan_rank, -s.id, s.store_name.lower())
@@ -240,11 +220,6 @@ def mall_directory(request):
 
 
 def zone_entry(request, zone_slug):
-    """
-    Experience layer:
-    /zones/<slug>/
-    Shows the branded entrance page for a real MallZone.
-    """
     zone = get_object_or_404(MallZone, slug=zone_slug, is_active=True)
 
     return render(
@@ -259,11 +234,6 @@ def zone_entry(request, zone_slug):
 
 
 def zone_interior(request, zone_slug):
-    """
-    Functional layer:
-    /zones/<slug>/inside/
-    Shows all public stores assigned to this zone.
-    """
     zone = get_object_or_404(MallZone, slug=zone_slug, is_active=True)
 
     stores = (
@@ -303,7 +273,10 @@ def zone_interior(request, zone_slug):
     )
 
 
-# Optional backward-compatible placeholders
+# ---------------------------
+# Optional backward-compatible zone redirects
+# ---------------------------
+
 def fashion_zone(request):
     return redirect("zone-entry", zone_slug="fashion-zone")
 
@@ -343,62 +316,23 @@ def food_court_zone(request):
 def learning_zone(request):
     return redirect("zone-entry", zone_slug="learning-zone")
 
-from django.shortcuts import render, redirect
 
-ZONE_DATA = {
-    "fashion": {
-        "name": "Fashion Zone",
-        "tagline": "Where style, beauty, luxury, and culture meet.",
-    },
-    "food-court": {
-        "name": "Food Court",
-        "tagline": "Taste the flavor of the MajicMall Megaverse.",
-    },
-    "theater": {
-        "name": "Theater Zone",
-        "tagline": "Movies, premieres, red carpets, and unforgettable shows.",
-    },
-    "music": {
-        "name": "Music Zone",
-        "tagline": "Artists, radio, performances, merch, and media.",
-    },
-    "business": {
-        "name": "Business Zone",
-        "tagline": "Services, tools, creators, entrepreneurs, and opportunity.",
-    },
-    "creator": {
-        "name": "Creator Zone",
-        "tagline": "A home for influencers, filmmakers, artists, and digital products.",
-    },
-}
+def business_zone(request):
+    zone = get_object_or_404(MallZone, slug="business-services-zone", is_active=True)
+    stores = zone.stores.filter(is_public=True, is_archived=False).order_by("store_name")
+
+    return render(
+        request,
+        "mall/zone_live.html",
+        {
+            "zone": zone,
+            "stores": stores,
+        },
+    )
 
 
-def homepage(request):
-    return render(request, "megaverse_home.html")
-
-
-def zone_entry(request, zone_slug):
-    zone = ZONE_DATA.get(zone_slug)
-
-    if not zone:
-        return redirect("home")
-
-    return render(request, "zone_entry.html", {
-        "zone": zone,
-        "zone_slug": zone_slug,
-    })
-
-
-def zone_interior(request, zone_slug):
-    zone = ZONE_DATA.get(zone_slug)
-
-    if not zone:
-        return redirect("home")
-
-    return render(request, "zone_interior.html", {
-        "zone": zone,
-        "zone_slug": zone_slug,
-    })
+def music_zone(request):
+    return render(request, "mall/zone_placeholder.html", {"zone_name": "Music"})
 
 
 # ---------------------------
@@ -447,6 +381,7 @@ def theater_stream(request):
 
     if not request.session.session_key:
         request.session.create()
+
     session_key = request.session.session_key
 
     has_ticket = Ticket.objects.filter(
@@ -459,6 +394,7 @@ def theater_stream(request):
         return redirect("box-office")
 
     movie = get_object_or_404(Movie, id=movie_id)
+
     return render(
         request,
         "theater/theater_stream.html",
@@ -476,6 +412,7 @@ def buy_ticket(request, movie_id):
 
     if not request.session.session_key:
         request.session.create()
+
     session_key = request.session.session_key
 
     exists = Ticket.objects.filter(

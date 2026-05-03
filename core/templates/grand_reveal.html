@@ -11,13 +11,10 @@ html, body {
   margin:0;
   padding:0;
   width:100%;
-  min-height:100%;
+  height:100%;
   background:#000;
-  font-family:Arial, sans-serif;
-}
-
-body {
   overflow:hidden;
+  font-family:Arial, sans-serif;
 }
 
 .scene {
@@ -26,9 +23,6 @@ body {
   width:100vw;
   height:100vh;
   overflow:hidden;
-  background:#000;
-  z-index:100;
-  animation:sceneExit 1.6s ease 9.2s forwards;
 }
 
 .scene img {
@@ -37,290 +31,16 @@ body {
   width:100%;
   height:100%;
   object-fit:cover;
-  object-position:center;
 }
 
-.entrance-fill {
-  z-index:1;
-  filter:blur(7px) brightness(.62) contrast(1.08) saturate(1.1);
-  transform:scale(1.14);
-}
-
+/* Cinematic entrance */
 .entrance-main {
-  z-index:2;
-  filter:brightness(1.08) contrast(1.16) saturate(1.12);
-  transform:translate3d(0,-2%,0) scale(1.22);
-  animation:cinematicWalk 8.8s cubic-bezier(.16,.84,.32,1) forwards;
+  animation:zoomIn 8s ease forwards;
 }
 
-.inside-main {
-  z-index:4;
-  opacity:0;
-  filter:brightness(.95) contrast(1.08) saturate(1.08);
-  transform:translate3d(0,2%,0) scale(1.1);
-  animation:insideMajicReveal 7s cubic-bezier(.16,.84,.32,1) 2.45s forwards;
-}
-
-.gold-atmosphere {
-  position:absolute;
-  inset:0;
-  z-index:5;
-  pointer-events:none;
-  background:
-    radial-gradient(circle at 50% 48%, rgba(255,232,150,.38), transparent 32%),
-    radial-gradient(circle at 50% 78%, rgba(180,100,20,.22), transparent 42%),
-    linear-gradient(to bottom, rgba(0,0,0,.08), rgba(0,0,0,.38));
-  mix-blend-mode:screen;
-  animation:goldBreath 8.8s ease forwards;
-}
-
-.portal-light {
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:18vw;
-  height:24vh;
-  transform:translate(-50%, -50%) scale(.75);
-  z-index:6;
-  border-radius:50%;
-  background:radial-gradient(circle, rgba(255,250,205,.92), rgba(255,215,100,.42), transparent 70%);
-  filter:blur(12px);
-  opacity:0;
-  pointer-events:none;
-  animation:royalPortal 6.6s ease .7s forwards;
-}
-
-.door-left,
-.door-right {
-  position:absolute;
-  top:0;
-  width:50%;
-  height:100%;
-  z-index:7;
-  pointer-events:none;
-  background:linear-gradient(to bottom, rgba(0,0,0,.86), rgba(30,18,4,.55), rgba(0,0,0,.9));
-  box-shadow:inset 0 0 80px rgba(255,215,90,.12);
-  animation:doorsOpen 5.8s cubic-bezier(.18,.82,.22,1) .8s forwards;
-}
-
-.door-left {
-  left:0;
-  transform-origin:left center;
-}
-
-.door-right {
-  right:0;
-  transform-origin:right center;
-}
-
-.door-seam {
-  position:absolute;
-  left:50%;
-  top:0;
-  width:4px;
-  height:100%;
-  z-index:8;
-  transform:translateX(-50%);
-  background:linear-gradient(to bottom, transparent, rgba(255,230,140,.9), transparent);
-  box-shadow:0 0 28px rgba(255,220,120,.9);
-  opacity:0;
-  animation:seamGlow 5.8s ease .6s forwards;
-}
-
-.sparkles {
-  position:absolute;
-  inset:0;
-  z-index:9;
-  pointer-events:none;
-  background-image:
-    radial-gradient(circle, rgba(255,255,220,.9) 0 1px, transparent 2px),
-    radial-gradient(circle, rgba(255,210,100,.7) 0 1px, transparent 2px);
-  background-size:120px 120px, 180px 180px;
-  background-position:20% 30%, 70% 65%;
-  opacity:0;
-  animation:sparkleRise 7.8s ease 1.2s forwards;
-}
-
-.vignette {
-  position:absolute;
-  inset:0;
-  z-index:10;
-  pointer-events:none;
-  background:radial-gradient(circle at center, transparent 38%, rgba(0,0,0,.55) 100%);
-  opacity:.45;
-}
-
-.reveal-title {
-  position:absolute;
-  left:50%;
-  bottom:8vh;
-  transform:translateX(-50%);
-  z-index:11;
-  color:#fff7d6;
-  text-align:center;
-  text-shadow:0 0 18px rgba(255,210,80,.75), 0 5px 20px #000;
-  letter-spacing:.08em;
-  font-weight:800;
-  opacity:0;
-  animation:titleReveal 6.2s ease 1.5s forwards;
-}
-
-.reveal-title .small {
-  display:block;
-  font-size:clamp(.8rem, 2.6vw, 1.1rem);
-  color:#f6d879;
-  margin-bottom:.35rem;
-}
-
-.reveal-title .big {
-  display:block;
-  font-size:clamp(1.5rem, 6vw, 3.6rem);
-}
-
-.directory-stage {
-  min-height:100vh;
-  opacity:0;
-  transform:scale(1.04);
-  animation:directoryReveal 1.8s ease 8.3s forwards;
-}
-
-.directory-hero {
-  min-height:100vh;
-  padding:34px 18px;
-  color:#fff;
-  background:
-    linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.78)),
-    url("{% static 'img/inside_majic_mall.png' %}") center/cover no-repeat;
-}
-
-.directory-wrap {
-  max-width:1100px;
-  margin:0 auto;
-  padding-top:8vh;
-}
-
-.directory-kicker {
-  color:#f7d46b;
-  font-weight:800;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  font-size:.9rem;
-}
-
-.directory-title {
-  margin:.5rem 0 1rem;
-  font-size:clamp(2.3rem, 8vw, 5.8rem);
-  line-height:.95;
-  color:#fff7d6;
-  text-shadow:0 0 24px rgba(255,210,80,.6), 0 6px 22px #000;
-}
-
-.directory-subtitle {
-  max-width:760px;
-  font-size:clamp(1.05rem, 3vw, 1.45rem);
-  line-height:1.45;
-  color:#f7f0d8;
-}
-
-.zone-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
-  gap:18px;
-  margin-top:34px;
-}
-
-.zone-card {
-  min-height:170px;
-  padding:22px;
-  border-radius:24px;
-  color:#fff;
-  text-decoration:none;
-  background:
-    linear-gradient(145deg, rgba(255,255,255,.14), rgba(255,255,255,.04)),
-    radial-gradient(circle at top left, rgba(255,215,90,.28), transparent 45%);
-  border:1px solid rgba(255,230,150,.28);
-  box-shadow:0 20px 50px rgba(0,0,0,.35);
-  backdrop-filter:blur(10px);
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  transition:transform .35s ease, box-shadow .35s ease, border-color .35s ease;
-}
-
-.zone-card:hover {
-  transform:translateY(-8px) scale(1.02);
-  border-color:rgba(255,230,150,.75);
-  box-shadow:0 28px 70px rgba(255,200,80,.18);
-}
-
-.zone-card h2 {
-  margin:0;
-  font-size:1.55rem;
-}
-
-.zone-card span {
-  color:#f6d879;
-  font-weight:800;
-}
-
-@keyframes cinematicWalk {
-  0% { transform:translate3d(0,-2%,0) scale(1.22); opacity:1; }
-  45% { transform:translate3d(0,-3%,0) scale(1.38); opacity:.92; }
-  72% { transform:translate3d(0,-4%,0) scale(1.56); opacity:.62; }
-  100% { transform:translate3d(0,-5%,0) scale(1.74); opacity:0; }
-}
-
-@keyframes insideMajicReveal {
-  0% { opacity:0; transform:translate3d(0,2%,0) scale(1.1); filter:brightness(.88) blur(1.5px); }
-  35% { opacity:.55; transform:translate3d(0,1%,0) scale(1.055); filter:brightness(1.04) blur(.5px); }
-  100% { opacity:1; transform:translate3d(0,0,0) scale(1); filter:brightness(1.08) blur(0); }
-}
-
-@keyframes doorsOpen {
-  0% { transform:scaleX(1); opacity:.96; }
-  45% { opacity:.8; }
-  100% { transform:scaleX(.02); opacity:0; }
-}
-
-@keyframes seamGlow {
-  0% { opacity:0; transform:translateX(-50%) scaleY(.2); }
-  35% { opacity:1; transform:translateX(-50%) scaleY(1); }
-  100% { opacity:0; transform:translateX(-50%) scaleY(1.2); }
-}
-
-@keyframes royalPortal {
-  0% { opacity:0; transform:translate(-50%, -50%) scale(.75); }
-  35% { opacity:.95; transform:translate(-50%, -50%) scale(1.45); }
-  70% { opacity:.55; transform:translate(-50%, -50%) scale(2.5); }
-  100% { opacity:0; transform:translate(-50%, -50%) scale(3.6); }
-}
-
-@keyframes goldBreath {
-  0% { opacity:.35; }
-  45% { opacity:.9; }
-  100% { opacity:.36; }
-}
-
-@keyframes sparkleRise {
-  0% { opacity:0; transform:translateY(20px) scale(1); }
-  35% { opacity:.65; }
-  100% { opacity:0; transform:translateY(-80px) scale(1.08); }
-}
-
-@keyframes titleReveal {
-  0%, 12% { opacity:0; transform:translateX(-50%) translateY(18px); }
-  35%, 72% { opacity:1; transform:translateX(-50%) translateY(0); }
-  100% { opacity:0; transform:translateX(-50%) translateY(-10px); }
-}
-
-@keyframes sceneExit {
-  0% { opacity:1; visibility:visible; }
-  100% { opacity:0; visibility:hidden; pointer-events:none; }
-}
-
-@keyframes directoryReveal {
-  0% { opacity:0; transform:scale(1.04); }
-  100% { opacity:1; transform:scale(1); }
+@keyframes zoomIn {
+  from { transform:scale(1.1); }
+  to   { transform:scale(1.6); }
 }
 </style>
 </head>
@@ -328,72 +48,13 @@ body {
 <body>
 
 <div class="scene">
-  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="entrance-fill" alt="">
-  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="entrance-main" alt="MajicMall Megaverse Grand Entrance">
-  <img src="{% static 'img/inside_majic_mall.png' %}" class="inside-main" alt="Inside MajicMall Megaverse">
-
-  <div class="gold-atmosphere"></div>
-  <div class="portal-light"></div>
-  <div class="door-left"></div>
-  <div class="door-right"></div>
-  <div class="door-seam"></div>
-  <div class="sparkles"></div>
-  <div class="vignette"></div>
-
-  <div class="reveal-title">
-    <span class="small">WELCOME TO</span>
-    <span class="big">MajicMall Megaverse</span>
-  </div>
+  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="entrance-main">
 </div>
-
-<main class="directory-stage">
-  <section class="directory-hero">
-    <div class="directory-wrap">
-      <div class="directory-kicker">Choose Your Destination</div>
-      <h1 class="directory-title">MajicMall Megaverse Directory</h1>
-      <p class="directory-subtitle">
-        Step into the world of shopping, entertainment, creators, food, events, media, and unforgettable experiences.
-      </p>
-
-      <div class="zone-grid">
-        <a class="zone-card" href="{% url 'zone-entry' 'fashion' %}">
-          <h2>Fashion Zone</h2>
-          <span>Enter Zone →</span>
-        </a>
-
-        <a class="zone-card" href="{% url 'zone-entry' 'food-court' %}">
-          <h2>Food Court</h2>
-          <span>Enter Zone →</span>
-        </a>
-
-        <a class="zone-card" href="{% url 'zone-entry' 'theater' %}">
-          <h2>Theater Zone</h2>
-          <span>Enter Zone →</span>
-        </a>
-
-        <a class="zone-card" href="{% url 'zone-entry' 'music' %}">
-          <h2>Music Zone</h2>
-          <span>Enter Zone →</span>
-        </a>
-
-        <a class="zone-card" href="{% url 'zone-entry' 'business' %}">
-          <h2>Business Zone</h2>
-          <span>Enter Zone →</span>
-        </a>
-
-        <a class="zone-card" href="{% url 'zone-entry' 'creator' %}">
-          <h2>Creator Zone</h2>
-          <span>Enter Zone →</span>
-        </a>
-      </div>
-    </div>
-  </section>
-</main>
 
 <script>
   setTimeout(() => {
-    document.body.style.overflow = "auto";
-  }, 9600);
+    window.location.href = "{% url 'mall-directory' %}";
+  }, 8000);
 </script>
 
 </body>

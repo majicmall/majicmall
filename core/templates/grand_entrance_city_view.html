@@ -2,91 +2,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Grand Entrance City View | MajicMall Megaverse</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta charset="UTF-8">
+<title>Grand Entrance City View | MajicMall Megaverse</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      overflow: hidden;
-    }
+<style>
+html, body {
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  background:#000;
+  overflow:hidden;
+}
 
-    body {
-      opacity: 1;
-      transition: opacity 0.9s ease;
-    }
+body {
+  opacity:1;
+  transition:opacity .9s ease;
+}
 
-    .scene {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      background: #000;
-    }
+.scene {
+  position:fixed;
+  inset:0;
+}
 
-    .bg-fill {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: blur(18px) brightness(0.48) saturate(1.25);
-      transform: scale(1.14);
-      z-index: 1;
-    }
+.bg-fill {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter:blur(18px) brightness(.48);
+  transform:scale(1.14);
+}
 
-    .bg-main {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center center;
-      z-index: 2;
-      filter: brightness(1.02) contrast(1.05) saturate(1.08);
-      animation: slowZoom 4.8s ease forwards;
-    }
+.bg-main {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  animation:slowZoom 4.8s ease forwards;
+}
 
-    .gold-wash {
-      position: absolute;
-      inset: 0;
-      z-index: 3;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at center, rgba(255, 215, 120, 0.12), transparent 48%),
-        linear-gradient(to bottom, rgba(0,0,0,0.06), rgba(0,0,0,0.24));
-    }
-
-    @keyframes slowZoom {
-      from { transform: scale(1); }
-      to { transform: scale(1.045); }
-    }
-  </style>
+@keyframes slowZoom {
+  from { transform:scale(1); }
+  to { transform:scale(1.045); }
+}
+</style>
 </head>
 
 <body>
 
 <div class="scene">
-  <img src="{% static 'img/grand_entrance_city_view.png' %}" class="bg-fill" alt="">
-  <img src="{% static 'img/grand_entrance_city_view.png' %}" class="bg-main" alt="MajicMall Megaverse Grand Entrance City View">
-  <div class="gold-wash"></div>
+  <img src="{% static 'img/grand_entrance_city_view.png' %}" class="bg-fill">
+  <img src="{% static 'img/grand_entrance_city_view.png' %}" class="bg-main">
 </div>
 
 <script>
+setTimeout(() => {
+  document.body.style.opacity = ".95";
+
   setTimeout(() => {
-    document.body.style.opacity = "0.96";
+    window.location.href = "{% url 'grand-reveal' %}";
+  }, 600);
 
-    setTimeout(() => {
-      window.location.href = "{% url 'grand-reveal' %}";
-    }, 650);
-
-  }, 4600);
+}, 4600);
 </script>
 
 </body>

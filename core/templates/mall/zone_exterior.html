@@ -1,0 +1,224 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ zone.name }} | MajicMall Megaverse</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<style>
+html, body {
+  margin:0;
+  padding:0;
+  width:100%;
+  min-height:100%;
+  background:#050505;
+  font-family:Arial, sans-serif;
+  color:white;
+}
+
+body {
+  overflow:hidden;
+  opacity:0;
+  animation:pageFadeIn .9s ease forwards;
+}
+
+.scene {
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  background:#000;
+}
+
+.bg {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center center;
+  z-index:1;
+  filter:brightness(.78) contrast(1.18) saturate(1.15);
+  animation:slowPush 8s ease forwards;
+}
+
+.overlay {
+  position:absolute;
+  inset:0;
+  z-index:2;
+  background:
+    radial-gradient(circle at center, rgba(255,210,95,.18), transparent 42%),
+    linear-gradient(to bottom, rgba(0,0,0,.12), rgba(0,0,0,.78));
+}
+
+.gold-glow {
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+  background:
+    linear-gradient(115deg, transparent 0%, rgba(255,228,140,.16) 44%, transparent 58%);
+  animation:lightSweep 4.5s ease-in-out infinite;
+}
+
+.content {
+  position:relative;
+  z-index:5;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  align-items:center;
+  text-align:center;
+  padding:32px 20px 56px;
+  box-sizing:border-box;
+}
+
+.badge {
+  display:inline-block;
+  padding:10px 18px;
+  border:1px solid rgba(255,215,120,.65);
+  border-radius:999px;
+  background:rgba(0,0,0,.45);
+  color:#ffe9a3;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  box-shadow:0 0 22px rgba(255,215,120,.22);
+  margin-bottom:16px;
+}
+
+h1 {
+  margin:0;
+  font-size:clamp(40px, 9vw, 86px);
+  line-height:.95;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+  text-shadow:
+    0 4px 18px rgba(0,0,0,.85),
+    0 0 28px rgba(255,215,120,.48);
+}
+
+.subtitle {
+  margin:18px auto 0;
+  max-width:760px;
+  font-size:clamp(18px, 4.5vw, 28px);
+  line-height:1.3;
+  font-weight:700;
+  color:#fff4cf;
+  text-shadow:0 3px 14px rgba(0,0,0,.9);
+}
+
+.actions {
+  margin-top:28px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  width:min(92vw, 420px);
+}
+
+.enter-btn,
+.back-btn {
+  display:block;
+  text-decoration:none;
+  text-align:center;
+  border-radius:999px;
+  font-weight:900;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+.enter-btn {
+  padding:18px 22px;
+  color:#120900;
+  background:linear-gradient(135deg, #fff2b8, #d4af37, #fff0a8);
+  box-shadow:
+    0 0 28px rgba(255,215,120,.55),
+    inset 0 0 8px rgba(255,255,255,.45);
+}
+
+.back-btn {
+  padding:14px 18px;
+  color:#ffe9a3;
+  background:rgba(0,0,0,.48);
+  border:1px solid rgba(255,215,120,.38);
+}
+
+.enter-btn:active,
+.back-btn:active {
+  transform:scale(.98);
+}
+
+@keyframes pageFadeIn {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+
+@keyframes slowPush {
+  from { transform:scale(1); }
+  to { transform:scale(1.08); }
+}
+
+@keyframes lightSweep {
+  0%, 100% { opacity:.15; transform:translateX(-20%); }
+  50% { opacity:.45; transform:translateX(20%); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="scene">
+
+  {% if zone.slug == "atls-hottest" or zone.slug == "atls-hottest-zone" %}
+    <img
+      src="{% static 'img/atls_hottest_zone_entry.png' %}"
+      class="bg"
+      alt="ATL's Hottest Zone Luxury Entrance"
+    >
+  {% else %}
+    <img
+      src="{% static 'img/inside_majic_mall.png' %}"
+      class="bg"
+      alt="{{ zone.name }} Entrance"
+    >
+  {% endif %}
+
+  <div class="overlay"></div>
+  <div class="gold-glow"></div>
+
+  <main class="content">
+    <div class="badge">MajicMall Megaverse Luxury Zone</div>
+
+    <h1>{{ zone.name }}</h1>
+
+    {% if zone.slug == "atls-hottest" or zone.slug == "atls-hottest-zone" %}
+      <p class="subtitle">
+        Step into ATL’s Hottest Zone — where entertainment, fashion, media,
+        creators, nominees, events, and star power come alive.
+      </p>
+    {% else %}
+      <p class="subtitle">
+        Welcome to {{ zone.name }}. Enter this zone to explore featured stores,
+        brands, creators, and experiences.
+      </p>
+    {% endif %}
+
+    <div class="actions">
+      <a class="enter-btn" href="{% url 'zone-interior' zone.slug %}">
+        Enter {{ zone.name }}
+      </a>
+
+      <a class="back-btn" href="{% url 'mall-directory' %}">
+        Back to Directory
+      </a>
+    </div>
+  </main>
+
+</div>
+
+</body>
+</html>

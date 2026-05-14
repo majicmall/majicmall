@@ -224,7 +224,7 @@ def zone_entry(request, zone_slug):
 
     return render(
         request,
-        "mall/zone_entry.html",
+        "mall/zone_exterior.html",
         {
             "zone": zone,
             "zone_name": zone.name,

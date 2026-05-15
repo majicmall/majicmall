@@ -54,6 +54,21 @@ body {
   z-index:1;
 }
 
+@media (max-width: 640px) {
+  .atl-experience {
+    background:
+      radial-gradient(circle at center, rgba(255,215,0,0.12), transparent 58%),
+      url("{% static 'img/atls_hottest_zone_entry.png' %}") center 10% / 88vw auto no-repeat,
+      linear-gradient(to bottom, #050000, #120000 45%, #000);
+
+    background-attachment: scroll;
+  }
+
+  .atl-card {
+    margin-top: 38vh;
+  }
+}
+
 .atl-spotlight.left {
   left:-18vw;
   background:linear-gradient(to bottom, rgba(255,245,200,.9), transparent);

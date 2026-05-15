@@ -34,9 +34,11 @@ body {
 /* ATL'S HOTTEST SPECIAL EXPERIENCE */
 .atl-experience {
   background:
-    radial-gradient(circle at 50% 18%, rgba(255,215,90,.22), transparent 32%),
-    radial-gradient(circle at 50% 100%, rgba(160,0,0,.35), transparent 40%),
+    radial-gradient(circle at center, rgba(255,215,0,0.15), transparent 55%),
+    url("{% static 'img/atls_hottest_zone_entry.png' %}") center center / contain no-repeat,
     linear-gradient(to bottom, #050000, #120000 45%, #000);
+
+  background-attachment: fixed;
   overflow:hidden;
 }
 

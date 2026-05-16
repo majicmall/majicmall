@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <title>MajicMall Grand Reveal</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
 <style>
 html, body {
@@ -18,35 +18,93 @@ html, body {
 
 body {
   opacity:0;
-  animation:fadeIn .8s ease forwards;
-  transition:opacity .8s ease;
+  animation:fadeIn .85s ease forwards;
+  transition:opacity .9s ease;
 }
 
+/* SCENE */
 .scene {
   position:fixed;
   inset:0;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  background:#000;
 }
 
-.scene img {
+/* BACKGROUND FILL */
+.bg-fill {
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
+
+  filter:
+    blur(14px)
+    brightness(.48)
+    contrast(1.08)
+    saturate(1.15);
+
+  transform:scale(1.12);
+
+  z-index:1;
 }
 
+/* MAIN IMAGE */
+.bg-main {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center center;
+
+  z-index:2;
+
+  filter:
+    brightness(1.06)
+    contrast(1.14)
+    saturate(1.12);
+
+  animation:grandPushIn 4.8s ease forwards;
+}
+
+/* GOLD ATMOSPHERE */
+.glow {
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+
+  background:
+    radial-gradient(circle at center, rgba(255,215,120,.16), transparent 45%),
+    linear-gradient(to bottom, rgba(0,0,0,.02), rgba(0,0,0,.18));
+}
+
+/* FADE IN */
 @keyframes fadeIn {
-  from { opacity:.8; }
-  to { opacity:1; }
+  from {
+    opacity:.78;
+  }
+
+  to {
+    opacity:1;
+  }
 }
 
-.zoom {
-  animation:zoomIn 5s ease forwards;
-}
+/* CONTINUED PUSH-IN */
+@keyframes grandPushIn {
 
-@keyframes zoomIn {
-  from { transform:scale(1); }
-  to { transform:scale(1.08); }
+  from {
+    transform:scale(1.04);
+    opacity:.92;
+  }
+
+  to {
+    transform:scale(1.18);
+    opacity:1;
+  }
 }
 </style>
 </head>
@@ -54,18 +112,38 @@ body {
 <body>
 
 <div class="scene">
-  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="zoom">
+
+  <!-- SOFT ATMOSPHERIC FILL -->
+  <img
+    src="{% static 'img/majicmall_grand_entrance.png' %}"
+    class="bg-fill"
+    alt=""
+  >
+
+  <!-- MAIN ENTRANCE IMAGE -->
+  <img
+    src="{% static 'img/majicmall_grand_entrance.png' %}"
+    class="bg-main"
+    alt="MajicMall Grand Reveal"
+  >
+
+  <!-- GOLD GLOW -->
+  <div class="glow"></div>
+
 </div>
 
 <script>
 setTimeout(() => {
-  document.body.style.opacity = ".9";
+
+  document.body.style.opacity = ".90";
 
   setTimeout(() => {
-    window.location.href = "{% url 'mall-home' %}";
-  }, 500);
 
-}, 4500);
+    window.location.href = "{% url 'mall-home' %}";
+
+  }, 450);
+
+}, 4300);
 </script>
 
 </body>

@@ -38,7 +38,7 @@ body {
 }
 
 .atl-bg-image {
-  position:fixed;
+  position:absolute;
   inset:0;
   z-index:0;
   pointer-events:none;
@@ -145,32 +145,32 @@ body {
     linear-gradient(to bottom, #050505, #111111 45%, #0a0a0a);
 }
 
+
+
+.atl-mobile-image {
+  display:none;
+}
+
 @media (max-width:640px) {
   .atl-bg-image {
-    top:2vh;
-    left:50%;
-    right:auto;
+    display:none !important;
+  }
+
+  .atl-mobile-image {
+    display:block;
+    position:relative;
+    z-index:4;
     width:82vw;
-    height:46vh;
-    transform:translateX(-50%);
-    background-size:contain;
-    background-position:center top;
+    max-width:360px;
+    height:auto;
+    margin:22px auto 18px;
   }
 
   .atl-card {
-    margin-top:48vh;
-  }
-
-  .atl-carpet {
-    width:100vw;
-    height:42vh;
-    opacity:.38;
-  }
-
-  .atl-spotlight {
-    opacity:.14;
+    margin-top:0 !important;
   }
 }
+
 </style>
 </head>
 
@@ -178,6 +178,13 @@ body {
 
 {% if zone_slug == 'atls-hottest-zone' %}
   <div class="atl-bg-image"></div>
+
+  <img
+    src="{% static 'img/atls_hottest_zone_entry.png' %}"
+    class="atl-mobile-image"
+    alt="ATL's Hottest Zone Entrance"
+  >
+
   <div class="atl-carpet"></div>
   <div class="atl-spotlight left"></div>
   <div class="atl-spotlight right"></div>

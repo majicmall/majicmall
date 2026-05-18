@@ -44,66 +44,67 @@ html, body {
 
 .city-main {
   z-index:2;
-  filter:brightness(.96) contrast(1.08) saturate(1.08);
-  animation:cityPushForward 5.4s ease-in forwards;
+  filter:brightness(.98) contrast(1.05) saturate(1.04);
+  animation:cityPushForward 9.2s ease-in-out forwards;
 }
 
 .grand-fill {
   z-index:3;
   opacity:0;
-  filter:blur(12px) brightness(.48) saturate(1.15);
-  transform:scale(1.12);
-  animation:grandFadeIn 4.2s ease 2.7s forwards;
+  filter:blur(8px) brightness(.56) saturate(1.08);
+  transform:scale(1.02);
+  animation:grandFadeIn 7.4s ease-in-out 4.2s forwards;
 }
 
 .grand-main {
   z-index:4;
   opacity:0;
-  filter:brightness(1.05) contrast(1.14) saturate(1.12);
-  animation:grandFusePush 5.2s ease 2.6s forwards;
+  filter:brightness(1.02) contrast(1.08) saturate(1.06);
+  animation:grandFusePush 8.2s ease-in-out 4.1s forwards;
 }
-
 @keyframes cityPushForward {
+
   0% {
-    transform:scale(1);
+    transform:scale(.96);
     opacity:1;
   }
 
-  68% {
-    transform:scale(1.11);
+  45% {
+    transform:scale(1.01);
     opacity:1;
+  }
+
+  75% {
+    transform:scale(1.05);
+    opacity:.78;
   }
 
   100% {
-    transform:scale(1.16);
-    opacity:.16;
-  }
-}
-
-@keyframes grandFadeIn {
-  from {
+    transform:scale(1.08);
     opacity:0;
-  }
-
-  to {
-    opacity:.9;
   }
 }
 
 @keyframes grandFusePush {
+
   0% {
     opacity:0;
-    transform:scale(1.02);
+    transform:scale(.94);
   }
 
-  32% {
-    opacity:1;
-    transform:scale(1.07);
+  35% {
+    opacity:.38;
+    transform:scale(.97);
+  }
+
+  65% {
+    opacity:.82;
+    transform:scale(1.0);
   }
 
   100% {
     opacity:1;
-    transform:scale(1.22);
+    transform:scale(1.06);
   }
 }
 
@@ -272,13 +273,16 @@ html, body {
 
 <script>
 setTimeout(() => {
-  document.body.style.opacity = ".90";
+
+  document.body.style.opacity = ".92";
 
   setTimeout(() => {
-    window.location.href = "{% url 'grand-reveal' %}";
-  }, 450);
 
-}, 6900);
+    window.location.href = "{% url 'mall-home' %}";
+
+  }, 950);
+
+}, 11800);
 </script>
 
 </body>

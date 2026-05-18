@@ -49,7 +49,24 @@ def community_signup(request):
     else:
         form = CommunityMemberForm()
 
-    return render(request, "community_signup.html", {"form": form})
+        return render(request, "community_signup.html", {"form": form})
+
+
+def storefront(request, store_slug):
+    store = get_object_or_404(
+        MerchantStore,
+        slug=store_slug,
+        is_public=True,
+        is_archived=False,
+    )
+
+    return render(
+        request,
+        "mall/storefront_entry.html",
+        {
+            "store": store,
+        },
+    )
 
 
 # ---------------------------

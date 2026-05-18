@@ -143,9 +143,9 @@ html, body {
   width:38vw;
   height:170vh;
   z-index:6;
-  opacity:.22;
+  opacity:.34;
   pointer-events:none;
-  filter:blur(18px);
+  filter:blur(14px);
   mix-blend-mode:screen;
 }
 
@@ -162,7 +162,7 @@ html, body {
 
   transform:rotate(-18deg);
 
-  animation:leftSweep 7s ease-in-out infinite alternate;
+  animation:leftSweep 5.5s ease-in-out infinite alternate;
 }
 
 .spotlight-right {
@@ -178,7 +178,7 @@ html, body {
 
   transform:rotate(18deg);
 
-  animation:rightSweep 7s ease-in-out infinite alternate;
+  animation:rightSweep 5.5s ease-in-out infinite alternate;
 }
 
 /* GOLD PARTICLES */
@@ -192,18 +192,18 @@ html, body {
 
 .sparkles span {
   position:absolute;
-  width:5px;
-  height:5px;
+  width:7px;
+  height:7px;
   border-radius:50%;
   background:#fff3c2;
 
   box-shadow:
     0 0 8px #fff3c2,
-    0 0 18px rgba(255,215,90,.9);
+    0 0 18px rgba(255,215,90,1);
 
   opacity:0;
 
-  animation:sparkleFloat 4.8s ease-in-out infinite;
+  animation:sparkleFloat 3.6s ease-in-out infinite;
 }
 
 .sparkles span:nth-child(1) { top:16%; left:22%; animation-delay:0s; }
@@ -454,7 +454,7 @@ html, body {
   }
 
   42% {
-    opacity:.58;
+    opacity:.82;
   }
 
   48% {
@@ -462,7 +462,7 @@ html, body {
   }
 
   54% {
-    opacity:.34;
+    opacity:.58;
   }
 
   60% {
@@ -473,12 +473,12 @@ html, body {
 @keyframes rayPulse {
 
   0%,100% {
-    opacity:.28;
+    opacity:.42;
     transform:scale(1);
   }
 
   50% {
-    opacity:.5;
+    opacity:.72;
     transform:scale(1.05);
   }
 }

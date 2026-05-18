@@ -24,44 +24,93 @@ html, body {
   background:#000;
 }
 
-.bg-fill {
+/* FUSED CITY → GRAND ENTRANCE IMAGES */
+.city-fill,
+.city-main,
+.grand-fill,
+.grand-main {
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
-  object-position:center 68%;
-  filter:blur(4px) brightness(.52) contrast(1.14) saturate(1.15);
-  transform:translate3d(0,0,0) scale(1.08);
+}
+
+.city-fill {
   z-index:1;
+  filter:blur(16px) brightness(.46) saturate(1.18);
+  transform:scale(1.14);
 }
 
-.bg-main {
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center 72%;
+.city-main {
   z-index:2;
-  filter:brightness(1.1) contrast(1.18) saturate(1.12) sharpen(1);
-  transform:translate3d(0,0,0) scale(.98);
-  will-change:transform, opacity;
-  backface-visibility:hidden;
-  animation:walkForward 7.6s linear .35s forwards;
+  filter:brightness(.96) contrast(1.08) saturate(1.08);
+  animation:cityPushForward 5.4s ease-in forwards;
 }
 
-@media (min-width:768px) {
-  .bg-main {
-    object-fit:contain;
-    object-position:center center;
+.grand-fill {
+  z-index:3;
+  opacity:0;
+  filter:blur(12px) brightness(.48) saturate(1.15);
+  transform:scale(1.12);
+  animation:grandFadeIn 4.2s ease 2.7s forwards;
+}
+
+.grand-main {
+  z-index:4;
+  opacity:0;
+  filter:brightness(1.05) contrast(1.14) saturate(1.12);
+  animation:grandFusePush 5.2s ease 2.6s forwards;
+}
+
+@keyframes cityPushForward {
+  0% {
+    transform:scale(1);
+    opacity:1;
+  }
+
+  68% {
+    transform:scale(1.11);
+    opacity:1;
+  }
+
+  100% {
+    transform:scale(1.16);
+    opacity:.16;
+  }
+}
+
+@keyframes grandFadeIn {
+  from {
+    opacity:0;
+  }
+
+  to {
+    opacity:.9;
+  }
+}
+
+@keyframes grandFusePush {
+  0% {
+    opacity:0;
+    transform:scale(1.02);
+  }
+
+  32% {
+    opacity:1;
+    transform:scale(1.07);
+  }
+
+  100% {
+    opacity:1;
+    transform:scale(1.22);
   }
 }
 
 .luxury-glow {
   position:absolute;
   inset:0;
-  z-index:3;
+  z-index:5;
   pointer-events:none;
   background:
     radial-gradient(circle at center, rgba(255,215,120,.18), transparent 46%),
@@ -168,25 +217,6 @@ html, body {
   animation:bridgeFade 7.9s linear forwards;
 }
 
-@keyframes walkForward {
-  0% {
-    transform:translate3d(0,0,0) scale(.98);
-    opacity:1;
-  }
-  35% {
-    transform:translate3d(0,-.5%,0) scale(1.05);
-    opacity:1;
-  }
-  70% {
-    transform:translate3d(0,-1.4%,0) scale(1.16);
-    opacity:1;
-  }
-  100% {
-    transform:translate3d(0,-2.2%,0) scale(1.28);
-    opacity:.86;
-  }
-}
-
 @keyframes openLeft { to { transform:translate3d(-105%,0,0); } }
 @keyframes openRight { to { transform:translate3d(105%,0,0); } }
 
@@ -212,15 +242,17 @@ html, body {
   0%, 96% { opacity:0; }
   100% { opacity:.04; }
 }
-
 </style>
 </head>
 
 <body>
 
 <div class="scene">
-  <img src="{% static 'img/grand_entrance_city_view.png' %}" class="bg-fill" alt="">
-  <img src="{% static 'img/grand_entrance_city_view.png' %}" class="bg-main" alt="MajicMall Megaverse Grand Entrance City View">
+  <img src="{% static 'img/grand_entrance_city_view.png' %}" class="city-fill" alt="">
+  <img src="{% static 'img/grand_entrance_city_view.png' %}" class="city-main" alt="MajicMall Megaverse City Entrance">
+
+  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="grand-fill" alt="">
+  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="grand-main" alt="MajicMall Grand Entrance">
 
   <div class="luxury-glow"></div>
 
@@ -239,9 +271,14 @@ html, body {
 </div>
 
 <script>
+setTimeout(() => {
+  document.body.style.opacity = ".90";
+
   setTimeout(() => {
     window.location.href = "{% url 'grand-reveal' %}";
-  }, 7600);
+  }, 450);
+
+}, 6900);
 </script>
 
 </body>

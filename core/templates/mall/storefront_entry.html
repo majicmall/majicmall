@@ -30,14 +30,14 @@
 
 <main class="min-h-screen flex items-center justify-center px-4 md:px-6 py-8 md:py-10">
 
-  <section class="storefront-hero relative w-full max-w-6xl rounded-[36px] overflow-hidden border border-yellow-400/30 shadow-2xl min-h-[82vh]">
+ <section class="storefront-hero relative w-full max-w-6xl rounded-[36px] overflow-hidden border border-yellow-400/30 shadow-2xl min-h-[72vh] md:min-h-[82vh]"></section>
 
     <!-- STOREFRONT HERO IMAGE -->
     {% if store.storefront_image %}
       <img
         src="{{ store.storefront_image.url }}"
         alt="{{ store.store_name }}"
-        class="storefront-hero-img absolute inset-0 w-full h-full object-cover object-center"
+        class="storefront-hero-img absolute inset-0 w-full h-full object-cover md:object-cover object-top"
       >
     {% else %}
       <div class="absolute inset-0 bg-gradient-to-br from-gray-900 to-black"></div>

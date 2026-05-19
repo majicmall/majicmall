@@ -69,6 +69,13 @@ class MerchantStore(models.Model):
     is_archived = models.BooleanField(default=False)
     archived_at = models.DateTimeField(blank=True, null=True)
 
+    storefront_image = models.ImageField(
+        upload_to="storefronts/",
+        blank=True,
+        null=True,
+        help_text="Admin-controlled storefront entrance image for this merchant.",
+    )
+
     # --- Admin / vendor contact info ---
     contact_person = models.CharField(max_length=255, blank=True)
     contact_email = models.EmailField(blank=True)

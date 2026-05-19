@@ -61,6 +61,7 @@ class MerchantStoreAdmin(admin.ModelAdmin):
                 "store_name",
                 "slug",
                 "logo",
+                "storefront_image",
                 "slogan",
                 "description",
                 "category",

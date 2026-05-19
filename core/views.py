@@ -49,8 +49,12 @@ def community_signup(request):
     else:
         form = CommunityMemberForm()
 
-        return render(request, "community_signup.html", {"form": form})
+    return render(request, "community_signup.html", {"form": form})
 
+
+# ---------------------------
+# 🏬 Storefront Flow
+# ---------------------------
 
 def storefront(request, store_slug):
     store = get_object_or_404(
@@ -65,6 +69,28 @@ def storefront(request, store_slug):
         "mall/storefront_entry.html",
         {
             "store": store,
+        },
+    )
+
+
+def store_inside(request, store_slug):
+    store = get_object_or_404(
+        MerchantStore,
+        slug=store_slug,
+        is_public=True,
+        is_archived=False,
+    )
+
+    products_manager = getattr(store, "products", None)
+    products = products_manager.all().order_by("-created_at") if products_manager else []
+
+    return render(
+        request,
+        "merchant/storefront_inside.html",
+        {
+            "store": store,
+            "products": products,
+            "public_url": request.build_absolute_uri(),
         },
     )
 

@@ -29,8 +29,9 @@
     display:block;
     width:100%;
     height:auto;
-    max-height:48vh;
+    max-height:52vh;
     object-fit:contain;
+    object-position:center top;
     background:#000;
   }
 
@@ -47,19 +48,33 @@
 
   <section
     class="storefront-hero relative w-full max-w-6xl rounded-[36px] overflow-hidden border border-yellow-400/30 shadow-2xl min-h-[82vh]"
-    {% if store.storefront_image %}
-      style="background-image:url('{{ store.storefront_image.url }}');"
+    {% if storefront_image_url %}
+      style="background-image:url('{{ storefront_image_url }}');"
     {% endif %}
   >
 
-    {% if store.storefront_image %}
+    {% if storefront_image_url %}
+
+      <!-- MOBILE SAFE REAL IMAGE -->
       <img
-        src="{{ store.storefront_image.url }}"
+        src="{{ storefront_image_url }}"
         alt="{{ store.store_name }}"
-        class="mobile-storefront-img"
+        class="mobile-storefront-img relative z-0"
       >
+
+      <!-- DESKTOP BACKGROUND LAYER -->
+      <div
+        class="hidden md:block absolute inset-0"
+        style="
+          background-image:url('{{ storefront_image_url }}');
+          background-size:cover;
+          background-position:center center;
+          background-repeat:no-repeat;
+        "
+      ></div>
+
     {% else %}
-      <div class="bg-gradient-to-br from-gray-900 to-black h-72"></div>
+      <div class="bg-gradient-to-br from-gray-900 to-black h-72 md:absolute md:inset-0 md:h-auto"></div>
     {% endif %}
 
     <div class="absolute inset-0 hidden md:block bg-black/40"></div>
@@ -129,15 +144,4 @@
 </main>
 
 </body>
-<div style="background:red;color:white;padding:12px;z-index:99999;position:relative;">
-  storefront_image = {{ store.storefront_image }}
-  <br>
-  storefront_image_url =
-  {% if store.storefront_image %}
-    {{ store.storefront_image.url }}
-  {% else %}
-    NO IMAGE FOUND
-  {% endif %}
-</div>
-
 </html>

@@ -64,11 +64,16 @@ def storefront(request, store_slug):
         is_archived=False,
     )
 
+    storefront_image_url = None
+    if store.storefront_image:
+        storefront_image_url = request.build_absolute_uri(store.storefront_image.url)
+
     return render(
         request,
         "mall/storefront_entry.html",
         {
             "store": store,
+            "storefront_image_url": storefront_image_url,
         },
     )
 

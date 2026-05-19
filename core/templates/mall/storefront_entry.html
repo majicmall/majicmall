@@ -8,21 +8,27 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-  @media (max-width: 640px) {
-    .storefront-hero {
-      min-height: 78vh;
-      border-radius: 28px;
-    }
+.storefront-hero {
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
 
-    .storefront-hero-content {
-      min-height: 78vh;
-    }
-
-    .storefront-hero-img {
-      object-fit: cover;
-      object-position: center top;
-    }
+@media (max-width: 640px) {
+  .storefront-hero {
+    min-height: 78vh;
+    border-radius: 28px;
+    background-position: center top;
   }
+
+  .storefront-hero-content {
+    min-height: 78vh;
+  }
+
+  .mobile-overlay {
+    background: rgba(0,0,0,.28);
+  }
+}
 </style>
 </head>
 
@@ -30,27 +36,22 @@
 
 <main class="min-h-screen flex items-center justify-center px-4 md:px-6 py-8 md:py-10">
 
- <section class="storefront-hero relative w-full max-w-6xl rounded-[36px] overflow-hidden border border-yellow-400/30 shadow-2xl min-h-[72vh] md:min-h-[82vh]"></section>
-
-    <!-- STOREFRONT HERO IMAGE -->
+  <section
+    class="storefront-hero relative w-full max-w-6xl rounded-[36px] overflow-hidden border border-yellow-400/30 shadow-2xl min-h-[78vh] md:min-h-[82vh]"
     {% if store.storefront_image %}
-      <img
-        src="{{ store.storefront_image.url }}"
-        alt="{{ store.store_name }}"
-        class="storefront-hero-img absolute inset-0 w-full h-full object-cover md:object-cover object-top"
-      >
-    {% else %}
+      style="background-image:url('{{ store.storefront_image.url }}');"
+    {% endif %}
+  >
+
+    {% if not store.storefront_image %}
       <div class="absolute inset-0 bg-gradient-to-br from-gray-900 to-black"></div>
     {% endif %}
 
-    <!-- DARK OVERLAY -->
-    <div class="absolute inset-0 bg-black/45"></div>
+    <div class="mobile-overlay absolute inset-0 bg-black/40"></div>
 
-    <!-- GOLD GLOW -->
     <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
 
-    <!-- CONTENT -->
-    <div class="storefront-hero-content relative z-10 flex flex-col justify-end min-h-[82vh] p-6 md:p-14">
+    <div class="storefront-hero-content relative z-10 flex flex-col justify-end min-h-[78vh] md:min-h-[82vh] p-6 md:p-14">
 
       {% if store.logo %}
         <img

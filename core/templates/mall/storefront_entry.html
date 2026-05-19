@@ -12,63 +12,76 @@
 
 <main class="min-h-screen flex items-center justify-center px-6 py-10">
 
-  <section class="w-full max-w-5xl rounded-3xl p-6 md:p-10 text-center bg-black/70 border border-yellow-400/30 shadow-2xl">
+  <section class="relative w-full max-w-6xl rounded-[36px] overflow-hidden border border-yellow-400/30 shadow-2xl min-h-[82vh]">
 
-    {% if store.storefront_image %}
-      <img src="{{ store.storefront_image.url }}"
-           alt="{{ store.store_name }}"
-           class="w-full h-72 md:h-[480px] object-cover rounded-3xl mb-8 border border-yellow-400/30 shadow-2xl">
-    {% endif %}
+  <!-- STOREFRONT HERO IMAGE -->
+  {% if store.storefront_image %}
+    <img src="{{ store.storefront_image.url }}"
+         alt="{{ store.store_name }}"
+         class="absolute inset-0 w-full h-full object-cover">
+  {% else %}
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-900 to-black"></div>
+  {% endif %}
+
+  <!-- DARK OVERLAY -->
+  <div class="absolute inset-0 bg-black/45"></div>
+
+  <!-- GOLD GLOW -->
+  <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+
+  <!-- CONTENT -->
+  <div class="relative z-10 flex flex-col justify-end min-h-[82vh] p-6 md:p-14">
 
     {% if store.logo %}
       <img src="{{ store.logo.url }}"
            alt="{{ store.store_name }}"
-           class="mx-auto h-28 w-28 rounded-2xl object-cover bg-white mb-6">
-    {% else %}
-      <div class="mx-auto h-28 w-28 rounded-2xl bg-gray-800 flex items-center justify-center text-5xl mb-6">
-        🏬
-      </div>
+           class="h-28 w-28 rounded-3xl object-cover bg-white border-4 border-white/20 shadow-2xl mb-6">
     {% endif %}
 
-    <div class="text-yellow-400 uppercase tracking-widest font-bold text-sm mb-3">
+    <div class="text-yellow-400 uppercase tracking-[0.35em] font-black text-sm mb-3">
       Welcome To
     </div>
 
-    <h1 class="text-4xl md:text-6xl font-black mb-4">
+    <h1 class="text-5xl md:text-7xl font-black leading-none mb-4 text-white drop-shadow-2xl">
       {{ store.store_name }}
     </h1>
 
     {% if store.slogan %}
-      <p class="text-xl text-gray-200 mb-5">{{ store.slogan }}</p>
-    {% endif %}
-
-    {% if store.description %}
-      <p class="text-gray-300 max-w-2xl mx-auto leading-relaxed mb-8">
-        {{ store.description|truncatewords:35 }}
+      <p class="text-xl md:text-2xl text-white/90 font-medium mb-5 max-w-3xl">
+        {{ store.slogan }}
       </p>
     {% endif %}
 
-    <div class="flex flex-col sm:flex-row justify-center gap-4">
+    {% if store.description %}
+      <p class="text-white/80 text-lg leading-relaxed max-w-3xl mb-10">
+        {{ store.description|truncatewords:40 }}
+      </p>
+    {% endif %}
+
+    <div class="flex flex-col sm:flex-row gap-4">
+
       <a href="{% url 'store-inside' store.slug %}"
-         class="px-8 py-4 rounded-2xl bg-yellow-400 text-black font-black text-lg hover:bg-yellow-300 transition">
+         class="px-10 py-5 rounded-2xl bg-yellow-400 text-black font-black text-xl hover:bg-yellow-300 transition text-center shadow-2xl">
         Enter Store →
       </a>
 
       {% if store.zone %}
         <a href="{% url 'zone-interior' zone_slug=store.zone.slug %}"
-           class="px-8 py-4 rounded-2xl bg-gray-800 text-white font-bold text-lg hover:bg-gray-700 transition">
+           class="px-10 py-5 rounded-2xl bg-black/55 backdrop-blur-md text-white border border-white/20 font-bold text-xl hover:bg-black/70 transition text-center">
           ← Back to {{ store.zone.name }}
         </a>
       {% else %}
         <a href="{% url 'mall-directory' %}"
-           class="px-8 py-4 rounded-2xl bg-gray-800 text-white font-bold text-lg hover:bg-gray-700 transition">
+           class="px-10 py-5 rounded-2xl bg-black/55 backdrop-blur-md text-white border border-white/20 font-bold text-xl hover:bg-black/70 transition text-center">
           ← Back to Directory
         </a>
       {% endif %}
+
     </div>
 
-  </section>
+  </div>
 
+</section>
 </main>
 
 </body>

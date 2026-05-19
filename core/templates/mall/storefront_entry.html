@@ -14,19 +14,28 @@
   background-repeat: no-repeat;
 }
 
+.mobile-storefront-img {
+  display:none;
+}
+
 @media (max-width: 640px) {
   .storefront-hero {
-    min-height: 78vh;
-    border-radius: 28px;
-    background-position: center top;
+    min-height:auto;
+    border-radius:28px;
+    background-image:none !important;
+  }
+
+  .mobile-storefront-img {
+    display:block;
+    width:100%;
+    height:auto;
+    max-height:48vh;
+    object-fit:contain;
+    background:#000;
   }
 
   .storefront-hero-content {
-    min-height: 78vh;
-  }
-
-  .mobile-overlay {
-    background: rgba(0,0,0,.28);
+    min-height:auto;
   }
 }
 </style>
@@ -37,21 +46,26 @@
 <main class="min-h-screen flex items-center justify-center px-4 md:px-6 py-8 md:py-10">
 
   <section
-    class="storefront-hero relative w-full max-w-6xl rounded-[36px] overflow-hidden border border-yellow-400/30 shadow-2xl min-h-[78vh] md:min-h-[82vh]"
+    class="storefront-hero relative w-full max-w-6xl rounded-[36px] overflow-hidden border border-yellow-400/30 shadow-2xl min-h-[82vh]"
     {% if store.storefront_image %}
       style="background-image:url('{{ store.storefront_image.url }}');"
     {% endif %}
   >
 
-    {% if not store.storefront_image %}
-      <div class="absolute inset-0 bg-gradient-to-br from-gray-900 to-black"></div>
+    {% if store.storefront_image %}
+      <img
+        src="{{ store.storefront_image.url }}"
+        alt="{{ store.store_name }}"
+        class="mobile-storefront-img"
+      >
+    {% else %}
+      <div class="bg-gradient-to-br from-gray-900 to-black h-72"></div>
     {% endif %}
 
-    <div class="mobile-overlay absolute inset-0 bg-black/40"></div>
+    <div class="absolute inset-0 hidden md:block bg-black/40"></div>
+    <div class="absolute inset-0 hidden md:block bg-gradient-to-t from-black via-black/20 to-transparent"></div>
 
-    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-
-    <div class="storefront-hero-content relative z-10 flex flex-col justify-end min-h-[78vh] md:min-h-[82vh] p-6 md:p-14">
+    <div class="storefront-hero-content relative z-10 flex flex-col justify-end min-h-[82vh] p-6 md:p-14 bg-black/70 md:bg-transparent">
 
       {% if store.logo %}
         <img

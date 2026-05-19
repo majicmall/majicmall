@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ store.store_name }} | MajicMall Megaverse</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-black text-white min-h-screen">
+
+<main class="min-h-screen flex items-center justify-center px-6 py-10">
+
+  <section class="w-full max-w-5xl rounded-3xl p-6 md:p-10 text-center bg-black/70 border border-yellow-400/30 shadow-2xl">
+
+    {% if store.storefront_image %}
+      <img src="{{ store.storefront_image.url }}"
+           alt="{{ store.store_name }}"
+           class="w-full h-72 md:h-[480px] object-cover rounded-3xl mb-8 border border-yellow-400/30 shadow-2xl">
+    {% endif %}
+
+    {% if store.logo %}
+      <img src="{{ store.logo.url }}"
+           alt="{{ store.store_name }}"
+           class="mx-auto h-28 w-28 rounded-2xl object-cover bg-white mb-6">
+    {% else %}
+      <div class="mx-auto h-28 w-28 rounded-2xl bg-gray-800 flex items-center justify-center text-5xl mb-6">
+        🏬
+      </div>
+    {% endif %}
+
+    <div class="text-yellow-400 uppercase tracking-widest font-bold text-sm mb-3">
+      Welcome To
+    </div>
+
+    <h1 class="text-4xl md:text-6xl font-black mb-4">
+      {{ store.store_name }}
+    </h1>
+
+    {% if store.slogan %}
+      <p class="text-xl text-gray-200 mb-5">{{ store.slogan }}</p>
+    {% endif %}
+
+    {% if store.description %}
+      <p class="text-gray-300 max-w-2xl mx-auto leading-relaxed mb-8">
+        {{ store.description|truncatewords:35 }}
+      </p>
+    {% endif %}
+
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      <a href="{% url 'store-inside' store.slug %}"
+         class="px-8 py-4 rounded-2xl bg-yellow-400 text-black font-black text-lg hover:bg-yellow-300 transition">
+        Enter Store →
+      </a>
+
+      {% if store.zone %}
+        <a href="{% url 'zone-interior' zone_slug=store.zone.slug %}"
+           class="px-8 py-4 rounded-2xl bg-gray-800 text-white font-bold text-lg hover:bg-gray-700 transition">
+          ← Back to {{ store.zone.name }}
+        </a>
+      {% else %}
+        <a href="{% url 'mall-directory' %}"
+           class="px-8 py-4 rounded-2xl bg-gray-800 text-white font-bold text-lg hover:bg-gray-700 transition">
+          ← Back to Directory
+        </a>
+      {% endif %}
+    </div>
+
+  </section>
+
+</main>
+
+</body>
+</html>

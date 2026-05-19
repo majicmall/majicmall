@@ -1,0 +1,83 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ store.store_name }} | MajicMall Store</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-950 text-white min-h-screen">
+
+<main class="max-w-6xl mx-auto px-6 py-8">
+
+  <a href="{% url 'storefront' store.slug %}" class="inline-block mb-8 text-yellow-400 font-bold">
+    ← Back to Storefront
+  </a>
+
+  <div class="flex items-center gap-4 mb-8">
+    {% if store.logo %}
+      <img src="{{ store.logo.url }}"
+           alt="{{ store.store_name }}"
+           class="h-20 w-20 object-cover rounded-2xl border border-gray-700 bg-white">
+    {% endif %}
+
+    <div>
+      <h1 class="text-3xl font-bold text-yellow-400">{{ store.store_name }}</h1>
+      {% if store.slogan %}
+        <p class="text-gray-300 mt-1">{{ store.slogan }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if store.description %}
+    <p class="text-gray-300 mb-8">{{ store.description }}</p>
+  {% endif %}
+
+  {% if products %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {% for product in products %}
+        <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
+
+          {% if product.image %}
+            <img src="{{ product.image.url }}"
+                 alt="{{ product.name }}"
+                 class="h-48 w-full object-cover rounded-xl mb-4">
+          {% else %}
+            <div class="h-48 w-full bg-gray-800 rounded-xl mb-4 grid place-items-center text-gray-500">
+              No image
+            </div>
+          {% endif %}
+
+          <h3 class="text-lg font-semibold text-yellow-400">{{ product.name }}</h3>
+
+          {% if product.category %}
+            <p class="text-xs text-gray-500 mt-1">{{ product.category.name }}</p>
+          {% endif %}
+
+          {% if product.description %}
+            <p class="text-sm text-gray-400 mt-2">{{ product.description|truncatewords:20 }}</p>
+          {% endif %}
+
+          <div class="mt-4 flex items-center justify-between">
+            <span class="text-xl font-bold">${{ product.price|floatformat:2 }}</span>
+
+            <button class="px-3 py-2 bg-yellow-400 text-black rounded-xl opacity-80">
+              View Item
+            </button>
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="bg-gray-900 rounded-2xl p-6 text-gray-300 border border-gray-800">
+      This store doesn’t have any products yet.
+    </div>
+  {% endif %}
+
+</main>
+
+</body>
+</html>

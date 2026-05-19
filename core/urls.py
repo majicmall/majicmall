@@ -12,12 +12,14 @@ urlpatterns = [
     path("community/signup/", views.community_signup, name="community-signup"),
     path("grand-entrance-city-view/", views.grand_entrance_city_view, name="grand-entrance-city-view"),
     path("grand-reveal/", views.grand_reveal, name="grand-reveal"),
+    
 
     # ---------------------------
     # 🗺️ Mall Directory
     # ---------------------------
     path("directory/", views.mall_directory, name="mall-directory"),
-
+    path("store/<slug:store_slug>/", views.storefront, name="storefront"),
+    path("store/<slug:store_slug>/inside/", views.store_inside, name="store-inside"),
     # ---------------------------
     # 🏬 ZONES
     # ---------------------------

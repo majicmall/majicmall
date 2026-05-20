@@ -6,7 +6,17 @@
   <title>Merchant Dashboard | Majic Mall</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     .line-clamp-1 {
       display: -webkit-box;
       -webkit-line-clamp: 1;
@@ -14,22 +24,92 @@
       overflow: hidden;
       line-clamp: 1;
     }
-    .nav-active { position: relative; color: #facc15; }
-    .nav-active::after {
-      content: ""; position: absolute; left: 0; bottom: -4px;
-      width: 100%; height: 2px; background: #facc15; border-radius: 1px;
+
+    .nav-active {
+      position: relative;
+      color: #facc15;
     }
-    .spark svg { display: block; }
+
+    .nav-active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 100%;
+      height: 2px;
+      background: #facc15;
+      border-radius: 1px;
+    }
+
+    .spark svg {
+      display: block;
+      width: 100%;
+      max-width: 220px;
+    }
+
+    .dashboard-shell {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+
+    .safe-card {
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    @media (max-width: 640px) {
+      .mobile-stack {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .mobile-full {
+        width: 100%;
+      }
+
+      .mobile-button {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .mobile-title {
+        font-size: 1.65rem;
+        line-height: 1.1;
+        word-break: break-word;
+      }
+
+      .desktop-table {
+        display: none;
+      }
+
+      .mobile-cards {
+        display: block;
+      }
+    }
+
+    @media (min-width: 641px) {
+      .mobile-cards {
+        display: none;
+      }
+    }
   </style>
 </head>
-<body class="bg-gray-950 text-white min-h-screen">
+
+<body class="bg-gray-950 text-white min-h-screen dashboard-shell">
 
   {% include "merchant/_nav.html" %}
 
   {% if messages %}
-    <div class="max-w-6xl mx-auto px-6 mt-4 space-y-2">
+    <div class="w-full max-w-6xl mx-auto px-4 md:px-6 mt-4 space-y-2">
       {% for message in messages %}
-        <div class="rounded-xl px-4 py-3
+        <div class="rounded-xl px-4 py-3 break-words
                     {% if message.tags == 'success' %}bg-green-900/40 text-green-200
                     {% elif message.tags == 'error' %}bg-red-900/40 text-red-200
                     {% else %}bg-gray-800 text-gray-200{% endif %}">
@@ -39,21 +119,22 @@
     </div>
   {% endif %}
 
-  <main class="max-w-6xl mx-auto px-6 py-8">
-    <div class="flex items-center justify-between mb-4">
+  <main class="w-full max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 overflow-x-hidden">
+
+    <div class="flex items-center justify-between gap-3 mb-4 mobile-stack">
       <div></div>
-      <a href="/" class="px-4 py-2 rounded-xl bg-gray-800 text-yellow-400 hover:bg-gray-700" aria-label="Back to Mall">
+      <a href="/" class="mobile-button inline-flex px-4 py-2 rounded-xl bg-gray-800 text-yellow-400 hover:bg-gray-700" aria-label="Back to Mall">
         ← Back to Mall
       </a>
     </div>
 
     {% if store and store.slug %}
-      <div class="mt-4">
+      <div class="mt-4 mb-6">
         <a
           href="{% url 'storefront' store.slug %}"
           target="_blank"
           rel="noopener"
-          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-yellow-400 text-black hover:opacity-90"
+          class="mobile-button inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-yellow-400 text-black hover:opacity-90 font-bold"
           title="Open your public storefront in a new tab"
         >
           <span aria-hidden="true">👁️</span>
@@ -63,11 +144,11 @@
     {% endif %}
 
     <!-- Welcome -->
-    <section class="mb-8">
-      <h2 class="text-3xl font-bold mb-2">
+    <section class="mb-8 safe-card">
+      <h2 class="mobile-title text-3xl font-bold mb-2">
         Welcome, {{ merchant.display_name|default:user.get_username }}
       </h2>
-      <p class="text-gray-400">Here’s an overview of your store performance and tools.</p>
+      <p class="text-gray-400 break-words">Here’s an overview of your store performance and tools.</p>
       <div class="mt-3">
         <a href="{% url 'merchant-plans' %}" class="inline-flex px-3 py-2 rounded-lg text-sm font-medium hover:text-white hover:bg-zinc-800">
           Plans & Pricing
@@ -76,38 +157,38 @@
     </section>
 
     <!-- Store Brand Header -->
-    <section class="mb-8 bg-gray-900 rounded-2xl p-6 flex items-center gap-5">
+    <section class="mb-8 bg-gray-900 rounded-2xl p-4 md:p-6 flex items-center gap-5 mobile-stack safe-card">
       {% if store.logo %}
-        <img src="{{ store.logo.url }}" alt="{{ store.store_name }}" class="h-16 w-16 rounded-xl object-cover shadow" />
+        <img src="{{ store.logo.url }}" alt="{{ store.store_name }}" class="h-16 w-16 shrink-0 rounded-xl object-cover shadow" />
       {% else %}
-        <div class="h-16 w-16 rounded-xl bg-gray-800 grid place-items-center text-gray-400">🏬</div>
+        <div class="h-16 w-16 shrink-0 rounded-xl bg-gray-800 grid place-items-center text-gray-400">🏬</div>
       {% endif %}
 
-      <div class="flex-1">
-        <h2 class="text-2xl font-bold text-yellow-400">{{ store.store_name }}</h2>
+      <div class="flex-1 min-w-0 mobile-full">
+        <h2 class="text-2xl font-bold text-yellow-400 break-words">{{ store.store_name }}</h2>
         {% if store.slogan %}
-          <p class="text-gray-400">{{ store.slogan }}</p>
+          <p class="text-gray-400 break-words">{{ store.slogan }}</p>
         {% elif store.description %}
-          <p class="text-gray-400 line-clamp-1">{{ store.description }}</p>
+          <p class="text-gray-400 line-clamp-1 break-words">{{ store.description }}</p>
         {% endif %}
       </div>
 
       {% if store %}
         <a href="{% url 'merchant-profile' %}"
-           class="px-4 py-2 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+           class="mobile-button inline-flex px-4 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
           ✏️ Customize Store
         </a>
       {% else %}
         <a href="{% url 'merchant-setup' %}"
-           class="px-4 py-2 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+           class="mobile-button inline-flex px-4 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
           🚀 Create Store
         </a>
       {% endif %}
     </section>
 
     <!-- Stats -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-      <div class="bg-gray-900 p-6 rounded-2xl shadow">
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10">
+      <div class="bg-gray-900 p-5 md:p-6 rounded-2xl shadow safe-card">
         <div class="text-center">
           <div class="text-3xl mb-2">📦</div>
           <p class="text-gray-400">Products</p>
@@ -116,8 +197,8 @@
         <div class="spark text-yellow-400 mt-4" data-points="{{ product_spark|default:'' }}"></div>
       </div>
 
-      <a href="{% url 'order-list' %}" class="block">
-        <div class="bg-gray-900 p-6 rounded-2xl shadow hover:bg-gray-800 transition">
+      <a href="{% url 'order-list' %}" class="block safe-card">
+        <div class="bg-gray-900 p-5 md:p-6 rounded-2xl shadow hover:bg-gray-800 transition">
           <div class="text-center">
             <div class="text-3xl mb-2">🧾</div>
             <p class="text-gray-400">Orders</p>
@@ -127,7 +208,7 @@
         </div>
       </a>
 
-      <div class="bg-gray-900 p-6 rounded-2xl shadow">
+      <div class="bg-gray-900 p-5 md:p-6 rounded-2xl shadow safe-card">
         <div class="text-center">
           <div class="text-3xl mb-2">💰</div>
           <p class="text-gray-400">Revenue</p>
@@ -138,13 +219,14 @@
     </section>
 
     <!-- Recent Orders -->
-    <section class="mb-10">
-      <div class="flex items-center justify-between mb-4">
+    <section class="mb-10 safe-card">
+      <div class="flex items-center justify-between gap-3 mb-4 mobile-stack">
         <h3 class="text-xl font-semibold">Recent Orders</h3>
         <a href="{% url 'order-list' %}" class="text-yellow-400 hover:underline">View all →</a>
       </div>
 
-      <div class="overflow-x-auto bg-gray-900 rounded-2xl shadow">
+      <!-- Desktop Table -->
+      <div class="desktop-table overflow-x-auto bg-gray-900 rounded-2xl shadow">
         <table class="min-w-full text-left">
           <thead class="bg-gray-800 text-gray-300 uppercase text-sm">
             <tr>
@@ -176,41 +258,80 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Mobile Cards -->
+      <div class="mobile-cards space-y-4">
+        {% for order in recent_orders %}
+          <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
+            <div class="flex justify-between gap-3">
+              <div>
+                <p class="text-gray-400 text-sm">Order</p>
+                <p class="font-bold text-yellow-400">#{{ order.id }}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-gray-400 text-sm">Total</p>
+                <p class="font-bold">${{ order.total|floatformat:2 }}</p>
+              </div>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p class="text-gray-400">Status</p>
+                <p>{{ order.status|title }}</p>
+              </div>
+              <div>
+                <p class="text-gray-400">Date</p>
+                <p>{{ order.created_at|date:"M d, Y" }}</p>
+              </div>
+            </div>
+
+            <a href="{% url 'order-detail' order.id %}" class="mt-4 inline-flex w-full justify-center px-4 py-3 rounded-xl bg-yellow-400 text-black font-bold">
+              View Order
+            </a>
+          </div>
+        {% empty %}
+          <div class="bg-gray-900 rounded-2xl p-6 text-center text-gray-400">
+            No orders yet.
+            <a href="{% url 'order-list' %}" class="text-yellow-400 hover:underline">See all</a>
+          </div>
+        {% endfor %}
+      </div>
     </section>
 
     <!-- Quick Actions -->
-    <section class="mb-10">
+    <section class="mb-10 safe-card">
       <h3 class="text-xl font-semibold mb-4">Quick Actions</h3>
-      <div class="flex flex-wrap gap-4">
-        <a href="{% url 'merchant-add-product' %}" class="px-5 py-3 bg-yellow-400 text-black rounded-xl shadow hover:opacity-90">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <a href="{% url 'merchant-add-product' %}" class="mobile-button px-5 py-3 bg-yellow-400 text-black rounded-xl shadow hover:opacity-90 font-bold">
           ➕ Add Product
         </a>
-        <a href="{% url 'merchant-category-list' %}" class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl shadow hover:bg-gray-700">
-  🗂️ Manage Categories
+        <a href="{% url 'merchant-category-list' %}" class="mobile-button px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl shadow hover:bg-gray-700 font-bold">
+          🗂️ Manage Categories
         </a>
-        <a href="{% url 'merchant-add-category' %}" class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl shadow hover:bg-gray-700">
-  ➕ Add Category
+        <a href="{% url 'merchant-add-category' %}" class="mobile-button px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl shadow hover:bg-gray-700 font-bold">
+          ➕ Add Category
         </a>
-        <a href="{% url 'merchant-profile' %}" class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl shadow hover:bg-gray-700">
+        <a href="{% url 'merchant-profile' %}" class="mobile-button px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl shadow hover:bg-gray-700 font-bold">
           ✏️ Customize Store
         </a>
-        <a href="{% url 'order-list' %}" class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl shadow hover:bg-gray-700">
+        <a href="{% url 'order-list' %}" class="mobile-button px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl shadow hover:bg-gray-700 font-bold">
           📦 View Orders
         </a>
-        <a href="{% url 'merchant-reports' %}" class="px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl shadow hover:bg-gray-700">
+        <a href="{% url 'merchant-reports' %}" class="mobile-button px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl shadow hover:bg-gray-700 font-bold">
           📊 View Reports
         </a>
       </div>
     </section>
 
-    <!-- Products Table -->
-    <section>
-      <div class="flex items-center justify-between mb-4">
+    <!-- Products -->
+    <section class="safe-card">
+      <div class="flex items-center justify-between gap-3 mb-4 mobile-stack">
         <h3 class="text-xl font-semibold">Your Products</h3>
         <a href="{% url 'merchant-add-product' %}" class="text-yellow-400 hover:underline">Add product →</a>
       </div>
 
-      <div class="overflow-x-auto bg-gray-900 rounded-2xl shadow">
+      <!-- Desktop Table -->
+      <div class="desktop-table overflow-x-auto bg-gray-900 rounded-2xl shadow">
         <table class="min-w-full text-left">
           <thead class="bg-gray-800 text-gray-300 uppercase text-sm">
             <tr>
@@ -271,6 +392,46 @@
             {% endfor %}
           </tbody>
         </table>
+      </div>
+
+      <!-- Mobile Product Cards -->
+      <div class="mobile-cards space-y-4">
+        {% for product in products %}
+          <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
+            <div class="flex gap-3">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-16 h-16 rounded-xl object-cover bg-gray-800 shrink-0">
+              {% else %}
+                <div class="w-16 h-16 rounded-xl bg-gray-800 grid place-items-center text-gray-500 shrink-0">🖼️</div>
+              {% endif %}
+
+              <div class="min-w-0 flex-1">
+                <h4 class="font-bold text-white break-words">{{ product.name }}</h4>
+                <p class="text-yellow-400 font-bold mt-1">${{ product.price|floatformat:2 }}</p>
+                <p class="text-xs text-gray-400 mt-1">{{ product.created_at|date:"M d, Y" }}</p>
+              </div>
+            </div>
+
+            {% if product.description %}
+              <p class="text-sm text-gray-400 mt-3 break-words">{{ product.description|truncatewords:18 }}</p>
+            {% endif %}
+
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <a href="{% url 'merchant-edit-product' product.id %}"
+                 class="px-3 py-3 bg-yellow-400 text-black rounded-xl text-sm font-bold text-center hover:opacity-90">
+                Edit
+              </a>
+              <a href="{% url 'merchant-delete-product' product.id %}"
+                 class="px-3 py-3 bg-red-600/80 text-white rounded-xl text-sm font-bold text-center hover:bg-red-600">
+                Delete
+              </a>
+            </div>
+          </div>
+        {% empty %}
+          <div class="bg-gray-900 rounded-2xl p-6 text-center text-gray-400">
+            No products yet. Click <span class="text-yellow-400 font-semibold">Add Product</span> to create your first one.
+          </div>
+        {% endfor %}
       </div>
     </section>
   </main>

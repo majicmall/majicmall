@@ -87,7 +87,7 @@
         </div>
 
         <div class="flex flex-wrap gap-3">
-          <<form method="post" action="{% url 'cart-add' product.id %}">
+          <form method="post" action="{% url 'cart-add' product.id %}">
   {% csrf_token %}
   <input type="hidden" name="quantity" value="1">
   <button type="submit"

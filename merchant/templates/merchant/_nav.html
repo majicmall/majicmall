@@ -1,22 +1,42 @@
 <nav class="bg-gray-900 border-b border-gray-800">
-  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-    <a href="/" class="text-yellow-400 font-bold text-lg">
-      Majic Mall
-    </a>
+  <div class="max-w-6xl mx-auto px-4 md:px-6 py-4">
 
-    <div class="flex items-center gap-2 text-sm">
-      <a href="/mall/" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">Mall</a>
-      <a href="/directory/" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">Directory</a>
-      <a href="/theater/" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">Theater</a>
-
-      <span class="mx-1 w-px h-6 bg-gray-800"></span>
+    <div class="flex items-center justify-between gap-3">
+      <a href="/" class="text-yellow-400 font-bold text-lg shrink-0">
+        Majic Mall
+      </a>
 
       {% if request.user.is_authenticated %}
+        <form method="post" action="/accounts/logout/" class="md:hidden">
+          {% csrf_token %}
+          <button type="submit" class="px-3 py-2 rounded-lg text-yellow-400 bg-gray-800">
+            Logout
+          </button>
+        </form>
+      {% endif %}
+    </div>
+
+    <div class="mt-4 grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:items-center gap-2 text-sm">
+
+      <a href="/mall/" class="px-3 py-2 rounded-lg text-gray-200 bg-gray-800/50 hover:bg-gray-800 text-center">
+        Mall
+      </a>
+
+      <a href="/directory/" class="px-3 py-2 rounded-lg text-gray-200 bg-gray-800/50 hover:bg-gray-800 text-center">
+        Directory
+      </a>
+
+      <a href="/theater/" class="px-3 py-2 rounded-lg text-gray-200 bg-gray-800/50 hover:bg-gray-800 text-center">
+        Theater
+      </a>
+
+      {% if request.user.is_authenticated %}
+
         {% if nav_stores %}
-          <form method="get" action="{% url 'merchant-dashboard' %}" class="inline">
+          <form method="get" action="{% url 'merchant-dashboard' %}" class="col-span-2 sm:col-span-3 md:col-span-1 md:inline">
             <select name="store"
                     onchange="this.form.submit()"
-                    class="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-200">
+                    class="w-full md:w-auto px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-200">
               {% for s in nav_stores %}
                 <option value="{{ s.id }}"
                   {% if nav_current_store and nav_current_store.id == s.id %}selected{% endif %}>
@@ -27,42 +47,51 @@
           </form>
         {% endif %}
 
-        <a href="{% url 'merchant-dashboard' %}" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">
+        <a href="{% url 'merchant-dashboard' %}" class="px-3 py-2 rounded-lg text-gray-200 bg-gray-800/50 hover:bg-gray-800 text-center">
           Dashboard
         </a>
-        <a href="{% url 'merchant-profile' %}" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">
+
+        <a href="{% url 'merchant-profile' %}" class="px-3 py-2 rounded-lg text-gray-200 bg-gray-800/50 hover:bg-gray-800 text-center">
           Manage Store
         </a>
-        <a href="{% url 'merchant-category-list' %}" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">
+
+        <a href="{% url 'merchant-category-list' %}" class="px-3 py-2 rounded-lg text-gray-200 bg-gray-800/50 hover:bg-gray-800 text-center">
           Categories
         </a>
-        <a href="{% url 'merchant-reports' %}" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">
+
+        <a href="{% url 'merchant-reports' %}" class="px-3 py-2 rounded-lg text-gray-200 bg-gray-800/50 hover:bg-gray-800 text-center">
           Reports
         </a>
-        <a href="{% url 'merchant-plans' %}" class="px-3 py-2 rounded-lg text-gray-200 hover:bg-gray-800">
+
+        <a href="{% url 'merchant-plans' %}" class="px-3 py-2 rounded-lg text-gray-200 bg-gray-800/50 hover:bg-gray-800 text-center">
           Plans
         </a>
 
         {% if request.user.is_staff or request.user.is_superuser %}
-          <a href="{% url 'admin-store-list' %}" class="px-3 py-2 rounded-lg text-yellow-400 hover:bg-gray-800">
+          <a href="{% url 'admin-store-list' %}" class="px-3 py-2 rounded-lg text-yellow-400 bg-gray-800/50 hover:bg-gray-800 text-center">
             Manage Stores
           </a>
         {% endif %}
 
-        <form method="post" action="/accounts/logout/" class="inline">
+        <form method="post" action="/accounts/logout/" class="hidden md:inline">
           {% csrf_token %}
-          <button type="submit" class="px-3 py-2 rounded-lg text-yellow-400 hover:bg-gray-800">
+          <button type="submit" class="px-3 py-2 rounded-lg text-yellow-400 bg-gray-800/50 hover:bg-gray-800">
             Logout
           </button>
         </form>
+
       {% else %}
-        <a href="/accounts/login/" class="px-3 py-2 rounded-lg text-yellow-400 hover:bg-gray-800">
+
+        <a href="/accounts/login/" class="px-3 py-2 rounded-lg text-yellow-400 bg-gray-800/50 hover:bg-gray-800 text-center">
           Merchant Login
         </a>
-        <a href="/merchant/profile/" class="px-3 py-2 rounded-lg bg-yellow-400 text-black hover:opacity-90">
+
+        <a href="/merchant/profile/" class="px-3 py-2 rounded-lg bg-yellow-400 text-black hover:opacity-90 text-center font-bold">
           Become a Merchant
         </a>
+
       {% endif %}
     </div>
+
   </div>
 </nav>

@@ -8,8 +8,10 @@ import dj_database_url
 import cloudinary
 from pathlib import Path
 from urllib.parse import urlparse
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 AUTO_PUBLIC_STOREFRONTS = os.getenv("AUTO_PUBLIC_STOREFRONTS", "False").lower() == "true"
 

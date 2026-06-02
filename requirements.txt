@@ -16,6 +16,7 @@ pillow==11.3.0
 psycopg2-binary==2.9.11
 pycparser==2.22
 PyJWT==2.10.1
+python-dotenv==1.2.2
 qrcode==8.2
 requests==2.32.4
 six==1.17.0

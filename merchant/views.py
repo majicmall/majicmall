@@ -682,10 +682,25 @@ def public_checkout_submit(request):
 
     customer_name = (request.POST.get("customer_name") or "").strip()
     customer_email = (request.POST.get("customer_email") or "").strip()
+    customer_phone = (request.POST.get("customer_phone") or "").strip()
+
+    shipping_address = (request.POST.get("shipping_address") or "").strip()
+    shipping_city = (request.POST.get("shipping_city") or "").strip()
+    shipping_state = (request.POST.get("shipping_state") or "").strip()
+    shipping_zip = (request.POST.get("shipping_zip") or "").strip()
+    delivery_notes = (request.POST.get("delivery_notes") or "").strip()
+
     payment_method_id = (request.POST.get("payment_method_id") or "").strip()
 
-    if not customer_name or not customer_email:
-        messages.error(request, "Please enter your name and email.")
+    if (
+        not customer_name
+        or not customer_email
+        or not shipping_address
+        or not shipping_city
+        or not shipping_state
+        or not shipping_zip
+    ):
+        messages.error(request, "Please complete all required customer and shipping fields.")
         return redirect("public-checkout")
 
     if not payment_method_id:
@@ -694,6 +709,7 @@ def public_checkout_submit(request):
 
     store = context["store"]
     total = context["total"]
+    subtotal = total
 
     try:
         payment_method = store.payment_methods.get(pk=int(payment_method_id), is_active=True)
@@ -705,6 +721,16 @@ def public_checkout_submit(request):
         store=store,
         total=total,
         status="pending",
+
+        customer_name=customer_name,
+        customer_email=customer_email,
+        customer_phone=customer_phone,
+
+        shipping_address=shipping_address,
+        shipping_city=shipping_city,
+        shipping_state=shipping_state,
+        shipping_zip=shipping_zip,
+        delivery_notes=delivery_notes,
     )
 
     for item in context["items"]:
@@ -740,6 +766,11 @@ def public_checkout_submit(request):
             "store_id": str(store.id),
             "customer_name": customer_name,
             "customer_email": customer_email,
+            "customer_phone": customer_phone,
+            "shipping_address": shipping_address,
+            "shipping_city": shipping_city,
+            "shipping_state": shipping_state,
+            "shipping_zip": shipping_zip,
             "promo_code": context.get("promo_code", ""),
             "purchase_type": "storefront_order",
         },
@@ -747,10 +778,10 @@ def public_checkout_submit(request):
 
     request.session["checkout_customer_name"] = customer_name
     request.session["checkout_customer_email"] = customer_email
+    request.session["checkout_order_id"] = order.id
     request.session.modified = True
 
     return redirect(result["redirect_url"])
-
 
 def public_checkout_success(request):
     session_id = (request.GET.get("session_id") or "").strip()
@@ -1249,7 +1280,13 @@ def edit_product(request, product_id: int):
 
 @login_required
 def delete_product(request, product_id: int):
-    store = get_current_store(request)
+    store = (
+        request.user.stores
+        .filter(is_archived=False)
+        .order_by("created_at")
+        .first()
+    )
+
     if not store:
         messages.error(request, "Create your store first.")
         return redirect("merchant-profile")
@@ -1258,7 +1295,11 @@ def delete_product(request, product_id: int):
     if guard:
         return guard
 
-    product = get_object_or_404(Product, pk=product_id, store=store)
+    product = get_object_or_404(
+        Product,
+        pk=product_id,
+        store=store,
+    )
 
     if request.method == "POST":
         name = product.name
@@ -1266,8 +1307,14 @@ def delete_product(request, product_id: int):
         messages.success(request, f'Deleted “{name}”.')
         return redirect("merchant-dashboard")
 
-    return render(request, "merchant/confirm_delete.html", {"product": product})
-
+    return render(
+        request,
+        "merchant/confirm_delete.html",
+        {
+            "product": product,
+            "store": store,
+        },
+    )
 
 @login_required
 def reports_export(request):

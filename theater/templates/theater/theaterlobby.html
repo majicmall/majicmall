@@ -3,66 +3,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Theater Lobby - Majic Mall</title>
+  <title>MajicMall Megaverse Theater Lobby</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
+      min-height: 100%;
+      background: #000;
+      font-family: Georgia, serif;
       overflow: hidden;
-      font-family: 'Georgia', serif;
-      background-color: black;
     }
 
-    .lobby-image {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-      object-fit: cover;
-      z-index: 0;
+    .lobby-scene {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.62)),
+        url("{% static 'img/majictheater_lobby.jpg' %}");
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      animation: lobbyZoom 7s ease forwards;
     }
 
-    .lobby-overlay {
-      position: relative;
-      z-index: 1;
+    .lobby-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 28%, rgba(255,215,90,.20), transparent 34%),
+        radial-gradient(circle at 50% 80%, rgba(180,0,0,.16), transparent 38%);
+      animation: glowPulse 2.5s ease-in-out infinite alternate;
+    }
+
+    .lobby-actions {
+      position: fixed;
+      left: 50%;
+      bottom: 7vh;
+      transform: translateX(-50%);
+      width: min(92vw, 560px);
       text-align: center;
-      color: gold;
-      text-shadow: 0 0 10px red;
-      padding-top: 3rem;
+      z-index: 5;
     }
 
-    .lobby-buttons {
-      margin-top: 2rem;
-      display: flex;
+    .now-showing-btn {
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
-      gap: 20px;
+      width: 100%;
+      max-width: 360px;
+      padding: 18px 28px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #fff2a8, #d4af37);
+      color: #111;
+      font-size: clamp(1.1rem, 4vw, 1.45rem);
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow:
+        0 16px 45px rgba(0,0,0,.75),
+        0 0 28px rgba(255,215,0,.28);
+      animation: buttonPulse 1.8s ease-in-out infinite alternate;
     }
 
-    .lobby-buttons a {
-      background: gold;
-      color: black;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-weight: bold;
-      text-decoration: none;
-      box-shadow: 0 0 10px red;
+    .hint {
+      margin-top: 14px;
+      color: rgba(255,255,255,.82);
+      font-size: .95rem;
+      text-shadow: 0 3px 12px #000;
+    }
+
+    @keyframes lobbyZoom {
+      from { transform: scale(1.01); }
+      to { transform: scale(1.055); }
+    }
+
+    @keyframes glowPulse {
+      from { opacity: .65; }
+      to { opacity: 1; }
+    }
+
+    @keyframes buttonPulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.035); }
+    }
+
+    @media (max-width: 768px) {
+      .lobby-scene {
+        background-size: contain;
+        background-position: center center;
+        background-color: #000;
+      }
+
+      .lobby-actions {
+        bottom: 5vh;
+      }
     }
   </style>
 </head>
+
 <body>
 
- <img src="{% static 'img/majictheater_lobby.jpg' %}" alt="Majic Lobby" class="lobby-image">
- 
+  <main class="lobby-scene"></main>
+  <div class="lobby-glow"></div>
 
-  <div class="lobby-overlay">
-    <h1>🎟️ Welcome to the Majic Mall Theater Lobby</h1>
-    <div class="lobby-buttons">
-      <a href="{% url 'box-office' %}">🎬 Visit Box Office</a>
-      <a href="{% url 'theater-zone' %}">⬅️ Back to Theater Directory</a>
-    </div>
+  <div class="lobby-actions">
+    <a href="{% url 'box-office' %}" class="now-showing-btn">
+      🎬 Now Showing
+    </a>
+    <div class="hint">View trailers, select a movie, and enter your theater.</div>
   </div>
 
 </body>

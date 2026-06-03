@@ -1,17 +1,38 @@
-from django.shortcuts import render
-from .models import Movie
+from django.shortcuts import get_object_or_404, render
+from .models import Movie, MovieScreen
 
-def movie_list(request):
-    # Get all movies from the database
-    movies = Movie.objects.all()
-    return render(request, 'theater/movie_list.html', {'movies': movies})
-from django.shortcuts import render
 
 def theater_zone(request):
-    # Add your logic or context here if needed
-    return render(request, 'theater/theater_zone.html')
+    screens = MovieScreen.objects.prefetch_related("movies").all()
+    featured_movies = Movie.objects.filter(is_active=True, is_featured=True)[:5]
+    premieres = Movie.objects.filter(is_active=True, is_premiere=True)[:5]
+
+    return render(
+        request,
+        "theater/theater_zone.html",
+        {
+            "screens": screens,
+            "featured_movies": featured_movies,
+            "premieres": premieres,
+        },
+    )
+
+
+def movie_list(request):
+    movies = Movie.objects.filter(is_active=True).select_related("screen")
+    return render(request, "theater/movie_list.html", {"movies": movies})
+
+
+def movie_detail(request, movie_id):
+    movie = get_object_or_404(Movie.objects.select_related("screen"), id=movie_id, is_active=True)
+    return render(request, "theater/movie_detail.html", {"movie": movie})
+
+
+def watch_movie(request, movie_id):
+    movie = get_object_or_404(Movie.objects.select_related("screen"), id=movie_id, is_active=True)
+    return render(request, "theater/watch_movie.html", {"movie": movie})
+
 
 def box_office(request):
-    return render(request, 'theater/box_office.html')
-
-
+    movies = Movie.objects.filter(is_active=True).select_related("screen")
+    return render(request, "theater/box_office.html", {"movies": movies})

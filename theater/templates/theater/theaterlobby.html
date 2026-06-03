@@ -20,11 +20,13 @@
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.62)),
+        linear-gradient(to bottom, rgba(0,0,0,0.04), rgba(0,0,0,0.50)),
         url("{% static 'img/majictheater_lobby.jpg' %}");
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
+      image-rendering: auto;
+      filter: contrast(1.06) brightness(1.08) saturate(1.06);
       animation: lobbyZoom 7s ease forwards;
     }
 
@@ -33,28 +35,30 @@
       inset: 0;
       pointer-events: none;
       background:
-        radial-gradient(circle at 50% 28%, rgba(255,215,90,.20), transparent 34%),
-        radial-gradient(circle at 50% 80%, rgba(180,0,0,.16), transparent 38%);
+        radial-gradient(circle at 50% 28%, rgba(255,215,90,.16), transparent 34%),
+        radial-gradient(circle at 50% 80%, rgba(180,0,0,.12), transparent 38%);
       animation: glowPulse 2.5s ease-in-out infinite alternate;
     }
 
     .lobby-actions {
       position: fixed;
-      left: 50%;
       bottom: 7vh;
-      transform: translateX(-50%);
-      width: min(92vw, 560px);
+      left: 0;
+      right: 0;
+      width: 100%;
       text-align: center;
       z-index: 5;
+      padding: 0 20px;
+      box-sizing: border-box;
     }
 
     .now-showing-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 100%;
-      max-width: 360px;
-      padding: 18px 28px;
+      width: min(90vw, 360px);
+      margin: 0 auto;
+      padding: 18px 24px;
       border-radius: 20px;
       background: linear-gradient(135deg, #fff2a8, #d4af37);
       color: #111;
@@ -65,28 +69,30 @@
         0 16px 45px rgba(0,0,0,.75),
         0 0 28px rgba(255,215,0,.28);
       animation: buttonPulse 1.8s ease-in-out infinite alternate;
+      box-sizing: border-box;
     }
 
     .hint {
-      margin-top: 14px;
-      color: rgba(255,255,255,.82);
+      margin: 14px auto 0;
+      max-width: 92vw;
+      color: rgba(255,255,255,.86);
       font-size: .95rem;
       text-shadow: 0 3px 12px #000;
     }
 
     @keyframes lobbyZoom {
-      from { transform: scale(1.01); }
-      to { transform: scale(1.055); }
+      from { transform: scale(1); }
+      to { transform: scale(1.015); }
     }
 
     @keyframes glowPulse {
-      from { opacity: .65; }
-      to { opacity: 1; }
+      from { opacity: .55; }
+      to { opacity: .9; }
     }
 
     @keyframes buttonPulse {
       from { transform: scale(1); }
-      to { transform: scale(1.035); }
+      to { transform: scale(1.025); }
     }
 
     @media (max-width: 768px) {
@@ -94,10 +100,21 @@
         background-size: contain;
         background-position: center center;
         background-color: #000;
+        filter: contrast(1.08) brightness(1.1) saturate(1.08);
       }
 
       .lobby-actions {
         bottom: 5vh;
+        padding: 0 14px;
+      }
+
+      .now-showing-btn {
+        width: min(86vw, 340px);
+        padding: 16px 20px;
+      }
+
+      .hint {
+        font-size: .86rem;
       }
     }
   </style>

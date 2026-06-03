@@ -17,78 +17,176 @@
       font-family: Georgia, serif;
     }
 
-    .theater-background {
+    .scene {
       position: fixed;
       inset: 0;
-      height: 100vh;
-      width: 100vw;
-      background-image:
-        linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.55)),
-        url("{% static 'img/theater_front.png' %}");
+      background: #000;
+      overflow: hidden;
+    }
+
+    .theater-background {
+      position: absolute;
+      inset: 0;
+      background-image: url("{% static 'img/theater_front.png' %}");
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
-      z-index: 0;
-      animation: slowZoom 5s ease forwards;
-    }
-
-    .overlay {
-      position: relative;
       z-index: 1;
-      color: gold;
-      text-align: center;
-      padding: 3rem 1rem 0;
-      text-shadow: 0 0 10px red, 0 0 24px rgba(255, 215, 0, 0.35);
+      animation: slowZoom 6s ease forwards;
     }
 
-    .overlay h1 {
-      font-size: clamp(2rem, 6vw, 4.5rem);
-      margin: 0;
-      font-weight: 900;
+    .gold-glow {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(255, 215, 80, 0.18), transparent 34%),
+        linear-gradient(to bottom, rgba(0,0,0,0.02), rgba(0,0,0,0.36));
+      animation: glowPulse 2.4s ease-in-out infinite alternate;
     }
 
-    .overlay p {
-      font-size: clamp(1rem, 3vw, 1.35rem);
-      margin-top: 1rem;
-      color: #f8e58a;
+    .light-sweep {
+      position: absolute;
+      top: -20%;
+      left: -45%;
+      width: 35%;
+      height: 150%;
+      z-index: 3;
+      pointer-events: none;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.10),
+        rgba(255,220,120,0.18),
+        transparent
+      );
+      transform: rotate(15deg);
+      filter: blur(10px);
+      animation: sweepAcross 4.2s ease-in-out infinite;
     }
+
+    .marquee-flicker {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 15%, rgba(255, 230, 120, 0.20), transparent 18%),
+        radial-gradient(circle at 46% 26%, rgba(255, 200, 70, 0.14), transparent 12%),
+        radial-gradient(circle at 56% 26%, rgba(255, 200, 70, 0.14), transparent 12%);
+      mix-blend-mode: screen;
+      opacity: 0.55;
+      animation: flicker 1.6s infinite;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255, 230, 140, 0.95);
+      box-shadow: 0 0 16px rgba(255, 215, 80, 0.9);
+      z-index: 5;
+      pointer-events: none;
+      animation: sparkleFloat 3.8s ease-in-out infinite;
+    }
+
+    .sparkle.s1 { left: 22%; top: 22%; animation-delay: .1s; }
+    .sparkle.s2 { left: 73%; top: 21%; animation-delay: .7s; }
+    .sparkle.s3 { left: 39%; top: 38%; animation-delay: 1.2s; }
+    .sparkle.s4 { left: 60%; top: 43%; animation-delay: 1.8s; }
+    .sparkle.s5 { left: 50%; top: 58%; animation-delay: 2.2s; }
 
     @keyframes slowZoom {
-      from { transform: scale(1.02); }
-      to { transform: scale(1.08); }
+      from { transform: scale(1.01); }
+      to { transform: scale(1.06); }
+    }
+
+    @keyframes glowPulse {
+      from { opacity: 0.68; }
+      to { opacity: 1; }
+    }
+
+    @keyframes sweepAcross {
+      0% { left: -45%; opacity: 0; }
+      18% { opacity: 0.8; }
+      55% { opacity: 0.5; }
+      100% { left: 115%; opacity: 0; }
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 0.38; }
+      8% { opacity: 0.76; }
+      12% { opacity: 0.42; }
+      18% { opacity: 0.90; }
+      45% { opacity: 0.55; }
+      58% { opacity: 0.82; }
+      70% { opacity: 0.48; }
+    }
+
+    @keyframes sparkleFloat {
+      0%, 100% { transform: translateY(0) scale(0.7); opacity: 0; }
+      30% { opacity: 1; }
+      55% { transform: translateY(-14px) scale(1); opacity: 0.85; }
+      85% { opacity: 0; }
     }
 
     @media (max-width: 768px) {
       .theater-background {
-        background-size: cover;
+        background-size: contain;
         background-position: center center;
+        background-color: #000;
+        animation: mobileBreath 5.5s ease-in-out infinite alternate;
       }
 
-      .overlay {
-        padding-top: 2rem;
+      .gold-glow {
+        background:
+          radial-gradient(circle at 50% 38%, rgba(255, 215, 80, 0.16), transparent 32%),
+          linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.48));
       }
+
+      .light-sweep {
+        width: 48%;
+        filter: blur(14px);
+      }
+
+      .marquee-flicker {
+        opacity: 0.42;
+      }
+    }
+
+    @keyframes mobileBreath {
+      from { transform: scale(1); }
+      to { transform: scale(1.025); }
     }
   </style>
 </head>
 
 <body>
 
-  <div id="bg" class="theater-background"></div>
+  <main class="scene">
+    <div id="bg" class="theater-background"></div>
+    <div class="gold-glow"></div>
+    <div class="light-sweep"></div>
+    <div class="marquee-flicker"></div>
 
-
+    <span class="sparkle s1"></span>
+    <span class="sparkle s2"></span>
+    <span class="sparkle s3"></span>
+    <span class="sparkle s4"></span>
+    <span class="sparkle s5"></span>
+  </main>
 
   <script>
     setTimeout(() => {
-      document.getElementById("bg").style.transition = "opacity 1.2s ease-out";
-      document.getElementById("overlay").style.transition = "opacity 1.2s ease-out";
-
-      document.getElementById("bg").style.opacity = "0";
-      document.getElementById("overlay").style.opacity = "0";
+      document.querySelector(".scene").style.transition = "opacity 1.2s ease-out";
+      document.querySelector(".scene").style.opacity = "0";
 
       setTimeout(() => {
         window.location.href = "{% url 'theater-lobby' %}";
       }, 1200);
-    }, 4200);
+    }, 5200);
   </script>
 
 </body>

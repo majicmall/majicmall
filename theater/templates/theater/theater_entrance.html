@@ -3,8 +3,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Majic Mall Theater Entrance</title>
+  <title>MajicMall Megaverse Theater Entrance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     html, body {
       margin: 0;
@@ -12,19 +13,23 @@
       height: 100%;
       width: 100%;
       overflow: hidden;
-      font-family: 'Georgia', serif;
+      background: #000;
+      font-family: Georgia, serif;
     }
 
     .theater-background {
-      position: absolute;
-      top: 0;
-      left: 0;
+      position: fixed;
+      inset: 0;
       height: 100vh;
       width: 100vw;
-      background: url("{% static 'img/majic_mall_theater_front_1920.jpg' %}") center center no-repeat;
+      background-image:
+        linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.55)),
+        url("{% static 'img/theater_front.png' %}");
       background-size: cover;
-      background-color: black;
+      background-position: center center;
+      background-repeat: no-repeat;
       z-index: 0;
+      animation: slowZoom 5s ease forwards;
     }
 
     .overlay {
@@ -32,41 +37,59 @@
       z-index: 1;
       color: gold;
       text-align: center;
-      padding-top: 3rem;
-      text-shadow: 0 0 10px red;
+      padding: 3rem 1rem 0;
+      text-shadow: 0 0 10px red, 0 0 24px rgba(255, 215, 0, 0.35);
     }
 
     .overlay h1 {
-      font-size: 2.5rem;
+      font-size: clamp(2rem, 6vw, 4.5rem);
+      margin: 0;
+      font-weight: 900;
     }
 
     .overlay p {
-      font-size: 1.25rem;
+      font-size: clamp(1rem, 3vw, 1.35rem);
       margin-top: 1rem;
+      color: #f8e58a;
+    }
+
+    @keyframes slowZoom {
+      from { transform: scale(1.02); }
+      to { transform: scale(1.08); }
+    }
+
+    @media (max-width: 768px) {
+      .theater-background {
+        background-size: cover;
+        background-position: center center;
+      }
+
+      .overlay {
+        padding-top: 2rem;
+      }
     }
   </style>
 </head>
+
 <body>
 
   <div id="bg" class="theater-background"></div>
 
-  <div id="overlay" class="overlay">
-    <h1>🎥 Welcome to the Majic Mall Theater</h1>
-    <p></p>
-  </div>
+
 
   <script>
     setTimeout(() => {
-      document.getElementById('bg').style.transition = "opacity 1s ease-out";
-      document.getElementById('overlay').style.transition = "opacity 1s ease-out";
+      document.getElementById("bg").style.transition = "opacity 1.2s ease-out";
+      document.getElementById("overlay").style.transition = "opacity 1.2s ease-out";
 
-      document.getElementById('bg').style.opacity = "0";
-      document.getElementById('overlay').style.opacity = "0";
+      document.getElementById("bg").style.opacity = "0";
+      document.getElementById("overlay").style.opacity = "0";
 
       setTimeout(() => {
         window.location.href = "{% url 'theater-lobby' %}";
-      }, 1000);  // after fade
-    }, 2000);  // wait before fade
+      }, 1200);
+    }, 4200);
   </script>
+
 </body>
 </html>

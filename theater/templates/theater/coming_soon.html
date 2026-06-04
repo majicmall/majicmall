@@ -1,12 +1,81 @@
-{% extends 'base.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Coming Soon | MajicMall Megaverse Theater</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-{% block title %}Coming Soon{% endblock %}
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: #000;
+  color: white;
+  font-family: Georgia, serif;
+}
 
-{% block content %}
-<div style="padding: 40px;">
-  <h1 style="text-align: center;">🎬 Coming Soon to Majic Mall Theater</h1>
-  <p style="text-align: center; margin-top: 20px;">Exciting new movies are on the way. Stay tuned!</p>
-</div>
-{% endblock %}
+body {
+  background-image:
+    linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.86)),
+    url("{% static 'img/theater_bg.jpg' %}");
+  background-size: cover;
+  background-position: center;
+}
 
+.wrap {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.card {
+  width: min(760px, 94vw);
+  text-align: center;
+  padding: 36px 24px;
+  border-radius: 30px;
+  background: rgba(0,0,0,.74);
+  border: 1px solid rgba(255,215,0,.45);
+  box-shadow: 0 0 40px rgba(0,0,0,.85);
+}
+
+h1 {
+  color: #ffd700;
+  font-size: clamp(2.2rem, 7vw, 4.6rem);
+  margin: 0 0 14px;
+  text-shadow: 0 0 22px rgba(255,0,0,.5);
+}
+
+p {
+  color: rgba(255,255,255,.82);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 22px;
+  padding: 14px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff2a8, #d4af37);
+  color: #111;
+  font-weight: 900;
+  text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<main class="wrap">
+  <section class="card">
+    <h1>🎬 Coming Soon</h1>
+    <p>Trailers, premieres, and featured films are being prepared for the MajicMall Megaverse Theater.</p>
+    <a href="{% url 'box-office' %}" class="btn">Back to Now Showing</a>
+  </section>
+</main>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from .models import Movie, MovieScreen
+from core.models import Movie as CoreMovie
 
 
 def theater_zone(request):
@@ -24,7 +25,7 @@ def movie_list(request):
 
 
 def movie_detail(request, movie_id):
-    movie = get_object_or_404(Movie.objects.select_related("screen"), id=movie_id, is_active=True)
+    movie = get_object_or_404(CoreMovie.objects.select_related("screen"), id=movie_id)
     return render(request, "theater/movie_detail.html", {"movie": movie})
 
 

@@ -18,11 +18,30 @@ html, body {
 
 body {
   background-image:
-    linear-gradient(to bottom, rgba(0,0,0,.42), rgba(0,0,0,.88)),
+    linear-gradient(to bottom, rgba(0,0,0,.18), rgba(0,0,0,.62)),
     url("{% static 'img/theater_bg.jpg' %}");
-  background-size: cover;
+  background-size: 108%;
   background-position: center center;
   background-attachment: fixed;
+  animation: walkToBoxOffice 3s ease forwards;
+}
+
+@keyframes walkToBoxOffice {
+  from {
+    background-size: 108%;
+    background-position: center center;
+  }
+  to {
+    background-size: 116%;
+    background-position: center center;
+  }
+}
+
+@keyframes postersArrive {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .page {
@@ -32,7 +51,11 @@ body {
 
 .header {
   text-align: center;
-  margin-bottom: 34px;
+  margin-bottom: 36px;
+  opacity: 0;
+  transform: translateY(-14px);
+  animation: postersArrive 1s ease forwards;
+  animation-delay: 1.8s;
 }
 
 .kicker {
@@ -40,53 +63,63 @@ body {
   letter-spacing: .28em;
   text-transform: uppercase;
   font-weight: 900;
-  font-size: .8rem;
+  font-size: .78rem;
 }
 
 h1 {
   margin: 12px 0 10px;
-  font-size: clamp(2.4rem, 7vw, 5.5rem);
+  font-size: clamp(2.4rem, 7vw, 5.3rem);
   color: #ffd700;
-  text-shadow: 0 0 22px rgba(255,0,0,.55);
+  text-shadow: 0 0 24px rgba(255,0,0,.5);
 }
 
 .subtitle {
-  color: rgba(255,255,255,.82);
-  font-size: clamp(1rem, 3vw, 1.25rem);
+  color: rgba(255,255,255,.84);
+  font-size: clamp(1rem, 3vw, 1.18rem);
 }
 
 .poster-grid {
-  max-width: 1250px;
+  max-width: 1050px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 26px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 280px));
+  justify-content: center;
+  gap: 24px;
+  opacity: 0;
+  transform: translateY(34px) scale(0.96);
+  animation: postersArrive 1.2s ease forwards;
+  animation-delay: 2.8s;
 }
 
 .movie-card {
-  background: rgba(0,0,0,.78);
-  border: 1px solid rgba(255,215,0,.5);
+  background: rgba(0,0,0,.72);
+  border: 1px solid rgba(255,215,0,.48);
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 0 28px rgba(0,0,0,.75);
+  box-shadow: 0 0 30px rgba(0,0,0,.8);
   transition: transform .25s ease, box-shadow .25s ease;
 }
 
 .movie-card:hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 0 34px rgba(255,215,0,.28);
+  transform: translateY(-7px) scale(1.02);
+  box-shadow: 0 0 38px rgba(255,215,0,.30);
+}
+
+.poster-link {
+  display: block;
+  text-decoration: none;
 }
 
 .poster {
   width: 100%;
-  height: 340px;
-  object-fit: cover;
+  height: 350px;
+  object-fit: contain;
   background: #111;
   display: block;
 }
 
 .poster-placeholder {
-  height: 340px;
+  height: 350px;
   display: grid;
   place-items: center;
   font-size: 4rem;
@@ -94,38 +127,33 @@ h1 {
 }
 
 .movie-body {
-  padding: 18px;
+  padding: 16px;
+  text-align: center;
 }
 
 .movie-title {
-  font-size: 1.35rem;
+  font-size: 1.18rem;
   color: #fff;
   margin: 0 0 8px;
 }
 
-.meta {
-  color: rgba(255,255,255,.72);
-  font-size: .92rem;
-  line-height: 1.6;
-}
-
-.description {
-  color: rgba(255,255,255,.78);
-  margin-top: 12px;
-  font-size: .95rem;
-  line-height: 1.45;
+.teaser {
+  color: rgba(255,255,255,.75);
+  font-size: .88rem;
+  line-height: 1.4;
+  min-height: 38px;
 }
 
 .actions {
   display: grid;
-  gap: 10px;
-  margin-top: 16px;
+  gap: 9px;
+  margin-top: 14px;
 }
 
 .btn {
   display: block;
   text-align: center;
-  padding: 12px 14px;
+  padding: 11px 13px;
   border-radius: 14px;
   font-weight: 900;
   text-decoration: none;
@@ -147,6 +175,13 @@ h1 {
   border: 1px solid rgba(255,255,255,.18);
 }
 
+.back {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  z-index: 10;
+}
+
 .empty {
   max-width: 760px;
   margin: 50px auto;
@@ -157,25 +192,27 @@ h1 {
   text-align: center;
 }
 
-.back {
-  position: fixed;
-  left: 16px;
-  top: 16px;
-  z-index: 10;
-}
-
 @media (max-width: 768px) {
   body {
     background-size: cover;
     background-attachment: scroll;
+    animation: none;
   }
 
   .page {
-    padding-top: 70px;
+    padding-top: 72px;
+  }
+
+  .poster-grid {
+    grid-template-columns: minmax(230px, 310px);
   }
 
   .poster {
-    height: 300px;
+    height: 360px;
+  }
+
+  .poster-placeholder {
+    height: 360px;
   }
 }
 </style>
@@ -186,11 +223,10 @@ h1 {
 <a href="{% url 'theater-lobby' %}" class="btn btn-dark back">← Lobby</a>
 
 <main class="page">
-
   <section class="header">
     <div class="kicker">MajicMall Megaverse Theater</div>
     <h1>Now Showing</h1>
-    <p class="subtitle">Select a movie, watch the trailer, purchase your ticket, and enter your theater.</p>
+    <p class="subtitle">Walk up to the box office, choose a film, then purchase your ticket.</p>
   </section>
 
   {% if movies %}
@@ -198,42 +234,27 @@ h1 {
       {% for movie in movies %}
         <article class="movie-card">
 
-  <a href="{% url 'movie-detail' movie.id %}">
+          <a href="{% url 'movie-detail' movie.id %}" class="poster-link">
+            {% if movie.image %}
+              <img src="{{ movie.image.url }}" alt="{{ movie.title }}" class="poster">
+            {% else %}
+              <div class="poster-placeholder">🎬</div>
+            {% endif %}
+          </a>
 
-    {% if movie.image %}
-      <img src="{{ movie.image.url }}" alt="{{ movie.title }}" class="poster">
-    {% else %}
-      <div class="poster-placeholder">🎬</div>
-    {% endif %}
-
-  </a>
           <div class="movie-body">
             <h2 class="movie-title">{{ movie.title }}</h2>
 
-            <div class="meta">
-              {% if movie.genre %}<div><strong>Genre:</strong> {{ movie.genre }}</div>{% endif %}
-              {% if movie.duration %}<div><strong>Runtime:</strong> {{ movie.duration }} min</div>{% endif %}
-              {% if movie.rating %}<div><strong>Rating:</strong> {{ movie.rating }}</div>{% endif %}
-              {% if movie.screen %}<div><strong>Screen:</strong> {{ movie.screen.name }}</div>{% endif %}
-            </div>
-
             {% if movie.description %}
-              <div class="description">
-                {{ movie.description|truncatechars:125 }}
-              </div>
+              <div class="teaser">{{ movie.description|truncatechars:75 }}</div>
+            {% else %}
+              <div class="teaser">Tap the poster to view details and enter the MajicMall Megaverse Theater experience.</div>
             {% endif %}
 
             <div class="actions">
-              {% if movie.trailer_url %}
-                <a href="{% url 'trailer-view' %}?id={{ movie.id }}" class="btn btn-gold">
-                  ▶ Watch Trailer
-                </a>
-              {% else %}
-                <a href="{% url 'coming-soon' %}" class="btn btn-dark">
-                  ▶ Trailer Coming Soon
-                </a>
-              {% endif %}
-
+              <a href="{% url 'movie-detail' movie.id %}" class="btn btn-gold">
+                View Details
+              </a>
               <a href="{% url 'buy-ticket' movie.id %}" class="btn btn-red">
                 🎟 Buy Ticket
               </a>
@@ -246,10 +267,9 @@ h1 {
   {% else %}
     <section class="empty">
       <h2>No Movies Showing Yet</h2>
-      <p>Movie posters and premieres will appear here once films are added in the admin.</p>
+      <p>Movie posters and premieres will appear here once films are added.</p>
     </section>
   {% endif %}
-
 </main>
 
 </body>

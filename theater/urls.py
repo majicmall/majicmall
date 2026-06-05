@@ -9,6 +9,7 @@ urlpatterns = [
     path("entrance/", core_views.theater_entrance, name="theater-entrance"),
     path("stream/", core_views.theater_stream, name="theater-stream"),
     path("buy-ticket/<int:movie_id>/", core_views.buy_ticket, name="buy-ticket"),
+    path("ticket-success/<int:movie_id>/", core_views.ticket_success, name="ticket-success"),
     path("coming-soon/", core_views.coming_soon, name="coming-soon"),
     path("trailer/", core_views.trailer_view, name="trailer-view"),
 

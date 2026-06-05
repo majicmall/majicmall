@@ -10,6 +10,10 @@ from merchant.models import MallZone, MerchantStore
 from .forms import MerchantSignupForm, CommunityMemberForm
 from .models import Movie, Ticket
 
+import stripe
+from django.conf import settings
+from django.urls import reverse
+
 
 # ---------------------------
 # 🌍 Global Pages
@@ -456,6 +460,46 @@ def theater_stream(request):
 
 def buy_ticket(request, movie_id):
     movie = get_object_or_404(Movie, id=movie_id)
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    success_url = request.build_absolute_uri(
+        reverse("ticket-success", args=[movie.id])
+    ) + "?session_id={CHECKOUT_SESSION_ID}"
+
+    cancel_url = request.build_absolute_uri(
+        reverse("movie-detail", args=[movie.id])
+    )
+
+    session = stripe.checkout.Session.create(
+        mode="payment",
+        payment_method_types=["card"],
+        line_items=[
+            {
+                "price_data": {
+                    "currency": "usd",
+                    "unit_amount": 200,
+                    "product_data": {
+                        "name": f"{movie.title} Ticket",
+                        "description": "MajicMall Megaverse Theater ticket",
+                    },
+                },
+                "quantity": 1,
+            }
+        ],
+        metadata={
+            "movie_id": str(movie.id),
+            "purchase_type": "theater_ticket",
+        },
+        success_url=success_url,
+        cancel_url=cancel_url,
+    )
+
+    return redirect(session.url)
+
+def ticket_success(request, movie_id):
+    movie = get_object_or_404(Movie, id=movie_id)
+
     user = request.user if request.user.is_authenticated else None
 
     if not request.session.session_key:
@@ -463,17 +507,10 @@ def buy_ticket(request, movie_id):
 
     session_key = request.session.session_key
 
-    exists = Ticket.objects.filter(
+    Ticket.objects.get_or_create(
         movie=movie,
         user=user if user else None,
         session_key=None if user else session_key,
-    ).exists()
-
-    if not exists:
-        Ticket.objects.create(
-            movie=movie,
-            user=user if user else None,
-            session_key=None if user else session_key,
-        )
+    )
 
     return redirect(f"/theater/stream/?id={movie.id}")

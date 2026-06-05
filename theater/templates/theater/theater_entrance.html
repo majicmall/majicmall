@@ -179,15 +179,18 @@
   </main>
 
   <script>
-    setTimeout(() => {
-      document.querySelector(".scene").style.transition = "opacity 1.2s ease-out";
-      document.querySelector(".scene").style.opacity = "0";
+  setTimeout(() => {
+    const scene = document.querySelector(".scene") || document.body;
 
-      setTimeout(() => {
-        window.location.href = "{% url 'theater-lobby' %}";
-      }, 1200);
-    }, 5200);
-  </script>
+    scene.style.transition = "transform 2.2s ease-in, opacity 1.4s ease-in";
+    scene.style.transform = "scale(1.18)";
+    scene.style.opacity = "0.15";
+
+    setTimeout(() => {
+      window.location.href = "{% url 'theater-lobby' %}";
+    }, 1800);
+  }, 4200);
+</script>
 
 </body>
 </html>

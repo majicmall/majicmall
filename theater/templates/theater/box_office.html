@@ -20,19 +20,19 @@ body {
   background-image:
     linear-gradient(to bottom, rgba(0,0,0,.18), rgba(0,0,0,.62)),
     url("{% static 'img/theater_bg.jpg' %}");
-  background-size: 108%;
+  background-size: 106%;
   background-position: center center;
   background-attachment: fixed;
-  animation: walkToBoxOffice 3s ease forwards;
+  animation: walkToBoxOffice 6.5s ease forwards;
 }
 
 @keyframes walkToBoxOffice {
   from {
-    background-size: 108%;
+    background-size: 106%;
     background-position: center center;
   }
   to {
-    background-size: 116%;
+    background-size: 113%;
     background-position: center center;
   }
 }
@@ -194,9 +194,21 @@ h1 {
 
 @media (max-width: 768px) {
   body {
-    background-size: cover;
+    background-size: auto 100%;
+    background-position: center center;
     background-attachment: scroll;
-    animation: none;
+    animation: walkToBoxOfficeMobile 6.5s ease forwards;
+  }
+
+  @keyframes walkToBoxOfficeMobile {
+    from {
+      background-size: auto 100%;
+      background-position: center center;
+    }
+    to {
+      background-size: auto 108%;
+      background-position: center center;
+    }
   }
 
   .page {

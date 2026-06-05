@@ -408,7 +408,8 @@ def theater_entrance(request):
 
 
 def theater_lobby(request):
-    return render(request, "theater/theaterlobby.html")
+    movies = Movie.objects.all().order_by("-is_premiere", "-release_date", "title")
+    return render(request, "theater/theaterlobby.html", {"movies": movies})
 
 
 def box_office(request):

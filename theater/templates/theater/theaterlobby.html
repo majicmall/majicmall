@@ -2,135 +2,265 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>MajicMall Megaverse Theater Lobby</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>MajicMall Megaverse Theater Lobby</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      background: #000;
-      font-family: Georgia, serif;
-      overflow: hidden;
-    }
-
-    .lobby-scene {
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(to bottom, rgba(0,0,0,0.04), rgba(0,0,0,0.50)),
-        url("{% static 'img/majictheater_lobby.jpg' %}");
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
-      image-rendering: auto;
-      filter: contrast(1.05) brightness(1.05) saturate(1.06);
-      animation: lobbyZoom 7s ease forwards;
-    }
-
-    .lobby-glow {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 50% 28%, rgba(255,215,90,.16), transparent 34%),
-        radial-gradient(circle at 50% 80%, rgba(180,0,0,.12), transparent 38%);
-      animation: glowPulse 2.5s ease-in-out infinite alternate;
-    }
-
-    .lobby-actions {
-      position: fixed;
-      bottom: 7vh;
-      left: 0;
-      right: 0;
-      width: 100%;
-      text-align: center;
-      z-index: 5;
-      padding: 0 20px;
-      box-sizing: border-box;
-    }
-
-    .now-showing-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: min(90vw, 360px);
-      margin: 0 auto;
-      padding: 18px 24px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #fff2a8, #d4af37);
-      color: #111;
-      font-size: clamp(1.1rem, 4vw, 1.45rem);
-      font-weight: 900;
-      text-decoration: none;
-      box-shadow:
-        0 16px 45px rgba(0,0,0,.75),
-        0 0 28px rgba(255,215,0,.28);
-      animation: buttonPulse 1.8s ease-in-out infinite alternate;
-      box-sizing: border-box;
-    }
-
-    .hint {
-      margin: 14px auto 0;
-      max-width: 92vw;
-      color: rgba(255,255,255,.86);
-      font-size: .95rem;
-      text-shadow: 0 3px 12px #000;
-    }
-
-    @keyframes lobbyZoom {
-  from { transform: scale(1); }
-  to { transform: scale(1.015); }
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: #000;
+  color: white;
+  font-family: Georgia, serif;
 }
 
-    @keyframes glowPulse {
-      from { opacity: .55; }
-      to { opacity: .9; }
-    }
+body {
+  background-image:
+    linear-gradient(to bottom, rgba(0,0,0,.16), rgba(0,0,0,.78)),
+    url("{% static 'img/majictheater_lobby.jpg' %}");
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+}
 
-    @keyframes buttonPulse {
-      from { transform: scale(1); }
-      to { transform: scale(1.025); }
-    }
+.page {
+  min-height: 100vh;
+  padding: 44px 18px 60px;
+}
 
-    @media (max-width: 768px) {
-      .lobby-scene {
-        background-size: contain;
-        background-position: center center;
-        background-color: #000;
-        filter: contrast(1.08) brightness(1.1) saturate(1.08);
-      }
+.header {
+  text-align: center;
+  margin-bottom: 34px;
+  animation: fadeDown .9s ease forwards;
+}
 
-      .lobby-actions {
-        bottom: 5vh;
-        padding: 0 14px;
-      }
+.kicker {
+  color: #facc15;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: .78rem;
+}
 
-      .now-showing-btn {
-        width: min(86vw, 340px);
-        padding: 16px 20px;
-      }
+h1 {
+  margin: 12px 0 10px;
+  font-size: clamp(2.4rem, 7vw, 5.6rem);
+  color: #ffd700;
+  text-shadow: 0 0 24px rgba(255,0,0,.55);
+}
 
-      .hint {
-        font-size: .86rem;
-      }
-    }
-  </style>
+.subtitle {
+  color: rgba(255,255,255,.84);
+  font-size: clamp(1rem, 3vw, 1.2rem);
+}
+
+.poster-hall {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 280px));
+  justify-content: center;
+  gap: 26px;
+  opacity: 0;
+  transform: translateY(32px);
+  animation: postersRise 1.1s ease forwards;
+  animation-delay: 1.2s;
+}
+
+.movie-card {
+  background: rgba(0,0,0,.72);
+  border: 1px solid rgba(255,215,0,.45);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 0 32px rgba(0,0,0,.82);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.movie-card:hover {
+  transform: translateY(-7px) scale(1.02);
+  box-shadow: 0 0 38px rgba(255,215,0,.30);
+}
+
+.poster-link {
+  display: block;
+  text-decoration: none;
+}
+
+.poster {
+  width: 100%;
+  height: 350px;
+  object-fit: contain;
+  background: #111;
+  display: block;
+}
+
+.poster-placeholder {
+  height: 350px;
+  display: grid;
+  place-items: center;
+  font-size: 4rem;
+  background: linear-gradient(135deg, #111, #2b0000);
+}
+
+.movie-body {
+  padding: 16px;
+  text-align: center;
+}
+
+.movie-title {
+  font-size: 1.15rem;
+  margin: 0 0 10px;
+}
+
+.teaser {
+  color: rgba(255,255,255,.76);
+  font-size: .88rem;
+  line-height: 1.4;
+  min-height: 38px;
+}
+
+.actions {
+  display: grid;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.btn {
+  display: block;
+  text-align: center;
+  padding: 11px 13px;
+  border-radius: 14px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #fff2a8, #d4af37);
+  color: #111;
+}
+
+.btn-red {
+  background: linear-gradient(135deg, #ef4444, #7f1d1d);
+  color: white;
+}
+
+.btn-dark {
+  background: rgba(255,255,255,.12);
+  color: white;
+  border: 1px solid rgba(255,255,255,.18);
+}
+
+.empty {
+  max-width: 760px;
+  margin: 50px auto;
+  padding: 32px;
+  border-radius: 26px;
+  background: rgba(0,0,0,.76);
+  border: 1px solid rgba(255,215,0,.35);
+  text-align: center;
+}
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes postersRise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: top center;
+    background-attachment: scroll;
+  }
+
+  .page {
+    padding-top: 46vh;
+  }
+
+  .poster-hall {
+    grid-template-columns: minmax(230px, 310px);
+  }
+
+  .poster {
+    height: 360px;
+  }
+
+  .poster-placeholder {
+    height: 360px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <main class="lobby-scene"></main>
-  <div class="lobby-glow"></div>
+<main class="page">
 
-  <div class="lobby-actions">
-    <a href="{% url 'box-office' %}" class="now-showing-btn">
-      🎬 Now Showing
-    </a>
-    <div class="hint">View trailers, select a movie, and enter your theater.</div>
-  </div>
+  <section class="header">
+    <div class="kicker">MajicMall Megaverse Theater</div>
+    <h1>Now Showing</h1>
+    <p class="subtitle">Walk through the lobby, view the posters, and choose your movie experience.</p>
+  </section>
+
+  {% if movies %}
+    <section class="poster-hall">
+      {% for movie in movies %}
+        <article class="movie-card">
+
+          <a href="{% url 'movie-detail' movie.id %}" class="poster-link">
+            {% if movie.image %}
+              <img src="{{ movie.image.url }}" alt="{{ movie.title }}" class="poster">
+            {% else %}
+              <div class="poster-placeholder">🎬</div>
+            {% endif %}
+          </a>
+
+          <div class="movie-body">
+            <h2 class="movie-title">{{ movie.title }}</h2>
+
+            {% if movie.description %}
+              <div class="teaser">{{ movie.description|truncatechars:75 }}</div>
+            {% else %}
+              <div class="teaser">Tap the poster to view details and continue to tickets.</div>
+            {% endif %}
+
+            <div class="actions">
+              <a href="{% url 'movie-detail' movie.id %}" class="btn btn-gold">
+                View Details
+              </a>
+              <a href="{% url 'buy-ticket' movie.id %}" class="btn btn-red">
+                🎟 Buy Ticket
+              </a>
+            </div>
+
+          </div>
+
+        </article>
+      {% endfor %}
+    </section>
+  {% else %}
+    <section class="empty">
+      <h2>No Movies Showing Yet</h2>
+      <p>Movie posters and premieres will appear here once films are added.</p>
+    </section>
+  {% endif %}
+
+</main>
 
 </body>
 </html>

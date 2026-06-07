@@ -103,6 +103,7 @@ html, body {
   padding:42px 20px 80px;
 }
 
+/* DIGITAL BILLBOARD */
 .billboard-wrap {
   width:100%;
   display:flex;
@@ -114,30 +115,22 @@ html, body {
 
 .billboard {
   position:relative;
-  width:min(92vw, 780px);
-  padding:14px 20px;
-  border-radius:12px;
+  width:min(92vw, 860px);
+  min-height:135px;
+  padding:18px 26px;
+  border-radius:10px;
   background:
-    linear-gradient(145deg, rgba(255,245,185,0.14), transparent 18%),
-    linear-gradient(135deg, rgba(2,2,4,0.98), rgba(18,18,24,0.96) 45%, rgba(0,0,0,0.98)),
-    radial-gradient(circle at center top, rgba(255,215,90,0.14), transparent 42%);
-  border:2px solid rgba(255,215,90,0.95);
+    linear-gradient(135deg, rgba(5,5,8,0.98), rgba(16,14,18,0.96)),
+    radial-gradient(circle at center top, rgba(90,65,25,0.22), transparent 48%);
+  border:2px solid rgba(92,72,42,0.95);
   text-align:center;
-  font-weight:900;
-  font-size:clamp(0.78rem, 2.6vw, 1rem);
-  letter-spacing:1px;
-  color:#fff4bc;
-  text-shadow:
-    0 0 8px rgba(255,241,168,0.8),
-    0 0 18px rgba(212,175,55,0.7);
+  overflow:hidden;
   box-shadow:
-    0 0 18px rgba(255,215,90,0.72),
-    0 0 44px rgba(212,175,55,0.45),
-    0 0 84px rgba(255,190,60,0.24),
-    0 16px 42px rgba(0,0,0,0.78),
-    inset 0 0 18px rgba(255,241,168,0.15),
-    inset 0 -18px 35px rgba(0,0,0,0.65);
-  overflow:visible;
+    0 0 18px rgba(0,0,0,0.92),
+    0 0 34px rgba(90,65,25,0.32),
+    0 18px 46px rgba(0,0,0,0.82),
+    inset 0 0 22px rgba(255,255,255,0.05),
+    inset 0 -22px 38px rgba(0,0,0,0.72);
 }
 
 .billboard::before,
@@ -147,10 +140,8 @@ html, body {
   top:100%;
   width:7px;
   height:36px;
-  background:linear-gradient(to bottom, rgba(255,225,110,0.98), rgba(130,82,12,0.58));
-  box-shadow:
-    0 0 14px rgba(255,215,90,0.7),
-    inset 0 0 6px rgba(255,246,190,0.5);
+  background:linear-gradient(to bottom, rgba(70,58,42,0.98), rgba(18,16,14,0.8));
+  box-shadow:0 0 14px rgba(0,0,0,0.7);
 }
 
 .billboard::before { left:18%; }
@@ -163,34 +154,79 @@ html, body {
   display:flex;
   justify-content:space-between;
   pointer-events:none;
+  z-index:5;
 }
 
 .billboard-lights span {
   width:6px;
   height:6px;
   border-radius:50%;
-  background:#fff1a8;
+  background:#a7894e;
   box-shadow:
-    0 0 10px rgba(255,241,168,0.98),
-    0 0 24px rgba(255,215,90,0.85);
+    0 0 10px rgba(167,137,78,0.85),
+    0 0 22px rgba(95,70,35,0.7);
 }
 
 .billboard .shine {
   position:absolute;
   inset:0;
-  border-radius:12px;
+  border-radius:10px;
   pointer-events:none;
+  z-index:4;
   background:linear-gradient(
     115deg,
     transparent 0%,
     transparent 38%,
-    rgba(255,235,150,0.34) 48%,
+    rgba(180,155,95,0.20) 48%,
     transparent 60%,
     transparent 100%
   );
   opacity:0;
   transform:translateX(-120%);
-  animation:billboardGoldShine 6.5s ease-in-out infinite;
+  animation:billboardGoldShine 7s ease-in-out infinite;
+}
+
+.billboard-slide {
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:18px 28px;
+  opacity:0;
+  transform:scale(1.02);
+  animation:billboardRotate 18s infinite;
+}
+
+.billboard-slide:nth-child(3) { animation-delay:0s; }
+.billboard-slide:nth-child(4) { animation-delay:6s; }
+.billboard-slide:nth-child(5) { animation-delay:12s; }
+
+.billboard-slide .ad-title {
+  font-weight:900;
+  font-size:clamp(1rem, 3.2vw, 1.65rem);
+  letter-spacing:1.5px;
+  color:#e8d49a;
+  text-shadow:
+    0 0 8px rgba(232,212,154,0.42),
+    0 0 18px rgba(90,65,25,0.75);
+}
+
+.billboard-slide .ad-subtitle {
+  margin-top:8px;
+  font-size:clamp(0.72rem, 2vw, 0.95rem);
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:#c2b07a;
+}
+
+@keyframes billboardRotate {
+  0% { opacity:0; transform:scale(1.035); }
+  7% { opacity:1; transform:scale(1); }
+  29% { opacity:1; transform:scale(1); }
+  36% { opacity:0; transform:scale(0.985); }
+  100% { opacity:0; transform:scale(0.985); }
 }
 
 @keyframes billboardGoldShine {
@@ -199,10 +235,10 @@ html, body {
     transform:translateX(-120%);
   }
   62% {
-    opacity:.85;
+    opacity:.7;
   }
   82% {
-    opacity:.3;
+    opacity:.25;
     transform:translateX(120%);
   }
   100% {
@@ -384,6 +420,13 @@ html, body {
   filter:brightness(0.86);
 }
 
+/* Merchant card only */
+.merchant-card img {
+  object-fit:contain !important;
+  object-position:center;
+  background:#000;
+}
+
 .label {
   position:absolute;
   bottom:0;
@@ -435,7 +478,8 @@ html, body {
 
   .billboard {
     width:92vw;
-    padding:13px 14px;
+    min-height:125px;
+    padding:16px 18px;
   }
 
   .title {
@@ -485,8 +529,23 @@ html, body {
       <div class="billboard-lights">
         <span></span><span></span><span></span><span></span><span></span>
       </div>
+
       <div class="shine"></div>
-      ⭐ PREMIUM BILLBOARD AD SPACE — YOUR BRAND HERE ⭐
+
+      <div class="billboard-slide">
+        <div class="ad-title">PREMIUM BILLBOARD AD SPACE</div>
+        <div class="ad-subtitle">Your Brand Here</div>
+      </div>
+
+      <div class="billboard-slide">
+        <div class="ad-title">FEATURE YOUR STORE</div>
+        <div class="ad-subtitle">Advertise Inside MajicMall Megaverse</div>
+      </div>
+
+      <div class="billboard-slide">
+        <div class="ad-title">SPONSOR A ZONE</div>
+        <div class="ad-subtitle">Fashion • Food • Theater • Events</div>
+      </div>
     </div>
   </div>
 
@@ -526,7 +585,7 @@ html, body {
       </a>
 
       <a href="{% url 'theater-entrance' %}" class="experience-card">
-       <img src="{% static 'img/majictheater_lobby.jpg' %}" alt="Watch a Movie">
+        <img src="{% static 'img/majictheater_lobby.jpg' %}" alt="Watch a Movie">
         <div class="label">Watch a Movie</div>
       </a>
 
@@ -535,7 +594,7 @@ html, body {
         <div class="label">Attend Events</div>
       </a>
 
-      <a href="/merchant/invite/" class="experience-card">
+      <a href="/merchant/invite/" class="experience-card merchant-card">
         <img src="{% static 'img/becomeamerchant.png' %}" alt="Become a Merchant">
         <div class="label">Become a Merchant</div>
       </a>
@@ -551,7 +610,7 @@ html, body {
       </a>
 
       <a href="{% url 'theater-entrance' %}" class="experience-card">
-        <img src="{% static 'img/majic_mall_theater_front_1920.jpg' %}" alt="Watch a Movie">
+        <img src="{% static 'img/majictheater_lobby.jpg' %}" alt="Watch a Movie">
         <div class="label">Watch a Movie</div>
       </a>
 
@@ -560,7 +619,7 @@ html, body {
         <div class="label">Attend Events</div>
       </a>
 
-      <a href="/merchant/invite/" class="experience-card">
+      <a href="/merchant/invite/" class="experience-card merchant-card">
         <img src="{% static 'img/becomeamerchant.png' %}" alt="Become a Merchant">
         <div class="label">Become a Merchant</div>
       </a>

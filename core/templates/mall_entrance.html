@@ -221,18 +221,18 @@ html, body {
 }
 
 .majic-dust span:nth-child(3n) {
-  width:1.5px;
-  height:1.5px;
+  width:1.1px;
+  height:1.1px;
 }
 
 .majic-dust span:nth-child(5n) {
-  width:2.2px;
-  height:2.2px;
+  width:1.1px;
+  height:1.1px;
 }
 
 .majic-dust span:nth-child(7n) {
   width:1px;
-  height:3.5px;
+  height:1.1px;
   border-radius:999px;
 }
 
@@ -445,12 +445,12 @@ html, body {
 
 .door.left {
   left:0;
-  animation:openLeft 6.2s cubic-bezier(.16,.84,.22,1) .85s forwards;
+  animation:openLeft 7.4s cubic-bezier(.16,.84,.22,1) .85s forwards;
 }
 
 .door.right {
   right:0;
-  animation:openRight 6.2s cubic-bezier(.16,.84,.22,1) .85s forwards;
+  animation:openRight 7.4s cubic-bezier(.16,.84,.22,1) .85s forwards;
 }
 
 .reflection {
@@ -593,6 +593,165 @@ html, body {
   0%, 96% { opacity:0; }
   100% { opacity:.04; }
 }
+@media (max-width: 768px) {
+
+  .majic-dust {
+    inset:-42vh -24vw;
+    filter:none;
+  }
+
+  .majic-dust span {
+    --drift:18px;
+
+    width:1.5px;
+height:.7px;
+border-radius:1px;
+clip-path:polygon(15% 0%, 100% 22%, 82% 100%, 0% 75%);
+
+    background:
+      linear-gradient(
+        135deg,
+        #fffbe8,
+        #f5d67b,
+        #d4af37,
+        #8c6615
+      );
+
+    box-shadow:
+      0 0 3px rgba(255,246,205,.9),
+      0 0 7px rgba(224,184,90,.6);
+
+    animation:flowDustMobile 10.4s ease-out forwards;
+  }
+
+  .majic-dust span::before,
+  .majic-dust span::after {
+    content:"";
+    position:absolute;
+    width:.7px;
+    height:.7px;
+   border-radius:1px;
+  clip-path:polygon(20% 0%, 100% 30%, 78% 100%, 0% 70%);
+    background:#fff4bd;
+    box-shadow:
+      0 0 4px rgba(255,240,190,.85),
+      0 0 8px rgba(212,175,55,.5);
+    opacity:.72;
+  }
+
+  .majic-dust span::before {
+    transform:translate(4px,-5px);
+  }
+
+  .majic-dust span::after {
+    transform:translate(-5px,4px);
+  }
+
+  .majic-dust span:nth-child(2n) {
+    --drift:-22px;
+  }
+
+  .majic-dust span:nth-child(3n) {
+    --drift:32px;
+    width:1px;
+    height:1px;
+  }
+
+  .majic-dust span:nth-child(5n) {
+    --drift:-34px;
+    width:1.4px;
+    height:1.4px;
+  }
+
+  .majic-dust span:nth-child(7n) {
+    width:.8px;
+    height:3px;
+  }
+
+  .majic-dust span:nth-child(9n) {
+    background:
+      linear-gradient(
+        135deg,
+        #fff0f0,
+        #ff6a6a,
+        #d32020,
+        #7a0000
+      );
+
+    box-shadow:
+      0 0 3px rgba(255,180,180,.75),
+      0 0 7px rgba(255,70,70,.5);
+  }
+
+  @keyframes flowDustMobile {
+    0% {
+      opacity:0;
+      transform:
+        translate(-50%,-50%)
+        scale(.28)
+        rotate(0deg);
+      filter:brightness(.85);
+    }
+
+    8% {
+      opacity:.95;
+      transform:
+        translate(-50%,-50%)
+        scale(calc(.55 * var(--z)))
+        rotate(80deg);
+      filter:brightness(2.1);
+    }
+
+    32% {
+      opacity:1;
+      transform:
+        translate(
+          calc(-50% + var(--x) * .72 + var(--drift)),
+          calc(-50% + var(--y) - 38vh)
+        )
+        scale(calc(.58 * var(--z)))
+        rotate(260deg);
+      filter:brightness(2.25);
+    }
+
+    58% {
+      opacity:.86;
+      transform:
+        translate(
+          calc(-50% + var(--x) * .95 - var(--drift)),
+          calc(-50% + var(--y) + 8vh)
+        )
+        scale(calc(.48 * var(--z)))
+        rotate(520deg);
+      filter:brightness(1.65);
+    }
+
+    82% {
+      opacity:.56;
+      transform:
+        translate(
+          calc(-50% + var(--x) * 1.08 + var(--drift) * 1.6),
+          calc(-50% + var(--y) + 48vh)
+        )
+        scale(calc(.38 * var(--z)))
+        rotate(760deg);
+      filter:brightness(1.25);
+    }
+
+    100% {
+      opacity:0;
+      transform:
+        translate(
+          calc(-50% + var(--x) * 1.18 - var(--drift) * 1.4),
+          calc(-50% + var(--y) + 95vh)
+        )
+        scale(calc(.25 * var(--z)))
+        rotate(980deg);
+      filter:brightness(.7);
+    }
+  }
+}
+
 </style>
 </head>
 

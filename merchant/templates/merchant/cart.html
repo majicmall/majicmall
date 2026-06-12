@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Your Cart | Majic Mall</title>
+  <title>Your Cart | MajicMall Megaverse</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0b0b">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -12,13 +12,12 @@
     <div class="mb-8 text-center">
       <h1 class="text-4xl md:text-5xl font-black text-yellow-400">Your Shopping Cart</h1>
       <p class="text-gray-300 mt-3 text-lg">
-        Review your selections and continue your Majic Mall experience.
+        Review your selections before secure checkout.
       </p>
     </div>
 
     {% if cart %}
       <div class="grid lg:grid-cols-3 gap-8">
-        <!-- Left Column -->
         <div class="lg:col-span-2">
           <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-2xl">
             <h2 class="text-2xl font-black text-yellow-400 mb-6">Cart Items</h2>
@@ -53,7 +52,6 @@
           </div>
         </div>
 
-        <!-- Right Column -->
         <div class="lg:col-span-1">
           <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-2xl sticky top-6">
             <h2 class="text-2xl font-black text-yellow-400 mb-6">Cart Summary</h2>
@@ -73,7 +71,7 @@
             <div class="mt-8 bg-gray-800 border border-gray-700 rounded-2xl p-4">
               <div class="text-sm text-gray-400 mb-2">Ready for Checkout?</div>
               <p class="text-sm text-gray-300 leading-relaxed">
-                Continue shopping in this store, explore more stores, or move forward to checkout.
+                Review your cart, then continue to checkout. To shop another store, complete or clear this cart first.
               </p>
             </div>
 
@@ -84,11 +82,6 @@
                   Continue This Store
                 </a>
               {% endif %}
-
-              <a href="{% url 'mall-directory' %}"
-                 class="w-full text-center px-5 py-3 bg-purple-700 text-white rounded-xl hover:bg-purple-800">
-                Browse More Stores
-              </a>
 
               <a href="{% url 'public-checkout' %}"
                  class="w-full text-center px-5 py-3 bg-yellow-400 text-black rounded-xl font-bold hover:opacity-90">
@@ -102,11 +95,11 @@
       <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 text-center shadow-2xl">
         <div class="text-5xl mb-4">🛒</div>
         <h2 class="text-2xl font-black text-yellow-400 mb-3">Your cart is empty</h2>
-        <p class="text-gray-300 mb-6">Browse Majic Mall and discover something amazing.</p>
+        <p class="text-gray-300 mb-6">Browse MajicMall Megaverse and discover something amazing.</p>
 
         <a href="{% url 'mall-directory' %}"
            class="inline-block px-5 py-3 bg-purple-700 text-white rounded-xl hover:bg-purple-800">
-          Browse More Stores
+          Browse Stores
         </a>
       </div>
     {% endif %}

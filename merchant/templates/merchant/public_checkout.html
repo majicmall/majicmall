@@ -12,8 +12,8 @@
     <div class="mb-8 text-center">
       <h1 class="text-4xl md:text-5xl font-black text-yellow-400">Secure Checkout</h1>
       <p class="text-gray-300 mt-3 text-lg">
-        Complete your purchase and enjoy the Majic Mall experience.
-      </p>
+  Complete your purchase securely. To shop another store, finish or clear your current cart first.
+</p>
     </div>
 
     {% if store %}
@@ -286,20 +286,14 @@
                 Promo discounts are reflected in the final total above.
               </p>
             </div>
-
-            <div class="mt-6 flex flex-col gap-3">
-              {% if store.slug %}
-                <a href="{% url 'storefront' store.slug %}"
-                   class="w-full text-center px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
-                  Continue This Store
-                </a>
-              {% endif %}
-
-              <a href="{% url 'mall-directory' %}"
-                 class="w-full text-center px-5 py-3 bg-purple-700 text-white rounded-xl hover:bg-purple-800">
-                Browse More Stores
-              </a>
-            </div>
+<div class="mt-6">
+  {% if store.slug %}
+    <a href="{% url 'storefront' store.slug %}"
+       class="w-full block text-center px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
+      Return to Store
+    </a>
+  {% endif %}
+</div>
           </div>
         </div>
       </div>

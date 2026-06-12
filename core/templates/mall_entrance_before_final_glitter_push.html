@@ -1,0 +1,638 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Enter MajicMall Megaverse</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<style>
+html, body {
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  font-family:Arial, sans-serif;
+}
+
+.scene {
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  background:#000;
+}
+
+.city-fill,
+.city-main,
+.grand-fill,
+.grand-main {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.city-fill {
+  z-index:1;
+  filter:blur(16px) brightness(.46) saturate(1.18);
+  transform:scale(1.14);
+}
+
+.city-main {
+  z-index:2;
+  filter:brightness(.98) contrast(1.05) saturate(1.04);
+  animation:cityPushForward 9.2s ease-in-out forwards;
+}
+
+.grand-fill {
+  z-index:3;
+  opacity:0;
+  filter:blur(8px) brightness(.56) saturate(1.08);
+  transform:scale(1.02);
+  animation:grandFadeIn 7.4s ease-in-out 4.2s forwards;
+}
+
+.grand-main {
+  z-index:4;
+  opacity:0;
+  filter:brightness(1.02) contrast(1.08) saturate(1.06);
+  animation:grandFusePush 8.2s ease-in-out 4.1s forwards;
+}
+
+@keyframes cityPushForward {
+  0% { transform:scale(.96); opacity:1; }
+  45% { transform:scale(1.01); opacity:1; }
+  75% { transform:scale(1.05); opacity:.78; }
+  100% { transform:scale(1.08); opacity:0; }
+}
+
+@keyframes grandFusePush {
+  0% { opacity:0; transform:scale(.94); }
+  35% { opacity:.38; transform:scale(.97); }
+  65% { opacity:.82; transform:scale(1); }
+  100% { opacity:1; transform:scale(1.06); }
+}
+
+@keyframes grandFadeIn {
+  from { opacity:0; }
+  to { opacity:.9; }
+}
+
+.luxury-glow {
+  position:absolute;
+  inset:0;
+  z-index:5;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at center, rgba(255,215,120,.18), transparent 46%),
+    linear-gradient(to bottom, rgba(0,0,0,.03), rgba(0,0,0,.18));
+  mix-blend-mode:screen;
+}
+
+.spotlight {
+  position:absolute;
+  top:-30%;
+  width:38vw;
+  height:170vh;
+  z-index:6;
+  opacity:.34;
+  pointer-events:none;
+  filter:blur(14px);
+  mix-blend-mode:screen;
+}
+
+.spotlight-left {
+  left:-12vw;
+  background:linear-gradient(to bottom, rgba(255,255,220,.95), rgba(255,215,120,.22), transparent);
+  transform:rotate(-18deg);
+  animation:leftSweep 5.5s ease-in-out infinite alternate;
+}
+
+.spotlight-right {
+  right:-12vw;
+  background:linear-gradient(to bottom, rgba(255,255,220,.95), rgba(255,215,120,.22), transparent);
+  transform:rotate(18deg);
+  animation:rightSweep 5.5s ease-in-out infinite alternate;
+}
+
+.sparkles {
+  position:absolute;
+  inset:0;
+  z-index:6;
+  pointer-events:none;
+}
+
+.sparkles span {
+  position:absolute;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#fff3c2;
+  box-shadow:0 0 8px #fff3c2, 0 0 18px rgba(255,215,90,1);
+  opacity:0;
+  animation:sparkleFloat 3.6s ease-in-out infinite;
+}
+
+.sparkles span:nth-child(1) { top:16%; left:22%; animation-delay:0s; }
+.sparkles span:nth-child(2) { top:22%; left:68%; animation-delay:.8s; }
+.sparkles span:nth-child(3) { top:36%; left:44%; animation-delay:1.2s; }
+.sparkles span:nth-child(4) { top:28%; left:80%; animation-delay:1.6s; }
+.sparkles span:nth-child(5) { top:42%; left:14%; animation-delay:2s; }
+.sparkles span:nth-child(6) { top:18%; left:54%; animation-delay:2.4s; }
+.sparkles span:nth-child(7) { top:48%; left:62%; animation-delay:2.8s; }
+.sparkles span:nth-child(8) { top:30%; left:34%; animation-delay:3.2s; }
+
+.camera-flash {
+  position:absolute;
+  inset:0;
+  z-index:7;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 25% 25%, rgba(255,255,255,.42), transparent 15%),
+    radial-gradient(circle at 72% 30%, rgba(190,145,55,.35), transparent 18%);
+  opacity:0;
+  animation:flashBurst 5s ease-in-out infinite;
+  mix-blend-mode:screen;
+}
+
+/* FLOWING BRASS-GOLD MAJIC DUST CLOUD */
+.majic-dust {
+  position:absolute;
+  inset:-12vh -12vw;
+  z-index:11;
+  pointer-events:none;
+  overflow:hidden;
+  opacity:0;
+  animation:dustLayerFade 8.5s ease-out .15s forwards;
+  filter:drop-shadow(0 0 9px rgba(210,165,70,.98));
+}
+
+.majic-dust span {
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:1px;
+  height:1px;
+  border-radius:50%;
+  background:radial-gradient(circle, #fffbe0 0%, #d6aa45 45%, #8a6118 100%);
+  box-shadow:
+    0 0 4px rgba(255,240,180,.98),
+    0 0 10px rgba(210,165,70,.86),
+    0 0 18px rgba(135,90,25,.5);
+  opacity:0;
+  animation:flowDust 7.6s ease-out forwards, glitterTwinkle 1.15s ease-in-out infinite alternate;
+}
+
+.majic-dust span::before,
+.majic-dust span::after {
+  content:"";
+  position:absolute;
+  width:1px;
+  height:1px;
+  border-radius:50%;
+  background:#fff3b8;
+  box-shadow:
+    0 0 5px rgba(255,240,190,.95),
+    0 0 12px rgba(212,175,55,.75);
+  opacity:.78;
+}
+
+.majic-dust span::before {
+  transform:translate(5px, -4px);
+}
+
+.majic-dust span::after {
+  transform:translate(-6px, 5px);
+  opacity:.55;
+}
+
+.majic-dust span:nth-child(3n) {
+  width:1.4px;
+  height:1.4px;
+}
+
+.majic-dust span:nth-child(5n) {
+  width:2px;
+  height:2px;
+}
+
+.majic-dust span:nth-child(7n) {
+  width:1px;
+  height:3px;
+  border-radius:999px;
+}
+
+.majic-dust span:nth-child(1){--x:-70px;--y:-260px;--z:1.2;animation-delay:.08s;}
+.majic-dust span:nth-child(2){--x:70px;--y:-260px;--z:1.25;animation-delay:.09s;}
+.majic-dust span:nth-child(3){--x:-110px;--y:-220px;--z:1.3;animation-delay:.10s;}
+.majic-dust span:nth-child(4){--x:110px;--y:-220px;--z:1.35;animation-delay:.11s;}
+.majic-dust span:nth-child(5){--x:-160px;--y:-190px;--z:1.45;animation-delay:.12s;}
+.majic-dust span:nth-child(6){--x:160px;--y:-190px;--z:1.45;animation-delay:.13s;}
+.majic-dust span:nth-child(7){--x:-210px;--y:-160px;--z:1.55;animation-delay:.14s;}
+.majic-dust span:nth-child(8){--x:210px;--y:-160px;--z:1.55;animation-delay:.15s;}
+.majic-dust span:nth-child(9){--x:-260px;--y:-130px;--z:1.65;animation-delay:.16s;}
+.majic-dust span:nth-child(10){--x:260px;--y:-130px;--z:1.65;animation-delay:.17s;}
+
+.majic-dust span:nth-child(11){--x:-90px;--y:-90px;--z:1.8;animation-delay:.14s;}
+.majic-dust span:nth-child(12){--x:90px;--y:-90px;--z:1.8;animation-delay:.16s;}
+.majic-dust span:nth-child(13){--x:-150px;--y:-60px;--z:1.9;animation-delay:.18s;}
+.majic-dust span:nth-child(14){--x:150px;--y:-60px;--z:1.9;animation-delay:.20s;}
+.majic-dust span:nth-child(15){--x:-230px;--y:-40px;--z:2.1;animation-delay:.22s;}
+.majic-dust span:nth-child(16){--x:230px;--y:-40px;--z:2.1;animation-delay:.24s;}
+.majic-dust span:nth-child(17){--x:-310px;--y:-20px;--z:2.2;animation-delay:.26s;}
+.majic-dust span:nth-child(18){--x:310px;--y:-20px;--z:2.2;animation-delay:.28s;}
+
+.majic-dust span:nth-child(19){--x:-40px;--y:20px;--z:2.4;animation-delay:.18s;}
+.majic-dust span:nth-child(20){--x:40px;--y:20px;--z:2.4;animation-delay:.19s;}
+.majic-dust span:nth-child(21){--x:-120px;--y:45px;--z:2.55;animation-delay:.21s;}
+.majic-dust span:nth-child(22){--x:120px;--y:45px;--z:2.55;animation-delay:.23s;}
+.majic-dust span:nth-child(23){--x:-200px;--y:65px;--z:2.7;animation-delay:.25s;}
+.majic-dust span:nth-child(24){--x:200px;--y:65px;--z:2.7;animation-delay:.27s;}
+.majic-dust span:nth-child(25){--x:-285px;--y:85px;--z:2.85;animation-delay:.29s;}
+.majic-dust span:nth-child(26){--x:285px;--y:85px;--z:2.85;animation-delay:.31s;}
+
+.majic-dust span:nth-child(27){--x:-360px;--y:-230px;--z:1.1;animation-delay:.20s;}
+.majic-dust span:nth-child(28){--x:360px;--y:-230px;--z:1.1;animation-delay:.22s;}
+.majic-dust span:nth-child(29){--x:-420px;--y:-150px;--z:1.35;animation-delay:.24s;}
+.majic-dust span:nth-child(30){--x:420px;--y:-150px;--z:1.35;animation-delay:.26s;}
+.majic-dust span:nth-child(31){--x:-460px;--y:-50px;--z:1.6;animation-delay:.28s;}
+.majic-dust span:nth-child(32){--x:460px;--y:-50px;--z:1.6;animation-delay:.30s;}
+.majic-dust span:nth-child(33){--x:-500px;--y:70px;--z:1.95;animation-delay:.32s;}
+.majic-dust span:nth-child(34){--x:500px;--y:70px;--z:1.95;animation-delay:.34s;}
+
+.majic-dust span:nth-child(35){--x:-20px;--y:-360px;--z:1.15;animation-delay:.10s;}
+.majic-dust span:nth-child(36){--x:20px;--y:-360px;--z:1.15;animation-delay:.12s;}
+.majic-dust span:nth-child(37){--x:-80px;--y:-430px;--z:1.25;animation-delay:.14s;}
+.majic-dust span:nth-child(38){--x:80px;--y:-430px;--z:1.25;animation-delay:.16s;}
+.majic-dust span:nth-child(39){--x:-150px;--y:-500px;--z:1.35;animation-delay:.18s;}
+.majic-dust span:nth-child(40){--x:150px;--y:-500px;--z:1.35;animation-delay:.20s;}
+
+.majic-dust span:nth-child(41){--x:-35px;--y:120px;--z:3.2;animation-delay:.18s;}
+.majic-dust span:nth-child(42){--x:35px;--y:120px;--z:3.2;animation-delay:.20s;}
+.majic-dust span:nth-child(43){--x:-95px;--y:170px;--z:3.4;animation-delay:.22s;}
+.majic-dust span:nth-child(44){--x:95px;--y:170px;--z:3.4;animation-delay:.24s;}
+.majic-dust span:nth-child(45){--x:-160px;--y:210px;--z:3.6;animation-delay:.26s;}
+.majic-dust span:nth-child(46){--x:160px;--y:210px;--z:3.6;animation-delay:.28s;}
+.majic-dust span:nth-child(47){--x:-240px;--y:240px;--z:3.8;animation-delay:.30s;}
+.majic-dust span:nth-child(48){--x:240px;--y:240px;--z:3.8;animation-delay:.32s;}
+
+.majic-dust span:nth-child(49){--x:-560px;--y:-260px;--z:1.15;animation-delay:.22s;}
+.majic-dust span:nth-child(50){--x:560px;--y:-260px;--z:1.15;animation-delay:.24s;}
+.majic-dust span:nth-child(51){--x:-620px;--y:-80px;--z:1.5;animation-delay:.26s;}
+.majic-dust span:nth-child(52){--x:620px;--y:-80px;--z:1.5;animation-delay:.28s;}
+.majic-dust span:nth-child(53){--x:-640px;--y:110px;--z:2.0;animation-delay:.30s;}
+.majic-dust span:nth-child(54){--x:640px;--y:110px;--z:2.0;animation-delay:.32s;}
+
+.majic-dust span:nth-child(55){--x:-10px;--y:-120px;--z:2.5;animation-delay:.08s;}
+.majic-dust span:nth-child(56){--x:10px;--y:-120px;--z:2.5;animation-delay:.09s;}
+.majic-dust span:nth-child(57){--x:-25px;--y:-30px;--z:2.9;animation-delay:.10s;}
+.majic-dust span:nth-child(58){--x:25px;--y:-30px;--z:2.9;animation-delay:.11s;}
+.majic-dust span:nth-child(59){--x:-15px;--y:60px;--z:3.4;animation-delay:.12s;}
+.majic-dust span:nth-child(60){--x:15px;--y:60px;--z:3.4;animation-delay:.13s;}
+
+.majic-dust span:nth-child(61){--x:-340px;--y:170px;--z:2.5;animation-delay:.36s;}
+.majic-dust span:nth-child(62){--x:340px;--y:170px;--z:2.5;animation-delay:.38s;}
+.majic-dust span:nth-child(63){--x:-420px;--y:230px;--z:2.9;animation-delay:.40s;}
+.majic-dust span:nth-child(64){--x:420px;--y:230px;--z:2.9;animation-delay:.42s;}
+.majic-dust span:nth-child(65){--x:-520px;--y:300px;--z:3.2;animation-delay:.44s;}
+.majic-dust span:nth-child(66){--x:520px;--y:300px;--z:3.2;animation-delay:.46s;}
+
+.majic-dust span:nth-child(67){--x:-720px;--y:-190px;--z:1.2;animation-delay:.34s;}
+.majic-dust span:nth-child(68){--x:720px;--y:-190px;--z:1.2;animation-delay:.36s;}
+.majic-dust span:nth-child(69){--x:-760px;--y:0px;--z:1.8;animation-delay:.38s;}
+.majic-dust span:nth-child(70){--x:760px;--y:0px;--z:1.8;animation-delay:.40s;}
+.majic-dust span:nth-child(71){--x:-760px;--y:210px;--z:2.5;animation-delay:.42s;}
+.majic-dust span:nth-child(72){--x:760px;--y:210px;--z:2.5;animation-delay:.44s;}
+
+.majic-dust span:nth-child(73){--x:-70px;--y:320px;--z:4.3;animation-delay:.24s;}
+.majic-dust span:nth-child(74){--x:70px;--y:320px;--z:4.3;animation-delay:.26s;}
+.majic-dust span:nth-child(75){--x:-150px;--y:390px;--z:4.7;animation-delay:.28s;}
+.majic-dust span:nth-child(76){--x:150px;--y:390px;--z:4.7;animation-delay:.30s;}
+.majic-dust span:nth-child(77){--x:-250px;--y:460px;--z:5.2;animation-delay:.32s;}
+.majic-dust span:nth-child(78){--x:250px;--y:460px;--z:5.2;animation-delay:.34s;}
+.majic-dust span:nth-child(79){--x:-360px;--y:520px;--z:5.7;animation-delay:.36s;}
+.majic-dust span:nth-child(80){--x:360px;--y:520px;--z:5.7;animation-delay:.38s;}
+
+@keyframes dustLayerFade {
+  0% { opacity:0; }
+  10% { opacity:1; }
+  82% { opacity:.95; }
+  100% { opacity:0; }
+}
+
+@keyframes flowDust {
+  0% {
+    opacity:0;
+    transform:translate(-50%,-50%) scale(.35);
+    filter:brightness(.8);
+  }
+
+  8% {
+    opacity:.95;
+    transform:translate(-50%,-50%) scale(calc(.65 * var(--z)));
+    filter:brightness(2.35);
+  }
+
+  34% {
+    opacity:.95;
+    transform:
+      translate(
+        calc(-50% + var(--x)),
+        calc(-50% + var(--y))
+      )
+      scale(calc(.72 * var(--z)));
+    filter:brightness(2);
+  }
+
+  68% {
+    opacity:.72;
+    transform:
+      translate(
+        calc(-50% + var(--x) * 1.04),
+        calc(-50% + var(--y) + 28vh)
+      )
+      scale(calc(.58 * var(--z)));
+    filter:brightness(1.45);
+  }
+
+  100% {
+    opacity:0;
+    transform:
+      translate(
+        calc(-50% + var(--x) * 1.08),
+        calc(-50% + var(--y) + 78vh)
+      )
+      scale(calc(.32 * var(--z)));
+    filter:brightness(.7);
+  }
+}
+
+@keyframes glitterTwinkle {
+  from {
+    filter:brightness(1.05);
+  }
+
+  to {
+    filter:brightness(2.45);
+  }
+}
+
+.entrance-rays {
+  position:absolute;
+  inset:0;
+  z-index:5;
+  pointer-events:none;
+  background:radial-gradient(circle at center, rgba(255,240,180,.18), transparent 55%);
+  animation:rayPulse 4.8s ease-in-out infinite;
+}
+
+.door {
+  position:absolute;
+  top:0;
+  width:50%;
+  height:100%;
+  z-index:8;
+  overflow:hidden;
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,.18), rgba(255,255,255,.06) 22%, rgba(255,255,255,.025) 48%, rgba(0,0,0,.08)),
+    linear-gradient(to right, rgba(255,255,255,.14), rgba(255,255,255,.025));
+  border:2px solid rgba(212,175,55,.42);
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,.08),
+    inset 0 0 45px rgba(255,255,255,.08),
+    0 0 30px rgba(212,175,55,.18);
+  will-change:transform;
+}
+
+.door.left {
+  left:0;
+  animation:openLeft 6.2s cubic-bezier(.16,.84,.22,1) .85s forwards;
+}
+
+.door.right {
+  right:0;
+  animation:openRight 6.2s cubic-bezier(.16,.84,.22,1) .85s forwards;
+}
+
+.reflection {
+  position:absolute;
+  top:-25%;
+  width:42%;
+  height:150%;
+  background:linear-gradient(to bottom, rgba(255,255,255,.36), rgba(255,255,255,.1) 24%, transparent 58%);
+  opacity:0;
+  pointer-events:none;
+  animation:reflectMove 2.8s ease .65s forwards;
+}
+
+.door.left .reflection {
+  right:10%;
+  transform:skewX(-15deg);
+}
+
+.door.right .reflection {
+  left:10%;
+  transform:skewX(15deg);
+}
+
+.handle {
+  position:absolute;
+  top:50%;
+  width:20px;
+  height:150px;
+  transform:translateY(-50%);
+  border-radius:999px;
+  background:linear-gradient(to bottom, #fffce5, #ffe793, #d4af37, #9b6b10, #fff1a8);
+  box-shadow:
+    0 0 16px rgba(255,225,110,.95),
+    0 0 40px rgba(212,175,55,.65),
+    0 0 70px rgba(255,215,0,.28),
+    inset 0 0 8px rgba(255,255,255,.75);
+  overflow:hidden;
+}
+
+.door.left .handle {
+  right:34px;
+}
+
+.door.right .handle {
+  left:34px;
+}
+
+.handle::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to bottom, transparent, rgba(255,255,255,.95), transparent);
+  opacity:0;
+  animation:handleSweep 1.8s ease .85s forwards;
+}
+
+.seam-light {
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:50%;
+  width:10px;
+  transform:translateX(-50%);
+  z-index:9;
+  background:linear-gradient(to bottom, transparent, rgba(255,240,180,1), transparent);
+  box-shadow:
+    0 0 24px rgba(255,223,128,.9),
+    0 0 90px rgba(255,223,128,.62);
+  animation:seamFade 3s ease forwards;
+  pointer-events:none;
+}
+
+.fade-bridge {
+  position:absolute;
+  inset:0;
+  z-index:12;
+  background:#000;
+  opacity:0;
+  pointer-events:none;
+  animation:bridgeFade 7.9s linear forwards;
+}
+
+@keyframes leftSweep {
+  from { transform:rotate(-24deg) translateX(-40px); }
+  to { transform:rotate(-8deg) translateX(140px); }
+}
+
+@keyframes rightSweep {
+  from { transform:rotate(24deg) translateX(40px); }
+  to { transform:rotate(8deg) translateX(-140px); }
+}
+
+@keyframes sparkleFloat {
+  0% { opacity:0; transform:translateY(12px) scale(.4); }
+  30% { opacity:1; }
+  60% { opacity:.9; }
+  100% { opacity:0; transform:translateY(-32px) scale(1.4); }
+}
+
+@keyframes flashBurst {
+  0%,100% { opacity:0; }
+  42% { opacity:.82; }
+  48% { opacity:.1; }
+  54% { opacity:.58; }
+  60% { opacity:0; }
+}
+
+@keyframes rayPulse {
+  0%,100% { opacity:.42; transform:scale(1); }
+  50% { opacity:.72; transform:scale(1.05); }
+}
+
+@keyframes openLeft {
+  to { transform:translate3d(-105%,0,0); }
+}
+
+@keyframes openRight {
+  to { transform:translate3d(105%,0,0); }
+}
+
+@keyframes reflectMove {
+  0% { opacity:0; transform:translate3d(-70px,0,0) skewX(-15deg); }
+  35% { opacity:.62; }
+  100% { opacity:0; transform:translate3d(130px,0,0) skewX(-15deg); }
+}
+
+@keyframes handleSweep {
+  0% { opacity:0; transform:translate3d(0,-45px,0); }
+  40% { opacity:1; }
+  100% { opacity:0; transform:translate3d(0,70px,0); }
+}
+
+@keyframes seamFade {
+  0% { opacity:.15; width:8px; }
+  38% { opacity:1; width:32px; }
+  100% { opacity:0; width:12px; }
+}
+
+@keyframes bridgeFade {
+  0%, 96% { opacity:0; }
+  100% { opacity:.04; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="scene">
+
+  <img src="{% static 'img/grand_entrance_city_view.png' %}" class="city-fill" alt="">
+  <img src="{% static 'img/grand_entrance_city_view.png' %}" class="city-main" alt="MajicMall Megaverse City Entrance">
+
+  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="grand-fill" alt="">
+  <img src="{% static 'img/majicmall_grand_entrance.png' %}" class="grand-main" alt="MajicMall Grand Entrance">
+
+  <div class="luxury-glow"></div>
+
+  <div class="spotlight spotlight-left"></div>
+  <div class="spotlight spotlight-right"></div>
+
+  <div class="sparkles">
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+
+  <div class="camera-flash"></div>
+
+  <div class="majic-dust">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <div class="entrance-rays"></div>
+
+  <div class="door left">
+    <div class="reflection"></div>
+    <div class="handle"></div>
+  </div>
+
+  <div class="door right">
+    <div class="reflection"></div>
+    <div class="handle"></div>
+  </div>
+
+  <div class="seam-light"></div>
+  <div class="fade-bridge"></div>
+
+</div>
+
+<script>
+setTimeout(() => {
+
+  document.body.style.opacity = ".92";
+
+  setTimeout(() => {
+
+    window.location.href = "{% url 'mall-home' %}";
+
+  }, 950);
+
+}, 11800);
+</script>
+
+</body>
+</html>

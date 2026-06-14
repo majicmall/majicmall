@@ -20,7 +20,7 @@ body{
   color:#fff;
   overflow-x:hidden;
   opacity:0;
-  animation:pageFadeIn 1.6s ease forwards;
+  animation:pageFadeIn 1.2s ease forwards;
 }
 
 .scene{
@@ -40,16 +40,15 @@ body{
   z-index:1;
 
   filter:
-    brightness(.96)
-    contrast(1.18)
-    saturate(1.14)
-    drop-shadow(0 0 0 rgba(255,255,255,.01));
+    brightness(.98)
+    contrast(1.2)
+    saturate(1.16);
 
   transform-origin:center center;
   backface-visibility:hidden;
   image-rendering:auto;
 
-  animation:insideWalkForward 22s ease-out forwards;
+  animation:insideWalkForward 18s linear forwards;
 }
 
 .inside-overlay{
@@ -62,6 +61,39 @@ body{
   pointer-events:none;
 }
 
+.mall-light-sweep{
+  position:fixed;
+  inset:-20%;
+  z-index:2;
+  pointer-events:none;
+  opacity:.0;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 32%,
+      rgba(255,235,170,.12) 45%,
+      rgba(255,255,255,.18) 50%,
+      rgba(212,175,55,.12) 55%,
+      transparent 68%
+    );
+  transform:translateX(-40%) rotate(4deg);
+  animation:mallLightSweep 8s ease-in-out 1.2s infinite;
+  mix-blend-mode:screen;
+}
+
+.mall-glow-pulse{
+  position:fixed;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 48% 40%, rgba(255,215,120,.16), transparent 38%),
+    radial-gradient(circle at 72% 62%, rgba(255,255,255,.07), transparent 24%);
+  opacity:.55;
+  animation:mallGlowPulse 5.8s ease-in-out infinite;
+  mix-blend-mode:screen;
+}
+
 .arrival-layer{
   position:relative;
   z-index:3;
@@ -71,7 +103,7 @@ body{
   justify-content:center;
   padding:18px 16px;
   opacity:0;
-  animation:showControls 1.8s ease 5.8s forwards;
+  animation:showControls 1.8s ease 5.4s forwards;
   box-sizing:border-box;
 }
 
@@ -87,7 +119,7 @@ body{
   -webkit-backdrop-filter:blur(8px);
   box-shadow:
     0 20px 60px rgba(0,0,0,.65),
-    0 0 40px rgba(212,175,55,.10);
+    0 0 40px rgba(212,175,55,.12);
   animation:cardFloat 6s ease-in-out infinite;
 }
 
@@ -106,7 +138,7 @@ body{
   font-weight:900;
   margin:0;
   text-shadow:
-    0 0 22px rgba(255,215,0,.16),
+    0 0 22px rgba(255,215,0,.18),
     0 8px 28px rgba(0,0,0,.75);
 }
 
@@ -148,23 +180,53 @@ body{
 
 @keyframes insideWalkForward{
   0%{
-    transform:scale(1) translateY(0);
+    transform:scale(1.02) translateY(0);
   }
 
-  25%{
-    transform:scale(1.045) translateY(-5px);
+  20%{
+    transform:scale(1.08) translateY(-6px);
   }
 
-  50%{
-    transform:scale(1.10) translateY(-10px);
+  40%{
+    transform:scale(1.15) translateY(-13px);
   }
 
-  75%{
-    transform:scale(1.17) translateY(-16px);
+  60%{
+    transform:scale(1.23) translateY(-21px);
+  }
+
+  80%{
+    transform:scale(1.32) translateY(-29px);
   }
 
   100%{
-    transform:scale(1.26) translateY(-24px);
+    transform:scale(1.42) translateY(-38px);
+  }
+}
+
+@keyframes insideWalkForwardMobile{
+  0%{
+    transform:scale(1.02) translateY(0);
+  }
+
+  20%{
+    transform:scale(1.18) translateY(-10px);
+  }
+
+  40%{
+    transform:scale(1.36) translateY(-22px);
+  }
+
+  60%{
+    transform:scale(1.52) translateY(-38px);
+  }
+
+  80%{
+    transform:scale(1.65) translateY(-50px);
+  }
+
+  100%{
+    transform:scale(1.75) translateY(-60px);
   }
 }
 
@@ -177,6 +239,38 @@ body{
   50%{transform:translateY(-6px);}
 }
 
+@keyframes mallLightSweep{
+  0%{
+    opacity:0;
+    transform:translateX(-55%) rotate(4deg);
+  }
+
+  22%{
+    opacity:.8;
+  }
+
+  52%{
+    opacity:.35;
+  }
+
+  100%{
+    opacity:0;
+    transform:translateX(55%) rotate(4deg);
+  }
+}
+
+@keyframes mallGlowPulse{
+  0%,100%{
+    opacity:.42;
+    transform:scale(1);
+  }
+
+  50%{
+    opacity:.72;
+    transform:scale(1.05);
+  }
+}
+
 @media (min-width:768px){
   .arrival-card{
     padding:30px 28px;
@@ -186,6 +280,20 @@ body{
   .btn{
     width:auto;
     min-width:240px;
+  }
+}
+
+@media (max-width:768px){
+  .inside-bg{
+    animation:insideWalkForwardMobile 34s linear forwards;
+  }
+
+  .mall-light-sweep{
+    animation-duration:9.5s;
+  }
+
+  .arrival-layer{
+    animation-delay:5.8s;
   }
 }
 
@@ -218,6 +326,8 @@ body{
   >
 
   <div class="inside-overlay"></div>
+  <div class="mall-glow-pulse"></div>
+  <div class="mall-light-sweep"></div>
 
   <section class="arrival-layer">
     <div class="arrival-card">

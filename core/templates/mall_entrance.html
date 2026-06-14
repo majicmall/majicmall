@@ -726,7 +726,122 @@ html, body {
     }
   }
 }
+/* MOBILE WOW RESTORE: LIGHT BEAM + INSTANT GLITTER ENERGY */
+/* MOBILE WOW RESTORE: SMOOTH SUN-RAY DOOR LIGHT + GLITTER ENERGY */
+@media (max-width:768px){
 
+  .seam-light{
+    z-index:12;
+    width:16px;
+    opacity:1;
+    background:
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(255,255,235,.72) 18%,
+        rgba(255,230,120,.95) 48%,
+        rgba(255,255,235,.72) 78%,
+        transparent 100%
+      );
+    box-shadow:
+      0 0 18px rgba(255,245,190,.95),
+      0 0 48px rgba(255,215,90,.78),
+      0 0 96px rgba(255,190,40,.46);
+    animation:seamSunRay 3.2s ease-out forwards;
+  }
+
+  .entrance-rays{
+    z-index:10;
+    opacity:1;
+    background:
+      radial-gradient(
+        ellipse at center,
+        rgba(255,245,190,.38) 0%,
+        rgba(255,215,90,.18) 32%,
+        transparent 68%
+      );
+    animation:smoothSunBloom 3.5s ease-out forwards;
+  }
+
+  .majic-dust{
+    z-index:13;
+    opacity:1;
+    filter:drop-shadow(0 0 8px rgba(255,215,90,.85));
+    animation:dustLayerFade 9.4s ease-out 0s forwards;
+  }
+
+  .majic-dust span{
+    animation:flowDustMobile 10.8s ease-out forwards;
+    box-shadow:
+      0 0 5px rgba(255,246,205,.95),
+      0 0 12px rgba(224,184,90,.85),
+      0 0 22px rgba(255,215,90,.45);
+  }
+
+  .majic-dust span:nth-child(9n){
+    box-shadow:
+      0 0 5px rgba(255,190,190,.9),
+      0 0 12px rgba(255,70,70,.7);
+  }
+
+  @keyframes seamSunRay{
+
+  0%{
+    opacity:0;
+    width:4px;
+  }
+
+  15%{
+    opacity:.95;
+    width:18px;
+  }
+
+  35%{
+    opacity:.72;
+    width:24px;
+  }
+
+  55%{
+    opacity:.28;
+    width:20px;
+  }
+
+  100%{
+    opacity:0;
+    width:10px;
+  }
+
+}
+
+  @keyframes smoothSunBloom{
+
+  0%{
+    opacity:0;
+    transform:scale(.9);
+  }
+
+  20%{
+    opacity:.65;
+    transform:scale(1.02);
+  }
+
+  40%{
+    opacity:.35;
+    transform:scale(1.12);
+  }
+
+  60%{
+    opacity:.12;
+    transform:scale(1.20);
+  }
+
+  100%{
+    opacity:0;
+    transform:scale(1.25);
+  }
+
+}
+}
 </style>
 </head>
 

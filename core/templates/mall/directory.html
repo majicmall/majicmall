@@ -88,6 +88,88 @@ body {
   box-shadow: 0 0 20px rgba(250, 204, 21, 0.18);
 }
 
+/* Ambient MajicMall atmosphere */
+.mall-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.mall-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 235, 160, 0.75);
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.75);
+  animation: floatParticle 18s linear infinite;
+}
+
+.mall-particle:nth-child(1) { left: 12%; top: 90%; animation-delay: 0s; }
+.mall-particle:nth-child(2) { left: 28%; top: 95%; animation-delay: 4s; }
+.mall-particle:nth-child(3) { left: 46%; top: 88%; animation-delay: 8s; }
+.mall-particle:nth-child(4) { left: 66%; top: 96%; animation-delay: 2s; }
+.mall-particle:nth-child(5) { left: 82%; top: 92%; animation-delay: 6s; }
+
+@keyframes floatParticle {
+  0% {
+    transform: translateY(0) scale(0.7);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(-110vh) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.light-ray {
+  position: fixed;
+  top: -20%;
+  width: 22vw;
+  height: 140vh;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 240, 190, 0.18),
+    rgba(255, 240, 190, 0.04),
+    transparent
+  );
+  transform: rotate(18deg);
+  filter: blur(18px);
+  pointer-events: none;
+  z-index: 1;
+  animation: rayDrift 18s ease-in-out infinite alternate;
+}
+
+.light-ray.one {
+  left: 12%;
+}
+
+.light-ray.two {
+  right: 10%;
+  animation-delay: 4s;
+  transform: rotate(-16deg);
+}
+
+@keyframes rayDrift {
+  from {
+    opacity: 0.18;
+    transform: translateX(-18px) rotate(18deg);
+  }
+  to {
+    opacity: 0.35;
+    transform: translateX(18px) rotate(18deg);
+  }
+}
+
+.directory-page > * {
+  position: relative;
+  z-index: 2;
+}
 @media (max-width: 640px) {
   .scroll-badge {
     right: 12px;
@@ -97,15 +179,14 @@ body {
   }
 
   .directory-page {
-    background-image:
-      linear-gradient(rgba(0,0,0,0.30), rgba(0,0,0,0.62)),
-      radial-gradient(circle at top center, rgba(255,215,0,0.18), transparent 42%),
-      url("{% static 'img/luxury_mall_mobile.png' %}");
-    background-size: 100% auto;
-    background-position: center top;
-    background-repeat: repeat-y;
-    background-attachment: scroll;
-  }
+  background-image:
+    linear-gradient(rgba(0,0,0,0.22), rgba(0,0,0,0.55)),
+    url("{% static 'img/luxury_mall_mobile.png' %}");
+  background-size: 100% auto;
+  background-position: center top;
+  background-repeat: repeat-y;
+  background-attachment: scroll;
+}
 }
 </style>
 </head>
@@ -298,4 +379,13 @@ body {
 </script>
 
 </body>
+<div class="mall-ambient">
+  <div class="light-ray one"></div>
+  <div class="light-ray two"></div>
+  <span class="mall-particle"></span>
+  <span class="mall-particle"></span>
+  <span class="mall-particle"></span>
+  <span class="mall-particle"></span>
+  <span class="mall-particle"></span>
+</div>
 </html>

@@ -205,8 +205,8 @@ body {
     Desktop stays elegant.
     Mobile gets a little stronger because mobile browsers need firmer scroll commands.
   */
-  const scrollDelay = isMobile ? 95 : 85;
-  const scrollStep = isMobile ? 2 : 1;
+const scrollDelay = isMobile ? 30 : 85;
+const scrollStep = isMobile ? 0.35 : 1;
 
   function updateBadge(text) {
     if (badge) {

@@ -34,11 +34,8 @@ body {
   min-height: 100vh;
   position: relative;
   background-image:
-    linear-gradient(
-      rgba(0, 0, 0, 0.48),
-      rgba(0, 0, 0, 0.68)
-    ),
-    radial-gradient(circle at top center, rgba(255, 215, 0, 0.16), transparent 38%),
+    linear-gradient(rgba(0,0,0,0.42), rgba(0,0,0,0.62)),
+    radial-gradient(circle at top center, rgba(255,215,0,0.16), transparent 38%),
     url("{% static 'img/luxury_mall_desktop.png' %}");
   background-size: cover;
   background-position: center center;
@@ -68,7 +65,7 @@ body {
 }
 
 .zone-card {
-  background-color: rgba(17, 24, 39, 0.84) !important;
+  background-color: rgba(17, 24, 39, 0.82) !important;
   backdrop-filter: blur(6px);
   box-shadow: 0 0 0 rgba(250, 204, 21, 0);
   transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
@@ -81,7 +78,7 @@ body {
 }
 
 .store-card {
-  background-color: rgba(31, 41, 55, 0.88) !important;
+  background-color: rgba(31, 41, 55, 0.86) !important;
   backdrop-filter: blur(4px);
   transition: transform .3s ease, box-shadow .3s ease;
 }
@@ -101,15 +98,12 @@ body {
 
   .directory-page {
     background-image:
-      linear-gradient(
-        rgba(0, 0, 0, 0.42),
-        rgba(0, 0, 0, 0.72)
-      ),
-      radial-gradient(circle at top center, rgba(255, 215, 0, 0.16), transparent 42%),
+      linear-gradient(rgba(0,0,0,0.30), rgba(0,0,0,0.62)),
+      radial-gradient(circle at top center, rgba(255,215,0,0.18), transparent 42%),
       url("{% static 'img/luxury_mall_mobile.png' %}");
-    background-size: cover;
+    background-size: 100% auto;
     background-position: center top;
-    background-repeat: no-repeat;
+    background-repeat: repeat-y;
     background-attachment: scroll;
   }
 }
@@ -126,7 +120,6 @@ body {
        class="directory-header w-full max-w-6xl mb-8"
        alt="MajicMall Megaverse Directory">
 
-  <!-- ZONE BUTTONS -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
     {% for zone in zones %}
       <a href="{% url 'zone-entry' zone.slug %}"
@@ -144,7 +137,6 @@ body {
     </a>
   </div>
 
-  <!-- FEATURED STORES BY ZONE -->
   <div class="w-full max-w-6xl">
 
     <div class="text-center mb-10">
@@ -225,19 +217,11 @@ body {
   let resumeTimer = null;
 
   const isMobile = window.innerWidth <= 768;
-
-  /*
-    Bigger number = slower.
-    Desktop stays elegant.
-    Mobile moves in tiny smooth steps.
-  */
   const scrollDelay = isMobile ? 30 : 85;
   const scrollStep = isMobile ? 0.35 : 1;
 
   function updateBadge(text) {
-    if (badge) {
-      badge.textContent = text;
-    }
+    if (badge) badge.textContent = text;
   }
 
   function pauseScroll() {
@@ -252,13 +236,7 @@ body {
   }
 
   function getScrollTop() {
-    return (
-      window.scrollY ||
-      window.pageYOffset ||
-      document.documentElement.scrollTop ||
-      document.body.scrollTop ||
-      0
-    );
+    return window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
   }
 
   function getMaxScroll() {
@@ -310,9 +288,7 @@ body {
     const currentY = event.touches[0].clientY;
     const moved = Math.abs(currentY - touchStartY);
 
-    if (moved > 18) {
-      pauseScroll();
-    }
+    if (moved > 18) pauseScroll();
   }, { passive: true });
 
   document.addEventListener("click", pauseScroll);

@@ -8,27 +8,30 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-html, body {
+html {
   margin: 0;
   padding: 0;
-  height: 100%;
-  overflow: hidden;
+  scroll-behavior: smooth;
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
   background-color: black;
   font-family: Arial, sans-serif;
   animation: fadeIn 1.5s ease-in-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(.98); }
-  to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .directory-page {
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
   background:
     radial-gradient(circle at top center, rgba(255, 215, 0, 0.14), transparent 35%),
     radial-gradient(circle at bottom center, rgba(180, 0, 0, 0.18), transparent 40%),
@@ -37,29 +40,6 @@ body {
 
 .directory-header {
   filter: drop-shadow(0 0 18px rgba(255, 215, 0, 0.42));
-  flex-shrink: 0;
-}
-
-.directory-scroll-window {
-  width: 100%;
-  max-width: 72rem;
-  height: 58vh;
-  overflow-y: auto;
-  padding-right: 8px;
-  scroll-behavior: smooth;
-}
-
-.directory-scroll-window::-webkit-scrollbar {
-  width: 8px;
-}
-
-.directory-scroll-window::-webkit-scrollbar-track {
-  background: rgba(0,0,0,.4);
-}
-
-.directory-scroll-window::-webkit-scrollbar-thumb {
-  background: rgba(250,204,21,.65);
-  border-radius: 999px;
 }
 
 .scroll-badge {
@@ -77,7 +57,6 @@ body {
   font-weight: bold;
   letter-spacing: .08em;
   text-transform: uppercase;
-  backdrop-filter: blur(8px);
 }
 
 .zone-card {
@@ -101,10 +80,6 @@ body {
 }
 
 @media (max-width: 640px) {
-  .directory-scroll-window {
-    height: 60vh;
-  }
-
   .scroll-badge {
     right: 12px;
     bottom: 12px;
@@ -117,16 +92,16 @@ body {
 
 <body>
 
-<div class="directory-page flex flex-col items-center p-6">
+<div class="directory-page flex flex-col items-center min-h-screen p-6">
 
   <div class="scroll-badge" id="scrollBadge">Auto Scroll On</div>
 
   <img src="{% static 'img/majic_directory.png' %}"
-       class="directory-header w-full max-w-6xl mb-6"
+       class="directory-header w-full max-w-6xl mb-8"
        alt="MajicMall Megaverse Directory">
 
   <!-- ZONE BUTTONS -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-6 w-full max-w-6xl flex-shrink-0">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
     {% for zone in zones %}
       <a href="{% url 'zone-entry' zone.slug %}"
          class="px-4 py-2 bg-red-600 text-white rounded-xl shadow-lg hover:bg-red-800 transition font-bold">
@@ -143,8 +118,8 @@ body {
     </a>
   </div>
 
-  <!-- SCROLLING DIRECTORY PANEL -->
-  <div class="directory-scroll-window" id="directoryScroller">
+  <!-- FEATURED STORES BY ZONE -->
+  <div class="w-full max-w-6xl">
 
     <div class="text-center mb-10">
       <h2 class="text-3xl font-bold text-yellow-400">Live Stores by Zone</h2>
@@ -210,22 +185,28 @@ body {
         </div>
       {% endfor %}
     </div>
-
-    <p class="text-white mt-10 mb-8 italic text-center">🧭 You Are Here: Main Entrance</p>
-
   </div>
+
+  <p class="text-white mt-10 mb-20 italic">🧭 You Are Here: Main Entrance</p>
+
 </div>
 
 <script>
 (function () {
-  const scroller = document.getElementById("directoryScroller");
   const badge = document.getElementById("scrollBadge");
 
-  let userPaused = false;
+  let paused = false;
   let resumeTimer = null;
 
-  /* Slower, luxury pace */
-  const scrollSpeed = 0.12;
+  const isMobile = window.innerWidth <= 768;
+
+  /*
+    Bigger number = slower.
+    Desktop stays elegant.
+    Mobile gets a little stronger because mobile browsers need firmer scroll commands.
+  */
+  const scrollDelay = isMobile ? 95 : 85;
+  const scrollStep = isMobile ? 2 : 1;
 
   function updateBadge(text) {
     if (badge) {
@@ -233,50 +214,89 @@ body {
     }
   }
 
-  function pauseAutoScroll() {
-    userPaused = true;
+  function pauseScroll() {
+    paused = true;
     updateBadge("Auto Scroll Paused");
 
     clearTimeout(resumeTimer);
-    resumeTimer = setTimeout(() => {
-      userPaused = false;
+    resumeTimer = setTimeout(function () {
+      paused = false;
       updateBadge("Auto Scroll On");
     }, 2500);
   }
 
-  function autoScroll() {
-    if (scroller && !userPaused) {
-      const bottomReached =
-        scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2;
-
-      if (bottomReached) {
-        scroller.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
-      } else {
-        scroller.scrollTop += scrollSpeed;
-      }
-    }
-
-    requestAnimationFrame(autoScroll);
+  function getScrollTop() {
+    return (
+      window.scrollY ||
+      window.pageYOffset ||
+      document.documentElement.scrollTop ||
+      document.body.scrollTop ||
+      0
+    );
   }
 
-  scroller.addEventListener("wheel", pauseAutoScroll, { passive: true });
-  scroller.addEventListener("touchstart", pauseAutoScroll, { passive: true });
-  scroller.addEventListener("mouseenter", pauseAutoScroll);
+  function getMaxScroll() {
+    const pageHeight = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.offsetHeight
+    );
 
-  scroller.addEventListener("mouseleave", function () {
-    clearTimeout(resumeTimer);
-    resumeTimer = setTimeout(() => {
-      userPaused = false;
-      updateBadge("Auto Scroll On");
-    }, 1800);
-  });
+    return pageHeight - window.innerHeight;
+  }
 
-  document.addEventListener("keydown", pauseAutoScroll);
+  function setScrollTop(value) {
+    window.scrollTo(0, value);
+    document.documentElement.scrollTop = value;
+    document.body.scrollTop = value;
+  }
 
-  autoScroll();
+  function movePage() {
+    if (paused) return;
+
+    const currentTop = getScrollTop();
+    const maxScroll = getMaxScroll();
+
+    if (maxScroll <= 0) return;
+
+    if (currentTop >= maxScroll - 4) {
+      setScrollTop(0);
+    } else {
+      setScrollTop(currentTop + scrollStep);
+    }
+  }
+
+  window.addEventListener("wheel", pauseScroll, { passive: true });
+  window.addEventListener("keydown", pauseScroll);
+
+  /*
+    Mobile fix:
+    Do not pause on touchstart.
+    Only pause if the visitor physically drags the page.
+  */
+  let touchStartY = null;
+
+  window.addEventListener("touchstart", function (event) {
+    if (event.touches && event.touches.length) {
+      touchStartY = event.touches[0].clientY;
+    }
+  }, { passive: true });
+
+  window.addEventListener("touchmove", function (event) {
+    if (!event.touches || !event.touches.length || touchStartY === null) return;
+
+    const currentY = event.touches[0].clientY;
+    const moved = Math.abs(currentY - touchStartY);
+
+    if (moved > 18) {
+      pauseScroll();
+    }
+  }, { passive: true });
+
+  document.addEventListener("click", pauseScroll);
+
+  setInterval(movePage, scrollDelay);
 })();
 </script>
 

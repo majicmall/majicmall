@@ -8,15 +8,17 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-html {
-  scroll-behavior: smooth;
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
   background-color: black;
   font-family: Arial, sans-serif;
   animation: fadeIn 1.5s ease-in-out;
-  overflow-x: hidden;
 }
 
 @keyframes fadeIn {
@@ -24,22 +26,42 @@ body {
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Luxury ambient background */
 .directory-page {
-  position: relative;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background:
-    radial-gradient(circle at top center, rgba(255, 215, 0, 0.12), transparent 35%),
-    radial-gradient(circle at bottom center, rgba(180, 0, 0, 0.18), transparent 38%),
+    radial-gradient(circle at top center, rgba(255, 215, 0, 0.14), transparent 35%),
+    radial-gradient(circle at bottom center, rgba(180, 0, 0, 0.18), transparent 40%),
     #000;
 }
 
-/* Soft gold glow around directory board */
 .directory-header {
   filter: drop-shadow(0 0 18px rgba(255, 215, 0, 0.42));
+  flex-shrink: 0;
 }
 
-/* Auto-scroll status badge */
+.directory-scroll-window {
+  width: 100%;
+  max-width: 72rem;
+  height: 58vh;
+  overflow-y: auto;
+  padding-right: 8px;
+  scroll-behavior: smooth;
+}
+
+.directory-scroll-window::-webkit-scrollbar {
+  width: 8px;
+}
+
+.directory-scroll-window::-webkit-scrollbar-track {
+  background: rgba(0,0,0,.4);
+}
+
+.directory-scroll-window::-webkit-scrollbar-thumb {
+  background: rgba(250,204,21,.65);
+  border-radius: 999px;
+}
+
 .scroll-badge {
   position: fixed;
   right: 18px;
@@ -58,7 +80,6 @@ body {
   backdrop-filter: blur(8px);
 }
 
-/* Store/zone hover glow */
 .zone-card {
   box-shadow: 0 0 0 rgba(250, 204, 21, 0);
   transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
@@ -79,8 +100,11 @@ body {
   box-shadow: 0 0 20px rgba(250, 204, 21, 0.18);
 }
 
-/* Mobile badge placement */
 @media (max-width: 640px) {
+  .directory-scroll-window {
+    height: 60vh;
+  }
+
   .scroll-badge {
     right: 12px;
     bottom: 12px;
@@ -93,16 +117,16 @@ body {
 
 <body>
 
-<div class="directory-page flex flex-col items-center min-h-screen p-6">
+<div class="directory-page flex flex-col items-center p-6">
 
   <div class="scroll-badge" id="scrollBadge">Auto Scroll On</div>
 
   <img src="{% static 'img/majic_directory.png' %}"
-       class="directory-header w-full max-w-6xl mb-8"
+       class="directory-header w-full max-w-6xl mb-6"
        alt="MajicMall Megaverse Directory">
 
   <!-- ZONE BUTTONS -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-6 w-full max-w-6xl flex-shrink-0">
     {% for zone in zones %}
       <a href="{% url 'zone-entry' zone.slug %}"
          class="px-4 py-2 bg-red-600 text-white rounded-xl shadow-lg hover:bg-red-800 transition font-bold">
@@ -119,8 +143,9 @@ body {
     </a>
   </div>
 
-  <!-- FEATURED STORES BY ZONE -->
-  <div class="w-full max-w-6xl" id="directoryContent">
+  <!-- SCROLLING DIRECTORY PANEL -->
+  <div class="directory-scroll-window" id="directoryScroller">
+
     <div class="text-center mb-10">
       <h2 class="text-3xl font-bold text-yellow-400">Live Stores by Zone</h2>
       <p class="text-gray-300 mt-2">Only 5 premium placements per zone</p>
@@ -185,20 +210,22 @@ body {
         </div>
       {% endfor %}
     </div>
+
+    <p class="text-white mt-10 mb-8 italic text-center">🧭 You Are Here: Main Entrance</p>
+
   </div>
-
-  <p class="text-white mt-10 italic">🧭 You Are Here: Main Entrance</p>
-
 </div>
 
 <script>
 (function () {
-  let autoScrollEnabled = true;
+  const scroller = document.getElementById("directoryScroller");
+  const badge = document.getElementById("scrollBadge");
+
   let userPaused = false;
-  let scrollSpeed = 0.35;
   let resumeTimer = null;
 
-  const badge = document.getElementById("scrollBadge");
+  /* Slower, luxury pace */
+  const scrollSpeed = 0.12;
 
   function updateBadge(text) {
     if (badge) {
@@ -214,46 +241,40 @@ body {
     resumeTimer = setTimeout(() => {
       userPaused = false;
       updateBadge("Auto Scroll On");
-    }, 5000);
+    }, 2500);
   }
 
   function autoScroll() {
-    if (autoScrollEnabled && !userPaused) {
-      const bottomReached = window.innerHeight + window.scrollY >= document.body.scrollHeight - 4;
+    if (scroller && !userPaused) {
+      const bottomReached =
+        scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2;
 
       if (bottomReached) {
-        window.scrollTo({
+        scroller.scrollTo({
           top: 0,
           behavior: "smooth"
         });
       } else {
-        window.scrollBy(0, scrollSpeed);
+        scroller.scrollTop += scrollSpeed;
       }
     }
 
     requestAnimationFrame(autoScroll);
   }
 
-  window.addEventListener("wheel", pauseAutoScroll, { passive: true });
-  window.addEventListener("touchstart", pauseAutoScroll, { passive: true });
-  window.addEventListener("keydown", pauseAutoScroll);
+  scroller.addEventListener("wheel", pauseAutoScroll, { passive: true });
+  scroller.addEventListener("touchstart", pauseAutoScroll, { passive: true });
+  scroller.addEventListener("mouseenter", pauseAutoScroll);
 
-  document.addEventListener("mouseover", function (event) {
-    if (event.target.closest("a, button, .zone-card, .store-card")) {
-      userPaused = true;
-      updateBadge("Auto Scroll Paused");
-    }
+  scroller.addEventListener("mouseleave", function () {
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => {
+      userPaused = false;
+      updateBadge("Auto Scroll On");
+    }, 1800);
   });
 
-  document.addEventListener("mouseout", function (event) {
-    if (event.target.closest("a, button, .zone-card, .store-card")) {
-      clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(() => {
-        userPaused = false;
-        updateBadge("Auto Scroll On");
-      }, 1800);
-    }
-  });
+  document.addEventListener("keydown", pauseAutoScroll);
 
   autoScroll();
 })();

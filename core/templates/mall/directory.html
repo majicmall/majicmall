@@ -223,7 +223,20 @@ body {
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
     {% for zone in zones %}
       <a href="{% url 'zone-entry' zone.slug %}"
-         class="px-4 py-2 bg-red-600 text-white rounded-xl shadow-lg hover:bg-red-800 transition font-bold">
+        class="px-4 py-3
+bg-black/80
+text-yellow-400
+border border-yellow-500/40
+rounded-xl
+font-bold
+tracking-wide
+backdrop-blur-md
+shadow-lg
+hover:bg-yellow-400
+hover:text-black
+hover:border-yellow-300
+hover:shadow-yellow-500/30
+transition-all duration-300"
         {{ zone.name|upper }}
       </a>
     {% endfor %}
@@ -241,7 +254,9 @@ body {
 
     <div class="text-center mb-10">
       <h2 class="text-3xl font-bold text-yellow-400">Feature Stores by Zone</h2>
-      <p class="text-gray-300 mt-2"</p>
+      <p class="text-gray-300 mt-2">
+  Premium featured merchants from across the MajicMall Megaverse
+</p>
     </div>
 
     <div class="space-y-10">

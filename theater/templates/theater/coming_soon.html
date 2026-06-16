@@ -71,10 +71,32 @@ p {
 
 <main class="wrap">
   <section class="card">
-    <h1>🎬 Coming Soon</h1>
-    <p>Trailers, premieres, and featured films are being prepared for the MajicMall Megaverse Theater.</p>
-    <a href="{% url 'box-office' %}" class="btn">Back to Now Showing</a>
-  </section>
+
+  <h1>🎬 When A Man Loves A Woman</h1>
+
+  <p>
+    Experience the upcoming feature presentation inside the
+    MajicMall Megaverse Theater.
+  </p>
+
+  <p style="margin-top:18px;">
+    Watch the official trailer and prepare for an unforgettable
+    cinematic experience.
+  </p>
+
+  <div style="margin-top:30px; display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+
+    <a href="{% url 'trailer-view' %}" class="btn">
+      ▶ Watch Trailer
+    </a>
+
+    <a href="{% url 'box-office' %}" class="btn">
+      🎟 Back to Box Office
+    </a>
+
+  </div>
+
+</section>
 </main>
 
 </body>

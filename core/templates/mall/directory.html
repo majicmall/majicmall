@@ -72,21 +72,35 @@ body {
   padding: 12px 18px;
   background: rgba(0, 0, 0, 0.92) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.58) !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
   border-radius: 14px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.08em;
   text-align: center;
   text-transform: uppercase;
   text-decoration: none !important;
-  text-shadow:
-    0 0 4px rgba(255,255,255,0.95),
-    0 0 10px rgba(255,255,255,0.45);
+
+  /* Removed text glow */
+  text-shadow: none;
+
+  /* Keep subtle button glow */
   box-shadow:
-    0 0 8px rgba(255,255,255,0.28),
-    inset 0 0 10px rgba(255,255,255,0.08);
+    0 0 6px rgba(255,255,255,0.12),
+    inset 0 0 6px rgba(255,255,255,0.04);
+
   backdrop-filter: blur(8px);
   transition: all .3s ease;
+}
+
+.zone-nav-btn:hover {
+  color: #facc15 !important;
+  border-color: rgba(250, 204, 21, 0.8) !important;
+
+  box-shadow:
+    0 0 12px rgba(255,255,255,0.18),
+    0 0 18px rgba(250,204,21,0.12);
+
+  transform: translateY(-2px);
 }
 
 .zone-nav-btn:hover {
@@ -258,9 +272,18 @@ body {
 
   <div class="scroll-badge" id="scrollBadge">Auto Scroll On</div>
 
-  <img src="{% static 'img/majic_directory.png' %}"
-       class="directory-header w-full max-w-6xl mb-8"
-       alt="MajicMall Megaverse Directory">
+  <div class="text-center mb-8">
+
+  <h1 class="text-4xl md:text-6xl font-bold text-white tracking-wider">
+    MajicMall Megaverse
+  </h1>
+
+  <div class="h-1 w-40 bg-yellow-400 mx-auto my-4 rounded-full"></div>
+
+
+
+</div>
+
 
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10 w-full max-w-6xl">
     {% for zone in zones %}

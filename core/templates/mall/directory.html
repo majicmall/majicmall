@@ -34,8 +34,8 @@ body {
   min-height: 100vh;
   position: relative;
   background-image:
-    linear-gradient(rgba(0,0,0,0.42), rgba(0,0,0,0.62)),
-    radial-gradient(circle at top center, rgba(255,215,0,0.16), transparent 38%),
+    linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.45)),
+    radial-gradient(circle at top center, rgba(255,215,0,0.10), transparent 38%),
     url("{% static 'img/luxury_mall_desktop.png' %}");
   background-size: cover;
   background-position: center center;
@@ -65,28 +65,29 @@ body {
 }
 
 .zone-card {
-  background: rgba(0, 0, 0, 0.68);
-  border: 1px solid rgba(255, 215, 0, 0.15);
+  background: rgba(0, 0, 0, 0.72) !important;
+  border: 1px solid rgba(255, 215, 0, 0.22) !important;
   backdrop-filter: blur(8px);
-  box-shadow: 0 0 0 rgba(250, 204, 21, 0);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.45);
   transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
 }
 
 .zone-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(250, 204, 21, 0.65);
-  box-shadow: 0 0 24px rgba(250, 204, 21, 0.16);
+  border-color: rgba(250, 204, 21, 0.72) !important;
+  box-shadow: 0 0 26px rgba(250, 204, 21, 0.18);
 }
 
 .store-card {
-  background: rgba(0, 0, 0, 0.75);
-  border: 1px solid rgba(255, 215, 0, 0.08);
+  background: rgba(0, 0, 0, 0.80) !important;
+  border: 1px solid rgba(255, 215, 0, 0.12) !important;
   backdrop-filter: blur(5px);
-  transition: transform .3s ease, box-shadow .3s ease;
+  transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
 }
 
 .store-card:hover {
   transform: translateY(-4px);
+  border-color: rgba(250, 204, 21, 0.45) !important;
   box-shadow: 0 0 20px rgba(250, 204, 21, 0.18);
 }
 
@@ -103,17 +104,17 @@ body {
   position: absolute;
   width: 4px;
   height: 4px;
-  background: rgba(255, 235, 160, 0.75);
+  background: rgba(255, 235, 160, 0.70);
   border-radius: 999px;
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.75);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.65);
   animation: floatParticle 18s linear infinite;
 }
 
-.mall-particle:nth-child(1) { left: 12%; top: 90%; animation-delay: 0s; }
-.mall-particle:nth-child(2) { left: 28%; top: 95%; animation-delay: 4s; }
-.mall-particle:nth-child(3) { left: 46%; top: 88%; animation-delay: 8s; }
-.mall-particle:nth-child(4) { left: 66%; top: 96%; animation-delay: 2s; }
-.mall-particle:nth-child(5) { left: 82%; top: 92%; animation-delay: 6s; }
+.mall-particle:nth-child(3) { left: 12%; top: 90%; animation-delay: 0s; }
+.mall-particle:nth-child(4) { left: 28%; top: 95%; animation-delay: 4s; }
+.mall-particle:nth-child(5) { left: 46%; top: 88%; animation-delay: 8s; }
+.mall-particle:nth-child(6) { left: 66%; top: 96%; animation-delay: 2s; }
+.mall-particle:nth-child(7) { left: 82%; top: 92%; animation-delay: 6s; }
 
 @keyframes floatParticle {
   0% {
@@ -121,7 +122,7 @@ body {
     opacity: 0;
   }
   15% {
-    opacity: 0.75;
+    opacity: 0.65;
   }
   100% {
     transform: translateY(-110vh) scale(1.2);
@@ -136,11 +137,10 @@ body {
   height: 140vh;
   background: linear-gradient(
     to bottom,
-    rgba(255, 240, 190, 0.18),
-    rgba(255, 240, 190, 0.04),
+    rgba(255, 240, 190, 0.14),
+    rgba(255, 240, 190, 0.035),
     transparent
   );
-  transform: rotate(18deg);
   filter: blur(18px);
   pointer-events: none;
   z-index: 1;
@@ -149,6 +149,7 @@ body {
 
 .light-ray.one {
   left: 12%;
+  transform: rotate(18deg);
 }
 
 .light-ray.two {
@@ -159,12 +160,12 @@ body {
 
 @keyframes rayDrift {
   from {
-    opacity: 0.18;
-    transform: translateX(-18px) rotate(18deg);
+    opacity: 0.14;
+    margin-left: -18px;
   }
   to {
-    opacity: 0.35;
-    transform: translateX(18px) rotate(18deg);
+    opacity: 0.28;
+    margin-left: 18px;
   }
 }
 
@@ -172,6 +173,7 @@ body {
   position: relative;
   z-index: 2;
 }
+
 @media (max-width: 640px) {
   .scroll-badge {
     right: 12px;
@@ -181,19 +183,34 @@ body {
   }
 
   .directory-page {
-  background-image:
-    linear-gradient(rgba(0,0,0,0.22), rgba(0,0,0,0.55)),
-    url("{% static 'img/luxury_mall_mobile.png' %}");
-  background-size: 100% auto;
-  background-position: center top;
-  background-repeat: repeat-y;
-  background-attachment: scroll;
-}
+    background-image:
+      linear-gradient(rgba(0,0,0,0.10), rgba(0,0,0,0.35)),
+      url("{% static 'img/luxury_mall_mobile.png' %}");
+    background-size: 100% auto;
+    background-position: center top;
+    background-repeat: repeat-y;
+    background-attachment: scroll;
+  }
+
+  .light-ray {
+    width: 34vw;
+    opacity: 0.18;
+  }
 }
 </style>
 </head>
 
 <body>
+
+<div class="mall-ambient">
+  <div class="light-ray one"></div>
+  <div class="light-ray two"></div>
+  <span class="mall-particle"></span>
+  <span class="mall-particle"></span>
+  <span class="mall-particle"></span>
+  <span class="mall-particle"></span>
+  <span class="mall-particle"></span>
+</div>
 
 <div class="directory-page flex flex-col items-center min-h-screen p-6">
 
@@ -229,7 +246,7 @@ body {
 
     <div class="space-y-10">
       {% for section in zone_sections %}
-        <div id="zone-{{ section.zone.slug }}" class="zone-card bg-gray-900 border border-gray-800 rounded-2xl p-6">
+        <div id="zone-{{ section.zone.slug }}" class="zone-card rounded-2xl p-6">
 
           <div class="flex justify-between items-center mb-4 gap-4">
             <h3 class="text-2xl font-bold text-yellow-400">{{ section.zone.name }}</h3>
@@ -247,7 +264,7 @@ body {
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
 
             {% for store in section.stores %}
-              <div class="store-card bg-gray-800 rounded-xl p-4 flex flex-col">
+              <div class="store-card rounded-xl p-4 flex flex-col">
                 {% if store.logo %}
                   <img src="{{ store.logo.url }}" class="h-20 w-20 object-cover rounded-lg mb-3 bg-white" alt="{{ store.store_name }}">
                 {% else %}
@@ -273,7 +290,7 @@ body {
 
             {% for _ in section.empty_slots %}
               <a href="{% url 'merchant-invite' %}"
-                 class="store-card bg-gray-800 border-2 border-dashed border-yellow-400 rounded-xl p-4 flex flex-col justify-center items-center text-center hover:bg-gray-700 transition no-underline">
+                 class="store-card rounded-xl p-4 flex flex-col justify-center items-center text-center hover:bg-gray-700 transition no-underline">
                 <div class="text-yellow-400 text-2xl mb-2">★</div>
                 <div class="text-yellow-400 font-bold">Claim This Spot</div>
                 <div class="text-sm text-gray-400 mt-2">
@@ -381,13 +398,4 @@ body {
 </script>
 
 </body>
-<div class="mall-ambient">
-  <div class="light-ray one"></div>
-  <div class="light-ray two"></div>
-  <span class="mall-particle"></span>
-  <span class="mall-particle"></span>
-  <span class="mall-particle"></span>
-  <span class="mall-particle"></span>
-  <span class="mall-particle"></span>
-</div>
 </html>

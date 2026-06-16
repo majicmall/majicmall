@@ -23,3 +23,9 @@ __pycache__/
 *.pyc
 staticfiles/
 .env
+
+# Large local video files
+core/static/videos/trailers/*.mov
+core/static/videos/trailers/*.mp4
+staticfiles/videos/trailers/*.mov
+staticfiles/videos/trailers/*.mp4

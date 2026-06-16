@@ -12,8 +12,8 @@ class Command(BaseCommand):
             "Food Court",
             "Theater Zone",
             "Music Zone",
-            "Business Services Zone",
-            "ATL's Hottest Zone",
+            "Business Services",
+            "ATL's Hottest",
         ]
 
         created = 0

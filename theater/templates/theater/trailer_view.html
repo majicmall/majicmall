@@ -64,6 +64,13 @@
         0 0 40px rgba(255,0,0,.22);
     }
 
+    .video-note {
+      color: rgba(255,255,255,.72);
+      font-size: .9rem;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
     .buttons {
       margin-top: 25px;
       display: flex;
@@ -134,18 +141,15 @@
   </div>
 
   <video controls preload="metadata" playsinline>
-    <!-- Production S3 MP4 source -->
     <source
-      src="https://majicmallvideos-238841125891-us-east-2-an.s3.us-east-2.amazonaws.com/wawlam_trailer.mp4"
-      type="video/mp4">
-
-    <!-- Local development fallback -->
-    <source
-      src="{% static 'videos/trailers/wawlam_trailer.mp4' %}"
-      type="video/mp4">
-
+      src="https://majicmallvideos-238841125891-us-east-2-an.s3.us-east-2.amazonaws.com/WAWLAM+teaser+f2.mov"
+      type="video/quicktime">
     Your browser does not support video playback.
   </video>
+
+  <div class="video-note">
+    If the trailer does not play on your device, the optimized MP4 version is being prepared for faster mobile streaming.
+  </div>
 
   <div class="buttons">
     <a href="/theater/" class="btn btn-gold">

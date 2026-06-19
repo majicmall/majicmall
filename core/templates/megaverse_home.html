@@ -16,6 +16,7 @@ html, body {
   font-family:'Montserrat', sans-serif;
   color:#fff;
   overflow-x:hidden;
+  scroll-behavior:smooth;
 }
 
 .city-bg {
@@ -100,10 +101,10 @@ html, body {
   z-index:3;
   max-width:1200px;
   margin:0 auto;
-  padding:42px 20px 80px;
+  padding:42px 20px 100px;
 }
 
-/* DIGITAL BILLBOARD */
+/* DAZZLE BILLBOARD */
 .billboard-wrap {
   width:100%;
   display:flex;
@@ -116,25 +117,27 @@ html, body {
 .billboard {
   position:relative;
   width:min(92vw, 860px);
-  min-height:100px;
+  min-height:104px;
   padding:12px 22px;
-  border-radius:12px;
+  border-radius:15px;
   background:
-    linear-gradient(135deg, rgba(3,3,6,0.99), rgba(18,15,22,0.98)),
-    radial-gradient(circle at center top, rgba(255,215,120,0.16), transparent 52%);
-  border:2px solid rgba(255,215,90,0.95);
+    radial-gradient(circle at center top, rgba(255,255,255,0.16), transparent 38%),
+    linear-gradient(135deg, rgba(2,2,6,0.99), rgba(18,14,24,0.98));
+  border:1px solid rgba(255,255,255,0.34);
   text-align:center;
   overflow:hidden;
   box-shadow:
-    0 0 14px rgba(255,235,150,0.72),
-    0 0 34px rgba(212,175,55,0.62),
-    0 0 76px rgba(212,175,55,0.34),
+    0 0 12px rgba(255,255,255,0.55),
+    0 0 30px rgba(255,241,168,0.80),
+    0 0 70px rgba(212,175,55,0.58),
+    0 0 130px rgba(255,255,255,0.18),
     0 18px 54px rgba(0,0,0,0.88),
-    inset 0 0 18px rgba(255,255,255,0.08),
-    inset 0 0 34px rgba(255,215,90,0.10),
+    inset 0 0 22px rgba(255,255,255,0.12),
+    inset 0 0 44px rgba(255,215,90,0.18),
     inset 0 -22px 38px rgba(0,0,0,0.72);
-  animation:billboardGlowPulse 4.2s ease-in-out infinite;
+  animation:billboardGlowPulse 3.8s ease-in-out infinite;
 }
+
 .billboard::before,
 .billboard::after {
   content:"";
@@ -149,6 +152,46 @@ html, body {
 .billboard::before { left:18%; }
 .billboard::after { right:18%; }
 
+.billboard-aura {
+  position:absolute;
+  inset:-34px;
+  z-index:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 15% 50%, rgba(255,255,255,0.16), transparent 22%),
+    radial-gradient(circle at 85% 50%, rgba(255,215,90,0.22), transparent 24%);
+  filter:blur(15px);
+  animation:auraPulse 4s ease-in-out infinite;
+}
+
+.billboard-trim {
+  position:absolute;
+  inset:0;
+  border-radius:15px;
+  z-index:7;
+  pointer-events:none;
+  padding:2px;
+  background:
+    linear-gradient(90deg,
+      rgba(255,255,255,0.38),
+      rgba(255,245,190,1),
+      rgba(212,175,55,0.95),
+      rgba(255,255,255,1),
+      rgba(255,245,190,1),
+      rgba(255,255,255,0.38)
+    );
+  background-size:300% 100%;
+  -webkit-mask:
+  linear-gradient(#000 0 0) content-box,
+  linear-gradient(#000 0 0);
+mask:
+  linear-gradient(#000 0 0) content-box,
+  linear-gradient(#000 0 0);
+-webkit-mask-composite:xor;
+mask-composite:exclude;
+  animation:trimRun 3.8s linear infinite;
+}
+
 .billboard-lights {
   position:absolute;
   inset:-8px 16px auto;
@@ -156,25 +199,32 @@ html, body {
   display:flex;
   justify-content:space-between;
   pointer-events:none;
-  z-index:6;
+  z-index:8;
 }
 
 .billboard-lights span {
-  width:6px;
-  height:6px;
+  width:7px;
+  height:7px;
   border-radius:50%;
-  background:#a7894e;
+  background:#fff6c7;
   box-shadow:
-    0 0 10px rgba(167,137,78,0.85),
-    0 0 22px rgba(95,70,35,0.7);
+    0 0 8px rgba(255,255,255,1),
+    0 0 18px rgba(255,215,90,0.95),
+    0 0 34px rgba(255,255,255,0.48);
+  animation:bulbSparkle 1.9s ease-in-out infinite;
 }
+
+.billboard-lights span:nth-child(2) { animation-delay:.25s; }
+.billboard-lights span:nth-child(3) { animation-delay:.5s; }
+.billboard-lights span:nth-child(4) { animation-delay:.75s; }
+.billboard-lights span:nth-child(5) { animation-delay:1s; }
 
 .billboard-led {
   position:absolute;
   inset:0;
   z-index:1;
   pointer-events:none;
-  opacity:.22;
+  opacity:.24;
   background-image:
     radial-gradient(circle, rgba(255,230,165,.42) 1px, transparent 1px);
   background-size:10px 10px;
@@ -192,8 +242,8 @@ html, body {
     transparent 0%,
     transparent 34%,
     rgba(255,255,255,0.18) 43%,
-    rgba(255,235,160,0.65) 50%,
-    rgba(212,175,55,0.28) 56%,
+    rgba(255,235,160,0.78) 50%,
+    rgba(212,175,55,0.32) 56%,
     transparent 66%,
     transparent 100%
   );
@@ -201,6 +251,7 @@ html, body {
   transform:translateX(-130%);
   animation:billboardGoldShine 5.8s ease-in-out infinite;
 }
+
 .billboard-slide {
   position:absolute;
   inset:0;
@@ -215,18 +266,18 @@ html, body {
   animation:billboardRotate 18s infinite;
 }
 
-.billboard-slide:nth-child(4) { animation-delay:0s; }
-.billboard-slide:nth-child(5) { animation-delay:6s; }
-.billboard-slide:nth-child(6) { animation-delay:12s; }
+.billboard-slide.slide-1 { animation-delay:0s; }
+.billboard-slide.slide-2 { animation-delay:6s; }
+.billboard-slide.slide-3 { animation-delay:12s; }
 
 .billboard-slide .ad-title {
   font-weight:900;
   font-size:clamp(0.95rem, 3vw, 1.4rem);
   letter-spacing:1.5px;
-  color:#e8d49a;
+  color:#fff1a8;
   text-shadow:
-    0 0 8px rgba(232,212,154,0.55),
-    0 0 18px rgba(90,65,25,0.85);
+    0 0 8px rgba(255,255,255,0.60),
+    0 0 20px rgba(255,215,90,0.70);
 }
 
 .billboard-slide .ad-subtitle {
@@ -234,7 +285,7 @@ html, body {
   font-size:clamp(0.62rem, 1.7vw, 0.82rem);
   letter-spacing:0.16em;
   text-transform:uppercase;
-  color:#c2b07a;
+  color:#e8d49a;
 }
 
 @keyframes billboardRotate {
@@ -246,51 +297,59 @@ html, body {
 }
 
 @keyframes billboardGoldShine {
-  0%, 50% {
-    opacity:0;
-    transform:translateX(-120%);
-  }
-  62% { opacity:.7; }
-  82% {
-    opacity:.25;
-    transform:translateX(120%);
-  }
-  100% {
-    opacity:0;
-    transform:translateX(120%);
-  }
+  0%, 50% { opacity:0; transform:translateX(-120%); }
+  62% { opacity:.78; }
+  82% { opacity:.25; transform:translateX(120%); }
+  100% { opacity:0; transform:translateX(120%); }
 }
 
 @keyframes billboardGlowPulse {
   0%, 100% {
     box-shadow:
-      0 0 14px rgba(255,235,150,0.62),
-      0 0 34px rgba(212,175,55,0.54),
-      0 0 72px rgba(212,175,55,0.28),
+      0 0 12px rgba(255,255,255,0.50),
+      0 0 30px rgba(255,241,168,0.70),
+      0 0 70px rgba(212,175,55,0.52),
+      0 0 120px rgba(255,255,255,0.14),
       0 18px 54px rgba(0,0,0,0.88),
-      inset 0 0 18px rgba(255,255,255,0.08),
-      inset 0 0 34px rgba(255,215,90,0.10),
+      inset 0 0 22px rgba(255,255,255,0.12),
+      inset 0 0 44px rgba(255,215,90,0.18),
       inset 0 -22px 38px rgba(0,0,0,0.72);
   }
 
   50% {
     box-shadow:
-      0 0 22px rgba(255,245,180,0.92),
-      0 0 52px rgba(255,215,90,0.78),
-      0 0 104px rgba(212,175,55,0.42),
+      0 0 18px rgba(255,255,255,0.88),
+      0 0 50px rgba(255,245,180,0.95),
+      0 0 110px rgba(255,215,90,0.72),
+      0 0 160px rgba(255,255,255,0.22),
       0 18px 58px rgba(0,0,0,0.9),
-      inset 0 0 24px rgba(255,255,255,0.12),
-      inset 0 0 46px rgba(255,215,90,0.18),
+      inset 0 0 28px rgba(255,255,255,0.18),
+      inset 0 0 54px rgba(255,215,90,0.24),
       inset 0 -22px 38px rgba(0,0,0,0.72);
   }
 }
 
 @keyframes ledFlicker {
   0%, 100% { opacity:.18; }
-  50% { opacity:.30; }
+  50% { opacity:.32; }
 }
 
-/* HERO LOWERED */
+@keyframes trimRun {
+  from { background-position:0% center; }
+  to { background-position:300% center; }
+}
+
+@keyframes auraPulse {
+  0%, 100% { opacity:.46; transform:scale(.98); }
+  50% { opacity:1; transform:scale(1.03); }
+}
+
+@keyframes bulbSparkle {
+  0%, 100% { opacity:.55; transform:scale(.85); }
+  50% { opacity:1; transform:scale(1.22); }
+}
+
+/* HERO */
 .hero {
   display:flex;
   justify-content:center;
@@ -338,19 +397,10 @@ html, body {
 }
 
 @keyframes titleIlluminate {
-  0% {
-    background-position:0% center;
-    filter:brightness(0.72);
-  }
+  0% { background-position:0% center; filter:brightness(0.72); }
   35% { filter:brightness(1.1); }
-  55% {
-    background-position:100% center;
-    filter:brightness(1.45);
-  }
-  100% {
-    background-position:0% center;
-    filter:brightness(0.88);
-  }
+  55% { background-position:100% center; filter:brightness(1.45); }
+  100% { background-position:0% center; filter:brightness(0.88); }
 }
 
 .red-line {
@@ -388,26 +438,41 @@ html, body {
   color:#fff;
   background:linear-gradient(135deg,#8b0000,#dc2626);
   box-shadow:0 12px 30px rgba(220,38,38,0.35);
+  transition:.3s ease;
+}
+
+.cta:hover {
+  transform:translateY(-2px);
+  box-shadow:0 0 22px rgba(255,0,0,.55);
 }
 
 .experiences {
   margin-top:38px;
-  overflow:hidden;
 }
 
 .experience-title {
   font-family:'Cinzel', serif;
   font-size:clamp(1.8rem,6vw,2.6rem);
-  margin-bottom:20px;
+  margin-bottom:16px;
   color:#fff1a8;
   text-align:center;
+}
+
+.experience-shell {
+  position:relative;
+}
+
+.experience-viewport {
+  overflow:hidden;
+  width:100%;
+  padding:8px 0 18px;
 }
 
 .experience-track {
   display:flex;
   gap:20px;
   width:max-content;
-  animation:scrollExperiences 32s linear infinite;
+  will-change:transform;
 }
 
 .experience-card {
@@ -479,25 +544,64 @@ html, body {
   z-index:3;
 }
 
-@keyframes scrollExperiences {
-  from { transform:translateX(0); }
-  to { transform:translateX(-50%); }
+.experience-controls {
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  margin:0 0 16px;
+}
+
+.roll-btn {
+  width:44px;
+  height:44px;
+  border-radius:999px;
+  border:1px solid rgba(255,241,168,.72);
+  background:rgba(0,0,0,.72);
+  color:#fff1a8;
+  font-size:1.4rem;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 0 18px rgba(212,175,55,.24);
+  transition:.25s ease;
+}
+
+.roll-btn:hover {
+  transform:translateY(-2px) scale(1.05);
+  background:rgba(212,175,55,.22);
+  box-shadow:0 0 24px rgba(255,241,168,.42);
+}
+
+.secondary-entry {
+  text-align:center;
+  margin-top:8px;
+}
+
+.cta-secondary {
+  display:inline-block;
+  padding:14px 28px;
+  border-radius:999px;
+  font-weight:900;
+  text-decoration:none;
+  color:#111;
+  background:linear-gradient(135deg,#fff6c7,#d4af37,#fff1a8);
+  box-shadow:
+    0 0 18px rgba(255,241,168,.38),
+    0 12px 28px rgba(0,0,0,.42);
+  transition:.3s ease;
+}
+
+.cta-secondary:hover {
+  transform:translateY(-2px);
+  box-shadow:
+    0 0 26px rgba(255,241,168,.72),
+    0 14px 32px rgba(0,0,0,.5);
 }
 
 @keyframes bannerGoldShimmer {
-  0%, 55% {
-    opacity:0;
-    transform:translateX(-120%);
-  }
+  0%, 55% { opacity:0; transform:translateX(-120%); }
   65% { opacity:0.75; }
-  82% {
-    opacity:0.45;
-    transform:translateX(120%);
-  }
-  100% {
-    opacity:0;
-    transform:translateX(120%);
-  }
+  82% { opacity:0.45; transform:translateX(120%); }
+  100% { opacity:0; transform:translateX(120%); }
 }
 
 @media (max-width:640px) {
@@ -516,7 +620,7 @@ html, body {
 
   .billboard {
     width:92vw;
-    min-height:95px;
+    min-height:98px;
     padding:12px 16px;
   }
 
@@ -578,6 +682,9 @@ html, body {
 
   <div class="billboard-wrap">
     <div class="billboard">
+      <div class="billboard-aura"></div>
+      <div class="billboard-trim"></div>
+
       <div class="billboard-lights">
         <span></span><span></span><span></span><span></span><span></span>
       </div>
@@ -585,17 +692,17 @@ html, body {
       <div class="billboard-led"></div>
       <div class="shine"></div>
 
-      <div class="billboard-slide">
+      <div class="billboard-slide slide-1">
         <div class="ad-title">PREMIUM BILLBOARD AD SPACE</div>
         <div class="ad-subtitle">Your Brand Here</div>
       </div>
 
-      <div class="billboard-slide">
+      <div class="billboard-slide slide-2">
         <div class="ad-title">FEATURE YOUR STORE</div>
         <div class="ad-subtitle">Advertise Inside MajicMall Megaverse</div>
       </div>
 
-      <div class="billboard-slide">
+      <div class="billboard-slide slide-3">
         <div class="ad-title">SPONSOR A ZONE</div>
         <div class="ad-subtitle">Fashion • Food • Theater • Events</div>
       </div>
@@ -625,59 +732,75 @@ html, body {
 
     <h2 class="experience-title">Explore the MajicMall Megaverse</h2>
 
-    <div class="experience-track">
-
-      <a href="{% url 'mall-entrance' %}" class="experience-card">
-        <img src="{% static 'img/majic_directory.png' %}" alt="Shop the Marketplace">
-        <div class="label">Shop the Marketplace</div>
-      </a>
-
-      <a href="/tv/" class="experience-card">
-        <img src="{% static 'img/majicmalltv.png' %}" alt="Watch MajicMall TV">
-        <div class="label">Watch MajicMall TV</div>
-      </a>
-
-      <a href="{% url 'theater-entrance' %}" class="experience-card">
-        <img src="{% static 'img/majictheater_lobby.jpg' %}" alt="Watch a Movie">
-        <div class="label">Watch a Movie</div>
-      </a>
-
-      <a href="#" class="experience-card">
-        <img src="{% static 'img/grand_entrance_city_view.png' %}" alt="Attend Events">
-        <div class="label">Attend Events</div>
-      </a>
-
-      <a href="/merchant/invite/" class="experience-card merchant-card">
-        <img src="{% static 'img/becomeamerchant.png' %}" alt="Become a Merchant">
-        <div class="label">Become a Merchant</div>
-      </a>
-
-      <a href="{% url 'mall-entrance' %}" class="experience-card">
-        <img src="{% static 'img/majic_directory.png' %}" alt="Shop the Marketplace">
-        <div class="label">Shop the Marketplace</div>
-      </a>
-
-      <a href="/tv/" class="experience-card">
-        <img src="{% static 'img/majicmalltv.png' %}" alt="Watch MajicMall TV">
-        <div class="label">Watch MajicMall TV</div>
-      </a>
-
-      <a href="{% url 'theater-entrance' %}" class="experience-card">
-        <img src="{% static 'img/majictheater_lobby.jpg' %}" alt="Watch a Movie">
-        <div class="label">Watch a Movie</div>
-      </a>
-
-      <a href="#" class="experience-card">
-        <img src="{% static 'img/grand_entrance_city_view.png' %}" alt="Attend Events">
-        <div class="label">Attend Events</div>
-      </a>
-
-      <a href="/merchant/invite/" class="experience-card merchant-card">
-        <img src="{% static 'img/becomeamerchant.png' %}" alt="Become a Merchant">
-        <div class="label">Become a Merchant</div>
-      </a>
-
+    <div class="experience-controls">
+      <button class="roll-btn" id="rollPrev" type="button" aria-label="Previous experience">‹</button>
+      <button class="roll-btn" id="rollNext" type="button" aria-label="Next experience">›</button>
     </div>
+
+    <div class="experience-shell">
+      <div class="experience-viewport" id="experienceViewport">
+        <div class="experience-track" id="experienceTrack">
+
+          <a href="{% url 'mall-entrance' %}" class="experience-card">
+            <img src="{% static 'img/majic_directory.png' %}" alt="Shop the Marketplace">
+            <div class="label">Shop the Marketplace</div>
+          </a>
+
+          <a href="/tv/" class="experience-card">
+            <img src="{% static 'img/majicmalltv.png' %}" alt="Watch MajicMall TV">
+            <div class="label">Watch MajicMall TV</div>
+          </a>
+
+          <a href="{% url 'theater-entrance' %}" class="experience-card">
+            <img src="{% static 'img/majictheater_lobby.jpg' %}" alt="Watch a Movie">
+            <div class="label">Watch a Movie</div>
+          </a>
+
+          <a href="#" class="experience-card">
+            <img src="{% static 'img/grand_entrance_city_view.png' %}" alt="Attend Events">
+            <div class="label">Attend Events</div>
+          </a>
+
+          <a href="/merchant/invite/" class="experience-card merchant-card">
+            <img src="{% static 'img/becomeamerchant.png' %}" alt="Become a Merchant">
+            <div class="label">Become a Merchant</div>
+          </a>
+
+          <a href="{% url 'mall-entrance' %}" class="experience-card">
+            <img src="{% static 'img/majic_directory.png' %}" alt="Shop the Marketplace">
+            <div class="label">Shop the Marketplace</div>
+          </a>
+
+          <a href="/tv/" class="experience-card">
+            <img src="{% static 'img/majicmalltv.png' %}" alt="Watch MajicMall TV">
+            <div class="label">Watch MajicMall TV</div>
+          </a>
+
+          <a href="{% url 'theater-entrance' %}" class="experience-card">
+            <img src="{% static 'img/majictheater_lobby.jpg' %}" alt="Watch a Movie">
+            <div class="label">Watch a Movie</div>
+          </a>
+
+          <a href="#" class="experience-card">
+            <img src="{% static 'img/grand_entrance_city_view.png' %}" alt="Attend Events">
+            <div class="label">Attend Events</div>
+          </a>
+
+          <a href="/merchant/invite/" class="experience-card merchant-card">
+            <img src="{% static 'img/becomeamerchant.png' %}" alt="Become a Merchant">
+            <div class="label">Become a Merchant</div>
+          </a>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="secondary-entry">
+      <a href="{% url 'mall-entrance' %}" class="cta-secondary">
+        Experience The Majic
+      </a>
+    </div>
+
   </div>
 
 </div>
@@ -698,6 +821,128 @@ html, body {
       starContainer.appendChild(star);
     }
   }
+
+  /* EXPERIENCE ROLL: auto moves, visitor can stop and move manually */
+  (function () {
+    const track = document.getElementById("experienceTrack");
+    const viewport = document.getElementById("experienceViewport");
+    const prev = document.getElementById("rollPrev");
+    const next = document.getElementById("rollNext");
+
+    if (!track || !viewport || !prev || !next) return;
+
+    let offset = 0;
+    let paused = false;
+    let resumeTimer = null;
+    let lastTime = performance.now();
+
+    function getLoopWidth() {
+      return track.scrollWidth / 2;
+    }
+
+    function normalizeOffset() {
+      const loopWidth = getLoopWidth();
+      if (loopWidth <= 0) return;
+
+      while (offset >= loopWidth) offset -= loopWidth;
+      while (offset < 0) offset += loopWidth;
+    }
+
+    function render() {
+      normalizeOffset();
+      track.style.transform = "translateX(" + (-offset) + "px)";
+    }
+
+    function pauseThenResume() {
+      paused = true;
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(function () {
+        paused = false;
+        lastTime = performance.now();
+      }, 3500);
+    }
+
+    function cardStep() {
+      const card = track.querySelector(".experience-card");
+      if (!card) return 300;
+      const styles = window.getComputedStyle(track);
+      const gap = parseFloat(styles.columnGap || styles.gap || 20) || 20;
+      return card.offsetWidth + gap;
+    }
+
+    prev.addEventListener("click", function () {
+      offset -= cardStep();
+      render();
+      pauseThenResume();
+    });
+
+    next.addEventListener("click", function () {
+      offset += cardStep();
+      render();
+      pauseThenResume();
+    });
+
+    viewport.addEventListener("mouseenter", pauseThenResume);
+    viewport.addEventListener("touchstart", pauseThenResume, { passive:true });
+    viewport.addEventListener("pointerdown", pauseThenResume);
+
+    function animate(now) {
+      const delta = now - lastTime;
+      lastTime = now;
+
+      if (!paused) {
+        offset += delta * 0.035;
+        render();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  })();
+
+  /* SLOW AUTO UPWARD PAGE SCROLL */
+  (function () {
+    let paused = false;
+    let resumeTimer = null;
+
+    function pausePageScroll() {
+      paused = true;
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(function () {
+        paused = false;
+      }, 4500);
+    }
+
+    function maxScroll() {
+      return Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight
+      ) - window.innerHeight;
+    }
+
+    function movePage() {
+      if (paused) return;
+
+      const currentTop = window.scrollY || document.documentElement.scrollTop || 0;
+      const maxTop = maxScroll();
+
+      if (maxTop <= 0) return;
+
+      if (currentTop >= maxTop - 3) {
+        window.scrollTo({ top:0, behavior:"smooth" });
+      } else {
+        window.scrollTo(0, currentTop + 0.45);
+      }
+    }
+
+    window.addEventListener("wheel", pausePageScroll, { passive:true });
+    window.addEventListener("keydown", pausePageScroll);
+    window.addEventListener("touchmove", pausePageScroll, { passive:true });
+    document.addEventListener("click", pausePageScroll);
+
+    setInterval(movePage, 45);
+  })();
 </script>
 
 </body>

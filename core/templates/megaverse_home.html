@@ -909,9 +909,9 @@ html, body {
     let userPauseTimer = null;
     let lastMoveTime = 0;
 
-    const scrollStep = window.innerWidth <= 640 ? 1 : 1;
+    const scrollStep = window.innerWidth <= 640 ? 0.5: 0.6;
     const frameDelay = window.innerWidth <= 640 ? 38 : 44;
-    const edgePause = 2200;
+    const edgePause = 6000;
 
     function pauseFromUser() {
       paused = true;
@@ -919,7 +919,7 @@ html, body {
 
       userPauseTimer = setTimeout(function () {
         paused = false;
-      }, 3500);
+      }, 8000);
     }
 
     function getCurrentTop() {
@@ -983,7 +983,7 @@ html, body {
 
     setTimeout(function () {
       requestAnimationFrame(autoScroll);
-    }, 1500);
+    }, 10000);
   })();
 
 </script>

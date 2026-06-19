@@ -101,7 +101,7 @@ html, body {
   z-index:3;
   max-width:1200px;
   margin:0 auto;
-  padding:42px 20px 100px;
+  padding:42px 20px 260px;
 }
 
 /* DAZZLE BILLBOARD */
@@ -182,13 +182,13 @@ html, body {
     );
   background-size:300% 100%;
   -webkit-mask:
-  linear-gradient(#000 0 0) content-box,
-  linear-gradient(#000 0 0);
-mask:
-  linear-gradient(#000 0 0) content-box,
-  linear-gradient(#000 0 0);
--webkit-mask-composite:xor;
-mask-composite:exclude;
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
   animation:trimRun 3.8s linear infinite;
 }
 
@@ -606,7 +606,7 @@ mask-composite:exclude;
 
 @media (max-width:640px) {
   .wrapper {
-    padding-top:34px;
+    padding:34px 20px 260px;
   }
 
   .hero {
@@ -901,48 +901,91 @@ mask-composite:exclude;
     requestAnimationFrame(animate);
   })();
 
-  /* SLOW AUTO UPWARD PAGE SCROLL */
+  /* CINEMATIC AUTO PAGE SCROLL - smooth ping-pong motion */
   (function () {
+    let direction = 1;
     let paused = false;
-    let resumeTimer = null;
+    let edgePauseActive = false;
+    let userPauseTimer = null;
+    let lastMoveTime = 0;
 
-    function pausePageScroll() {
+    const scrollStep = window.innerWidth <= 640 ? 1 : 1;
+    const frameDelay = window.innerWidth <= 640 ? 38 : 44;
+    const edgePause = 2200;
+
+    function pauseFromUser() {
       paused = true;
-      clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(function () {
+      clearTimeout(userPauseTimer);
+
+      userPauseTimer = setTimeout(function () {
         paused = false;
-      }, 4500);
+      }, 3500);
     }
 
-    function maxScroll() {
+    function getCurrentTop() {
+      return Math.round(
+        window.scrollY ||
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop ||
+        0
+      );
+    }
+
+    function getMaxTop() {
       return Math.max(
         document.body.scrollHeight,
-        document.documentElement.scrollHeight
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight
       ) - window.innerHeight;
     }
 
-    function movePage() {
-      if (paused) return;
+    function autoScroll(now) {
+      requestAnimationFrame(autoScroll);
 
-      const currentTop = window.scrollY || document.documentElement.scrollTop || 0;
-      const maxTop = maxScroll();
+      if (now - lastMoveTime < frameDelay) return;
+      lastMoveTime = now;
 
-      if (maxTop <= 0) return;
+      const current = getCurrentTop();
+      const max = getMaxTop();
 
-      if (currentTop >= maxTop - 3) {
-        window.scrollTo({ top:0, behavior:"smooth" });
-      } else {
-        window.scrollTo(0, currentTop + 0.45);
+      if (paused || edgePauseActive || max <= 12) return;
+
+      if (current >= max - 2 && direction === 1) {
+        edgePauseActive = true;
+
+        setTimeout(function () {
+          direction = -1;
+          edgePauseActive = false;
+        }, edgePause);
+
+        return;
       }
+
+      if (current <= 2 && direction === -1) {
+        edgePauseActive = true;
+
+        setTimeout(function () {
+          direction = 1;
+          edgePauseActive = false;
+        }, edgePause);
+
+        return;
+      }
+
+      window.scrollTo(0, current + (scrollStep * direction));
     }
 
-    window.addEventListener("wheel", pausePageScroll, { passive:true });
-    window.addEventListener("keydown", pausePageScroll);
-    window.addEventListener("touchmove", pausePageScroll, { passive:true });
-    document.addEventListener("click", pausePageScroll);
+    window.addEventListener("wheel", pauseFromUser, { passive:true });
+    window.addEventListener("touchmove", pauseFromUser, { passive:true });
+    window.addEventListener("keydown", pauseFromUser);
 
-    setInterval(movePage, 45);
+    setTimeout(function () {
+      requestAnimationFrame(autoScroll);
+    }, 1500);
   })();
+
 </script>
 
 </body>

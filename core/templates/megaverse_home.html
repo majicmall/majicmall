@@ -909,8 +909,8 @@ html, body {
     let userPauseTimer = null;
     let lastMoveTime = 0;
 
-    const scrollStep = window.innerWidth <= 640 ? 0.5: 0.6;
-    const frameDelay = window.innerWidth <= 640 ? 38 : 44;
+    const scrollStep = window.innerWidth <= 640 ? 1: 0.7;
+    const frameDelay = window.innerWidth <= 640 ? 42 : 48;
     const edgePause = 6000;
 
     function pauseFromUser() {
@@ -983,7 +983,7 @@ html, body {
 
     setTimeout(function () {
       requestAnimationFrame(autoScroll);
-    }, 10000);
+    }, 8000);
   })();
 
 </script>

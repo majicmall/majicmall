@@ -424,7 +424,35 @@ html, body {
   margin:0 4px;
   font-weight:700;
 }
+.word-wave {
+  animation: softWordWave 5s ease-in-out infinite;
+  transform-origin:center bottom;
+}
 
+.wave-1 { animation-delay:0s; }
+.wave-2 { animation-delay:.5s; }
+.wave-3 { animation-delay:1s; }
+.wave-4 { animation-delay:1.5s; }
+.wave-5 { animation-delay:2s; }
+
+@keyframes softWordWave {
+
+  0%,100% {
+    transform:translateY(0) scale(1);
+    text-shadow:none;
+  }
+
+  30% {
+    transform:translateY(-4px) scale(1.06);
+    text-shadow:
+      0 0 8px rgba(255,255,255,.35),
+      0 0 18px rgba(255,215,90,.25);
+  }
+
+  55% {
+    transform:translateY(0) scale(1);
+  }
+}
 .gold { color:#d4af37; }
 .red { color:#ff3b3b; }
 
@@ -719,9 +747,12 @@ html, body {
       <div class="red-line"></div>
 
       <div class="tagline">
-        <span class="gold">Shop.</span><span>Work.</span><span class="red">Play.</span><span>Imagine.</span><span class="gold">Create.</span>
-      </div>
-
+  <span class="gold word-wave wave-1">Shop.</span>
+  <span class="word-wave wave-2">Work.</span>
+  <span class="red word-wave wave-3">Play.</span>
+  <span class="word-wave wave-4">Imagine.</span>
+  <span class="gold word-wave wave-5">Create.</span>
+</div>
       <a href="{% url 'mall-entrance' %}" class="cta">
         Enter MajicMall Megaverse
       </a>

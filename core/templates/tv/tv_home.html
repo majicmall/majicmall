@@ -43,8 +43,7 @@ body {
   content:"";
   position:absolute;
   inset:0;
-  background:
-    linear-gradient(115deg, transparent 0%, rgba(255,255,255,.08) 48%, transparent 58%);
+  background:linear-gradient(115deg, transparent 0%, rgba(255,255,255,.08) 48%, transparent 58%);
   transform:translateX(-120%);
   animation:studioSweep 7s ease-in-out infinite;
 }
@@ -112,11 +111,13 @@ body {
 }
 
 h1 {
-  margin:18px 0 8px;
-  font-size:clamp(3rem,9vw,6.8rem);
-  line-height:.9;
-  letter-spacing:.04em;
+  margin:18px auto 8px;
+  font-size:clamp(2rem,5vw,4.5rem);
+  line-height:1;
+  letter-spacing:.035em;
   text-transform:uppercase;
+  white-space:nowrap;
+  max-width:100%;
   background:linear-gradient(90deg,#ffffff,#93c5fd,#dbeafe,#ffffff);
   background-size:240% auto;
   -webkit-background-clip:text;
@@ -331,6 +332,7 @@ h1 {
 
 @media(max-width:640px) {
   .page {
+    width:min(100%,96vw);
     padding-top:26px;
   }
 
@@ -339,9 +341,29 @@ h1 {
     flex-direction:column;
   }
 
+  .hero {
+    padding:24px 6px 18px;
+  }
+
+  h1 {
+    font-size:clamp(1.15rem,5.2vw,2.15rem);
+    letter-spacing:.015em;
+    line-height:1.05;
+    white-space:nowrap;
+  }
+
+  .subtitle {
+    font-size:.94rem;
+  }
+
   .broadcast-shell {
     padding:12px;
     border-radius:22px;
+  }
+
+  .player-title {
+    font-size:.82rem;
+    letter-spacing:.08em;
   }
 
   .video-frame {
@@ -372,18 +394,18 @@ h1 {
       Live Broadcast
     </div>
 
-    <h1>MajicMall TV</h1>
+    <h1>MajicMall Megaverse TV</h1>
 
     <p class="subtitle">
-  The official streaming entertainment network of the MajicMall Megaverse featuring live television, creators, music, culture, events, red carpet coverage, and original programming.
-</p>
+      The official streaming entertainment network of the MajicMall Megaverse featuring live television, creators, music, culture, events, red carpet coverage, and original programming.
+    </p>
   </section>
 
   <section class="broadcast-shell">
     <div class="player-header">
       <div class="player-title">
-  MajicMall Megaverse TV — Featured Channel Live Now
-</div>
+        MajicMall Megaverse TV — Featured Channel Live Now
+      </div>
       <div class="signal">● Signal Online</div>
     </div>
 
@@ -405,7 +427,7 @@ h1 {
     <div class="channel-grid">
       <div class="channel-card">
         <h3>MajicMall Megaverse TV Live</h3>
-        <p>The main broadcast hub for featured programming, announcements, interviews, and live MajicMall moments.</p>
+        <p>The main broadcast hub for featured programming, announcements, interviews, and live MajicMall Megaverse moments.</p>
         <div class="tag">Live Channel</div>
       </div>
 

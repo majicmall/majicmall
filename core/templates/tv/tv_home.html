@@ -2,104 +2,445 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Theater Zone</title>
-  <style>
-    body {
-      background-color: black;
-      color: white;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
+<meta charset="UTF-8">
+<title>MajicMall Megaverse TV | Streaming Entertainment Network</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-    /* Curtain container to position images */
-    .curtain-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1000;
-      pointer-events: none;
-    }
+<style>
+html, body {
+  margin:0;
+  padding:0;
+  min-height:100%;
+  background:#02030a;
+  color:#fff;
+  font-family:Arial, sans-serif;
+  overflow-x:hidden;
+}
 
-    /* Left Curtain */
-    .curtain-left {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 50%;
-      object-fit: cover;
-      animation: curtainLeft 3s forwards;
-    }
+body {
+  background:
+    radial-gradient(circle at top center, rgba(0,140,255,.25), transparent 34%),
+    linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,.92)),
+    #02030a;
+}
 
-    /* Right Curtain */
-    .curtain-right {
-      position: absolute;
-      top: 0;
-      right: 0;
-      height: 100%;
-      width: 50%;
-      object-fit: cover;
-      animation: curtainRight 3s forwards;
-    }
+.tv-bg {
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    radial-gradient(circle at 20% 20%, rgba(0,132,255,.18), transparent 28%),
+    radial-gradient(circle at 80% 18%, rgba(255,0,80,.15), transparent 30%),
+    radial-gradient(circle at 50% 75%, rgba(255,215,0,.10), transparent 34%);
+  background-size:44px 44px, 44px 44px, cover, cover, cover;
+  animation:bgPulse 8s ease-in-out infinite;
+}
 
-    @keyframes curtainLeft {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-100%); }
-    }
+.tv-bg::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(115deg, transparent 0%, rgba(255,255,255,.08) 48%, transparent 58%);
+  transform:translateX(-120%);
+  animation:studioSweep 7s ease-in-out infinite;
+}
 
-    @keyframes curtainRight {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(100%); }
-    }
+.page {
+  position:relative;
+  z-index:2;
+  width:min(1200px,94vw);
+  margin:0 auto;
+  padding:42px 0 70px;
+}
 
-    h1 {
-      text-align: center;
-      margin-top: 40px;
-      font-size: 2rem;
-    }
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:28px;
+}
 
-    .poster-gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
-      padding: 20px;
-    }
+.brand {
+  font-weight:900;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#dbeafe;
+  text-shadow:0 0 18px rgba(59,130,246,.65);
+}
 
-    .poster-gallery img {
-      width: 100%;
-      height: auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-      transition: transform 0.3s ease;
-    }
+.back-link {
+  color:#fff;
+  text-decoration:none;
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.35);
+}
 
-    .poster-gallery img:hover {
-      transform: scale(1.05);
-    }
-  </style>
+.hero {
+  text-align:center;
+  padding:28px 18px 22px;
+}
+
+.live-pill {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(220,38,38,.18);
+  border:1px solid rgba(255,70,70,.55);
+  color:#fecaca;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  box-shadow:0 0 20px rgba(220,38,38,.25);
+}
+
+.live-dot {
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#ff2d2d;
+  box-shadow:0 0 14px #ff2d2d;
+  animation:livePulse 1.3s ease-in-out infinite;
+}
+
+h1 {
+  margin:18px 0 8px;
+  font-size:clamp(3rem,9vw,6.8rem);
+  line-height:.9;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  background:linear-gradient(90deg,#ffffff,#93c5fd,#dbeafe,#ffffff);
+  background-size:240% auto;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:titleGlow 6s ease-in-out infinite;
+}
+
+.subtitle {
+  color:rgba(255,255,255,.78);
+  font-size:clamp(1rem,2.3vw,1.35rem);
+  margin:0 auto;
+  max-width:760px;
+  line-height:1.6;
+}
+
+.broadcast-shell {
+  margin:34px auto 34px;
+  padding:18px;
+  border-radius:30px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.035)),
+    rgba(0,0,0,.72);
+  border:1px solid rgba(147,197,253,.38);
+  box-shadow:
+    0 0 35px rgba(59,130,246,.25),
+    0 0 70px rgba(0,0,0,.65),
+    inset 0 0 22px rgba(255,255,255,.05);
+}
+
+.player-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+  padding:0 4px;
+}
+
+.player-title {
+  font-size:1.1rem;
+  font-weight:900;
+  color:#bfdbfe;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+}
+
+.signal {
+  color:#86efac;
+  font-weight:800;
+  font-size:.92rem;
+}
+
+.video-frame {
+  overflow:hidden;
+  border-radius:22px;
+  border:2px solid rgba(219,234,254,.55);
+  box-shadow:
+    0 0 18px rgba(147,197,253,.28),
+    0 18px 50px rgba(0,0,0,.72);
+  background:#000;
+}
+
+.viloud-responsive {
+  position:relative;
+  padding-bottom:56.25%;
+  height:0;
+}
+
+.viloud-responsive iframe {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+}
+
+.channel-section {
+  margin-top:36px;
+}
+
+.section-title {
+  font-size:clamp(1.8rem,4vw,2.7rem);
+  text-align:center;
+  margin:0 0 22px;
+  color:#fff;
+  text-shadow:0 0 18px rgba(59,130,246,.45);
+}
+
+.channel-grid {
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:16px;
+}
+
+.channel-card {
+  min-height:190px;
+  border-radius:22px;
+  padding:18px;
+  background:
+    radial-gradient(circle at top left, rgba(59,130,246,.24), transparent 48%),
+    linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 18px 42px rgba(0,0,0,.45);
+  position:relative;
+  overflow:hidden;
+}
+
+.channel-card::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(115deg, transparent 0%, rgba(255,255,255,.12) 50%, transparent 62%);
+  transform:translateX(-120%);
+  animation:cardSweep 6s ease-in-out infinite;
+}
+
+.channel-card h3 {
+  position:relative;
+  margin:0 0 10px;
+  font-size:1.05rem;
+  color:#fff1a8;
+}
+
+.channel-card p {
+  position:relative;
+  color:rgba(255,255,255,.76);
+  font-size:.92rem;
+  line-height:1.45;
+  margin:0 0 18px;
+}
+
+.channel-card .tag {
+  position:absolute;
+  left:18px;
+  bottom:18px;
+  font-size:.78rem;
+  font-weight:900;
+  color:#bfdbfe;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.actions {
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:14px;
+  margin-top:30px;
+}
+
+.btn {
+  display:inline-block;
+  padding:14px 22px;
+  border-radius:999px;
+  text-decoration:none;
+  font-weight:900;
+  transition:.25s ease;
+}
+
+.btn:hover {
+  transform:translateY(-2px);
+}
+
+.btn-gold {
+  background:linear-gradient(135deg,#fff2a8,#d4af37);
+  color:#111;
+  box-shadow:0 0 20px rgba(255,215,0,.25);
+}
+
+.btn-dark {
+  background:rgba(255,255,255,.10);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.20);
+}
+
+@keyframes livePulse {
+  0%,100% { opacity:.55; transform:scale(.9); }
+  50% { opacity:1; transform:scale(1.25); }
+}
+
+@keyframes titleGlow {
+  0%,100% { background-position:0% center; filter:brightness(.95); }
+  50% { background-position:100% center; filter:brightness(1.35); }
+}
+
+@keyframes bgPulse {
+  0%,100% { opacity:.75; filter:brightness(.9); }
+  50% { opacity:1; filter:brightness(1.2); }
+}
+
+@keyframes studioSweep {
+  0%,55% { transform:translateX(-120%); opacity:0; }
+  65% { opacity:.65; }
+  85% { transform:translateX(120%); opacity:.15; }
+  100% { transform:translateX(120%); opacity:0; }
+}
+
+@keyframes cardSweep {
+  0%,58% { transform:translateX(-120%); opacity:0; }
+  70% { opacity:.55; }
+  90% { transform:translateX(120%); opacity:.1; }
+  100% { transform:translateX(120%); opacity:0; }
+}
+
+@media(max-width:980px) {
+  .channel-grid {
+    grid-template-columns:repeat(2, 1fr);
+  }
+}
+
+@media(max-width:640px) {
+  .page {
+    padding-top:26px;
+  }
+
+  .topbar {
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .broadcast-shell {
+    padding:12px;
+    border-radius:22px;
+  }
+
+  .video-frame {
+    border-radius:16px;
+  }
+
+  .channel-grid {
+    grid-template-columns:1fr;
+  }
+}
+</style>
 </head>
+
 <body>
-  <!-- Luxurious Velvet Curtains -->
-  <div class="curtain-container">
-    <img src="{% static 'img/curtain_left.png' %}" alt="Left Curtain" class="curtain curtain-left" />
-    <img src="{% static 'img/curtain_right.png' %}" alt="Right Curtain" class="curtain curtain-right" />
+
+<div class="tv-bg"></div>
+
+<main class="page">
+
+  <div class="topbar">
+    <div class="brand">MajicMall Megaverse Broadcast Network</div>
+    <a href="{% url 'mall-entrance' %}" class="back-link">Enter The Mall</a>
   </div>
 
-  <!-- Main Content -->
-  <h1>Welcome to the Theater Zone</h1>
+  <section class="hero">
+    <div class="live-pill">
+      <span class="live-dot"></span>
+      Live Broadcast
+    </div>
 
-  <div class="poster-gallery">
-    <img src="{% static 'img/poster1.jpg' %}" alt="Movie 1" />
-    <img src="{% static 'img/poster2.jpg' %}" alt="Movie 2" />
-    <img src="{% static 'img/poster3.jpg' %}" alt="Movie 3" />
-    <img src="{% static 'img/poster4.jpg' %}" alt="Movie 4" />
-    <!-- Add more posters as needed -->
-  </div>
+    <h1>MajicMall TV</h1>
+
+    <p class="subtitle">
+  The official streaming entertainment network of the MajicMall Megaverse featuring live television, creators, music, culture, events, red carpet coverage, and original programming.
+</p>
+  </section>
+
+  <section class="broadcast-shell">
+    <div class="player-header">
+      <div class="player-title">
+  MajicMall Megaverse TV — Featured Channel Live Now
+</div>
+      <div class="signal">● Signal Online</div>
+    </div>
+
+    <div class="video-frame">
+      <div class="viloud-responsive">
+        <iframe
+          src="https://player.viloud.tv/embed/channel/390ea821b9476d7919b6ca92232eaa90?autoplay=1&volume=1&controls=1&title=1&share=1&open_playlist=0&random=0"
+          frameborder="0"
+          allow="autoplay"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <section class="channel-section">
+    <h2 class="section-title">MajicMall Megaverse TV Channels</h2>
+
+    <div class="channel-grid">
+      <div class="channel-card">
+        <h3>MajicMall Megaverse TV Live</h3>
+        <p>The main broadcast hub for featured programming, announcements, interviews, and live MajicMall moments.</p>
+        <div class="tag">Live Channel</div>
+      </div>
+
+      <div class="channel-card">
+        <h3>PKCE.TV</h3>
+        <p>Entertainment, business, culture, and streaming originals from the PassKeyChoice network.</p>
+        <div class="tag">Coming Soon</div>
+      </div>
+
+      <div class="channel-card">
+        <h3>ATL's Hottest TV</h3>
+        <p>Red carpet coverage, interviews, award moments, community spotlights, and Atlanta entertainment culture.</p>
+        <div class="tag">Coming Soon</div>
+      </div>
+
+      <div class="channel-card">
+        <h3>MajicMega Music TV</h3>
+        <p>Music videos, artist showcases, performances, interviews, and creator-driven music programming.</p>
+        <div class="tag">Coming Soon</div>
+      </div>
+
+      <div class="channel-card">
+        <h3>Creator TV</h3>
+        <p>A destination for creators, podcasts, shows, short-form series, and independent media voices.</p>
+        <div class="tag">Coming Soon</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a href="/" class="btn btn-dark">← Back to Megaverse Home</a>
+      <a href="{% url 'mall-entrance' %}" class="btn btn-gold">Experience The Majic</a>
+    </div>
+  </section>
+
+</main>
+
 </body>
 </html>

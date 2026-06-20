@@ -1,0 +1,228 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MajicMall Megaverse Cinemas | Entry Pass</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+html, body {
+  margin:0;
+  min-height:100%;
+  background:#000;
+  color:white;
+  font-family:Georgia, serif;
+}
+
+body {
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.30), rgba(0,0,0,.92)),
+    url("{% static 'img/theater_bg.jpg' %}");
+  background-size:cover;
+  background-position:center;
+  background-attachment:fixed;
+}
+
+.wrap {
+  min-height:100vh;
+  padding:42px 18px;
+  display:grid;
+  place-items:center;
+}
+
+.pass {
+  width:min(1150px,96vw);
+  border-radius:30px;
+  padding:28px;
+  background:rgba(0,0,0,.78);
+  border:1px solid rgba(255,215,0,.45);
+  box-shadow:0 0 55px rgba(0,0,0,.9);
+  text-align:center;
+}
+
+.badge {
+  display:inline-block;
+  padding:8px 16px;
+  border-radius:999px;
+  background:rgba(255,215,0,.14);
+  border:1px solid rgba(255,215,0,.45);
+  color:#ffd700;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+h1 {
+  color:#ffd700;
+  font-size:clamp(2.3rem,6vw,4.8rem);
+  margin:18px 0 8px;
+  text-shadow:0 0 22px rgba(255,0,0,.45);
+}
+
+.subtitle {
+  color:rgba(255,255,255,.82);
+  font-size:1.1rem;
+  line-height:1.6;
+  max-width:780px;
+  margin:0 auto 26px;
+}
+
+.ticket-card {
+  margin:24px auto;
+  padding:20px;
+  border-radius:24px;
+  background:linear-gradient(135deg, rgba(255,215,0,.16), rgba(255,255,255,.04));
+  border:1px solid rgba(255,215,0,.35);
+}
+
+.movie-title {
+  font-size:clamp(1.7rem,4vw,3rem);
+  color:white;
+  margin:0 0 8px;
+}
+
+.screen-grid {
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:14px;
+  margin-top:28px;
+}
+
+.screen {
+  min-height:180px;
+  border-radius:22px;
+  padding:18px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  text-align:left;
+  position:relative;
+  overflow:hidden;
+}
+
+.screen.active {
+  border-color:rgba(255,215,0,.75);
+  box-shadow:0 0 28px rgba(255,215,0,.18);
+}
+
+.screen h3 {
+  color:#fff1a8;
+  margin:0 0 10px;
+}
+
+.screen p {
+  color:rgba(255,255,255,.75);
+  font-size:.92rem;
+  line-height:1.45;
+}
+
+.status {
+  position:absolute;
+  left:18px;
+  bottom:16px;
+  font-size:.78rem;
+  font-weight:900;
+  color:#ffd700;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+
+.actions {
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:14px;
+  margin-top:30px;
+}
+
+.btn {
+  display:inline-block;
+  padding:15px 24px;
+  border-radius:999px;
+  font-weight:900;
+  text-decoration:none;
+  transition:.25s ease;
+}
+
+.btn:hover {
+  transform:translateY(-2px);
+}
+
+.btn-gold {
+  background:linear-gradient(135deg,#fff2a8,#d4af37);
+  color:#111;
+}
+
+.btn-red {
+  background:linear-gradient(135deg,#ef4444,#7f1d1d);
+  color:white;
+}
+
+.btn-dark {
+  background:rgba(255,255,255,.12);
+  color:white;
+  border:1px solid rgba(255,255,255,.18);
+}
+
+@media(max-width:980px) {
+  .screen-grid {
+    grid-template-columns:repeat(2, 1fr);
+  }
+}
+
+@media(max-width:640px) {
+  .pass {
+    padding:22px 16px;
+  }
+
+  .screen-grid {
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+<main class="wrap">
+  <section class="pass">
+    <div class="badge">Ticket Confirmed</div>
+
+    <h1>MajicMall Megaverse Cinemas</h1>
+
+    <p class="subtitle">
+      Welcome to the MajicMall Megaverse Cinemas. Your ticket is confirmed.
+      Select your screening experience and enter the featured presentation.
+    </p>
+
+    <div class="ticket-card">
+      <div class="movie-title">{{ movie.title }}</div>
+      <div>Admit One • Digital Entry Pass • Screening Access Granted</div>
+    </div>
+
+    <div class="screen-grid">
+      {% for screen in screens %}
+        <div class="screen {% if forloop.first %}active{% endif %}">
+          <h3>{{ screen.name }}</h3>
+          <p>{{ screen.theme }}</p>
+          <div class="status">{{ screen.status }}</div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="actions">
+      <a href="/theater/stream/?id={{ movie.id }}" class="btn btn-red">
+        🎬 Enter Majic Screen
+      </a>
+
+      <a href="{% url 'movie-detail' movie.id %}" class="btn btn-gold">
+        View Movie Details
+      </a>
+
+      <a href="{% url 'box-office' %}" class="btn btn-dark">
+        ← Back to Now Showing
+      </a>
+    </div>
+  </section>
+</main>
+</body>
+</html>

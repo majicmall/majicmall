@@ -424,9 +424,9 @@ def trailer_view(request):
 def coming_soon(request):
     return render(request, "theater/coming_soon.html")
 
-
 def theater_stream(request):
     movie_id = request.GET.get("id")
+
     if not movie_id:
         return redirect("box-office")
 
@@ -462,41 +462,9 @@ def theater_stream(request):
 def buy_ticket(request, movie_id):
     movie = get_object_or_404(Movie, id=movie_id)
 
-    stripe.api_key = settings.STRIPE_SECRET_KEY
+    # TEMPORARY DEVELOPMENT BYPASS
+    return redirect("ticket-success", movie_id=movie.id)
 
-    success_url = request.build_absolute_uri(
-        reverse("ticket-success", args=[movie.id])
-    ) + "?session_id={CHECKOUT_SESSION_ID}"
-
-    cancel_url = request.build_absolute_uri(
-        reverse("movie-detail", args=[movie.id])
-    )
-
-    session = stripe.checkout.Session.create(
-        mode="payment",
-        payment_method_types=["card"],
-        line_items=[
-            {
-                "price_data": {
-                    "currency": "usd",
-                    "unit_amount": 200,
-                    "product_data": {
-                        "name": f"{movie.title} Ticket",
-                        "description": "MajicMall Megaverse Theater ticket",
-                    },
-                },
-                "quantity": 1,
-            }
-        ],
-        metadata={
-            "movie_id": str(movie.id),
-            "purchase_type": "theater_ticket",
-        },
-        success_url=success_url,
-        cancel_url=cancel_url,
-    )
-
-    return redirect(session.url)
 
 def ticket_success(request, movie_id):
     movie = get_object_or_404(Movie, id=movie_id)
@@ -514,4 +482,39 @@ def ticket_success(request, movie_id):
         session_key=None if user else session_key,
     )
 
-    return redirect(f"/theater/stream/?id={movie.id}")
+    screens = [
+        {
+            "name": "Majic Screen",
+            "theme": "The signature premium screening room of MajicMall Megaverse Cinemas.",
+            "status": "Now Seating",
+        },
+        {
+            "name": "Nostalgia Screen",
+            "theme": "Classic cinema energy, throwback favorites, and timeless stories.",
+            "status": "Coming Soon",
+        },
+        {
+            "name": "Fantasy Screen",
+            "theme": "Dream worlds, imagination, wonder, and cinematic escape.",
+            "status": "Coming Soon",
+        },
+        {
+            "name": "Indie Screen",
+            "theme": "Independent films, creator premieres, and original voices.",
+            "status": "Coming Soon",
+        },
+        {
+            "name": "Experience Screen",
+            "theme": "Special events, red carpet premieres, and featured presentations.",
+            "status": "Coming Soon",
+        },
+    ]
+
+    return render(
+        request,
+        "theater/ticket_success.html",
+        {
+            "movie": movie,
+            "screens": screens,
+        },
+    )

@@ -8,102 +8,345 @@
 
 <style>
 html, body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  background: #000;
-  color: white;
-  font-family: Georgia, serif;
+  margin:0;
+  padding:0;
+  min-height:100%;
+  background:#000;
+  color:white;
+  font-family:Georgia, serif;
+  overflow-x:hidden;
 }
 
 body {
   background:
-    radial-gradient(circle at center, rgba(255,215,0,.12), transparent 35%),
-    linear-gradient(to bottom, #050505, #000);
+    radial-gradient(circle at center 18%, rgba(255,215,0,.18), transparent 30%),
+    radial-gradient(circle at center 72%, rgba(140,0,0,.22), transparent 38%),
+    linear-gradient(to bottom, #050101 0%, #120202 48%, #000 100%);
 }
 
 .theater-room {
-  min-height: 100vh;
-  padding: 32px 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  position:relative;
+  min-height:100vh;
+  padding:28px 16px 0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  overflow:hidden;
+}
+
+.wall-glow {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.92), transparent 22%, transparent 78%, rgba(0,0,0,.92)),
+    radial-gradient(circle at center 26%, rgba(255,215,0,.16), transparent 34%);
+  z-index:0;
+}
+
+.ceiling-light {
+  position:absolute;
+  top:-120px;
+  left:50%;
+  width:min(780px,95vw);
+  height:330px;
+  transform:translateX(-50%);
+  background:radial-gradient(ellipse at center, rgba(255,235,170,.24), transparent 70%);
+  filter:blur(12px);
+  pointer-events:none;
+  z-index:0;
 }
 
 .screen-title {
-  text-align: center;
-  color: #ffd700;
-  font-size: clamp(2rem, 6vw, 4rem);
-  margin: 18px 0 8px;
-  text-shadow: 0 0 20px rgba(255,0,0,.55);
+  position:relative;
+  z-index:3;
+  text-align:center;
+  color:#ffd700;
+  font-size:clamp(1.8rem,5vw,3.8rem);
+  margin:14px 0 6px;
+  text-shadow:
+    0 0 18px rgba(255,215,0,.45),
+    0 0 28px rgba(255,0,0,.35);
 }
 
 .screen-subtitle {
-  text-align: center;
-  color: rgba(255,255,255,.78);
-  margin-bottom: 28px;
+  position:relative;
+  z-index:3;
+  text-align:center;
+  color:rgba(255,255,255,.78);
+  margin-bottom:22px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  font-size:.92rem;
+}
+
+.stage {
+  position:relative;
+  z-index:2;
+  width:min(1160px,96vw);
+  padding:22px 18px 28px;
+  border-radius:28px;
+  background:
+    linear-gradient(90deg, rgba(70,0,0,.42), rgba(0,0,0,.42), rgba(70,0,0,.42));
+  border:1px solid rgba(255,215,0,.20);
+  box-shadow:
+    0 0 50px rgba(0,0,0,.85),
+    inset 0 0 40px rgba(255,215,0,.05);
+}
+
+.stage::before,
+.stage::after {
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:84px;
+  z-index:3;
+  pointer-events:none;
+  opacity:.78;
+}
+
+.stage::before {
+  left:0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(90,0,0,.95) 0px,
+      rgba(140,0,0,.90) 12px,
+      rgba(40,0,0,.95) 24px
+    );
+  border-radius:28px 0 0 28px;
+  box-shadow:18px 0 28px rgba(0,0,0,.45);
+}
+
+.stage::after {
+  right:0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(40,0,0,.95) 0px,
+      rgba(140,0,0,.90) 12px,
+      rgba(90,0,0,.95) 24px
+    );
+  border-radius:0 28px 28px 0;
+  box-shadow:-18px 0 28px rgba(0,0,0,.45);
+}
+
+.top-curtain {
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:34px;
+  z-index:4;
+  border-radius:28px 28px 0 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #420000 0px,
+      #8b0000 18px,
+      #220000 36px
+    );
+  box-shadow:0 10px 24px rgba(0,0,0,.55);
+  pointer-events:none;
 }
 
 .movie-screen {
-  width: min(1100px, 96vw);
-  aspect-ratio: 16 / 9;
-  background: #111;
-  border: 8px solid #222;
-  border-radius: 18px;
+  position:relative;
+  z-index:2;
+  width:min(1000px, calc(96vw - 38px));
+  margin:16px auto 0;
+  aspect-ratio:16 / 9;
+  background:#070707;
+  border:10px solid #171717;
+  border-radius:18px;
   box-shadow:
-    0 0 45px rgba(255,215,0,.18),
-    0 30px 90px rgba(0,0,0,.9);
-  overflow: hidden;
-  display: grid;
-  place-items: center;
+    0 0 22px rgba(255,255,255,.18),
+    0 0 54px rgba(255,215,0,.22),
+    0 34px 90px rgba(0,0,0,.95);
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+}
+
+.movie-screen::before {
+  content:"";
+  position:absolute;
+  inset:-18px;
+  border-radius:24px;
+  background:radial-gradient(circle at center, rgba(255,255,255,.18), transparent 62%);
+  pointer-events:none;
+  z-index:-1;
 }
 
 .movie-screen video,
 .movie-screen img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  background:#000;
 }
 
 .placeholder {
-  padding: 28px;
-  text-align: center;
+  padding:28px;
+  text-align:center;
 }
 
 .placeholder h2 {
-  color: #ffd700;
-  font-size: clamp(1.6rem, 5vw, 3rem);
+  color:#ffd700;
+  font-size:clamp(1.6rem,5vw,3rem);
 }
 
 .placeholder p {
-  color: rgba(255,255,255,.75);
-  font-size: 1.05rem;
+  color:rgba(255,255,255,.75);
+  font-size:1.05rem;
+}
+
+.floor {
+  position:relative;
+  z-index:1;
+  width:100vw;
+  min-height:260px;
+  margin-top:-10px;
+  background:
+    linear-gradient(to bottom, rgba(20,0,0,.92), #000 72%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,215,0,.06) 0px,
+      rgba(255,215,0,.06) 2px,
+      transparent 2px,
+      transparent 80px
+    );
+  clip-path:polygon(14% 0, 86% 0, 100% 100%, 0 100%);
+  box-shadow:inset 0 20px 40px rgba(0,0,0,.8);
+}
+
+.aisle-light {
+  position:absolute;
+  top:18px;
+  bottom:0;
+  width:3px;
+  background:linear-gradient(to bottom, rgba(255,215,0,.85), transparent);
+  box-shadow:0 0 16px rgba(255,215,0,.8);
+}
+
+.aisle-light.left { left:31%; }
+.aisle-light.right { right:31%; }
+
+.seats {
+  position:absolute;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:min(1120px,100vw);
+  height:150px;
+  z-index:5;
+  pointer-events:none;
+}
+
+.seats::before,
+.seats::after {
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  height:48px;
+  background:
+    radial-gradient(ellipse at center, rgba(0,0,0,.95) 0 48%, transparent 52%);
+  background-size:70px 48px;
+  background-repeat:repeat-x;
+  opacity:.95;
+}
+
+.seats::before {
+  bottom:46px;
+  transform:scaleX(1.08);
+}
+
+.seats::after {
+  bottom:0;
+  transform:scaleX(1.18);
 }
 
 .actions {
-  margin-top: 26px;
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  justify-content: center;
+  position:relative;
+  z-index:8;
+  margin:18px 0 26px;
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  justify-content:center;
 }
 
 .btn {
-  padding: 13px 18px;
-  border-radius: 14px;
-  text-decoration: none;
-  font-weight: 900;
+  padding:13px 18px;
+  border-radius:999px;
+  text-decoration:none;
+  font-weight:900;
+  transition:.25s ease;
+}
+
+.btn:hover {
+  transform:translateY(-2px);
 }
 
 .btn-gold {
-  background: linear-gradient(135deg, #fff2a8, #d4af37);
-  color: #111;
+  background:linear-gradient(135deg,#fff2a8,#d4af37);
+  color:#111;
 }
 
 .btn-dark {
-  background: rgba(255,255,255,.12);
-  color: white;
-  border: 1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.12);
+  color:white;
+  border:1px solid rgba(255,255,255,.18);
+}
+
+@media(max-width:720px) {
+  .theater-room {
+    padding:22px 10px 0;
+  }
+
+  .screen-title {
+    font-size:clamp(1.5rem,8vw,2.6rem);
+  }
+
+  .stage {
+    padding:18px 8px 20px;
+    border-radius:22px;
+  }
+
+  .stage::before,
+  .stage::after {
+    width:28px;
+  }
+
+  .top-curtain {
+    height:24px;
+    border-radius:22px 22px 0 0;
+  }
+
+  .movie-screen {
+    width:calc(96vw - 12px);
+    border-width:5px;
+    border-radius:12px;
+    margin-top:12px;
+  }
+
+  .floor {
+    min-height:210px;
+    clip-path:polygon(4% 0, 96% 0, 100% 100%, 0 100%);
+  }
+
+  .aisle-light.left { left:22%; }
+  .aisle-light.right { right:22%; }
+
+  .seats {
+    height:120px;
+  }
+
+  .screen-subtitle {
+    font-size:.75rem;
+  }
 }
 </style>
 </head>
@@ -112,27 +355,45 @@ body {
 
 <main class="theater-room">
 
+  <div class="wall-glow"></div>
+  <div class="ceiling-light"></div>
+
   <h1 class="screen-title">{{ movie.title }}</h1>
 
   <div class="screen-subtitle">
-    {% if movie.screen %}Now entering {{ movie.screen.name }}{% else %}Now entering the theater{% endif %}
+    {% if movie.screen %}
+      Now entering {{ movie.screen.name }}
+    {% else %}
+      Now entering the Majic Screen
+    {% endif %}
   </div>
 
-  <section class="movie-screen">
-    {% if movie.video %}
-      <video controls autoplay>
-        <source src="{{ movie.video.url }}">
-        Your browser does not support the video tag.
-      </video>
-    {% elif movie.image %}
-      <img src="{{ movie.image.url }}" alt="{{ movie.title }}">
-    {% else %}
-      <div class="placeholder">
-        <h2>Movie Experience Coming Soon</h2>
-        <p>This theater screen is ready. Add a video file to begin playback.</p>
-      </div>
-    {% endif %}
+  <section class="stage">
+    <div class="top-curtain"></div>
+
+    <div class="movie-screen">
+      {% if movie.video %}
+        <video controls autoplay playsinline>
+          <source src="{{ movie.video.url }}">
+          Your browser does not support the video tag.
+        </video>
+      {% elif movie.image %}
+        <img src="{{ movie.image.url }}" alt="{{ movie.title }}">
+      {% else %}
+        <div class="placeholder">
+          <h2>Movie Experience Coming Soon</h2>
+          <p>This theater screen is ready. Add a video file to begin playback.</p>
+        </div>
+      {% endif %}
+    </div>
   </section>
+
+  <div class="floor">
+    <div class="aisle-light left"></div>
+    <div class="aisle-light right"></div>
+  </div>
+
+  <div class="seats"></div>
 
   <div class="actions">
     <a href="{% url 'box-office' %}" class="btn btn-gold">← Back to Now Showing</a>

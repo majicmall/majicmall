@@ -398,21 +398,12 @@ html, body {
   </div>
 
   <section class="screen-player">
-    {% if movie.video %}
-      <video id="movieVideo" controls playsinline preload="metadata">
-        <source src="{{ movie.video.url }}">
-        Your browser does not support the video tag.
-      </video>
-    {% elif movie.image %}
-      <img src="{{ movie.image.url }}" alt="{{ movie.title }}">
-    {% else %}
-      <div class="placeholder">
-        <div>
-          <h2>Movie Experience Coming Soon</h2>
-          <p>This Majic Screen is ready. Add a video file to begin playback.</p>
-        </div>
-      </div>
-    {% endif %}
+    <video id="movieVideo" controls playsinline preload="metadata">
+      <source
+        src="https://majicmallvideos-238841125891-us-east-2-an.s3.us-east-2.amazonaws.com/wawlam_trailer.mp4"
+        type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
   </section>
 
   <div class="controls">

@@ -2,106 +2,348 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Now Playing - Theater Zone</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    body {
-      background-color: black;
-      color: white;
-      font-family: 'Georgia', serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-    }
+<meta charset="UTF-8">
+<title>{{ movie.title }} | MajicMall Megaverse Cinemas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    h1 {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-bottom: 1rem;
-      text-align: center;
-      color: gold;
-      text-shadow: 0 0 10px red, 0 0 20px darkred;
-    }
+<style>
+html, body {
+  margin:0;
+  padding:0;
+  min-height:100%;
+  background:#000;
+  color:white;
+  font-family:Georgia, serif;
+  overflow:hidden;
+}
 
-    .video-container {
-      width: 100%;
-      max-width: 1280px;
-      position: relative;
-      border: 5px solid gold;
-      border-radius: 12px;
-      box-shadow: 0 0 30px gold;
-      overflow: hidden;
-      transition: all 0.5s ease-in-out;
-    }
+.cinema-experience {
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  background:#000;
+}
 
-    /* Animation class triggered during playback */
-    .video-playing {
-      animation: pulse-glow 1.5s infinite alternate ease-in-out;
-    }
+.theater-bg {
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.05), rgba(0,0,0,.25)),
+    url("{% static 'img/majic_screen_theater.jpg' %}");
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
+  z-index:1;
+  animation:
+    theaterPush 9s ease-in-out forwards,
+    theaterFade 11s ease-in-out forwards;
+}
 
-    @keyframes pulse-glow {
-      from {
-        box-shadow: 0 0 30px gold;
-      }
-      to {
-        box-shadow: 0 0 60px #ffcc00, 0 0 40px red;
-      }
-    }
+.house-dim {
+  position:absolute;
+  inset:0;
+  z-index:2;
+  background:rgba(0,0,0,0);
+  animation:houseDim 8s ease-in-out forwards;
+  pointer-events:none;
+}
 
-    video {
-      width: 100%;
-      border: none;
-    }
+.screen-player {
+  position:absolute;
+  left:50%;
+  top:42%;
+  width:52vw;
+  max-width:1050px;
+  aspect-ratio:16 / 9;
+  transform:translate(-50%, -50%) scale(.42);
+  opacity:0;
+  z-index:4;
+  background:#000;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:
+    0 0 35px rgba(255,255,255,.18),
+    0 0 80px rgba(255,215,0,.25),
+    0 35px 100px rgba(0,0,0,.95);
+  animation:screenAdvance 11s ease-in-out forwards;
+}
 
-    .back-button {
-      margin-top: 2rem;
-      padding: 0.5rem 1.25rem;
-      background-color: #facc15;
-      color: black;
-      font-weight: bold;
-      border-radius: 8px;
-      text-decoration: none;
-      box-shadow: 0 0 8px gold;
-    }
+.screen-player video,
+.screen-player img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  background:#000;
+}
 
-    .back-button:hover {
-      background-color: #fde047;
-    }
-  </style>
+.placeholder {
+  width:100%;
+  height:100%;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  padding:24px;
+  box-sizing:border-box;
+  background:radial-gradient(circle at center, #1a1a1a, #000);
+}
+
+.placeholder h2 {
+  color:#ffd700;
+  font-size:clamp(1.4rem,4vw,3rem);
+}
+
+.placeholder p {
+  color:rgba(255,255,255,.75);
+}
+
+.controls {
+  position:absolute;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%);
+  z-index:6;
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  justify-content:center;
+  opacity:0;
+  animation:controlsAppear 11s ease forwards;
+}
+
+.btn {
+  padding:13px 20px;
+  border-radius:999px;
+  text-decoration:none;
+  font-weight:900;
+  transition:.25s ease;
+}
+
+.btn:hover {
+  transform:translateY(-2px);
+}
+
+.btn-gold {
+  background:linear-gradient(135deg,#fff2a8,#d4af37);
+  color:#111;
+}
+
+.btn-dark {
+  background:rgba(0,0,0,.62);
+  color:white;
+  border:1px solid rgba(255,255,255,.24);
+}
+
+.skip-intro {
+  position:absolute;
+  top:18px;
+  right:18px;
+  z-index:7;
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.26);
+  background:rgba(0,0,0,.45);
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+}
+
+@keyframes theaterPush {
+  0% {
+    transform:scale(1);
+    filter:brightness(1);
+  }
+
+  45% {
+    transform:scale(1.04);
+    filter:brightness(.88);
+  }
+
+  78% {
+    transform:scale(1.12);
+    filter:brightness(.62);
+  }
+
+  100% {
+    transform:scale(1.16);
+    filter:brightness(.38);
+  }
+}
+
+@keyframes theaterFade {
+  0%, 72% {
+    opacity:1;
+  }
+
+  100% {
+    opacity:.18;
+  }
+}
+
+@keyframes houseDim {
+  0% {
+    background:rgba(0,0,0,0);
+  }
+
+  48% {
+    background:rgba(0,0,0,.18);
+  }
+
+  100% {
+    background:rgba(0,0,0,.62);
+  }
+}
+
+@keyframes screenAdvance {
+  0%, 34% {
+    opacity:0;
+    transform:translate(-50%, -50%) scale(.42);
+  }
+
+  48% {
+    opacity:.22;
+    transform:translate(-50%, -50%) scale(.55);
+  }
+
+  72% {
+    opacity:.75;
+    transform:translate(-50%, -50%) scale(.82);
+  }
+
+  100% {
+    opacity:1;
+    top:50%;
+    width:min(1120px,94vw);
+    transform:translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes controlsAppear {
+  0%, 78% {
+    opacity:0;
+  }
+
+  100% {
+    opacity:1;
+  }
+}
+
+.cinema-experience.ready .theater-bg {
+  animation:none;
+  opacity:.14;
+  transform:scale(1.16);
+  filter:brightness(.35);
+}
+
+.cinema-experience.ready .house-dim {
+  animation:none;
+  background:rgba(0,0,0,.68);
+}
+
+.cinema-experience.ready .screen-player {
+  animation:none;
+  opacity:1;
+  top:50%;
+  width:min(1120px,94vw);
+  transform:translate(-50%, -50%) scale(1);
+}
+
+.cinema-experience.ready .controls {
+  animation:none;
+  opacity:1;
+}
+
+@media(max-width:720px) {
+  .theater-bg {
+    background-size:cover;
+    background-position:center center;
+  }
+
+  .screen-player {
+    top:43%;
+    width:60vw;
+  }
+
+  .cinema-experience.ready .screen-player {
+    width:96vw;
+  }
+
+  .controls {
+    width:94vw;
+    bottom:14px;
+  }
+
+  .btn {
+    width:100%;
+    text-align:center;
+    box-sizing:border-box;
+  }
+
+  .skip-intro {
+    top:12px;
+    right:12px;
+    font-size:.82rem;
+  }
+}
+</style>
 </head>
+
 <body>
 
-  <h1>🎬 Now Playing in The Majic Theater</h1>
-  
-<div class="video-container" id="videoBox"> 
-  <video controls poster="{{ poster }}" id="theaterVideo">
-    <source src="{{ video }}" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-</div>
+<main class="cinema-experience" id="cinemaExperience">
 
-<a href="{% url 'theater-zone' %}" class="back-button">⬅️ Back to Theater Lobby</a>
+  <button class="skip-intro" type="button" onclick="skipIntro()">
+    Skip Intro
+  </button>
 
+  <div class="theater-bg"></div>
+  <div class="house-dim"></div>
 
-  <script>
-    const video = document.getElementById('theaterVideo');
-    const box = document.getElementById('videoBox');
+  <section class="screen-player">
+    {% if movie.video %}
+      <video id="movieVideo" controls playsinline preload="metadata">
+        <source src="{{ movie.video.url }}">
+        Your browser does not support the video tag.
+      </video>
+    {% elif movie.image %}
+      <img src="{{ movie.image.url }}" alt="{{ movie.title }}">
+    {% else %}
+      <div class="placeholder">
+        <div>
+          <h2>Movie Experience Coming Soon</h2>
+          <p>This Majic Screen is ready. Add a video file to begin playback.</p>
+        </div>
+      </div>
+    {% endif %}
+  </section>
 
-    video.addEventListener('play', () => {
-      box.classList.add('video-playing');
+  <div class="controls">
+    <a href="{% url 'box-office' %}" class="btn btn-gold">← Back to Now Showing</a>
+    <a href="{% url 'theater-lobby' %}" class="btn btn-dark">Return to Lobby</a>
+  </div>
+
+</main>
+
+<script>
+function beginMovie() {
+  const cinema = document.getElementById("cinemaExperience");
+  const video = document.getElementById("movieVideo");
+
+  cinema.classList.add("ready");
+
+  if (video) {
+    video.play().catch(function () {
+      // Browser may require user tap on mobile. Controls remain visible.
     });
+  }
+}
 
-    video.addEventListener('pause', () => {
-      box.classList.remove('video-playing');
-    });
+function skipIntro() {
+  beginMovie();
+}
 
-    video.addEventListener('ended', () => {
-      box.classList.remove('video-playing');
-    });
-  </script>
+setTimeout(beginMovie, 11000);
+</script>
 
 </body>
 </html>

@@ -24,6 +24,7 @@ body {
   background-position:center center;
   background-repeat:no-repeat;
   background-attachment:fixed;
+  animation: backgroundReveal 4s ease forwards;
 }
 
 .wrap {
@@ -43,7 +44,10 @@ body {
   border-radius:28px;
   padding:24px;
   box-shadow:0 0 45px rgba(0,0,0,.85);
-  animation:detailCardReveal 1.2s ease forwards;
+ opacity:0;
+transform:translateY(28px) scale(.98);
+animation:detailCardReveal 1.2s ease forwards;
+animation-delay:4.1s;
 }
 
 .poster {
@@ -106,7 +110,17 @@ h1 {
   color:white;
   border:1px solid rgba(255,255,255,.18);
 }
+@keyframes backgroundReveal {
+  from {
+    background-size:cover;
+    filter:brightness(.82);
+  }
 
+  to {
+    background-size:115%;
+    filter:brightness(1);
+  }
+}
 @keyframes detailCardReveal {
   from {
     opacity:0;

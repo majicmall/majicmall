@@ -82,6 +82,25 @@ h1 {
   margin:0 0 8px;
 }
 
+.rental-access {
+  margin:18px auto 0;
+  padding:14px 18px;
+  max-width:520px;
+  border-radius:18px;
+  background:rgba(255,215,0,.10);
+  border:1px solid rgba(255,215,0,.35);
+  color:#fff1a8;
+  text-align:center;
+  line-height:1.5;
+  box-shadow:0 0 22px rgba(255,215,0,.14);
+}
+
+.rental-access strong {
+  color:#ffd700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
 .screen-grid {
   display:grid;
   grid-template-columns:repeat(5, 1fr);
@@ -171,12 +190,21 @@ h1 {
 }
 
 @media(max-width:640px) {
+  .wrap {
+    padding:26px 12px;
+  }
+
   .pass {
     padding:22px 16px;
   }
 
   .screen-grid {
     grid-template-columns:1fr;
+  }
+
+  .btn {
+    width:100%;
+    box-sizing:border-box;
   }
 }
 </style>
@@ -196,7 +224,18 @@ h1 {
 
     <div class="ticket-card">
       <div class="movie-title">{{ movie.title }}</div>
-      <div>Admit One • Digital Entry Pass • Screening Access Granted</div>
+
+      <div>
+        Admit One • Digital Entry Pass • Screening Access Granted
+      </div>
+
+      {% if ticket.expires_at %}
+        <div class="rental-access">
+          <strong>Rental Access Granted</strong><br>
+          Valid for 36 Hours<br><br>
+          Expires: {{ ticket.expires_at|date:"M d, Y g:i A" }}
+        </div>
+      {% endif %}
     </div>
 
     <div class="screen-grid">

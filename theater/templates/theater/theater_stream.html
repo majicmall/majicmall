@@ -502,15 +502,13 @@ html, body {
   </div>
 
   <section class="screen-player">
-    <div class="ad-label" id="adLabel">Sponsored Message</div>
-
-    <video id="movieVideo" controls playsinline preload="metadata">
-      <source id="movieSource"
-        src="https://majicmallvideos-238841125891-us-east-2-an.s3.us-east-2.amazonaws.com/wawlam_trailer.mp4"
-        type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  </section>
+  <video id="movieVideo" controls preload="metadata" playsinline>
+    <source
+      src="https://majicmallvideos-238841125891-us-east-2-an.s3.us-east-2.amazonaws.com/wawlam_trailer.mp4"
+      type="video/mp4">
+    Your browser does not support video playback.
+  </video>
+</section>
 
   <div class="controls">
     <a href="{% url 'box-office' %}" class="btn btn-gold">← Back to Now Showing</a>

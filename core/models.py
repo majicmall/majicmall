@@ -49,19 +49,33 @@ class Movie(models.Model):
 # -----------------------------
 
 class Ticket(models.Model):
+    RENTAL_HOURS = 36
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True
     )
     session_key = models.CharField(max_length=40, null=True, blank=True)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="tickets")
     purchased_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
     used = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        from django.utils import timezone
+        from datetime import timedelta
+
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(hours=self.RENTAL_HOURS)
+
+        super().save(*args, **kwargs)
+
+    def is_valid(self):
+        from django.utils import timezone
+        return self.expires_at and self.expires_at > timezone.now()
 
     def __str__(self):
         who = "Guest" if not self.user else getattr(self.user, "username", str(self.user))
         return f"Ticket for {self.movie.title} - {who}"
-
-
 # -----------------------------
 # 💼 Merchant Model (Consolidated)
 # -----------------------------

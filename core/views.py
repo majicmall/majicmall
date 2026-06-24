@@ -425,6 +425,8 @@ def coming_soon(request):
     return render(request, "theater/coming_soon.html")
 
 def theater_stream(request):
+    from django.utils import timezone
+
     movie_id = request.GET.get("id")
 
     if not movie_id:
@@ -437,13 +439,14 @@ def theater_stream(request):
 
     session_key = request.session.session_key
 
-    has_ticket = Ticket.objects.filter(
+    ticket = Ticket.objects.filter(
         movie_id=movie_id,
         user=user if user else None,
         session_key=None if user else session_key,
-    ).exists()
+        expires_at__gt=timezone.now(),
+    ).first()
 
-    if not has_ticket:
+    if not ticket:
         return redirect("box-office")
 
     movie = get_object_or_404(Movie, id=movie_id)
@@ -455,6 +458,7 @@ def theater_stream(request):
             "poster": movie.image.url if getattr(movie, "image", None) else "default_poster.jpg",
             "video": movie.video.url if getattr(movie, "video", None) else "default_video.mp4",
             "movie": movie,
+            "ticket": ticket,
         },
     )
 
@@ -465,8 +469,10 @@ def buy_ticket(request, movie_id):
     # TEMPORARY DEVELOPMENT BYPASS
     return redirect("ticket-success", movie_id=movie.id)
 
-
 def ticket_success(request, movie_id):
+    from django.utils import timezone
+    from datetime import timedelta
+
     movie = get_object_or_404(Movie, id=movie_id)
 
     user = request.user if request.user.is_authenticated else None
@@ -476,11 +482,16 @@ def ticket_success(request, movie_id):
 
     session_key = request.session.session_key
 
-    Ticket.objects.get_or_create(
+    ticket, created = Ticket.objects.get_or_create(
         movie=movie,
         user=user if user else None,
         session_key=None if user else session_key,
     )
+
+    if created or not ticket.expires_at or ticket.expires_at <= timezone.now():
+        ticket.expires_at = timezone.now() + timedelta(hours=36)
+        ticket.used = False
+        ticket.save()
 
     screens = [
         {
@@ -515,6 +526,10 @@ def ticket_success(request, movie_id):
         "theater/ticket_success.html",
         {
             "movie": movie,
+            "ticket": ticket,
             "screens": screens,
         },
     )
+
+
+

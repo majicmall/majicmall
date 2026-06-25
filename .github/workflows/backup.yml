@@ -1,0 +1,24 @@
+name: Backup MajicMall
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  create-backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create ZIP of the project
+        run: zip -r majicmall-backup.zip . -x "*.git*" ".venv/*" "venv/*" "__pycache__/*"
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: majicmall-backup
+          path: majicmall-backup.zip

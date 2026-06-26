@@ -785,22 +785,20 @@ def public_checkout_submit(request):
     return redirect(result["redirect_url"])
 def send_order_confirmation_emails(order, customer_name="", customer_email=""):
     store = order.store
+    store_name = getattr(store, "store_name", "MajicMall Store")
     items = order.items.all()
 
-    item_lines = []
-    for item in items:
-        item_lines.append(
-            f"- {item.name} x {item.quantity} @ ${item.unit_price}"
-        )
+    item_lines = [
+        f"- {item.name} x {item.quantity} @ ${item.unit_price}"
+        for item in items
+    ]
 
     items_text = "\n".join(item_lines) if item_lines else "No items listed."
-
     from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@majicmall.com")
 
     store_email = (
-        getattr(store, "email", None)
+        getattr(store, "contact_email", None)
         or getattr(getattr(store, "owner", None), "email", None)
-        or getattr(getattr(store, "user", None), "email", None)
     )
 
     if customer_email:
@@ -808,7 +806,7 @@ def send_order_confirmation_emails(order, customer_name="", customer_email=""):
             subject=f"MajicMall Megaverse Order Confirmation #{order.id}",
             message=(
                 f"Hello {customer_name or 'MajicMall Customer'},\n\n"
-                f"Thank you for your order from {store.name}!\n\n"
+                f"Thank you for your order from {store_name}!\n\n"
                 f"Order Number: #{order.id}\n"
                 f"Order Total: ${order.total}\n\n"
                 f"Items:\n{items_text}\n\n"
@@ -823,7 +821,7 @@ def send_order_confirmation_emails(order, customer_name="", customer_email=""):
         send_mail(
             subject=f"New MajicMall Megaverse Order #{order.id}",
             message=(
-                f"New order received for {store.name}.\n\n"
+                f"New order received for {store_name}.\n\n"
                 f"Order Number: #{order.id}\n"
                 f"Customer: {customer_name or 'Customer'}\n"
                 f"Customer Email: {customer_email or 'Not provided'}\n"
@@ -836,8 +834,10 @@ def send_order_confirmation_emails(order, customer_name="", customer_email=""):
             fail_silently=True,
         )
 
+
 def public_checkout_success(request):
     session_id = (request.GET.get("session_id") or "").strip()
+
     if not session_id:
         messages.warning(request, "Missing checkout session.")
         return redirect("mall-directory")
@@ -846,58 +846,44 @@ def public_checkout_success(request):
 
     try:
         session = stripe.checkout.Session.retrieve(session_id)
-        metadata = session.get("metadata", {}) or {}
-        order_id = metadata.get("order_id")
-
-        if not order_id:
-            messages.warning(request, "Payment completed, but no order ID was found.")
-            return redirect("mall-directory")
-
-        order = get_object_or_404(Order.objects.prefetch_related("items"), pk=order_id)
-
-        already_paid = order.status == "paid"
-
-        if not already_paid:
-            order.status = "paid"
-            order.save(update_fields=["status"])
-
-            customer_name = metadata.get("customer_name") or request.session.get("checkout_customer_name", "")
-            customer_email = metadata.get("customer_email") or request.session.get("checkout_customer_email", "")
-
-            send_order_confirmation_emails(
-                order=order,
-                customer_name=customer_name,
-                customer_email=customer_email,
-            )
-
-        request.session.pop("cart", None)
-        request.session.pop("promo_code", None)
-        request.session.pop("checkout_customer_name", None)
-        request.session.pop("checkout_customer_email", None)
-        request.session.modified = True
     except Exception as e:
         print("STRIPE SESSION RETRIEVE ERROR:", repr(e))
         messages.error(request, "Payment verification failed.")
         return redirect("mall-directory")
 
     order = _mark_order_paid_from_checkout_session(session)
+
     if not order:
         messages.error(request, "Order not found.")
         return redirect("mall-directory")
 
-    payment_label = "Card"
-    try:
-        types = getattr(session, "payment_method_types", []) or []
-        if "card" in types:
-            payment_label = "Credit / Debit Card"
-    except Exception:
-        pass
+    metadata = session.get("metadata", {}) or {}
+
+    customer_name = (
+        metadata.get("customer_name")
+        or request.session.get("checkout_customer_name", "")
+    )
+
+    customer_email = (
+        metadata.get("customer_email")
+        or request.session.get("checkout_customer_email", "")
+    )
+
+    if order.status == "paid":
+        send_order_confirmation_emails(
+            order=order,
+            customer_name=customer_name,
+            customer_email=customer_email,
+        )
+
+    payment_label = "Credit / Debit Card"
 
     request.session["cart"] = {}
     request.session.pop("last_store_slug", None)
     request.session.pop("promo_code", None)
     request.session.pop("checkout_customer_name", None)
     request.session.pop("checkout_customer_email", None)
+    request.session.pop("checkout_order_id", None)
     request.session.modified = True
 
     context = _build_success_context_from_order(order, session, payment_label)

@@ -227,6 +227,12 @@ class Order(models.Model):
     session_key = models.CharField(max_length=40, null=True, blank=True)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="paid")
+    shipping_status = models.CharField(max_length=30, default="processing")
+    shipping_carrier = models.CharField(max_length=80, blank=True, default="")
+    tracking_number = models.CharField(max_length=120, blank=True, default="")
+    tracking_url = models.URLField(blank=True, default="")
+    shipped_at = models.DateTimeField(null=True, blank=True)
+    delivered_at = models.DateTimeField(null=True, blank=True)
     note = models.TextField(blank=True)
 
     # Customer Information

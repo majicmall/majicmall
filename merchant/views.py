@@ -1240,6 +1240,7 @@ def order_detail(request, order_id: int):
             pass
 
     allowed_statuses = ["pending", "paid", "shipped", "completed", "canceled", "refunded"]
+    shipping_statuses = ["processing", "packed", "shipped", "out_for_delivery", "delivered", "returned"]
 
     context = {
         "store": store,
@@ -1247,6 +1248,7 @@ def order_detail(request, order_id: int):
         "item_count": item_count,
         "subtotal": subtotal,
         "allowed_statuses": allowed_statuses,
+        "shipping_statuses": shipping_statuses,
     }
 
     return render(request, "merchant/order_detail.html", context)
@@ -1286,6 +1288,71 @@ def order_update_status(request, order_id: int):
     messages.success(
         request,
         f"Order #{order.id} status updated from {old_status} to {new_status}."
+    )
+    return redirect("order-detail", order_id=order.id)
+
+
+@login_required
+def order_update_shipping(request, order_id: int):
+    if request.method != "POST":
+        return redirect("order-detail", order_id=order_id)
+
+    store = get_current_store(request)
+    if not store:
+        messages.info(request, "Create your store to update shipping.")
+        return redirect("merchant-profile")
+
+    guard = _redirect_if_archived(request, store)
+    if guard:
+        return guard
+
+    order = get_object_or_404(Order, pk=order_id, store=store)
+
+    allowed_shipping_statuses = {
+        "processing",
+        "packed",
+        "shipped",
+        "out_for_delivery",
+        "delivered",
+        "returned",
+    }
+
+    shipping_status = (request.POST.get("shipping_status") or "").strip().lower()
+    shipping_carrier = (request.POST.get("shipping_carrier") or "").strip()
+    tracking_number = (request.POST.get("tracking_number") or "").strip()
+    tracking_url = (request.POST.get("tracking_url") or "").strip()
+
+    if shipping_status not in allowed_shipping_statuses:
+        messages.error(request, "Invalid shipping status selected.")
+        return redirect("order-detail", order_id=order.id)
+
+    old_status = getattr(order, "shipping_status", "processing")
+
+    order.shipping_status = shipping_status
+    order.shipping_carrier = shipping_carrier
+    order.tracking_number = tracking_number
+    order.tracking_url = tracking_url
+
+    if shipping_status == "shipped" and not order.shipped_at:
+        order.shipped_at = timezone.now()
+
+    if shipping_status == "delivered" and not order.delivered_at:
+        order.delivered_at = timezone.now()
+
+    order.save(
+        update_fields=[
+            "shipping_status",
+            "shipping_carrier",
+            "tracking_number",
+            "tracking_url",
+            "shipped_at",
+            "delivered_at",
+        ]
+    )
+
+    messages.success(
+        request,
+        f"Order #{order.id} shipping updated from {old_status} to {shipping_status}."
     )
     return redirect("order-detail", order_id=order.id)
 

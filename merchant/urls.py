@@ -43,6 +43,7 @@ path("webhooks/coinbase/", views.webhook_coinbase, name="webhook-coinbase"),
     path("orders/", views.order_list, name="order-list"),
     path("orders/<int:order_id>/", views.order_detail, name="order-detail"),
     path("orders/<int:order_id>/status/", views.order_update_status, name="order-update-status"),
+path("orders/<int:order_id>/shipping/", views.order_update_shipping, name="order-update-shipping"),
 
     # =========================
     # Cart (Public)

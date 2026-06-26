@@ -204,6 +204,59 @@
       </div>
 
     </div>
-  </main>
+  
+<section style="margin-top:24px; padding:20px; border:1px solid rgba(212,175,55,.35); border-radius:16px; background:rgba(0,0,0,.04);">
+  <h2>Shipping & Fulfillment</h2>
+
+  <p><strong>Status:</strong> {{ order.shipping_status|default:"processing"|title }}</p>
+
+  {% if order.shipping_carrier %}
+    <p><strong>Carrier:</strong> {{ order.shipping_carrier }}</p>
+  {% endif %}
+
+  {% if order.tracking_number %}
+    <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
+  {% endif %}
+
+  {% if order.tracking_url %}
+    <p><a href="{{ order.tracking_url }}" target="_blank" rel="noopener">Track Shipment</a></p>
+  {% endif %}
+
+  <form method="post" action="{% url 'order-update-shipping' order.id %}" style="margin-top:18px;">
+    {% csrf_token %}
+
+    <label>
+      Shipping Status
+      <select name="shipping_status" style="width:100%; padding:10px; margin:6px 0 12px;">
+        {% for status in shipping_statuses %}
+          <option value="{{ status }}" {% if order.shipping_status == status %}selected{% endif %}>
+            {{ status|title }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>
+      Carrier
+      <input type="text" name="shipping_carrier" value="{{ order.shipping_carrier }}" placeholder="USPS, UPS, FedEx, DHL" style="width:100%; padding:10px; margin:6px 0 12px;">
+    </label>
+
+    <label>
+      Tracking Number
+      <input type="text" name="tracking_number" value="{{ order.tracking_number }}" style="width:100%; padding:10px; margin:6px 0 12px;">
+    </label>
+
+    <label>
+      Tracking URL
+      <input type="url" name="tracking_url" value="{{ order.tracking_url }}" style="width:100%; padding:10px; margin:6px 0 12px;">
+    </label>
+
+    <button type="submit" style="padding:12px 18px; border-radius:10px; border:0; font-weight:800; cursor:pointer;">
+      Update Shipping
+    </button>
+  </form>
+</section>
+
+</main>
 </body>
 </html>

@@ -180,6 +180,9 @@ class Product(models.Model):
         default="physical",
     )
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    track_inventory = models.BooleanField(default=False)
+    stock_quantity = models.PositiveIntegerField(default=0)
+    low_stock_threshold = models.PositiveIntegerField(default=5)
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to="product_images/", blank=True, null=True)
     digital_file = models.FileField(upload_to="digital_products/", blank=True, null=True)

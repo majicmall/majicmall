@@ -548,11 +548,39 @@ def storefront_qr(request, slug: str):
     return resp
 
 
+
+def product_has_stock(product, quantity=1):
+    if not getattr(product, "track_inventory", False):
+        return True
+
+    return int(getattr(product, "stock_quantity", 0) or 0) >= int(quantity or 1)
+
+
+def decrement_inventory_for_order(order):
+    for item in order.items.select_related("product").all():
+        product = item.product
+
+        if not product:
+            continue
+
+        if not getattr(product, "track_inventory", False):
+            continue
+
+        qty = int(item.quantity or 0)
+        current_stock = int(product.stock_quantity or 0)
+        product.stock_quantity = max(0, current_stock - qty)
+        product.save(update_fields=["stock_quantity"])
+
+
 def cart_add(request, product_id: int):
     if request.method != "POST":
         return redirect("mall-directory")
 
     product = get_object_or_404(Product, pk=product_id)
+
+    if not product_has_stock(product, 1):
+        messages.warning(request, "This item is currently out of stock.")
+        return redirect("product-detail", slug=product.store.slug, product_id=product.id)
 
     cart = request.session.get("cart", {})
     key = str(product.id)
@@ -570,7 +598,13 @@ def cart_add(request, product_id: int):
         return redirect("cart-view")
 
     if key in cart:
-        cart[key]["quantity"] += 1
+        new_quantity = int(cart[key].get("quantity", 0)) + 1
+
+        if not product_has_stock(product, new_quantity):
+            messages.warning(request, "Not enough inventory is available for that quantity.")
+            return redirect("cart-view")
+
+        cart[key]["quantity"] = new_quantity
     else:
         cart[key] = {
             "name": product.name,
@@ -899,6 +933,10 @@ def public_checkout_success(request):
             customer_name = request.session.get("checkout_customer_name", "")
             customer_email = request.session.get("checkout_customer_email", "")
 
+            decrement_inventory_for_order(order)
+
+            decrement_inventory_for_order(order)
+
             send_order_confirmation_emails(
                 order=order,
                 customer_name=customer_name,
@@ -961,6 +999,8 @@ def public_checkout_success(request):
     )
 
     if order.status == "paid":
+        decrement_inventory_for_order(order)
+
         send_order_confirmation_emails(
             order=order,
             customer_name=customer_name,
@@ -1333,6 +1373,18 @@ def add_product(request):
                 messages.error(request, "Invalid category selected.")
                 return render(request, "merchant/add_product.html", {"categories": categories})
 
+        track_inventory = request.POST.get("track_inventory") == "on"
+
+        try:
+            stock_quantity = int(request.POST.get("stock_quantity") or 0)
+        except (TypeError, ValueError):
+            stock_quantity = 0
+
+        try:
+            low_stock_threshold = int(request.POST.get("low_stock_threshold") or 5)
+        except (TypeError, ValueError):
+            low_stock_threshold = 5
+
         product = Product(
             store=store,
             name=name,
@@ -1340,6 +1392,9 @@ def add_product(request):
             product_type=product_type,
             price=price_val,
             description=description,
+            track_inventory=track_inventory,
+            stock_quantity=max(0, stock_quantity),
+            low_stock_threshold=max(0, low_stock_threshold),
         )
 
         if image:
@@ -1425,6 +1480,21 @@ def edit_product(request, product_id: int):
             product.image = image
         if hasattr(Product, "digital_file") and digital_file and product_type == "digital":
             product.digital_file = digital_file
+
+        if hasattr(Product, "track_inventory"):
+            product.track_inventory = request.POST.get("track_inventory") == "on"
+
+        if hasattr(Product, "stock_quantity"):
+            try:
+                product.stock_quantity = max(0, int(request.POST.get("stock_quantity") or 0))
+            except (TypeError, ValueError):
+                product.stock_quantity = product.stock_quantity or 0
+
+        if hasattr(Product, "low_stock_threshold"):
+            try:
+                product.low_stock_threshold = max(0, int(request.POST.get("low_stock_threshold") or 5))
+            except (TypeError, ValueError):
+                product.low_stock_threshold = product.low_stock_threshold or 5
 
         product.save()
         messages.success(request, "Product updated.")

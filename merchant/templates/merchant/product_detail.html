@@ -89,6 +89,13 @@
         <div class="flex flex-wrap gap-3">
           <form method="post" action="{% url 'cart-add' product.id %}">
   {% csrf_token %}
+        {% if product.track_inventory %}
+          {% if product.stock_quantity <= 0 %}
+            <p style="color:#b00020; font-weight:800;">Out of Stock</p>
+          {% elif product.stock_quantity <= product.low_stock_threshold %}
+            <p style="color:#b8860b; font-weight:800;">Only {{ product.stock_quantity }} left</p>
+          {% endif %}
+        {% endif %}
   <input type="hidden" name="quantity" value="1">
   <button type="submit"
           class="btn px-5 py-3 bg-yellow-400 text-black rounded-xl hover:opacity-90 font-semibold">

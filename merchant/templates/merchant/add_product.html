@@ -103,6 +103,26 @@
       Cancel
     </a>
   </div>
+
+  <div style="margin-top:18px; padding:16px; border:1px solid rgba(212,175,55,.35); border-radius:14px; background:rgba(0,0,0,.04);">
+    <h3 style="margin-top:0;">Inventory Management</h3>
+
+    <label style="display:flex; gap:10px; align-items:center; margin-bottom:12px;">
+      <input type="checkbox" name="track_inventory" {% if product.track_inventory %}checked{% endif %}>
+      Track inventory for this product
+    </label>
+
+    <label>
+      Stock Quantity
+      <input type="number" name="stock_quantity" min="0" value="{{ product.stock_quantity|default:0 }}" style="width:100%; padding:10px; margin:6px 0 12px;">
+    </label>
+
+    <label>
+      Low Stock Alert Threshold
+      <input type="number" name="low_stock_threshold" min="0" value="{{ product.low_stock_threshold|default:5 }}" style="width:100%; padding:10px; margin-top:6px;">
+    </label>
+  </div>
+
 </form>
   </main>
 

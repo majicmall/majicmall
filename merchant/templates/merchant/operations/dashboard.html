@@ -1,0 +1,222 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MajicMall Megaverse Operations Center</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  background:#050505;
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
+
+.page{
+  min-height:100vh;
+  padding:28px;
+  background:
+    radial-gradient(circle at top, rgba(212,175,55,.18), transparent 38%),
+    linear-gradient(135deg,#050505,#111,#050505);
+}
+
+.header{
+  border:1px solid rgba(212,175,55,.45);
+  border-radius:22px;
+  padding:28px;
+  background:rgba(0,0,0,.72);
+  box-shadow:0 0 40px rgba(212,175,55,.12);
+  margin-bottom:24px;
+}
+
+.kicker{
+  color:#d4af37;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  font-weight:900;
+  font-size:.82rem;
+}
+
+h1{
+  margin:8px 0 0;
+  font-size:clamp(2rem,5vw,4rem);
+  line-height:1;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:16px;
+  margin-bottom:26px;
+}
+
+.card{
+  border:1px solid rgba(212,175,55,.35);
+  border-radius:18px;
+  background:rgba(0,0,0,.62);
+  padding:20px;
+  box-shadow:0 18px 42px rgba(0,0,0,.45);
+}
+
+.card .label{
+  color:#d4af37;
+  font-size:.85rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.card .value{
+  font-size:2rem;
+  font-weight:900;
+  margin-top:8px;
+}
+
+.section{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;
+  background:rgba(0,0,0,.48);
+  padding:22px;
+  margin-bottom:22px;
+}
+
+.section h2{
+  margin-top:0;
+  color:#f3d56a;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:12px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  text-align:left;
+}
+
+th{
+  color:#d4af37;
+}
+
+.actions{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+}
+
+.action{
+  display:block;
+  padding:16px;
+  border-radius:16px;
+  text-decoration:none;
+  color:#111;
+  font-weight:900;
+  background:linear-gradient(135deg,#fff3b0,#d4af37);
+  text-align:center;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:999px;
+  background:rgba(212,175,55,.16);
+  color:#f3d56a;
+  font-weight:800;
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <header class="header">
+    <div class="kicker">Executive Command</div>
+    <h1>MajicMall Megaverse<br>Operations Center</h1>
+    <p>Central command for merchants, orders, payments, inventory, shipping, zones, and system health.</p>
+  </header>
+
+  <section class="grid">
+    <div class="card"><div class="label">Users</div><div class="value">{{ stats.users }}</div></div>
+    <div class="card"><div class="label">Mall Zones</div><div class="value">{{ stats.zones }}</div></div>
+    <div class="card"><div class="label">Stores</div><div class="value">{{ stats.stores }}</div></div>
+    <div class="card"><div class="label">Live Stores</div><div class="value">{{ stats.live_stores }}</div></div>
+    <div class="card"><div class="label">Products</div><div class="value">{{ stats.products }}</div></div>
+    <div class="card"><div class="label">Orders</div><div class="value">{{ stats.orders }}</div></div>
+    <div class="card"><div class="label">Pending Orders</div><div class="value">{{ stats.pending_orders }}</div></div>
+    <div class="card"><div class="label">Paid Orders</div><div class="value">{{ stats.paid_orders }}</div></div>
+    <div class="card"><div class="label">Pending Shipments</div><div class="value">{{ stats.pending_shipments }}</div></div>
+    <div class="card"><div class="label">Low Stock Alerts</div><div class="value">{{ stats.low_stock }}</div></div>
+    <div class="card"><div class="label">Revenue</div><div class="value">${{ stats.revenue }}</div></div>
+  </section>
+
+  <section class="section">
+    <h2>Quick Actions</h2>
+    <div class="actions">
+      <a class="action" href="{% url 'admin-store-list' %}">Manage Stores</a>
+      <a class="action" href="{% url 'admin_payment_methods' %}">Payment Methods</a>
+      <a class="action" href="{% url 'mall-directory' %}">View Directory</a>
+      <a class="action" href="{% url 'merchant-dashboard' %}">Merchant Dashboard</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Recent Orders</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Store</th>
+          <th>Status</th>
+          <th>Shipping</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in recent_orders %}
+        <tr>
+          <td>#{{ order.id }}</td>
+          <td>{{ order.store.store_name }}</td>
+          <td><span class="badge">{{ order.status }}</span></td>
+          <td>{{ order.shipping_status|default:"processing" }}</td>
+          <td>${{ order.total }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No recent orders yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>Newest Stores</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Store</th>
+          <th>Owner</th>
+          <th>Plan</th>
+          <th>Live</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for store in recent_stores %}
+        <tr>
+          <td>{{ store.store_name }}</td>
+          <td>{{ store.owner.username }}</td>
+          <td>{{ store.plan }}</td>
+          <td>{% if store.is_public %}Yes{% else %}No{% endif %}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No stores yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+</div>
+</body>
+</html>

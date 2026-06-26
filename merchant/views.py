@@ -2082,3 +2082,48 @@ def webhook_coinbase(request):
 
     return HttpResponse(status=200)
 
+@staff_required
+def operations_center(request):
+    users_count = 0
+    try:
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        users_count = User.objects.count()
+    except Exception:
+        users_count = 0
+
+    stats = {
+        "users": users_count,
+        "zones": MallZone.objects.count(),
+        "stores": MerchantStore.objects.count(),
+        "live_stores": MerchantStore.objects.filter(is_public=True, is_archived=False).count(),
+        "products": Product.objects.count(),
+        "orders": Order.objects.count(),
+        "pending_orders": Order.objects.filter(status="pending").count(),
+        "paid_orders": Order.objects.filter(status__in=["paid", "completed"]).count(),
+        "pending_shipments": Order.objects.filter(
+            status__in=["paid", "completed"],
+            shipping_status__in=["processing", "packed", "shipped", "out_for_delivery"],
+        ).count(),
+        "low_stock": Product.objects.filter(
+            track_inventory=True,
+            stock_quantity__lte=models.F("low_stock_threshold"),
+        ).count(),
+        "revenue": Order.objects.filter(status__in=["paid", "completed"]).aggregate(
+            total=Sum("total")
+        )["total"] or Decimal("0.00"),
+    }
+
+    recent_orders = Order.objects.select_related("store").order_by("-created_at")[:10]
+    recent_stores = MerchantStore.objects.select_related("owner").order_by("-created_at")[:10]
+
+    return render(
+        request,
+        "merchant/operations/dashboard.html",
+        {
+            "stats": stats,
+            "recent_orders": recent_orders,
+            "recent_stores": recent_stores,
+        },
+    )
+

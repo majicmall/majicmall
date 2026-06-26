@@ -65,7 +65,7 @@ def main():
 
         elif choice == "8":
 
-            coming_soon("Database Tools")
+            run("python tools/database_tools.py")
 
         elif choice == "9":
 

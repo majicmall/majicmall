@@ -836,7 +836,81 @@ def send_order_confirmation_emails(order, customer_name="", customer_email=""):
 
 
 def public_checkout_success(request):
+    gateway = (request.GET.get("gateway") or "").strip().lower()
+    paypal_token = (request.GET.get("token") or "").strip()
     session_id = (request.GET.get("session_id") or "").strip()
+
+    if gateway == "paypal" or paypal_token:
+        order_id = request.session.get("checkout_order_id")
+
+        if not order_id:
+            messages.warning(request, "Payment completed, but no order was found in your session.")
+            return redirect("mall-directory")
+
+        order = get_object_or_404(
+            Order.objects.select_related("store").prefetch_related("items"),
+            pk=order_id,
+        )
+
+        payment_method = order.store.payment_methods.filter(
+            provider="paypal",
+            is_active=True,
+        ).first()
+
+        if not payment_method:
+            messages.error(request, "PayPal is not configured for this store.")
+            return redirect("mall-directory")
+
+        try:
+            adapter = build_adapter(
+                "paypal",
+                credentials=payment_method.credentials,
+                success_url=request.build_absolute_uri(reverse("public-checkout-success")),
+                cancel_url=request.build_absolute_uri(reverse("public-checkout-cancel")),
+            )
+            paypal_result = adapter.capture_checkout(paypal_token)
+        except Exception as e:
+            print("PAYPAL CAPTURE ERROR:", repr(e))
+            messages.error(request, "PayPal payment verification failed.")
+            return redirect("mall-directory")
+
+        if paypal_result.get("status") == "COMPLETED":
+            if order.status != "paid":
+                order.status = "paid"
+                order.save(update_fields=["status"])
+
+            customer_name = request.session.get("checkout_customer_name", "")
+            customer_email = request.session.get("checkout_customer_email", "")
+
+            send_order_confirmation_emails(
+                order=order,
+                customer_name=customer_name,
+                customer_email=customer_email,
+            )
+        else:
+            messages.error(request, "PayPal payment was not completed.")
+            return redirect("mall-directory")
+
+        payment_label = "PayPal"
+
+        request.session["cart"] = {}
+        request.session.pop("last_store_slug", None)
+        request.session.pop("promo_code", None)
+        request.session.pop("checkout_customer_name", None)
+        request.session.pop("checkout_customer_email", None)
+        request.session.pop("checkout_order_id", None)
+        request.session.modified = True
+
+        fake_session = {
+            "metadata": {
+                "customer_name": customer_name,
+                "customer_email": customer_email,
+                "promo_code": "",
+            }
+        }
+
+        context = _build_success_context_from_order(order, fake_session, payment_label)
+        return render(request, "merchant/checkout_success.html", context)
 
     if not session_id:
         messages.warning(request, "Missing checkout session.")

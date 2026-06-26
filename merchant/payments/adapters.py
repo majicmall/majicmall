@@ -1,130 +1,228 @@
-"""
-Payment adapter pattern.
-
-Stripe is wired to real Stripe Checkout.
-PayPal remains a demo stub for now until live PayPal API wiring is added.
-"""
-
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Dict, Any, Protocol
-
+import requests
 import stripe
 from django.conf import settings
 
 
-class PaymentAdapter(Protocol):
-    """
-    Minimal interface for a payment adapter.
-    Return a dict with:
-      - redirect_url: URL the shopper should be sent to
-      - session_id: opaque gateway session/intent id (string)
-    """
-
-    def start_checkout(
-        self,
-        *,
-        amount_cents: int,
-        currency: str,
-        metadata: Dict[str, Any],
-    ) -> Dict[str, str]:
-        ...
+class PaymentAdapterError(Exception):
+    pass
 
 
-@dataclass
-class StripeAdapterImpl:
-    api_key: str | None = None
-    success_url: str | None = None
-    cancel_url: str | None = None
+class BasePaymentAdapter:
+    def __init__(self, credentials=None, success_url=None, cancel_url=None):
+        self.credentials = credentials or {}
+        self.success_url = success_url
+        self.cancel_url = cancel_url
 
-    def start_checkout(
-        self,
-        *,
-        amount_cents: int,
-        currency: str,
-        metadata: Dict[str, Any],
-    ) -> Dict[str, str]:
+    def start_checkout(self, amount_cents, currency="usd", metadata=None):
+        raise NotImplementedError
+
+
+class StripeCheckoutAdapter(BasePaymentAdapter):
+    def start_checkout(self, amount_cents, currency="usd", metadata=None):
+        metadata = metadata or {}
+
+        api_key = (
+            self.credentials.get("secret_key")
+            or getattr(settings, "STRIPE_SECRET_KEY", "")
+        )
+
+        if not api_key:
+            raise PaymentAdapterError("Stripe secret key is missing.")
+
+        stripe.api_key = api_key
+
+        success_url = self.success_url
+        if success_url and "session_id=" not in success_url:
+            separator = "&" if "?" in success_url else "?"
+            success_url = f"{success_url}{separator}session_id={{CHECKOUT_SESSION_ID}}"
+
         try:
-            stripe.api_key = settings.STRIPE_SECRET_KEY
-
-            order_id = str(metadata.get("order_id", "")).strip()
-
             session = stripe.checkout.Session.create(
+                mode="payment",
                 payment_method_types=["card"],
                 line_items=[
                     {
                         "price_data": {
                             "currency": currency,
                             "product_data": {
-                                "name": "Majic Mall Order",
+                                "name": "MajicMall Megaverse Order",
                             },
                             "unit_amount": amount_cents,
                         },
                         "quantity": 1,
                     }
                 ],
-                mode="payment",
-                success_url=f"{self.success_url}?session_id={{CHECKOUT_SESSION_ID}}",
+                success_url=success_url,
                 cancel_url=self.cancel_url,
                 metadata=metadata,
-                client_reference_id=order_id or None,
+                client_reference_id=metadata.get("order_id", ""),
             )
-
-            return {
-                "redirect_url": session.url,
-                "session_id": session.id,
-            }
-        except Exception as e:
-            print("STRIPE CHECKOUT ERROR:", repr(e))
+        except Exception as exc:
+            print("STRIPE CHECKOUT ERROR:", repr(exc))
             raise
 
-
-@dataclass
-class PayPalAdapterImpl:
-    client_id: str | None = None
-    client_secret: str | None = None
-    success_url: str | None = None
-    cancel_url: str | None = None
-
-    def start_checkout(
-        self,
-        *,
-        amount_cents: int,
-        currency: str,
-        metadata: Dict[str, Any],
-    ) -> Dict[str, str]:
-        # Demo stub for now
-        session_id = f"pp_sess_{metadata.get('order_id', 'demo')}"
-        redirect_url = f"{self.success_url or '/merchant/checkout/success/'}?session_id={session_id}&gateway=paypal"
-        return {"redirect_url": redirect_url, "session_id": session_id}
+        return {
+            "provider": "stripe",
+            "redirect_url": session.url,
+            "session_id": session.id,
+        }
 
 
-def build_adapter(
-    provider: str,
-    *,
-    credentials: dict,
-    success_url: str,
-    cancel_url: str,
-) -> PaymentAdapter:
+class PayPalCheckoutAdapter(BasePaymentAdapter):
+    def _mode(self):
+        return (
+            self.credentials.get("mode")
+            or getattr(settings, "PAYPAL_MODE", "sandbox")
+            or "sandbox"
+        ).lower()
+
+    def _base_url(self):
+        if self._mode() == "live":
+            return "https://api-m.paypal.com"
+        return "https://api-m.sandbox.paypal.com"
+
+    def _client_id(self):
+        return (
+            self.credentials.get("client_id")
+            or getattr(settings, "PAYPAL_CLIENT_ID", "")
+        )
+
+    def _client_secret(self):
+        return (
+            self.credentials.get("client_secret")
+            or getattr(settings, "PAYPAL_CLIENT_SECRET", "")
+        )
+
+    def _access_token(self):
+        client_id = self._client_id()
+        client_secret = self._client_secret()
+
+        if not client_id or not client_secret:
+            raise PaymentAdapterError("PayPal client ID or secret is missing.")
+
+        response = requests.post(
+            f"{self._base_url()}/v1/oauth2/token",
+            auth=(client_id, client_secret),
+            data={"grant_type": "client_credentials"},
+            timeout=30,
+        )
+
+        if response.status_code >= 400:
+            print("PAYPAL TOKEN ERROR:", response.status_code, response.text)
+            raise PaymentAdapterError("Could not authenticate with PayPal.")
+
+        return response.json()["access_token"]
+
+    def start_checkout(self, amount_cents, currency="usd", metadata=None):
+        metadata = metadata or {}
+        access_token = self._access_token()
+
+        amount = f"{amount_cents / 100:.2f}"
+        order_id = str(metadata.get("order_id", ""))
+
+        success_url = self.success_url
+        if success_url:
+            separator = "&" if "?" in success_url else "?"
+            success_url = f"{success_url}{separator}gateway=paypal"
+
+        payload = {
+            "intent": "CAPTURE",
+            "purchase_units": [
+                {
+                    "custom_id": order_id,
+                    "invoice_id": f"MM-{order_id}" if order_id else None,
+                    "amount": {
+                        "currency_code": currency.upper(),
+                        "value": amount,
+                    },
+                }
+            ],
+            "payment_source": {
+                "paypal": {
+                    "experience_context": {
+                        "brand_name": "MajicMall Megaverse",
+                        "landing_page": "LOGIN",
+                        "user_action": "PAY_NOW",
+                        "return_url": success_url,
+                        "cancel_url": self.cancel_url,
+                    }
+                }
+            },
+        }
+
+        response = requests.post(
+            f"{self._base_url()}/v2/checkout/orders",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+            },
+            json=payload,
+            timeout=30,
+        )
+
+        if response.status_code >= 400:
+            print("PAYPAL CREATE ORDER ERROR:", response.status_code, response.text)
+            raise PaymentAdapterError("Could not create PayPal checkout order.")
+
+        data = response.json()
+
+        approval_url = None
+        for link in data.get("links", []):
+            if link.get("rel") == "payer-action":
+                approval_url = link.get("href")
+                break
+            if link.get("rel") == "approve":
+                approval_url = link.get("href")
+
+        if not approval_url:
+            raise PaymentAdapterError("PayPal approval URL was not returned.")
+
+        return {
+            "provider": "paypal",
+            "redirect_url": approval_url,
+            "session_id": data.get("id"),
+        }
+
+    def capture_checkout(self, paypal_order_id):
+        access_token = self._access_token()
+
+        response = requests.post(
+            f"{self._base_url()}/v2/checkout/orders/{paypal_order_id}/capture",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+            },
+            timeout=30,
+        )
+
+        if response.status_code >= 400:
+            print("PAYPAL CAPTURE ERROR:", response.status_code, response.text)
+            raise PaymentAdapterError("Could not capture PayPal payment.")
+
+        return response.json()
+
+
+class CardDemoAdapter(BasePaymentAdapter):
+    def start_checkout(self, amount_cents, currency="usd", metadata=None):
+        success_url = self.success_url or "/merchant/checkout/success/"
+        separator = "&" if "?" in success_url else "?"
+        return {
+            "provider": "card",
+            "redirect_url": f"{success_url}{separator}gateway=card&demo=1",
+            "session_id": "demo",
+        }
+
+
+def build_adapter(provider, credentials=None, success_url=None, cancel_url=None):
     provider = (provider or "").lower()
 
     if provider == "stripe":
-        return StripeAdapterImpl(
-            api_key=credentials.get("api_key"),
-            success_url=success_url,
-            cancel_url=cancel_url,
-        )
+        return StripeCheckoutAdapter(credentials, success_url, cancel_url)
 
     if provider == "paypal":
-        return PayPalAdapterImpl(
-            client_id=credentials.get("client_id"),
-            client_secret=credentials.get("client_secret"),
-            success_url=success_url,
-            cancel_url=cancel_url,
-        )
+        return PayPalCheckoutAdapter(credentials, success_url, cancel_url)
 
-    return StripeAdapterImpl(
-        success_url=success_url,
-        cancel_url=cancel_url,
-    )
+    if provider == "card":
+        return CardDemoAdapter(credentials, success_url, cancel_url)
+
+    raise PaymentAdapterError(f"Unsupported payment provider: {provider}")

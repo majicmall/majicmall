@@ -3,6 +3,7 @@ from django.views.generic import RedirectView
 from . import views
 
 urlpatterns = [
+path("webhooks/coinbase/", views.webhook_coinbase, name="webhook-coinbase"),
     # =========================
     # Auth (redirect to allauth)
     # =========================

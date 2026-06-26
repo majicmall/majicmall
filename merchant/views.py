@@ -4,6 +4,8 @@ from datetime import timedelta
 from decimal import Decimal, InvalidOperation
 from django.core.mail import send_mail
 import csv
+import hashlib
+import hmac
 import io
 import json
 
@@ -121,6 +123,16 @@ def ensure_default_payment_methods(store: MerchantStore):
         },
     )
 
+    coinbase_method, _ = MerchantPaymentMethod.objects.get_or_create(
+        store=store,
+        provider="coinbase",
+        defaults={
+            "is_active": True,
+            "is_default": False,
+            "credentials": {},
+        },
+    )
+
     changed = False
 
     if not stripe_method.is_active:
@@ -131,6 +143,10 @@ def ensure_default_payment_methods(store: MerchantStore):
         paypal_method.is_active = True
         changed = True
 
+    if not coinbase_method.is_active:
+        coinbase_method.is_active = True
+        changed = True
+
     if not MerchantPaymentMethod.objects.filter(store=store, is_default=True).exists():
         stripe_method.is_default = True
         changed = True
@@ -138,6 +154,7 @@ def ensure_default_payment_methods(store: MerchantStore):
     if changed:
         stripe_method.save()
         paypal_method.save()
+        coinbase_method.save()
 
 
 PROMO_CODES = {
@@ -1863,3 +1880,68 @@ def webhook_paypal(request):
     if event is None:
         return HttpResponseBadRequest("Invalid JSON")
     return HttpResponse(status=200)
+
+@csrf_exempt
+def webhook_coinbase(request):
+    if request.method != "POST":
+        return HttpResponseBadRequest("POST required")
+
+    payload = request.body
+    signature = request.META.get("HTTP_X_CC_WEBHOOK_SIGNATURE", "")
+    webhook_secret = getattr(settings, "COINBASE_COMMERCE_WEBHOOK_SECRET", "")
+
+    if webhook_secret:
+        expected = hmac.new(
+            webhook_secret.encode("utf-8"),
+            payload,
+            hashlib.sha256,
+        ).hexdigest()
+
+        if not hmac.compare_digest(expected, signature):
+            return HttpResponseBadRequest("Invalid Coinbase signature")
+
+    event = _json(request)
+    if event is None:
+        return HttpResponseBadRequest("Invalid JSON")
+
+    event_obj = event.get("event", event)
+    event_type = event_obj.get("type", "")
+    data = event_obj.get("data", {}) or {}
+    metadata = data.get("metadata", {}) or {}
+
+    order_id = metadata.get("order_id")
+    if not order_id:
+        return HttpResponse(status=200)
+
+    try:
+        order = Order.objects.select_related("store").prefetch_related("items").get(pk=int(order_id))
+    except (ValueError, TypeError, Order.DoesNotExist):
+        return HttpResponse(status=200)
+
+    if event_type in {"charge:confirmed", "charge:resolved"}:
+        if order.status != "paid":
+            order.status = "paid"
+            order.save(update_fields=["status"])
+
+            customer_name = (
+                getattr(order, "customer_name", "")
+                or metadata.get("customer_name", "")
+            )
+            customer_email = (
+                getattr(order, "customer_email", "")
+                or metadata.get("customer_email", "")
+            )
+
+            send_order_confirmation_emails(
+                order=order,
+                customer_name=customer_name,
+                customer_email=customer_email,
+            )
+
+    elif event_type in {"charge:failed", "charge:expired"}:
+        if order.status == "pending":
+            order.status = "canceled"
+            order.save(update_fields=["status"])
+
+    return HttpResponse(status=200)
+

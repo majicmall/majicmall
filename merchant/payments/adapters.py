@@ -202,6 +202,69 @@ class PayPalCheckoutAdapter(BasePaymentAdapter):
         return response.json()
 
 
+
+class CoinbaseCommerceAdapter(BasePaymentAdapter):
+    def _api_key(self):
+        return (
+            self.credentials.get("api_key")
+            or getattr(settings, "COINBASE_COMMERCE_API_KEY", "")
+        )
+
+    def start_checkout(self, amount_cents, currency="usd", metadata=None):
+        metadata = metadata or {}
+        api_key = self._api_key()
+
+        if not api_key:
+            raise PaymentAdapterError("Coinbase Commerce API key is missing.")
+
+        amount = f"{amount_cents / 100:.2f}"
+
+        success_url = self.success_url
+        if success_url:
+            separator = "&" if "?" in success_url else "?"
+            success_url = f"{success_url}{separator}gateway=coinbase"
+
+        payload = {
+            "name": "MajicMall Megaverse Order",
+            "description": "MajicMall Megaverse storefront purchase",
+            "pricing_type": "fixed_price",
+            "local_price": {
+                "amount": amount,
+                "currency": currency.upper(),
+            },
+            "metadata": metadata,
+            "redirect_url": success_url,
+            "cancel_url": self.cancel_url,
+        }
+
+        response = requests.post(
+            "https://api.commerce.coinbase.com/charges",
+            headers={
+                "X-CC-Api-Key": api_key,
+                "X-CC-Version": "2018-03-22",
+                "Content-Type": "application/json",
+            },
+            json=payload,
+            timeout=30,
+        )
+
+        if response.status_code >= 400:
+            print("COINBASE CREATE CHARGE ERROR:", response.status_code, response.text)
+            raise PaymentAdapterError("Could not create Coinbase checkout charge.")
+
+        data = response.json().get("data", {})
+        hosted_url = data.get("hosted_url")
+
+        if not hosted_url:
+            raise PaymentAdapterError("Coinbase hosted checkout URL was not returned.")
+
+        return {
+            "provider": "coinbase",
+            "redirect_url": hosted_url,
+            "session_id": data.get("id") or data.get("code"),
+        }
+
+
 class CardDemoAdapter(BasePaymentAdapter):
     def start_checkout(self, amount_cents, currency="usd", metadata=None):
         success_url = self.success_url or "/merchant/checkout/success/"
@@ -221,6 +284,9 @@ def build_adapter(provider, credentials=None, success_url=None, cancel_url=None)
 
     if provider == "paypal":
         return PayPalCheckoutAdapter(credentials, success_url, cancel_url)
+
+    if provider in {"coinbase", "coinbase_commerce"}:
+        return CoinbaseCommerceAdapter(credentials, success_url, cancel_url)
 
     if provider == "card":
         return CardDemoAdapter(credentials, success_url, cancel_url)

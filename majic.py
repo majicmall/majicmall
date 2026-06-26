@@ -58,10 +58,9 @@ def main():
             coming_soon("Theater Tools")
 
         elif choice == "6":
+            run("python tools/payment_tools.py")
 
-            coming_soon("Payment Tools")
-
-        elif choice == "7":
+        elif choice  == "7":
 
             coming_soon("Email Tools")
 

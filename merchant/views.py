@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 from decimal import Decimal, InvalidOperation
+from django.core.mail import send_mail
 import csv
 import io
 import json
@@ -782,6 +783,58 @@ def public_checkout_submit(request):
     request.session.modified = True
 
     return redirect(result["redirect_url"])
+def send_order_confirmation_emails(order, customer_name="", customer_email=""):
+    store = order.store
+    items = order.items.all()
+
+    item_lines = []
+    for item in items:
+        item_lines.append(
+            f"- {item.name} x {item.quantity} @ ${item.unit_price}"
+        )
+
+    items_text = "\n".join(item_lines) if item_lines else "No items listed."
+
+    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@majicmall.com")
+
+    store_email = (
+        getattr(store, "email", None)
+        or getattr(getattr(store, "owner", None), "email", None)
+        or getattr(getattr(store, "user", None), "email", None)
+    )
+
+    if customer_email:
+        send_mail(
+            subject=f"MajicMall Megaverse Order Confirmation #{order.id}",
+            message=(
+                f"Hello {customer_name or 'MajicMall Customer'},\n\n"
+                f"Thank you for your order from {store.name}!\n\n"
+                f"Order Number: #{order.id}\n"
+                f"Order Total: ${order.total}\n\n"
+                f"Items:\n{items_text}\n\n"
+                f"Thank you for shopping inside the MajicMall Megaverse."
+            ),
+            from_email=from_email,
+            recipient_list=[customer_email],
+            fail_silently=True,
+        )
+
+    if store_email:
+        send_mail(
+            subject=f"New MajicMall Megaverse Order #{order.id}",
+            message=(
+                f"New order received for {store.name}.\n\n"
+                f"Order Number: #{order.id}\n"
+                f"Customer: {customer_name or 'Customer'}\n"
+                f"Customer Email: {customer_email or 'Not provided'}\n"
+                f"Order Total: ${order.total}\n\n"
+                f"Items:\n{items_text}\n\n"
+                f"Log in to your merchant dashboard to view the order."
+            ),
+            from_email=from_email,
+            recipient_list=[store_email],
+            fail_silently=True,
+        )
 
 def public_checkout_success(request):
     session_id = (request.GET.get("session_id") or "").strip()
@@ -793,6 +846,35 @@ def public_checkout_success(request):
 
     try:
         session = stripe.checkout.Session.retrieve(session_id)
+        metadata = session.get("metadata", {}) or {}
+        order_id = metadata.get("order_id")
+
+        if not order_id:
+            messages.warning(request, "Payment completed, but no order ID was found.")
+            return redirect("mall-directory")
+
+        order = get_object_or_404(Order.objects.prefetch_related("items"), pk=order_id)
+
+        already_paid = order.status == "paid"
+
+        if not already_paid:
+            order.status = "paid"
+            order.save(update_fields=["status"])
+
+            customer_name = metadata.get("customer_name") or request.session.get("checkout_customer_name", "")
+            customer_email = metadata.get("customer_email") or request.session.get("checkout_customer_email", "")
+
+            send_order_confirmation_emails(
+                order=order,
+                customer_name=customer_name,
+                customer_email=customer_email,
+            )
+
+        request.session.pop("cart", None)
+        request.session.pop("promo_code", None)
+        request.session.pop("checkout_customer_name", None)
+        request.session.pop("checkout_customer_email", None)
+        request.session.modified = True
     except Exception as e:
         print("STRIPE SESSION RETRIEVE ERROR:", repr(e))
         messages.error(request, "Payment verification failed.")

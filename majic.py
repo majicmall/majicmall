@@ -7,15 +7,7 @@ def run(command):
 
 
 def pause():
-    input("\nPress Enter to return to the MajicMall Megaverse Developer Hub...")
-
-
-def deploy_project():
-    run("python tools/deploy_tools.py")
-
-
-def template_tools():
-    run("python tools/template_tools.py")
+    input("\nPress Enter to continue...")
 
 
 def coming_soon(name):
@@ -24,7 +16,9 @@ def coming_soon(name):
 
 
 def main():
+
     while True:
+
         print("\n=========================================")
         print("   MAJICMALL MEGAVERSE DEVELOPER HUB")
         print("=========================================")
@@ -44,32 +38,57 @@ def main():
         choice = input("\nChoose an option: ").strip()
 
         if choice == "1":
-            deploy_project()
+
+            run("python tools/deploy_tools.py")
+
         elif choice == "2":
-            template_tools()
+
+            run("python tools/template_tools.py")
+
         elif choice == "3":
-            coming_soon("Mall Tools")
+
+            run("python tools/mall_tools.py")
+
         elif choice == "4":
-            coming_soon("Merchant Tools")
+
+            run("python tools/merchant_tools.py")
+
         elif choice == "5":
+
             coming_soon("Theater Tools")
+
         elif choice == "6":
+
             coming_soon("Payment Tools")
+
         elif choice == "7":
+
             coming_soon("Email Tools")
+
         elif choice == "8":
+
             coming_soon("Database Tools")
+
         elif choice == "9":
+
             coming_soon("Image Tools")
+
         elif choice == "10":
+
             coming_soon("Diagnostics")
+
         elif choice == "11":
+
             coming_soon("AI Team Tools")
+
         elif choice == "12":
+
             print("\nMajicMall Megaverse Developer Hub closed.")
             sys.exit()
+
         else:
-            print("\nInvalid option. Try again.")
+
+            print("\nInvalid option.")
 
 
 if __name__ == "__main__":

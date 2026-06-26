@@ -60,9 +60,8 @@ def main():
         elif choice == "6":
             run("python tools/payment_tools.py")
 
-        elif choice  == "7":
-
-            coming_soon("Email Tools")
+        elif choice == "7":
+            run("python tools/email_tools.py")
 
         elif choice == "8":
 

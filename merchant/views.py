@@ -34,6 +34,7 @@ from .models import (
 
 from .forms import StoreForm, MerchantPaymentMethodForm
 from .payments.adapters import build_adapter
+from customer.models import CustomerProfile, CustomerAddress
 
 Store = MerchantStore
 
@@ -297,6 +298,7 @@ def profile(request):
         form = StoreForm(instance=store)
 
     ensure_default_payment_methods(store)
+    CustomerProfile.objects.get_or_create(user=request.user)
 
     public_url = None
     qr_url = None
@@ -834,9 +836,56 @@ def public_checkout_submit(request):
     request.session.modified = True
 
     return redirect(result["redirect_url"])
+def ensure_customer_account_from_order(order):
+    customer_email = (getattr(order, "customer_email", "") or "").strip().lower()
+    customer_name = (getattr(order, "customer_name", "") or "").strip()
+
+    if not customer_email:
+        return None
+
+    User = get_user_model()
+
+    user, created = User.objects.get_or_create(
+        email=customer_email,
+        defaults={
+            "username": customer_email,
+            "first_name": customer_name.split(" ")[0] if customer_name else "",
+            "last_name": " ".join(customer_name.split(" ")[1:]) if len(customer_name.split(" ")) > 1 else "",
+        },
+    )
+
+    if created:
+        user.set_unusable_password()
+        user.save()
+
+    profile, _ = CustomerProfile.objects.get_or_create(user=user)
+
+    shipping_address = (getattr(order, "shipping_address", "") or "").strip()
+    shipping_city = (getattr(order, "shipping_city", "") or "").strip()
+    shipping_state = (getattr(order, "shipping_state", "") or "").strip()
+    shipping_zip = (getattr(order, "shipping_zip", "") or "").strip()
+
+    if shipping_address and shipping_city and shipping_state and shipping_zip:
+        if not profile.addresses.exists():
+            CustomerAddress.objects.create(
+                customer=profile,
+                nickname="Primary",
+                full_name=customer_name or customer_email,
+                address1=shipping_address,
+                city=shipping_city,
+                state=shipping_state,
+                postal_code=shipping_zip,
+                default=True,
+            )
+
+    return profile
+
+
 def send_order_confirmation_emails(order, customer_name="", customer_email=""):
+    ensure_customer_account_from_order(order)
+
     store = order.store
-    store_name = getattr(store, "store_name", "MajicMall Store")
+    store_name = getattr(store, "store_name", "MajicMall Megaverse Store")
     items = order.items.all()
 
     item_lines = [
@@ -861,6 +910,9 @@ def send_order_confirmation_emails(order, customer_name="", customer_email=""):
                 f"Order Number: #{order.id}\n"
                 f"Order Total: ${order.total}\n\n"
                 f"Items:\n{items_text}\n\n"
+                f"Your MajicMall Megaverse Customer Command Center is ready.\n"
+                f"Visit your account to view orders, track shipments, save addresses, and earn rewards.\n"
+                f"Customer Account: /customer/\n\n"
                 f"Thank you for shopping inside the MajicMall Megaverse."
             ),
             from_email=from_email,

@@ -124,10 +124,7 @@
     <label style="display:block; margin:10px 0;">
       <input type="radio" name="fulfillment_method" value="local_delivery">
       Local Delivery
-      {% if store.delivery_fee %}
-        — ${{ store.delivery_fee }}
-      {% endif %}
-    </label>
+      </label>
   {% endif %}
 
   {% if store.offers_shipping %}

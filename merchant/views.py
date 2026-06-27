@@ -165,6 +165,13 @@ PROMO_CODES = {
 }
 
 
+def build_public_url(path):
+    base = (getattr(settings, "PUBLIC_BASE_URL", "") or "").rstrip("/")
+    if base:
+        return f"{base}{path}"
+    return path
+
+
 def _calculate_checkout_context(request):
     cart = request.session.get("cart", {})
     promo_code = (request.session.get("promo_code") or "").strip().upper()
@@ -853,8 +860,8 @@ def public_checkout_submit(request):
             unit_price=item["price"],
         )
 
-    success_url = request.build_absolute_uri(reverse("public-checkout-success"))
-    cancel_url = request.build_absolute_uri(reverse("public-checkout-cancel"))
+    success_url = build_public_url(reverse("public-checkout-success"))
+    cancel_url = build_public_url(reverse("public-checkout-cancel"))
 
     adapter = build_adapter(
         payment_method.provider,
@@ -1039,8 +1046,8 @@ def public_checkout_success(request):
             adapter = build_adapter(
                 "paypal",
                 credentials=payment_method.credentials,
-                success_url=request.build_absolute_uri(reverse("public-checkout-success")),
-                cancel_url=request.build_absolute_uri(reverse("public-checkout-cancel")),
+                success_url=build_public_url(reverse("public-checkout-success")),
+                cancel_url=build_public_url(reverse("public-checkout-cancel")),
             )
             paypal_result = adapter.capture_checkout(paypal_token)
         except Exception as e:

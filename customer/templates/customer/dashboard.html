@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+body{
+    background:#050505;
+}
+
+.command-title{
+
+    color:#ffffff;
+
+    font-size:48px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    margin-bottom:10px;
+
+}
+
+.command-sub{
+
+    color:#d4af37;
+
+    text-align:center;
+
+    margin-bottom:40px;
+
+    letter-spacing:2px;
+
+}
+
+.command-card{
+
+    background:rgba(255,255,255,.05);
+
+    border:1px solid rgba(212,175,55,.35);
+
+    border-radius:20px;
+
+    padding:30px;
+
+    backdrop-filter:blur(14px);
+
+    margin-bottom:25px;
+
+    box-shadow:0 0 25px rgba(212,175,55,.12);
+
+    transition:.35s;
+
+}
+
+.command-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 0 35px rgba(212,175,55,.35);
+
+}
+
+.command-number{
+
+    font-size:42px;
+
+    color:#d4af37;
+
+    font-weight:bold;
+
+}
+
+.quick-button{
+
+    display:block;
+
+    width:100%;
+
+    margin-top:14px;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    text-align:center;
+
+    text-decoration:none;
+
+    color:white;
+
+    border:1px solid rgba(212,175,55,.4);
+
+    transition:.3s;
+
+}
+
+.quick-button:hover{
+
+    background:#d4af37;
+
+    color:black;
+
+}
+
+.order-row{
+
+    padding:16px;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+}
+
+.order-row:last-child{
+
+    border:none;
+
+}
+
+</style>
+
+<div class="container py-5">
+
+<div class="command-title">
+
+MajicMall Megaverse
+
+</div>
+
+<div class="command-sub">
+
+CUSTOMER COMMAND CENTER
+
+</div>
+
+<div class="row">
+
+<div class="col-lg-4">
+
+<div class="command-card">
+
+<h3>Welcome</h3>
+
+<h2>{{ request.user.first_name|default:request.user.username }}</h2>
+
+<hr>
+
+<p>Loyalty Tier</p>
+
+<div class="command-number">
+
+{{ profile.get_loyalty_tier_display }}
+
+</div>
+
+<p style="margin-top:20px;">Points</p>
+
+<div class="command-number">
+
+{{ profile.loyalty_points }}
+
+</div>
+
+<a href="#" class="quick-button">
+
+Edit Profile
+
+</a>
+
+<a href="#" class="quick-button">
+
+Manage Addresses
+
+</a>
+
+<a href="#" class="quick-button">
+
+Account Settings
+
+</a>
+
+</div>
+
+</div>
+
+<div class="col-lg-8">
+
+<div class="command-card">
+
+<h3>Recent Orders</h3>
+
+{% for order in recent_orders %}
+
+<div class="order-row">
+
+<strong>
+
+Order #{{ order.id }}
+
+</strong>
+
+<br>
+
+Status:
+
+{{ order.status }}
+
+<br>
+
+Total:
+
+${{ order.total }}
+
+</div>
+
+{% empty %}
+
+<div class="order-row">
+
+No orders have been placed yet.
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</div>
+
+<div class="row mt-2">
+
+<div class="col-md-3">
+
+<div class="command-card text-center">
+
+<h5>Pending</h5>
+
+<div class="command-number">
+
+{{ pending_orders }}
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="command-card text-center">
+
+<h5>Paid</h5>
+
+<div class="command-number">
+
+{{ paid_orders }}
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="command-card text-center">
+
+<h5>Shipped</h5>
+
+<div class="command-number">
+
+{{ shipped_orders }}
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="command-card text-center">
+
+<h5>Completed</h5>
+
+<div class="command-number">
+
+{{ completed_orders }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="col-lg-6">
+
+<div class="command-card">
+
+<h3>Wishlist</h3>
+
+<h2>{{ profile.wishlist_count }}</h2>
+
+Coming Soon
+
+</div>
+
+</div>
+
+<div class="col-lg-6">
+
+<div class="command-card">
+
+<h3>Favorite Stores</h3>
+
+<h2>{{ profile.favorite_store_count }}</h2>
+
+Coming Soon
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

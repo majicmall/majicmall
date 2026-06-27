@@ -19,6 +19,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
 
     path("merchant/", include("merchant.urls")),
+    path("customer/", include("customer.urls")),
     path("theater/", include("theater.urls")),
     path("", include("core.urls")),
 

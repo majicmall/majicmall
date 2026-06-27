@@ -35,6 +35,7 @@ from .models import (
 from .forms import StoreForm, MerchantPaymentMethodForm
 from .payments.adapters import build_adapter
 from customer.models import CustomerProfile, CustomerAddress
+from delivery.models import DeliveryJob
 
 Store = MerchantStore
 
@@ -290,7 +291,37 @@ def profile(request):
     if request.method == "POST":
         form = StoreForm(request.POST, request.FILES, instance=store)
         if form.is_valid():
-            store = form.save()
+            store = form.save(commit=False)
+
+            if hasattr(store, "offers_local_delivery"):
+                store.offers_local_delivery = request.POST.get("offers_local_delivery") == "on"
+                store.offers_pickup = request.POST.get("offers_pickup") == "on"
+                store.offers_shipping = request.POST.get("offers_shipping") == "on"
+                store.business_zip = (request.POST.get("business_zip") or "").strip()
+
+                try:
+                    store.delivery_radius_miles = max(0, int(request.POST.get("delivery_radius_miles") or 0))
+                except (TypeError, ValueError):
+                    store.delivery_radius_miles = store.delivery_radius_miles or 0
+
+                try:
+                    store.delivery_fee = Decimal(request.POST.get("delivery_fee") or "0")
+                except Exception:
+                    store.delivery_fee = Decimal("0.00")
+
+                try:
+                    store.delivery_minimum = Decimal(request.POST.get("delivery_minimum") or "0")
+                except Exception:
+                    store.delivery_minimum = Decimal("0.00")
+
+                try:
+                    store.average_prep_minutes = max(0, int(request.POST.get("average_prep_minutes") or 0))
+                except (TypeError, ValueError):
+                    store.average_prep_minutes = store.average_prep_minutes or 30
+
+            store.save()
+            form.save_m2m()
+
             ensure_default_payment_methods(store)
             messages.success(request, "Store profile saved.")
             return redirect("merchant-profile")
@@ -745,6 +776,25 @@ def public_checkout_submit(request):
     delivery_notes = (request.POST.get("delivery_notes") or "").strip()
 
     payment_method_id = (request.POST.get("payment_method_id") or "").strip()
+    fulfillment_method = (request.POST.get("fulfillment_method") or "shipping").strip().lower()
+
+    allowed_fulfillment = []
+
+    if getattr(context["store"], "offers_pickup", False):
+        allowed_fulfillment.append("pickup")
+
+    if getattr(context["store"], "offers_local_delivery", False):
+        allowed_fulfillment.append("local_delivery")
+
+    if getattr(context["store"], "offers_shipping", False):
+        allowed_fulfillment.append("shipping")
+
+    if not allowed_fulfillment:
+        allowed_fulfillment = ["shipping"]
+
+    if fulfillment_method not in allowed_fulfillment:
+        messages.error(request, "Please select a valid delivery option.")
+        return redirect("public-checkout")
 
     if (
         not customer_name
@@ -785,6 +835,7 @@ def public_checkout_submit(request):
         shipping_state=shipping_state,
         shipping_zip=shipping_zip,
         delivery_notes=delivery_notes,
+        fulfillment_method=fulfillment_method,
     )
 
     for item in context["items"]:
@@ -827,6 +878,7 @@ def public_checkout_submit(request):
             "shipping_zip": shipping_zip,
             "promo_code": context.get("promo_code", ""),
             "purchase_type": "storefront_order",
+            "fulfillment_method": fulfillment_method,
         },
     )
 
@@ -836,6 +888,25 @@ def public_checkout_submit(request):
     request.session.modified = True
 
     return redirect(result["redirect_url"])
+def create_delivery_job_for_order(order):
+    if getattr(order, "fulfillment_method", "") != "local_delivery":
+        return None
+
+    job, created = DeliveryJob.objects.get_or_create(
+        order=order,
+        defaults={
+            "store": order.store,
+            "status": "pending",
+            "pickup_zip": getattr(order.store, "business_zip", "") or "",
+            "delivery_zip": getattr(order, "shipping_zip", "") or "",
+            "delivery_fee": getattr(order.store, "delivery_fee", 0) or 0,
+            "delivery_notes": getattr(order, "delivery_notes", "") or "",
+        },
+    )
+
+    return job
+
+
 def ensure_customer_account_from_order(order):
     customer_email = (getattr(order, "customer_email", "") or "").strip().lower()
     customer_name = (getattr(order, "customer_name", "") or "").strip()
@@ -988,6 +1059,7 @@ def public_checkout_success(request):
             decrement_inventory_for_order(order)
 
             decrement_inventory_for_order(order)
+            create_delivery_job_for_order(order)
 
             send_order_confirmation_emails(
                 order=order,
@@ -1052,6 +1124,7 @@ def public_checkout_success(request):
 
     if order.status == "paid":
         decrement_inventory_for_order(order)
+        create_delivery_job_for_order(order)
 
         send_order_confirmation_emails(
             order=order,

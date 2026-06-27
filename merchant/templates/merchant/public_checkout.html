@@ -109,6 +109,35 @@
             <form method="post"
                   action="{% url 'public-checkout-submit' %}"
                   class="space-y-6">
+
+<div style="margin:22px 0; padding:18px; border:1px solid rgba(212,175,55,.35); border-radius:16px; background:rgba(0,0,0,.04);">
+  <h3>How would you like to receive your order?</h3>
+
+  {% if store.offers_pickup %}
+    <label style="display:block; margin:10px 0;">
+      <input type="radio" name="fulfillment_method" value="pickup">
+      Store Pickup
+    </label>
+  {% endif %}
+
+  {% if store.offers_local_delivery %}
+    <label style="display:block; margin:10px 0;">
+      <input type="radio" name="fulfillment_method" value="local_delivery">
+      Local Delivery
+      {% if store.delivery_fee %}
+        — ${{ store.delivery_fee }}
+      {% endif %}
+    </label>
+  {% endif %}
+
+  {% if store.offers_shipping %}
+    <label style="display:block; margin:10px 0;">
+      <input type="radio" name="fulfillment_method" value="shipping" checked>
+      Shipping
+    </label>
+  {% endif %}
+</div>
+
               {% csrf_token %}
 
               <div class="grid md:grid-cols-2 gap-4">

@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     "theater",
     "merchant",
     "customer",
+    "delivery",
 
     "django.contrib.sites",
     "allauth",

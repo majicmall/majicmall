@@ -56,6 +56,14 @@ class MerchantStore(models.Model):
     slogan = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
     category = models.CharField(max_length=100)
+    offers_local_delivery = models.BooleanField(default=False)
+    offers_pickup = models.BooleanField(default=True)
+    offers_shipping = models.BooleanField(default=True)
+    business_zip = models.CharField(max_length=20, blank=True, default="")
+    delivery_radius_miles = models.PositiveIntegerField(default=10)
+    delivery_fee = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    delivery_minimum = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    average_prep_minutes = models.PositiveIntegerField(default=30)
     logo = models.ImageField(upload_to="merchant_logos/", blank=True, null=True)
 
     plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default="starter")
@@ -228,6 +236,7 @@ class Order(models.Model):
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="paid")
     shipping_status = models.CharField(max_length=30, default="processing")
+    fulfillment_method = models.CharField(max_length=30, default="shipping")
     shipping_carrier = models.CharField(max_length=80, blank=True, default="")
     tracking_number = models.CharField(max_length=120, blank=True, default="")
     tracking_url = models.URLField(blank=True, default="")

@@ -1,0 +1,47 @@
+cat > delivery/templates/delivery/dashboard.html <<'HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MajicMall Megaverse Delivery App</title>
+<style>
+body{background:#050505;color:white;font-family:Arial;margin:40px;}
+.card{background:#111;padding:25px;border-radius:18px;margin-bottom:20px;border:1px solid gold;}
+.stat{font-size:40px;color:gold;font-weight:bold;}
+</style>
+</head>
+<body>
+<h1>🚚 MajicMall Megaverse Delivery App</h1>
+
+<div class="card">
+  <h2>Pending Deliveries</h2>
+  <div class="stat">{{ pending_jobs }}</div>
+</div>
+
+<div class="card">
+  <h2>Active Deliveries</h2>
+  <div class="stat">{{ active_jobs }}</div>
+</div>
+
+<div class="card">
+  <h2>Completed Deliveries</h2>
+  <div class="stat">{{ completed_jobs }}</div>
+</div>
+
+{% if partner %}
+<div class="card">
+  <h2>Partner Status</h2>
+  <h3>{{ partner.status|title }}</h3>
+  <p>Vehicle: <strong>{{ partner.vehicle_type|title }}</strong></p>
+  <p>Rating: {{ partner.rating }} ⭐</p>
+  <p>Today's Earnings: ${{ partner.today_earnings }}</p>
+</div>
+{% else %}
+<div class="card">
+  <h2>Become a Delivery Partner</h2>
+  <p>You haven't registered as a MajicMall Megaverse Delivery Partner yet.</p>
+</div>
+{% endif %}
+</body>
+</html>
+HTML

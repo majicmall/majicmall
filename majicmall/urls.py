@@ -20,6 +20,7 @@ urlpatterns = [
 
     path("merchant/", include("merchant.urls")),
     path("customer/", include("customer.urls")),
+    path("delivery/", include("delivery.urls")),
     path("theater/", include("theater.urls")),
     path("", include("core.urls")),
 

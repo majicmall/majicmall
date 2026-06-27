@@ -193,7 +193,52 @@
           <button class="px-5 py-3 bg-yellow-400 text-black rounded-xl hover:opacity-90 font-semibold">
             Save Profile
           </button>
-        </form>
+        
+<div style="margin-top:24px; padding:18px; border:1px solid rgba(212,175,55,.35); border-radius:16px; background:rgba(0,0,0,.04);">
+  <h3>MajicMall Megaverse Delivery Services</h3>
+
+  <label style="display:block; margin:10px 0;">
+    <input type="checkbox" name="offers_local_delivery" {% if store.offers_local_delivery %}checked{% endif %}>
+    Offer Local Delivery
+  </label>
+
+  <label style="display:block; margin:10px 0;">
+    <input type="checkbox" name="offers_pickup" {% if store.offers_pickup %}checked{% endif %}>
+    Offer Store Pickup
+  </label>
+
+  <label style="display:block; margin:10px 0;">
+    <input type="checkbox" name="offers_shipping" {% if store.offers_shipping %}checked{% endif %}>
+    Offer Shipping
+  </label>
+
+  <label>
+    Business ZIP Code
+    <input type="text" name="business_zip" value="{{ store.business_zip }}" style="width:100%; padding:10px; margin:6px 0 12px;">
+  </label>
+
+  <label>
+    Delivery Radius Miles
+    <input type="number" name="delivery_radius_miles" min="0" value="{{ store.delivery_radius_miles }}" style="width:100%; padding:10px; margin:6px 0 12px;">
+  </label>
+
+  <label>
+    Delivery Fee
+    <input type="number" name="delivery_fee" min="0" step="0.01" value="{{ store.delivery_fee }}" style="width:100%; padding:10px; margin:6px 0 12px;">
+  </label>
+
+  <label>
+    Delivery Minimum Order
+    <input type="number" name="delivery_minimum" min="0" step="0.01" value="{{ store.delivery_minimum }}" style="width:100%; padding:10px; margin:6px 0 12px;">
+  </label>
+
+  <label>
+    Average Prep Time Minutes
+    <input type="number" name="average_prep_minutes" min="0" value="{{ store.average_prep_minutes }}" style="width:100%; padding:10px; margin:6px 0 12px;">
+  </label>
+</div>
+
+</form>
       </div>
 
       <!-- Right column -->

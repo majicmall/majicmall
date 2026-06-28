@@ -12,6 +12,7 @@ import json
 import qrcode
 import stripe
 from django.contrib.auth import get_user_model
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test

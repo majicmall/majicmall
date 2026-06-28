@@ -125,6 +125,9 @@ class PayPalCheckoutAdapter(BasePaymentAdapter):
             separator = "&" if "?" in success_url else "?"
             success_url = f"{success_url}{separator}gateway=paypal"
 
+        print("PAYPAL RETURN URL:", success_url)
+        print("PAYPAL CANCEL URL:", self.cancel_url)
+
         payload = {
             "intent": "CAPTURE",
             "purchase_units": [

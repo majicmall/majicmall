@@ -11,6 +11,7 @@ import json
 
 import qrcode
 import stripe
+from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -860,7 +861,7 @@ def public_checkout_submit(request):
             unit_price=item["price"],
         )
 
-    success_url = build_public_url(reverse("public-checkout-success"))
+    success_url = build_public_url(f"{reverse('public-checkout-success')}?order_id={order.id}")
     cancel_url = build_public_url(reverse("public-checkout-cancel"))
 
     adapter = build_adapter(
@@ -1022,7 +1023,7 @@ def public_checkout_success(request):
     session_id = (request.GET.get("session_id") or "").strip()
 
     if gateway == "paypal" or paypal_token:
-        order_id = request.session.get("checkout_order_id")
+        order_id = request.GET.get("order_id") or request.session.get("checkout_order_id")
 
         if not order_id:
             messages.warning(request, "Payment completed, but no order was found in your session.")
@@ -1062,8 +1063,6 @@ def public_checkout_success(request):
 
             customer_name = request.session.get("checkout_customer_name", "")
             customer_email = request.session.get("checkout_customer_email", "")
-
-            decrement_inventory_for_order(order)
 
             decrement_inventory_for_order(order)
             create_delivery_job_for_order(order)

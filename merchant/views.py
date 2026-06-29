@@ -168,11 +168,21 @@ PROMO_CODES = {
 }
 
 
-def build_public_url(path):
+def build_public_url(request, path):
+    """
+    Build absolute URLs safely for payment redirects.
+
+    In DEBUG/dev, use the active request host so Codespaces preview URLs work.
+    In production, use PUBLIC_BASE_URL when configured.
+    """
+    if getattr(settings, "DEBUG", False):
+        return request.build_absolute_uri(path)
+
     base = (getattr(settings, "PUBLIC_BASE_URL", "") or "").rstrip("/")
     if base:
         return f"{base}{path}"
-    return path
+
+    return request.build_absolute_uri(path)
 
 
 def _calculate_checkout_context(request):
@@ -863,8 +873,8 @@ def public_checkout_submit(request):
             unit_price=item["price"],
         )
 
-    success_url = build_public_url(f"{reverse('public-checkout-success')}?order_id={order.id}")
-    cancel_url = build_public_url(reverse("public-checkout-cancel"))
+    success_url = build_public_url(request, f"{reverse('public-checkout-success')}?order_id={order.id}")
+    cancel_url = build_public_url(request, reverse("public-checkout-cancel"))
 
     adapter = build_adapter(
         payment_method.provider,
@@ -1049,8 +1059,8 @@ def public_checkout_success(request):
             adapter = build_adapter(
                 "paypal",
                 credentials=payment_method.credentials,
-                success_url=build_public_url(reverse("public-checkout-success")),
-                cancel_url=build_public_url(reverse("public-checkout-cancel")),
+                success_url=build_public_url(request, reverse("public-checkout-success")),
+                cancel_url=build_public_url(request, reverse("public-checkout-cancel")),
             )
             paypal_result = adapter.capture_checkout(paypal_token)
         except Exception as e:

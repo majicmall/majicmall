@@ -169,19 +169,9 @@ PROMO_CODES = {
 
 
 def build_public_url(request, path):
-    """
-    Build absolute URLs safely for payment redirects.
-
-    In DEBUG/dev, use the active request host so Codespaces preview URLs work.
-    In production, use PUBLIC_BASE_URL when configured.
-    """
-    if getattr(settings, "DEBUG", False):
-        return request.build_absolute_uri(path)
-
     base = (getattr(settings, "PUBLIC_BASE_URL", "") or "").rstrip("/")
     if base:
         return f"{base}{path}"
-
     return request.build_absolute_uri(path)
 
 

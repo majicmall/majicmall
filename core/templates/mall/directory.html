@@ -256,6 +256,91 @@ body {
     letter-spacing: 0.05em;
   }
 }
+
+.customer-command-card {
+  position: relative;
+  max-width: 980px;
+  margin: 40px auto 34px;
+  padding: 2px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(255,215,0,.95), rgba(255,255,255,.35), rgba(255,215,0,.75));
+  box-shadow: 0 0 34px rgba(255,215,0,.28), 0 0 70px rgba(255,255,255,.09);
+  overflow: hidden;
+}
+
+.customer-command-content {
+  position: relative;
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  padding: 26px;
+  border-radius: 26px;
+  background: rgba(0,0,0,.82);
+  backdrop-filter: blur(10px);
+}
+
+.customer-command-icon {
+  width: 76px;
+  height: 76px;
+  flex: 0 0 76px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+  background: radial-gradient(circle, rgba(255,215,0,.35), rgba(0,0,0,.75));
+  border: 1px solid rgba(255,215,0,.75);
+  box-shadow: 0 0 22px rgba(255,215,0,.28);
+}
+
+.customer-command-kicker {
+  color: #f7d774;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  font-size: .72rem;
+  margin-bottom: 8px;
+}
+
+.customer-command-content h2 {
+  color: white;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  line-height: 1;
+  margin: 0 0 10px;
+  text-shadow: 0 0 18px rgba(255,255,255,.22);
+}
+
+.customer-command-content p {
+  color: rgba(255,255,255,.82);
+  max-width: 720px;
+  margin-bottom: 18px;
+}
+
+.customer-command-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 22px;
+  border-radius: 999px;
+  color: white;
+  font-weight: 800;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,.8);
+  box-shadow: 0 0 16px rgba(255,255,255,.28), inset 0 0 16px rgba(255,215,0,.18);
+  background: linear-gradient(135deg, rgba(150,0,0,.9), rgba(255,0,0,.72));
+}
+
+@media (max-width: 640px) {
+  .customer-command-card {
+    margin: 28px 12px 28px;
+  }
+
+  .customer-command-content {
+    flex-direction: column;
+    text-align: center;
+    padding: 22px 18px;
+  }
+}
+
+
 </style>
 </head>
 
@@ -303,6 +388,27 @@ body {
 
     <div class="text-center mb-10">
       <div class="feature-title-box">
+
+        <!-- Customer Command Center Entrance -->
+        <section class="customer-command-card">
+          <div class="customer-command-glow"></div>
+
+          <div class="customer-command-content">
+            <div class="customer-command-icon">👤</div>
+            <div>
+              <p class="customer-command-kicker">MajicMall Citizens & Customers</p>
+              <h2>Customer Command Center</h2>
+              <p>
+                View your orders, track deliveries, manage saved addresses, and enter your personal MajicMall experience.
+              </p>
+
+              <a href="/customer/" class="customer-command-btn">
+                Enter Customer Command Center →
+              </a>
+            </div>
+          </div>
+        </section>
+
         <h2 class="text-3xl font-bold text-yellow-400">Feature Stores by Zone</h2>
       </div>
     </div>

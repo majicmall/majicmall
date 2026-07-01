@@ -191,7 +191,7 @@ AUTHENTICATION_BACKENDS = [
 SITE_ID = 1
 
 LOGIN_URL = "/accounts/login/"
-LOGIN_REDIRECT_URL = "/merchant/dashboard/"
+LOGIN_REDIRECT_URL = "/identity-gateway/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/accounts/login/"
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_SIGNUP_REDIRECT_URL = "/merchant/setup/"

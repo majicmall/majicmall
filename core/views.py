@@ -533,3 +533,25 @@ def ticket_success(request, movie_id):
 
 
 
+
+
+def identity_gateway(request):
+    """
+    MajicMall Identity Gateway.
+    Routes one logged-in account into the right command center.
+    """
+    next_url = request.GET.get("next") or ""
+
+    if next_url.startswith("/customer"):
+        return redirect("/customer/")
+
+    if next_url.startswith("/merchant"):
+        return redirect("/merchant/dashboard/")
+
+    if next_url.startswith("/delivery"):
+        return redirect("/delivery/")
+
+    if request.user.is_authenticated:
+        return redirect("/customer/")
+
+    return redirect("/accounts/login/")

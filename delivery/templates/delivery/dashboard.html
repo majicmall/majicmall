@@ -1,20 +1,20 @@
-cat > delivery/templates/delivery/dashboard.html <<'HTML'
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MajicMall Megaverse Delivery App</title>
+<title>MajicMall Driver Command Center</title>
 <style>
 body{background:#050505;color:white;font-family:Arial;margin:40px;}
 .card{background:#111;padding:25px;border-radius:18px;margin-bottom:20px;border:1px solid gold;}
 .stat{font-size:40px;color:gold;font-weight:bold;}
+.job{border-top:1px solid rgba(255,215,0,.35);padding:14px 0;}
 </style>
 </head>
 <body>
-<h1>🚚 MajicMall Megaverse Delivery App</h1>
+<h1>🚚 MajicMall Driver Command Center</h1>
 
 <div class="card">
-  <h2>Pending Deliveries</h2>
+  <h2>Available Deliveries In Your Area</h2>
   <div class="stat">{{ pending_jobs }}</div>
 </div>
 
@@ -30,18 +30,35 @@ body{background:#050505;color:white;font-family:Arial;margin:40px;}
 
 {% if partner %}
 <div class="card">
-  <h2>Partner Status</h2>
+  <h2>Driver Status</h2>
   <h3>{{ partner.status|title }}</h3>
+  <p>Home Zip: <strong>{{ partner.home_zip|default:"Not set" }}</strong></p>
+  <p>Current Working Zip: <strong>{{ partner.current_zip|default:"Not set" }}</strong></p>
+  <p>Service Radius: {{ partner.service_radius_miles }} miles</p>
   <p>Vehicle: <strong>{{ partner.vehicle_type|title }}</strong></p>
   <p>Rating: {{ partner.rating }} ⭐</p>
   <p>Today's Earnings: ${{ partner.today_earnings }}</p>
 </div>
+
+<div class="card">
+  <h2>Nearby Delivery Jobs</h2>
+  {% for job in available_jobs %}
+    <div class="job">
+      <strong>Order #{{ job.order.id }}</strong><br>
+      Store: {{ job.store.store_name }}<br>
+      Pickup Zip: {{ job.pickup_zip }}<br>
+      Delivery Zip: {{ job.delivery_zip }}<br>
+      Status: {{ job.status|title }}
+    </div>
+  {% empty %}
+    <p>No delivery jobs available in your area yet.</p>
+  {% endfor %}
+</div>
 {% else %}
 <div class="card">
   <h2>Become a Delivery Partner</h2>
-  <p>You haven't registered as a MajicMall Megaverse Delivery Partner yet.</p>
+  <p>You have not registered as a MajicMall Megaverse Delivery Partner yet.</p>
 </div>
 {% endif %}
 </body>
 </html>
-HTML

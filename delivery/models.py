@@ -27,7 +27,9 @@ class DeliveryPartner(models.Model):
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="offline")
     vehicle_type = models.CharField(max_length=20, choices=VEHICLE_CHOICES, default="car")
+    home_zip = models.CharField(max_length=20, blank=True)
     current_zip = models.CharField(max_length=20, blank=True)
+    service_radius_miles = models.PositiveIntegerField(default=10)
     phone = models.CharField(max_length=30, blank=True)
 
     completed_deliveries = models.PositiveIntegerField(default=0)

@@ -1,0 +1,138 @@
+{% extends "delivery/driver_base.html" %}
+
+{% block title %}
+  Driver Onboarding | MajicMall Megaverse Driver Network
+{% endblock %}
+
+{% block content %}
+  <div class="narrow-shell">
+    <section class="panel">
+      <p class="eyebrow">
+        Driver Profile
+      </p>
+
+      <h1 style="font-size:clamp(2rem, 7vw, 3.5rem);">
+        Complete Your Onboarding
+      </h1>
+
+      <p class="lead">
+        Add your working area, delivery method, and contact
+        information before entering the Driver Command Center.
+      </p>
+
+      <form method="post" style="margin-top:30px;">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <ul class="error-list">
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% for field in form %}
+          {% if field.name != "contractor_agreement_accepted" %}
+            <div class="form-row">
+              <label for="{{ field.id_for_label }}">
+                {{ field.label }}
+              </label>
+
+              {{ field }}
+
+              {% if field.help_text %}
+                <p class="help-text">
+                  {{ field.help_text }}
+                </p>
+              {% endif %}
+
+              {% if field.errors %}
+                <ul class="error-list">
+                  {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+
+        <div class="agreement">
+          <h3>
+            Independent Contractor Agreement
+          </h3>
+
+          <p>
+            Agreement Version {{ agreement_version }}
+          </p>
+
+          <p>
+            By joining the MajicMall Megaverse Driver Network,
+            I acknowledge that I am providing delivery services
+            as an independent contractor and not as an employee
+            of MajicMall Megaverse or its participating merchants.
+          </p>
+
+          <p>
+            I understand that I am responsible for maintaining
+            any vehicle, equipment, licensing, insurance, permits,
+            registrations, and mobile service required to perform
+            delivery services safely and legally.
+          </p>
+
+          <p>
+            I may choose when I am available to receive delivery
+            opportunities. I am not guaranteed any minimum number
+            of delivery opportunities, hours, earnings, tips, or
+            assignments.
+          </p>
+
+          <p>
+            I agree to provide accurate driver information, protect
+            customer information, follow applicable traffic and
+            safety laws, handle orders with reasonable care, and
+            complete accepted deliveries professionally.
+          </p>
+
+          <p>
+            I understand that delivery opportunities may be based
+            on my current working ZIP, availability, service area,
+            vehicle type, account status, and other operational
+            requirements.
+          </p>
+
+          <p>
+            I understand that this onboarding agreement is an
+            initial platform acknowledgment and may later be
+            supplemented or replaced by a more detailed legal
+            agreement, insurance requirement, background-check
+            authorization, payment agreement, or local operating
+            policy.
+          </p>
+        </div>
+
+        <div class="agreement-checkbox">
+          {{ form.contractor_agreement_accepted }}
+
+          <label
+            for="{{ form.contractor_agreement_accepted.id_for_label }}"
+          >
+            {{ form.contractor_agreement_accepted.label }}
+          </label>
+        </div>
+
+        {% if form.contractor_agreement_accepted.errors %}
+          <ul class="error-list">
+            {% for error in form.contractor_agreement_accepted.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <button class="submit-button" type="submit">
+          Save Profile and Enter Command Center
+        </button>
+      </form>
+    </section>
+  </div>
+{% endblock %}

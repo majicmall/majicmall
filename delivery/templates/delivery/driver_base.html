@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    {% block title %}
+      MajicMall Megaverse Driver Network
+    {% endblock %}
+  </title>
+
+  <style>
+    :root {
+      --black: #030303;
+      --panel: rgba(16, 16, 16, 0.95);
+      --gold: #f2ca52;
+      --gold-bright: #ffe79a;
+      --white: #ffffff;
+      --muted: #c8c8c8;
+      --danger: #ff7b7b;
+      --success: #83e8a7;
+      --border: rgba(242, 202, 82, 0.44);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--black);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          rgba(242, 202, 82, 0.18),
+          transparent 35%
+        ),
+        linear-gradient(
+          145deg,
+          #050505 0%,
+          #0e0e0e 50%,
+          #020202 100%
+        );
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--border);
+      background: rgba(3, 3, 3, 0.94);
+      backdrop-filter: blur(16px);
+    }
+
+    .site-header-inner {
+      width: min(1180px, calc(100% - 32px));
+      min-height: 76px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      text-decoration: none;
+    }
+
+    .brand-main {
+      display: block;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1rem, 2.8vw, 1.35rem);
+      font-weight: 700;
+      letter-spacing: 0.035em;
+    }
+
+    .brand-subtitle {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-link,
+    .header-button {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 17px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .header-link {
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .header-button {
+      color: #080808;
+      border-color: var(--gold);
+      background: linear-gradient(
+        135deg,
+        var(--gold-bright),
+        var(--gold)
+      );
+      font-weight: 800;
+    }
+
+    .logout-form {
+      margin: 0;
+    }
+
+    .page-shell {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 52px 0 80px;
+    }
+
+    .narrow-shell {
+      width: min(720px, 100%);
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: clamp(26px, 5vw, 54px);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.07),
+          rgba(255, 255, 255, 0.015)
+        ),
+        rgba(8, 8, 8, 0.95);
+      box-shadow:
+        0 24px 80px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(242, 202, 82, 0.08);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--gold);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      overflow-wrap: anywhere;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 7vw, 4.3rem);
+      line-height: 1.02;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
+      line-height: 1.75;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .primary-action,
+    .secondary-action {
+      display: inline-flex;
+      min-height: 52px;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 24px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary-action {
+      border: 1px solid var(--gold);
+      color: #080808;
+      background: linear-gradient(
+        135deg,
+        var(--gold-bright),
+        var(--gold)
+      );
+      box-shadow: 0 0 28px rgba(242, 202, 82, 0.18);
+    }
+
+    .secondary-action {
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .panel {
+      padding: clamp(22px, 4vw, 34px);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: var(--panel);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.38);
+    }
+
+    .panel + .panel {
+      margin-top: 22px;
+    }
+
+    .form-row {
+      margin-bottom: 20px;
+    }
+
+    .form-row label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gold-bright);
+      font-weight: 700;
+    }
+
+    .form-control {
+      width: 100%;
+      min-height: 50px;
+      padding: 12px 14px;
+      border: 1px solid rgba(242, 202, 82, 0.42);
+      border-radius: 12px;
+      outline: none;
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.065);
+    }
+
+    select.form-control option {
+      color: #111111;
+      background: #ffffff;
+    }
+
+    .form-control:focus {
+      border-color: var(--gold-bright);
+      box-shadow: 0 0 0 3px rgba(242, 202, 82, 0.13);
+    }
+
+    .help-text {
+      margin: 7px 0 0;
+      color: #aaaaaa;
+      font-size: 0.87rem;
+      line-height: 1.5;
+    }
+
+    .error-list,
+    .errorlist {
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+      color: var(--danger);
+      font-size: 0.9rem;
+    }
+
+    .submit-button {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 20px;
+      border: 1px solid var(--gold);
+      border-radius: 999px;
+      color: #070707;
+      background: linear-gradient(
+        135deg,
+        var(--gold-bright),
+        var(--gold)
+      );
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .messages {
+      width: min(1100px, calc(100% - 32px));
+      margin: 20px auto 0;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      padding: 14px 18px;
+      border: 1px solid rgba(131, 232, 167, 0.45);
+      border-radius: 12px;
+      color: var(--success);
+      background: rgba(131, 232, 167, 0.08);
+    }
+
+    .agreement {
+      max-height: 340px;
+      overflow-y: auto;
+      margin: 28px 0 20px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 16px;
+      color: #d2d2d2;
+      background: rgba(255, 255, 255, 0.035);
+      line-height: 1.65;
+    }
+
+    .agreement h3 {
+      color: var(--gold-bright);
+    }
+
+    .agreement-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(242, 202, 82, 0.06);
+    }
+
+    .agreement-checkbox input {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--gold);
+      flex: 0 0 auto;
+    }
+
+    .agreement-checkbox label {
+      color: var(--white);
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .footer-note {
+      margin-top: 22px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .footer-note a {
+      color: var(--gold-bright);
+      font-weight: 700;
+    }
+
+    @media (max-width: 700px) {
+      .site-header-inner {
+        min-height: auto;
+        padding: 14px 0;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .header-link,
+      .header-button,
+      .logout-form {
+        flex: 1;
+      }
+
+      .header-button {
+        width: 100%;
+      }
+
+      .page-shell {
+        padding-top: 28px;
+      }
+
+      .action-row {
+        flex-direction: column;
+      }
+
+      .primary-action,
+      .secondary-action {
+        width: 100%;
+      }
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a
+        class="brand"
+        href="{% url 'delivery-become-driver' %}"
+      >
+        <span class="brand-main">
+          MajicMall Megaverse
+        </span>
+
+        <span class="brand-subtitle">
+          Driver Network
+        </span>
+      </a>
+
+      <div class="header-actions">
+        {% if request.user.is_authenticated %}
+          <a
+            class="header-link"
+            href="{% url 'delivery-dashboard' %}"
+          >
+            Command Center
+          </a>
+
+          <form
+            class="logout-form"
+            method="post"
+            action="{% url 'delivery-driver-logout' %}"
+          >
+            {% csrf_token %}
+
+            <button class="header-button" type="submit">
+              Sign Out
+            </button>
+          </form>
+        {% else %}
+          <a
+            class="header-link"
+            href="{% url 'delivery-driver-login' %}"
+          >
+            Driver Sign In
+          </a>
+
+          <a
+            class="header-button"
+            href="{% url 'delivery-driver-signup' %}"
+          >
+            Become a Driver
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div class="message">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="page-shell">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

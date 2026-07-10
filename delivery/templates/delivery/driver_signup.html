@@ -1,0 +1,72 @@
+{% extends "delivery/driver_base.html" %}
+
+{% block title %}
+  Driver Signup | MajicMall Megaverse Driver Network
+{% endblock %}
+
+{% block content %}
+  <div class="narrow-shell">
+    <section class="panel">
+      <p class="eyebrow">
+        Driver Registration
+      </p>
+
+      <h1 style="font-size:clamp(2rem, 7vw, 3.5rem);">
+        Create Your Driver Account
+      </h1>
+
+      <p class="lead">
+        Start your application to join the MajicMall Megaverse
+        Driver Network.
+      </p>
+
+      <form method="post" style="margin-top:30px;">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <ul class="error-list">
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% for field in form %}
+          <div class="form-row">
+            <label for="{{ field.id_for_label }}">
+              {{ field.label }}
+            </label>
+
+            {{ field }}
+
+            {% if field.help_text %}
+              <p class="help-text">
+                {{ field.help_text|safe }}
+              </p>
+            {% endif %}
+
+            {% if field.errors %}
+              <ul class="error-list">
+                {% for error in field.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <button class="submit-button" type="submit">
+          Create Driver Account
+        </button>
+      </form>
+
+      <p class="footer-note">
+        Already registered?
+
+        <a href="{% url 'delivery-driver-login' %}">
+          Sign in to your driver account.
+        </a>
+      </p>
+    </section>
+  </div>
+{% endblock %}

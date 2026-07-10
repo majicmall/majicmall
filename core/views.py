@@ -555,3 +555,28 @@ def identity_gateway(request):
         return redirect("/customer/")
 
     return redirect("/accounts/login/")
+
+def megaverse_command_center(request):
+    """
+    Universal MajicMall Megaverse launch hub.
+
+    This page does not guess which role dashboard a user wants.
+    Customers, merchants, drivers, creators, and team applicants
+    choose their intended destination from one neutral Command Center.
+    """
+    display_name = ""
+
+    if request.user.is_authenticated:
+        display_name = (
+            request.user.get_full_name().strip()
+            or request.user.username
+        )
+
+    return render(
+        request,
+        "core/command_center.html",
+        {
+            "display_name": display_name,
+        },
+    )
+

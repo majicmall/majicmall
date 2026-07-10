@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path("command-center/", views.megaverse_command_center, name="megaverse-command-center"),
+
     # ---------------------------
     # 🌍 Global Pages
     # ---------------------------

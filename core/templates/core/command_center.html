@@ -1,0 +1,1016 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    MajicMall Megaverse Command Center
+  </title>
+
+  <style>
+    :root {
+      --black: #020202;
+      --deep-black: #080808;
+      --panel: rgba(14, 14, 18, 0.9);
+      --panel-light: rgba(255, 255, 255, 0.055);
+      --gold: #e8bd45;
+      --gold-bright: #ffe59a;
+      --gold-soft: rgba(232, 189, 69, 0.22);
+      --white: #ffffff;
+      --muted: rgba(255, 255, 255, 0.72);
+      --border: rgba(232, 189, 69, 0.38);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--black);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(
+          circle at 50% -10%,
+          rgba(232, 189, 69, 0.2),
+          transparent 35%
+        ),
+        radial-gradient(
+          circle at 10% 35%,
+          rgba(80, 52, 160, 0.13),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 90% 60%,
+          rgba(30, 90, 170, 0.11),
+          transparent 30%
+        ),
+        linear-gradient(
+          145deg,
+          #020202 0%,
+          #0c0c0f 48%,
+          #020202 100%
+        );
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    body::before {
+      opacity: 0.72;
+      background-image:
+        radial-gradient(circle, #ffffff 0 1px, transparent 1.5px),
+        radial-gradient(circle, #ffe6a1 0 1px, transparent 1.5px);
+      background-position:
+        0 0,
+        45px 75px;
+      background-size:
+        120px 120px,
+        170px 170px;
+      animation: starDrift 32s linear infinite;
+    }
+
+    body::after {
+      background:
+        linear-gradient(
+          115deg,
+          transparent 25%,
+          rgba(255, 224, 139, 0.035) 42%,
+          transparent 58%
+        );
+      animation: lightSweep 10s ease-in-out infinite;
+    }
+
+    @keyframes starDrift {
+      from {
+        transform: translateY(0);
+      }
+
+      to {
+        transform: translateY(-120px);
+      }
+    }
+
+    @keyframes lightSweep {
+      0%,
+      100% {
+        transform: translateX(-35%);
+      }
+
+      50% {
+        transform: translateX(35%);
+      }
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .site-header {
+      position: relative;
+      z-index: 20;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.76);
+      backdrop-filter: blur(16px);
+    }
+
+    .header-inner {
+      width: min(1240px, calc(100% - 32px));
+      min-height: 76px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      text-decoration: none;
+    }
+
+    .brand-name {
+      display: block;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1rem, 3vw, 1.4rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-label {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-button {
+      min-height: 42px;
+      padding: 10px 18px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.05);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .header-button.gold {
+      color: #070707;
+      border-color: var(--gold);
+      background: linear-gradient(
+        135deg,
+        var(--gold-bright),
+        var(--gold)
+      );
+      font-weight: 900;
+    }
+
+    .header-form {
+      margin: 0;
+    }
+
+    .page-shell {
+      position: relative;
+      z-index: 5;
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 56px 0 90px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(30px, 7vw, 76px);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      text-align: center;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.07),
+          rgba(255, 255, 255, 0.015)
+        ),
+        rgba(5, 5, 7, 0.9);
+      box-shadow:
+        0 34px 100px rgba(0, 0, 0, 0.55),
+        0 0 60px rgba(232, 189, 69, 0.08);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        var(--gold-bright),
+        transparent
+      );
+      box-shadow: 0 0 25px var(--gold);
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--gold);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      overflow-wrap: anywhere;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.35rem, 8vw, 5.8rem);
+      line-height: 0.98;
+      text-shadow:
+        0 0 18px rgba(255, 229, 154, 0.16),
+        0 0 45px rgba(232, 189, 69, 0.08);
+    }
+
+    .hero-description {
+      width: min(790px, 100%);
+      margin: 24px auto 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2.6vw, 1.2rem);
+      line-height: 1.75;
+    }
+
+    .welcome {
+      margin-top: 24px;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.2rem, 3vw, 1.65rem);
+    }
+
+    .section {
+      margin-top: 54px;
+    }
+
+    .section-heading {
+      margin-bottom: 22px;
+      text-align: center;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+    }
+
+    .section-heading p {
+      width: min(720px, 100%);
+      margin: 12px auto 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .launcher-grid {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(270px, 1fr)
+      );
+      gap: 20px;
+    }
+
+    .launcher-card,
+    .staff-card {
+      position: relative;
+      overflow: hidden;
+      padding: 26px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.065),
+          rgba(255, 255, 255, 0.018)
+        ),
+        var(--panel);
+      box-shadow: 0 20px 56px rgba(0, 0, 0, 0.36);
+      transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+    }
+
+    .launcher-card:hover,
+    .staff-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 229, 154, 0.68);
+      box-shadow:
+        0 26px 70px rgba(0, 0, 0, 0.44),
+        0 0 34px rgba(232, 189, 69, 0.09);
+    }
+
+    .card-icon {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      font-size: 1.75rem;
+      background: rgba(232, 189, 69, 0.08);
+      box-shadow: inset 0 0 20px rgba(232, 189, 69, 0.04);
+    }
+
+    .launcher-card h3,
+    .staff-card h3 {
+      margin: 0;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.5rem;
+    }
+
+    .card-description {
+      min-height: 78px;
+      margin: 12px 0 20px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .button-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .launch-button {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.045);
+      text-align: center;
+      text-decoration: none;
+      font-weight: 800;
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .launch-button:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .launch-button.primary {
+      color: #060606;
+      border-color: var(--gold);
+      background: linear-gradient(
+        135deg,
+        var(--gold-bright),
+        var(--gold)
+      );
+    }
+
+    .staff-grid {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(230px, 1fr)
+      );
+      gap: 18px;
+    }
+
+    .staff-role {
+      margin: 7px 0 14px;
+      color: var(--gold);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .staff-description {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .future-label {
+      display: inline-flex;
+      margin-top: 18px;
+      padding: 7px 11px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 999px;
+      color: rgba(255, 255, 255, 0.64);
+      font-size: 0.73rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .footer-note {
+      margin-top: 58px;
+      color: rgba(255, 255, 255, 0.55);
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 760px) {
+      .header-inner {
+        padding: 14px 0;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .header-button,
+      .header-form {
+        flex: 1;
+      }
+
+      .header-form .header-button {
+        width: 100%;
+      }
+
+      .page-shell {
+        padding-top: 28px;
+      }
+
+      .hero {
+        border-radius: 24px;
+      }
+
+      .launcher-grid,
+      .staff-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card-description {
+        min-height: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/command-center/">
+        <span class="brand-name">
+          MajicMall Megaverse
+        </span>
+
+        <span class="brand-label">
+          Command Center 2.0
+        </span>
+      </a>
+
+      <div class="header-actions">
+        <a class="header-button" href="/">
+          Return to MajicMall
+        </a>
+
+        {% if request.user.is_authenticated %}
+          <form
+            class="header-form"
+            method="post"
+            action="/accounts/logout/"
+          >
+            {% csrf_token %}
+
+            <button class="header-button gold" type="submit">
+              Sign Out
+            </button>
+          </form>
+        {% else %}
+          <a class="header-button gold" href="/accounts/login/">
+            Sign In
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero">
+      <p class="eyebrow">
+        One Account • Multiple Roles • One Central Hub
+      </p>
+
+      <h1>
+        Command Center
+      </h1>
+
+      <p class="hero-description">
+        Your personalized launch hub for shopping, merchant tools,
+        the MajicMall Megaverse Driver Network, creator services,
+        entertainment, careers, memberships, account management,
+        and more—all in one place.
+      </p>
+
+      {% if request.user.is_authenticated %}
+        <p class="welcome">
+          Welcome back, {{ display_name }}.
+          Choose where you would like to go today.
+        </p>
+      {% else %}
+        <p class="welcome">
+          Choose the MajicMall experience you would like to enter.
+        </p>
+      {% endif %}
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <h2>
+          Choose Your Experience
+        </h2>
+
+        <p>
+          MajicMall will no longer guess which dashboard you intended
+          to visit. Select the role or service you want to use.
+        </p>
+      </div>
+
+      <div class="launcher-grid">
+        <article class="launcher-card">
+          <div class="card-icon">🛍️</div>
+
+          <h3>
+            Customer & Shopping
+          </h3>
+
+          <p class="card-description">
+            Shop, review purchases, manage orders, addresses,
+            tickets, downloads, account information, and more.
+          </p>
+
+          <div class="button-stack">
+            <a
+              class="launch-button primary"
+              href="/community/signup/?account_type=customer"
+            >
+              Create Customer Account
+            </a>
+
+            <a
+              class="launch-button"
+              href="/accounts/login/?next=/customer/"
+            >
+              Customer Sign In
+            </a>
+
+            {% if request.user.is_authenticated %}
+              <a class="launch-button" href="/customer/">
+                Open Customer Dashboard
+              </a>
+            {% endif %}
+          </div>
+        </article>
+
+        <article class="launcher-card">
+          <div class="card-icon">🏪</div>
+
+          <h3>
+            Merchant
+          </h3>
+
+          <p class="card-description">
+            Create and manage a MajicMall store, products, orders,
+            payments, reports, subscriptions, and business tools.
+          </p>
+
+          <div class="button-stack">
+            <a
+              class="launch-button primary"
+              href="/merchant/invite/"
+            >
+              Merchant Sign Up
+            </a>
+
+            <a
+              class="launch-button"
+              href="/accounts/login/?next=/merchant/dashboard/"
+            >
+              Merchant Sign In
+            </a>
+
+            {% if request.user.is_authenticated %}
+              <a
+                class="launch-button"
+                href="/merchant/dashboard/"
+              >
+                Open Merchant Dashboard
+              </a>
+            {% endif %}
+          </div>
+        </article>
+
+        <article class="launcher-card">
+          <div class="card-icon">🚚</div>
+
+          <h3>
+            Be Your Own Boss
+          </h3>
+
+          <p class="card-description">
+            Join the MajicMall Megaverse Driver Network or explore
+            opportunities as a MajicMall merchandiser.
+          </p>
+
+          <div class="button-stack">
+            <a
+              class="launch-button primary"
+              href="/delivery/become-a-driver/"
+            >
+              Become a Driver or Merchandiser
+            </a>
+
+            <a
+              class="launch-button"
+              href="/delivery/sign-in/"
+            >
+              Driver Sign In
+            </a>
+
+            {% if request.user.is_authenticated %}
+              <a class="launch-button" href="/delivery/">
+                Open Driver Command Center
+              </a>
+            {% endif %}
+          </div>
+        </article>
+
+        <article class="launcher-card">
+          <div class="card-icon">🎨</div>
+
+          <h3>
+            Creator Studio
+          </h3>
+
+          <p class="card-description">
+            Artists, authors, filmmakers, musicians, podcasters,
+            influencers, educators, and digital creators begin here.
+          </p>
+
+          <div class="button-stack">
+            <a
+              class="launch-button primary"
+              href="/community/signup/?account_type=creator"
+            >
+              Become a Creator
+            </a>
+
+            <a
+              class="launch-button"
+              href="/accounts/login/?next=/command-center/%3Flaunch%3Dcreator"
+            >
+              Creator Sign In
+            </a>
+          </div>
+        </article>
+
+        <article class="launcher-card">
+          <div class="card-icon">🎬</div>
+
+          <h3>
+            Entertainment
+          </h3>
+
+          <p class="card-description">
+            Enter the MajicMall Theater, explore events, films,
+            premieres, performances, tickets, and digital experiences.
+          </p>
+
+          <div class="button-stack">
+            <a class="launch-button primary" href="/theater/">
+              Enter Entertainment
+            </a>
+
+            <a class="launch-button" href="/directory/">
+              Explore MajicMall Zones
+            </a>
+          </div>
+        </article>
+
+        <article class="launcher-card">
+          <div class="card-icon">💼</div>
+
+          <h3>
+            Join Our Team
+          </h3>
+
+          <p class="card-description">
+            Learn about future employment, contractor, internship,
+            ambassador, support, technical, and partnership roles.
+          </p>
+
+          <div class="button-stack">
+            <a
+              class="launch-button primary"
+              href="/community/signup/?account_type=team"
+            >
+              Complete Team Interest Form
+            </a>
+
+            <a
+              class="launch-button"
+              href="/community/signup/?account_type=ambassador"
+            >
+              Ambassador Interest
+            </a>
+          </div>
+        </article>
+
+        <article class="launcher-card">
+          <div class="card-icon">❤️</div>
+
+          <h3>
+            Community & Giving
+          </h3>
+
+          <p class="card-description">
+            Connect with nonprofits, ambassadors, organizations,
+            members, giving campaigns, and community experiences.
+          </p>
+
+          <div class="button-stack">
+            <a
+              class="launch-button primary"
+              href="/community/signup/"
+            >
+              Join the Community
+            </a>
+
+            <a class="launch-button" href="/directory/">
+              Explore Community Zones
+            </a>
+          </div>
+        </article>
+
+        <article class="launcher-card">
+          <div class="card-icon">⚙️</div>
+
+          <h3>
+            Account & Security
+          </h3>
+
+          <p class="card-description">
+            Manage your universal MajicMall account, password,
+            authentication, profile information, and security.
+          </p>
+
+          <div class="button-stack">
+            {% if request.user.is_authenticated %}
+              <a
+                class="launch-button primary"
+                href="/accounts/email/"
+              >
+                Manage Account
+              </a>
+
+              <a
+                class="launch-button"
+                href="/accounts/password/change/"
+              >
+                Change Password
+              </a>
+            {% else %}
+              <a
+                class="launch-button primary"
+                href="/accounts/login/"
+              >
+                Universal Account Sign In
+              </a>
+
+              <a
+                class="launch-button"
+                href="/community/signup/"
+              >
+                Create MajicMall Account
+              </a>
+            {% endif %}
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <h2>
+          MajicMall AI Executive Team
+        </h2>
+
+        <p>
+          Meet the specialized AI staff being developed to assist
+          members, merchants, drivers, creators, and leadership
+          throughout the MajicMall Megaverse.
+        </p>
+      </div>
+
+      <div class="staff-grid">
+        <article class="staff-card">
+          <div class="card-icon">🤵</div>
+
+          <h3>Dexter</h3>
+
+          <p class="staff-role">
+            Mall Manager
+          </p>
+
+          <p class="staff-description">
+            Oversees the MajicMall experience and coordinates
+            services throughout the Megaverse.
+          </p>
+
+          <span class="future-label">
+            AI Office Coming Soon
+          </span>
+        </article>
+
+        <article class="staff-card">
+          <div class="card-icon">👋</div>
+
+          <h3>Megan</h3>
+
+          <p class="staff-role">
+            Mall Host & Concierge
+          </p>
+
+          <p class="staff-description">
+            Helps visitors find destinations, recommendations,
+            services, stores, and experiences.
+          </p>
+
+          <span class="future-label">
+            AI Office Coming Soon
+          </span>
+        </article>
+
+        <article class="staff-card">
+          <div class="card-icon">🤝</div>
+
+          <h3>Christeen</h3>
+
+          <p class="staff-role">
+            Member Services Manager
+          </p>
+
+          <p class="staff-description">
+            Supports MajicMall members with profiles, memberships,
+            accounts, questions, and service needs.
+          </p>
+
+          <span class="future-label">
+            AI Office Coming Soon
+          </span>
+        </article>
+
+        <article class="staff-card">
+          <div class="card-icon">🎬</div>
+
+          <h3>Nemesi</h3>
+
+          <p class="staff-role">
+            Director of Entertainment
+          </p>
+
+          <p class="staff-description">
+            Guides movies, concerts, premieres, events, streaming,
+            and entertainment experiences.
+          </p>
+
+          <span class="future-label">
+            AI Office Coming Soon
+          </span>
+        </article>
+
+        <article class="staff-card">
+          <div class="card-icon">🏪</div>
+
+          <h3>Terry</h3>
+
+          <p class="staff-role">
+            AI Store Manager
+          </p>
+
+          <p class="staff-description">
+            Helps merchants with products, inventory, promotions,
+            customers, store operations, and growth.
+          </p>
+
+          <span class="future-label">
+            AI Office Coming Soon
+          </span>
+        </article>
+
+        <article class="staff-card">
+          <div class="card-icon">📣</div>
+
+          <h3>Carole</h3>
+
+          <p class="staff-role">
+            Marketing Director
+          </p>
+
+          <p class="staff-description">
+            Helps businesses, creators, events, and organizations
+            develop promotions and reach the right audiences.
+          </p>
+
+          <span class="future-label">
+            AI Office Coming Soon
+          </span>
+        </article>
+
+        <article class="staff-card">
+          <div class="card-icon">💳</div>
+
+          <h3>James</h3>
+
+          <p class="staff-role">
+            MajicMega Pay Manager
+          </p>
+
+          <p class="staff-description">
+            Supports payments, subscriptions, merchant payouts,
+            driver earnings, and MajicMega Pay services.
+          </p>
+
+          <span class="future-label">
+            AI Office Coming Soon
+          </span>
+        </article>
+
+        <article class="staff-card">
+          <div class="card-icon">🌟</div>
+
+          <h3>Princess</h3>
+
+          <p class="staff-role">
+            Founder Success Manager
+          </p>
+
+          <p class="staff-description">
+            Guides founders, merchants, creators, organizations,
+            and partners as they grow within MajicMall.
+          </p>
+
+          <span class="future-label">
+            AI Office Coming Soon
+          </span>
+        </article>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      One MajicMall account may support multiple roles.
+      Choosing one experience does not remove or replace another.
+    </p>
+  </main>
+</body>
+</html>

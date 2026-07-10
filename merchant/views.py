@@ -991,7 +991,7 @@ def send_order_confirmation_emails(order, customer_name="", customer_email=""):
                 f"Order Number: #{order.id}\n"
                 f"Order Total: ${order.total}\n\n"
                 f"Items:\n{items_text}\n\n"
-                f"Your MajicMall Megaverse Customer Command Center is ready.\n"
+                f"Your MajicMall Megaverse Command Center is ready.\n"
                 f"Visit your account to view orders, track shipments, save addresses, and earn rewards.\n"
                 f"Customer Account: /customer/\n\n"
                 f"Thank you for shopping inside the MajicMall Megaverse."

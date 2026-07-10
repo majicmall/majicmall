@@ -20,6 +20,11 @@ urlpatterns = [
         name="delivery-driver-signup",
     ),
     path(
+        "sign-up/",
+        views.driver_signup,
+        name="delivery-driver-signup-alias",
+    ),
+    path(
         "sign-in/",
         views.DriverLoginView.as_view(),
         name="delivery-driver-login",
@@ -33,5 +38,15 @@ urlpatterns = [
         "onboarding/",
         views.driver_onboarding,
         name="delivery-onboarding",
+    ),
+    path(
+        "status/",
+        views.update_driver_status,
+        name="delivery-update-status",
+    ),
+    path(
+        "jobs/<int:job_id>/accept/",
+        views.accept_delivery,
+        name="delivery-accept-job",
     ),
 ]

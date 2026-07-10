@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.db import transaction
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -20,20 +20,19 @@ AGREEMENT_VERSION = DeliveryPartner.CONTRACTOR_AGREEMENT_VERSION
 
 
 def become_driver(request):
+    partner = None
+
     if request.user.is_authenticated:
         partner = DeliveryPartner.objects.filter(
             user=request.user
         ).first()
 
-        if partner and partner.is_ready_for_command_center:
-            return redirect("delivery-dashboard")
-
-        if partner:
-            return redirect("delivery-onboarding")
-
     return render(
         request,
         "delivery/become_driver.html",
+        {
+            "partner": partner,
+        },
     )
 
 
@@ -140,6 +139,14 @@ def driver_onboarding(request):
         partner.contractor_agreement_accepted
     )
 
+    previous_address = (
+        partner.street_address,
+        partner.address_line_2,
+        partner.city,
+        partner.state,
+        partner.home_zip,
+    )
+
     if request.method == "POST":
         form = DeliveryPartnerOnboardingForm(
             request.POST,
@@ -150,6 +157,22 @@ def driver_onboarding(request):
             with transaction.atomic():
                 partner = form.save(commit=False)
                 now = timezone.now()
+
+                new_address = (
+                    partner.street_address,
+                    partner.address_line_2,
+                    partner.city,
+                    partner.state,
+                    partner.home_zip,
+                )
+
+                if previous_address != new_address:
+                    partner.address_verified_at = now
+
+                if not partner.address_verified_at:
+                    partner.address_verified_at = now
+
+                partner.address_verified = True
 
                 if not agreement_was_already_accepted:
                     partner.contractor_agreement_accepted_at = now
@@ -167,14 +190,22 @@ def driver_onboarding(request):
             messages.success(
                 request,
                 (
-                    "Your driver profile is complete. Welcome to the "
-                    "MajicMall Megaverse Driver Network."
+                    "Your address and driver profile are confirmed. "
+                    "Welcome to the MajicMall Megaverse Driver Network."
                 ),
             )
 
             return redirect("delivery-dashboard")
     else:
-        form = DeliveryPartnerOnboardingForm(instance=partner)
+        form = DeliveryPartnerOnboardingForm(
+            instance=partner,
+            initial={
+                "confirm_address": partner.address_verified,
+                "contractor_agreement_accepted": (
+                    partner.contractor_agreement_accepted
+                ),
+            },
+        )
 
     return render(
         request,
@@ -185,6 +216,145 @@ def driver_onboarding(request):
             "agreement_version": AGREEMENT_VERSION,
         },
     )
+
+
+@login_required
+@require_POST
+def update_driver_status(request):
+    partner = get_object_or_404(
+        DeliveryPartner,
+        user=request.user,
+    )
+
+    requested_status = request.POST.get("status", "").strip()
+
+    allowed_statuses = {
+        "available",
+        "busy",
+        "offline",
+    }
+
+    if not partner.is_ready_for_command_center:
+        messages.error(
+            request,
+            "Complete your driver profile before changing your status.",
+        )
+
+        return redirect("delivery-onboarding")
+
+    if requested_status not in allowed_statuses:
+        messages.error(
+            request,
+            "That driver status is not valid.",
+        )
+
+        return redirect("delivery-dashboard")
+
+    partner.status = requested_status
+    partner.save(update_fields=["status", "updated_at"])
+
+    if requested_status == "available":
+        messages.success(
+            request,
+            (
+                "You are now available. Delivery opportunities "
+                "in your working ZIP will appear below."
+            ),
+        )
+    elif requested_status == "busy":
+        messages.success(
+            request,
+            "You are now on a break. New deliveries are hidden.",
+        )
+    else:
+        messages.success(
+            request,
+            "Your driving shift has ended.",
+        )
+
+    return redirect("delivery-dashboard")
+
+
+@login_required
+@require_POST
+def accept_delivery(request, job_id):
+    partner = get_object_or_404(
+        DeliveryPartner,
+        user=request.user,
+    )
+
+    if not partner.is_ready_for_command_center:
+        messages.error(
+            request,
+            "Complete your driver profile before accepting deliveries.",
+        )
+
+        return redirect("delivery-onboarding")
+
+    if partner.status != "available":
+        messages.error(
+            request,
+            "You must be available before accepting a delivery.",
+        )
+
+        return redirect("delivery-dashboard")
+
+    with transaction.atomic():
+        job = (
+            DeliveryJob.objects
+            .select_for_update()
+            .filter(pk=job_id)
+            .first()
+        )
+
+        if not job:
+            messages.error(
+                request,
+                "That delivery could not be found.",
+            )
+
+            return redirect("delivery-dashboard")
+
+        if job.status != "pending" or job.partner_id is not None:
+            messages.error(
+                request,
+                "That delivery has already been accepted by another driver.",
+            )
+
+            return redirect("delivery-dashboard")
+
+        if job.delivery_zip != partner.current_zip:
+            messages.error(
+                request,
+                "That delivery is outside your current working ZIP.",
+            )
+
+            return redirect("delivery-dashboard")
+
+        job.partner = partner
+        job.status = "accepted"
+        job.accepted_at = timezone.now()
+
+        job.save(
+            update_fields=[
+                "partner",
+                "status",
+                "accepted_at",
+            ]
+        )
+
+        partner.status = "busy"
+        partner.save(update_fields=["status", "updated_at"])
+
+    messages.success(
+        request,
+        (
+            f"Delivery Job #{job.id} is now yours. "
+            "It has moved to Active Deliveries."
+        ),
+    )
+
+    return redirect("delivery-dashboard")
 
 
 @login_required

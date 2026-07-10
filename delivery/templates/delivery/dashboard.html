@@ -210,6 +210,81 @@
         </a>
       </div>
 
+      <div
+        style="
+          margin-top:22px;
+          padding:22px;
+          border:1px solid rgba(242,202,82,.35);
+          border-radius:18px;
+          background:rgba(242,202,82,.045);
+        "
+      >
+        <span class="profile-label">
+          Driver Availability
+        </span>
+
+        <div
+          style="
+            margin:8px 0 18px;
+            color:var(--gold-bright);
+            font-size:1.45rem;
+            font-weight:900;
+          "
+        >
+          {% if partner.status == "available" %}
+            🟢 Available
+          {% elif partner.status == "busy" %}
+            🟡 On a Break or Delivery
+          {% else %}
+            ⚫ Offline
+          {% endif %}
+        </div>
+
+        <div
+          style="
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+          "
+        >
+          <form
+            method="post"
+            action="{% url 'delivery-update-status' %}"
+          >
+            {% csrf_token %}
+            <input type="hidden" name="status" value="available">
+
+            <button class="primary-action" type="submit">
+              Go Available
+            </button>
+          </form>
+
+          <form
+            method="post"
+            action="{% url 'delivery-update-status' %}"
+          >
+            {% csrf_token %}
+            <input type="hidden" name="status" value="busy">
+
+            <button class="secondary-action" type="submit">
+              Take a Break
+            </button>
+          </form>
+
+          <form
+            method="post"
+            action="{% url 'delivery-update-status' %}"
+          >
+            {% csrf_token %}
+            <input type="hidden" name="status" value="offline">
+
+            <button class="secondary-action" type="submit">
+              End Shift
+            </button>
+          </form>
+        </div>
+      </div>
+
       <div class="profile-grid" style="margin-top:22px;">
         <div class="profile-item">
           <span class="profile-label">
@@ -218,6 +293,20 @@
 
           <span class="profile-value">
             {{ partner.get_status_display }}
+          </span>
+        </div>
+
+        <div class="profile-item">
+          <span class="profile-label">
+            Verified Address
+          </span>
+
+          <span class="profile-value">
+            {% if partner.address_verified %}
+              ✓ {{ partner.full_address }}
+            {% else %}
+              Not confirmed
+            {% endif %}
           </span>
         </div>
 
@@ -345,6 +434,18 @@
               {{ job.get_status_display }}
             </div>
           </div>
+
+          <form
+            method="post"
+            action="{% url 'delivery-accept-job' job.id %}"
+            style="margin-top:18px;"
+          >
+            {% csrf_token %}
+
+            <button class="primary-action" type="submit">
+              Accept Delivery
+            </button>
+          </form>
         </article>
       {% empty %}
         <p class="empty-state">

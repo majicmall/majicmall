@@ -39,10 +39,22 @@ class DeliveryPartner(models.Model):
         default="car",
     )
 
+    street_address = models.CharField(max_length=255, blank=True)
+    address_line_2 = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=120, blank=True)
+    state = models.CharField(max_length=2, blank=True)
+
     home_zip = models.CharField(max_length=20, blank=True)
     current_zip = models.CharField(max_length=20, blank=True)
     service_radius_miles = models.PositiveIntegerField(default=10)
     phone = models.CharField(max_length=30, blank=True)
+
+    address_verified = models.BooleanField(default=False)
+
+    address_verified_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
 
     completed_deliveries = models.PositiveIntegerField(default=0)
 
@@ -101,10 +113,26 @@ class DeliveryPartner(models.Model):
         return full_name or self.user.username
 
     @property
+    def full_address(self):
+        pieces = [
+            self.street_address,
+            self.address_line_2,
+            self.city,
+            self.state,
+            self.home_zip,
+        ]
+
+        return ", ".join(piece for piece in pieces if piece)
+
+    @property
     def is_ready_for_command_center(self):
         return bool(
             self.onboarding_completed
             and self.contractor_agreement_accepted
+            and self.address_verified
+            and self.street_address
+            and self.city
+            and self.state
             and self.home_zip
             and self.current_zip
             and self.phone

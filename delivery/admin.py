@@ -11,11 +11,13 @@ class DeliveryPartnerAdmin(admin.ModelAdmin):
         "vehicle_type",
         "home_zip",
         "current_zip",
+        "address_verified",
         "service_radius_miles",
         "rating",
         "completed_deliveries",
         "onboarding_completed",
         "contractor_agreement_accepted",
+        "address_verified",
         "is_active",
     )
 
@@ -34,6 +36,9 @@ class DeliveryPartnerAdmin(admin.ModelAdmin):
         "user__last_name",
         "user__email",
         "phone",
+        "street_address",
+        "city",
+        "state",
         "home_zip",
         "current_zip",
     )
@@ -42,6 +47,7 @@ class DeliveryPartnerAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
         "contractor_agreement_accepted_at",
+        "address_verified_at",
         "onboarding_completed_at",
     )
 
@@ -58,10 +64,23 @@ class DeliveryPartnerAdmin(admin.ModelAdmin):
             },
         ),
         (
+            "Verified Residential Address",
+            {
+                "fields": (
+                    "street_address",
+                    "address_line_2",
+                    "city",
+                    "state",
+                    "home_zip",
+                    "address_verified",
+                    "address_verified_at",
+                )
+            },
+        ),
+        (
             "Service Area",
             {
                 "fields": (
-                    "home_zip",
                     "current_zip",
                     "service_radius_miles",
                 )

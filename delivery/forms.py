@@ -48,6 +48,7 @@ class DriverSignupForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
+
         fields = (
             "first_name",
             "last_name",
@@ -134,6 +135,16 @@ class DriverAuthenticationForm(AuthenticationForm):
 
 
 class DeliveryPartnerOnboardingForm(forms.ModelForm):
+    confirm_address = forms.BooleanField(
+        required=True,
+        label=(
+            "I confirm that this is my current legal residential address."
+        ),
+        error_messages={
+            "required": "You must confirm your residential address."
+        },
+    )
+
     contractor_agreement_accepted = forms.BooleanField(
         required=True,
         label=(
@@ -152,15 +163,24 @@ class DeliveryPartnerOnboardingForm(forms.ModelForm):
         model = DeliveryPartner
 
         fields = (
+            "street_address",
+            "address_line_2",
+            "city",
+            "state",
             "home_zip",
             "current_zip",
             "service_radius_miles",
             "vehicle_type",
             "phone",
+            "confirm_address",
             "contractor_agreement_accepted",
         )
 
         labels = {
+            "street_address": "Street Address",
+            "address_line_2": "Apartment, Suite, or Unit",
+            "city": "City",
+            "state": "State",
             "home_zip": "Home ZIP",
             "current_zip": "Current Working ZIP",
             "service_radius_miles": "Service Radius",
@@ -169,23 +189,48 @@ class DeliveryPartnerOnboardingForm(forms.ModelForm):
         }
 
         help_texts = {
-            "home_zip": "Enter the ZIP code for your home location.",
             "current_zip": (
                 "Available deliveries will be matched to this working ZIP."
             ),
             "service_radius_miles": (
                 "Choose how far you are willing to travel for deliveries."
             ),
-            "phone": (
-                "Use a number where delivery support can contact you."
-            ),
         }
 
         widgets = {
+            "street_address": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "123 Peachtree Street",
+                    "autocomplete": "address-line1",
+                }
+            ),
+            "address_line_2": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Apartment, suite, or unit",
+                    "autocomplete": "address-line2",
+                }
+            ),
+            "city": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Atlanta",
+                    "autocomplete": "address-level2",
+                }
+            ),
+            "state": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "GA",
+                    "autocomplete": "address-level1",
+                    "maxlength": "2",
+                }
+            ),
             "home_zip": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Example: 30303",
+                    "placeholder": "30303",
                     "inputmode": "numeric",
                     "autocomplete": "postal-code",
                     "maxlength": "10",
@@ -194,7 +239,7 @@ class DeliveryPartnerOnboardingForm(forms.ModelForm):
             "current_zip": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Example: 30303",
+                    "placeholder": "30303",
                     "inputmode": "numeric",
                     "maxlength": "10",
                 }
@@ -215,12 +260,40 @@ class DeliveryPartnerOnboardingForm(forms.ModelForm):
             "phone": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Example: 404-555-1234",
+                    "placeholder": "404-555-1234",
                     "inputmode": "tel",
                     "autocomplete": "tel",
                 }
             ),
         }
+
+    def clean_street_address(self):
+        value = self.cleaned_data.get("street_address", "").strip()
+
+        if len(value) < 5:
+            raise forms.ValidationError(
+                "Enter a complete street address."
+            )
+
+        return value
+
+    def clean_city(self):
+        value = self.cleaned_data.get("city", "").strip()
+
+        if len(value) < 2:
+            raise forms.ValidationError("Enter a valid city.")
+
+        return value.title()
+
+    def clean_state(self):
+        value = self.cleaned_data.get("state", "").strip().upper()
+
+        if not re.fullmatch(r"[A-Z]{2}", value):
+            raise forms.ValidationError(
+                "Enter the two-letter state abbreviation."
+            )
+
+        return value
 
     def clean_home_zip(self):
         return self._clean_zip(

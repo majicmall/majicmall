@@ -8,16 +8,19 @@ from .models import DeliveryPartner, DeliveryJob
 def dashboard(request):
     partner = DeliveryPartner.objects.filter(user=request.user).first()
 
-    available_jobs_qs = DeliveryJob.objects.filter(status="pending")
+    if partner:
+        available_jobs_qs = DeliveryJob.objects.filter(status="pending")
 
-    if partner and partner.current_zip:
-        available_jobs_qs = available_jobs_qs.filter(
-            delivery_zip=partner.current_zip
-        )
+        if partner.current_zip:
+            available_jobs_qs = available_jobs_qs.filter(
+                delivery_zip=partner.current_zip
+            )
 
-    available_jobs = available_jobs_qs.order_by("-created_at")[:20]
-
-    pending_jobs = available_jobs_qs.count()
+        available_jobs = available_jobs_qs.order_by("-created_at")[:20]
+        pending_jobs = available_jobs_qs.count()
+    else:
+        available_jobs = []
+        pending_jobs = 0
 
     active_jobs = DeliveryJob.objects.filter(
         partner=partner,

@@ -150,6 +150,7 @@ def driver_onboarding(request):
     if request.method == "POST":
         form = DeliveryPartnerOnboardingForm(
             request.POST,
+            request.FILES,
             instance=partner,
         )
 
@@ -180,7 +181,11 @@ def driver_onboarding(request):
                 partner.contractor_agreement_accepted = True
                 partner.contractor_agreement_version = AGREEMENT_VERSION
                 partner.onboarding_completed = True
-                partner.is_active = True
+
+                if partner.approval_status == "rejected":
+                    partner.approval_status = "pending"
+                    partner.reviewed_at = None
+                    partner.reviewed_by = None
 
                 if not partner.onboarding_completed_at:
                     partner.onboarding_completed_at = now
@@ -191,7 +196,8 @@ def driver_onboarding(request):
                 request,
                 (
                     "Your address and driver profile are confirmed. "
-                    "Welcome to the MajicMall Megaverse Driver Network."
+                    "Your application is now awaiting approval from the "
+                    "MajicMall Megaverse Driver Network team."
                 ),
             )
 

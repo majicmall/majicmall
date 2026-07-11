@@ -536,25 +536,130 @@
     </section>
 
   {% elif partner %}
-    <section class="panel warning-panel">
-      <h2>
-        Complete Your Driver Profile
-      </h2>
+    {% if not partner.onboarding_completed %}
+      <section class="panel warning-panel">
+        <h2>
+          Complete Your Driver Profile
+        </h2>
 
-      <p class="lead" style="font-size:1rem;">
-        Your account exists, but onboarding must be completed before
-        delivery jobs become available.
-      </p>
+        <p class="lead" style="font-size:1rem;">
+          Complete onboarding before your application can be reviewed
+          by the MajicMall Megaverse Driver Network team.
+        </p>
 
-      <div class="action-row">
-        <a
-          class="primary-action"
-          href="{% url 'delivery-onboarding' %}"
-        >
-          Continue Driver Onboarding
-        </a>
-      </div>
-    </section>
+        <div class="action-row">
+          <a
+            class="primary-action"
+            href="{% url 'delivery-onboarding' %}"
+          >
+            Continue Driver Onboarding
+          </a>
+        </div>
+      </section>
+
+    {% elif partner.approval_status == "pending" %}
+      <section class="panel">
+        <p class="eyebrow">
+          Application Under Review
+        </p>
+
+        <h2>
+          Driver Approval Pending
+        </h2>
+
+        <p class="lead" style="font-size:1rem;">
+          Your onboarding is complete. The MajicMall Megaverse Driver
+          Network team must approve your application before you can go
+          available or accept deliveries.
+        </p>
+
+        <div class="profile-grid" style="margin-top:24px;">
+          <div class="profile-item">
+            <span class="profile-label">
+              Application Status
+            </span>
+
+            <span class="profile-value">
+              Pending Approval
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-label">
+              Account Access
+            </span>
+
+            <span class="profile-value">
+              Limited Until Approved
+            </span>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <a
+            class="secondary-action"
+            href="{% url 'delivery-onboarding' %}"
+          >
+            Review Driver Profile
+          </a>
+        </div>
+      </section>
+
+    {% elif partner.approval_status == "rejected" %}
+      <section class="panel warning-panel">
+        <p class="eyebrow">
+          Application Update
+        </p>
+
+        <h2>
+          Driver Application Not Approved
+        </h2>
+
+        <p class="lead" style="font-size:1rem;">
+          Your application is not currently approved. You may review
+          and update your profile before submitting it for another
+          review.
+        </p>
+
+        <div class="action-row">
+          <a
+            class="primary-action"
+            href="{% url 'delivery-onboarding' %}"
+          >
+            Update and Resubmit Application
+          </a>
+        </div>
+      </section>
+
+    {% elif not partner.is_active %}
+      <section class="panel warning-panel">
+        <p class="eyebrow">
+          Driver Account Notice
+        </p>
+
+        <h2>
+          Driver Account Deactivated
+        </h2>
+
+        <p class="lead" style="font-size:1rem;">
+          Your driver account is currently inactive. You cannot go
+          available or accept deliveries until the MajicMall
+          Megaverse Driver Network team reactivates your account.
+        </p>
+      </section>
+
+    {% else %}
+      <section class="panel warning-panel">
+        <h2>
+          Driver Access Unavailable
+        </h2>
+
+        <p class="lead" style="font-size:1rem;">
+          Your Driver Command Center is not currently available.
+          Please review your profile or contact Driver Network support.
+        </p>
+      </section>
+    {% endif %}
 
   {% else %}
     <section class="panel">
@@ -581,4 +686,5 @@
       </div>
     </section>
   {% endif %}
+
 {% endblock %}

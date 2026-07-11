@@ -4,22 +4,259 @@
   Driver Onboarding | MajicMall Megaverse Driver Network
 {% endblock %}
 
+{% block extra_css %}
+  <style>
+    .verification-progress {
+      margin-top: 28px;
+      padding: 22px;
+      border: 1px solid rgba(242, 202, 82, 0.4);
+      border-radius: 18px;
+      background: rgba(242, 202, 82, 0.045);
+    }
+
+    .verification-progress-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .verification-progress-label {
+      display: block;
+      margin-bottom: 6px;
+      color: #aaa;
+      font-size: .75rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .verification-percentage {
+      color: var(--gold-bright);
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .verification-progress-track {
+      height: 12px;
+      margin-top: 18px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .verification-progress-fill {
+      min-width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(
+        90deg,
+        var(--gold),
+        var(--gold-bright)
+      );
+      box-shadow: 0 0 18px rgba(242, 202, 82, .35);
+      transition: width .45s ease;
+    }
+
+    .verification-checklist {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(145px, 1fr)
+      );
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .verification-checklist span {
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 999px;
+      color: #aaa;
+      text-align: center;
+      font-size: .82rem;
+    }
+
+    .verification-checklist span.complete {
+      border-color: rgba(131, 232, 167, .45);
+      color: #83e8a7;
+      background: rgba(131, 232, 167, .07);
+    }
+
+    .verification-checklist span.complete::before {
+      content: "✓ ";
+    }
+
+    .verification-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(220px, 1fr)
+      );
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .verification-preview-card {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .verification-preview-card span {
+      display: block;
+      padding: 12px 14px;
+      color: var(--gold-bright);
+      font-size: .82rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .verification-preview-card img {
+      display: block;
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+    }
+
+    .file-control {
+      min-height: auto;
+      padding: 11px;
+      cursor: pointer;
+    }
+
+    .file-control::file-selector-button {
+      margin-right: 12px;
+      padding: 9px 13px;
+      border: 1px solid var(--gold);
+      border-radius: 999px;
+      color: #080808;
+      background: var(--gold);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    @media (max-width: 620px) {
+      .verification-progress-heading {
+        align-items: flex-start;
+      }
+
+      .verification-preview-card img {
+        height: 220px;
+      }
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
   <div class="narrow-shell">
     <section class="panel">
       <p class="eyebrow">
-        Driver Profile and Address Verification
+        Driver Verification Center
       </p>
 
       <h1 style="font-size:clamp(2rem, 7vw, 3.5rem);">
-        Complete Your Onboarding
+        Complete Your Driver Verification
       </h1>
 
       <p class="lead">
-        Confirm your residential address, working area, delivery
-        method, and contact information before entering the Driver
-        Command Center.
+        Complete your personal profile, residential address, vehicle
+        information, and required documents for review by the
+        MajicMall Megaverse Driver Network team.
       </p>
+
+      <div class="verification-progress">
+        <div class="verification-progress-heading">
+          <div>
+            <span class="verification-progress-label">
+              Verification Progress
+            </span>
+
+            <strong>
+              {{ partner.verification_completed_items }}
+              of
+              {{ partner.verification_total_items }}
+              items complete
+            </strong>
+          </div>
+
+          <span class="verification-percentage">
+            {{ partner.verification_percentage }}%
+          </span>
+        </div>
+
+        <div class="verification-progress-track">
+          <div
+            class="verification-progress-fill"
+            style="width:{{ partner.verification_percentage }}%;"
+          ></div>
+        </div>
+
+        <div class="verification-checklist">
+          <span
+            class="{% if partner.profile_photo %}complete{% endif %}"
+          >
+            Driver Photo
+          </span>
+
+          <span
+            class="{% if partner.vehicle_make and partner.vehicle_model and partner.vehicle_year and partner.vehicle_color and partner.license_plate %}complete{% endif %}"
+          >
+            Vehicle Details
+          </span>
+
+          <span
+            class="{% if partner.vehicle_photo %}complete{% endif %}"
+          >
+            Vehicle Photo
+          </span>
+
+          <span
+            class="{% if partner.driver_license_document %}complete{% endif %}"
+          >
+            Driver License
+          </span>
+
+          <span
+            class="{% if partner.insurance_document %}complete{% endif %}"
+          >
+            Insurance
+          </span>
+
+          <span
+            class="{% if partner.vehicle_registration_document %}complete{% endif %}"
+          >
+            Registration
+          </span>
+        </div>
+      </div>
+
+      {% if partner.profile_photo or partner.vehicle_photo %}
+        <div class="verification-preview-grid">
+          {% if partner.profile_photo %}
+            <div class="verification-preview-card">
+              <span>Driver Photo</span>
+
+              <img
+                src="{{ partner.profile_photo.url }}"
+                alt="Driver profile"
+              >
+            </div>
+          {% endif %}
+
+          {% if partner.vehicle_photo %}
+            <div class="verification-preview-card">
+              <span>Vehicle Photo</span>
+
+              <img
+                src="{{ partner.vehicle_photo.url }}"
+                alt="Driver vehicle"
+              >
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
 
       {% if partner.address_verified %}
         <div
@@ -40,7 +277,7 @@
         </div>
       {% endif %}
 
-      <form method="post" style="margin-top:30px;">
+      <form method="post" enctype="multipart/form-data" style="margin-top:30px;">
         {% csrf_token %}
 
         {% if form.non_field_errors %}
@@ -156,7 +393,7 @@
         {% endif %}
 
         <button class="submit-button" type="submit">
-          Confirm Address and Enter Command Center
+          Save Verification Profile
         </button>
       </form>
     </section>

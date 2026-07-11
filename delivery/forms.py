@@ -134,6 +134,40 @@ class DriverAuthenticationForm(AuthenticationForm):
     )
 
 
+ALLOWED_DOCUMENT_EXTENSIONS = {
+    "jpg",
+    "jpeg",
+    "png",
+    "webp",
+    "pdf",
+}
+
+MAX_VERIFICATION_FILE_SIZE = 10 * 1024 * 1024
+
+
+def validate_verification_upload(uploaded_file, label):
+    if not uploaded_file:
+        return uploaded_file
+
+    extension = (
+        uploaded_file.name.rsplit(".", 1)[-1].lower()
+        if "." in uploaded_file.name
+        else ""
+    )
+
+    if extension not in ALLOWED_DOCUMENT_EXTENSIONS:
+        raise forms.ValidationError(
+            f"{label} must be a JPG, PNG, WEBP, or PDF file."
+        )
+
+    if uploaded_file.size > MAX_VERIFICATION_FILE_SIZE:
+        raise forms.ValidationError(
+            f"{label} must be smaller than 10 MB."
+        )
+
+    return uploaded_file
+
+
 class DeliveryPartnerOnboardingForm(forms.ModelForm):
     confirm_address = forms.BooleanField(
         required=True,
@@ -172,6 +206,16 @@ class DeliveryPartnerOnboardingForm(forms.ModelForm):
             "service_radius_miles",
             "vehicle_type",
             "phone",
+            "profile_photo",
+            "vehicle_make",
+            "vehicle_model",
+            "vehicle_year",
+            "vehicle_color",
+            "license_plate",
+            "vehicle_photo",
+            "driver_license_document",
+            "insurance_document",
+            "vehicle_registration_document",
             "confirm_address",
             "contractor_agreement_accepted",
         )
@@ -184,8 +228,18 @@ class DeliveryPartnerOnboardingForm(forms.ModelForm):
             "home_zip": "Home ZIP",
             "current_zip": "Current Working ZIP",
             "service_radius_miles": "Service Radius",
-            "vehicle_type": "Vehicle Type",
+            "vehicle_type": "Delivery Method",
             "phone": "Phone Number",
+            "profile_photo": "Driver Profile Photo",
+            "vehicle_make": "Vehicle Make",
+            "vehicle_model": "Vehicle Model",
+            "vehicle_year": "Vehicle Year",
+            "vehicle_color": "Vehicle Color",
+            "license_plate": "License Plate",
+            "vehicle_photo": "Vehicle Photo",
+            "driver_license_document": "Driver License",
+            "insurance_document": "Insurance Card or Policy",
+            "vehicle_registration_document": "Vehicle Registration",
         }
 
         help_texts = {
@@ -194,6 +248,21 @@ class DeliveryPartnerOnboardingForm(forms.ModelForm):
             ),
             "service_radius_miles": (
                 "Choose how far you are willing to travel for deliveries."
+            ),
+            "profile_photo": (
+                "Upload a clear, recent photo of yourself."
+            ),
+            "vehicle_photo": (
+                "Upload a clear exterior photo of the delivery vehicle."
+            ),
+            "driver_license_document": (
+                "Accepted formats: JPG, PNG, WEBP, or PDF. Maximum 10 MB."
+            ),
+            "insurance_document": (
+                "Upload current proof of insurance. Maximum 10 MB."
+            ),
+            "vehicle_registration_document": (
+                "Upload current vehicle registration. Maximum 10 MB."
             ),
         }
 
@@ -265,6 +334,69 @@ class DeliveryPartnerOnboardingForm(forms.ModelForm):
                     "autocomplete": "tel",
                 }
             ),
+            "profile_photo": forms.ClearableFileInput(
+                attrs={
+                    "class": "form-control file-control",
+                    "accept": "image/jpeg,image/png,image/webp",
+                }
+            ),
+            "vehicle_make": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Toyota",
+                }
+            ),
+            "vehicle_model": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Camry",
+                }
+            ),
+            "vehicle_year": forms.NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "2022",
+                    "min": "1980",
+                    "max": "2100",
+                }
+            ),
+            "vehicle_color": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Black",
+                }
+            ),
+            "license_plate": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "ABC1234",
+                    "autocomplete": "off",
+                }
+            ),
+            "vehicle_photo": forms.ClearableFileInput(
+                attrs={
+                    "class": "form-control file-control",
+                    "accept": "image/jpeg,image/png,image/webp",
+                }
+            ),
+            "driver_license_document": forms.ClearableFileInput(
+                attrs={
+                    "class": "form-control file-control",
+                    "accept": "image/jpeg,image/png,image/webp,application/pdf",
+                }
+            ),
+            "insurance_document": forms.ClearableFileInput(
+                attrs={
+                    "class": "form-control file-control",
+                    "accept": "image/jpeg,image/png,image/webp,application/pdf",
+                }
+            ),
+            "vehicle_registration_document": forms.ClearableFileInput(
+                attrs={
+                    "class": "form-control file-control",
+                    "accept": "image/jpeg,image/png,image/webp,application/pdf",
+                }
+            ),
         }
 
     def clean_street_address(self):
@@ -294,6 +426,58 @@ class DeliveryPartnerOnboardingForm(forms.ModelForm):
             )
 
         return value
+
+    def clean_vehicle_year(self):
+        year = self.cleaned_data.get("vehicle_year")
+
+        if year is None:
+            return year
+
+        if year < 1980 or year > 2100:
+            raise forms.ValidationError(
+                "Enter a valid vehicle year."
+            )
+
+        return year
+
+    def clean_license_plate(self):
+        return (
+            self.cleaned_data.get("license_plate", "")
+            .strip()
+            .upper()
+        )
+
+    def clean_profile_photo(self):
+        return validate_verification_upload(
+            self.cleaned_data.get("profile_photo"),
+            "Driver profile photo",
+        )
+
+    def clean_vehicle_photo(self):
+        return validate_verification_upload(
+            self.cleaned_data.get("vehicle_photo"),
+            "Vehicle photo",
+        )
+
+    def clean_driver_license_document(self):
+        return validate_verification_upload(
+            self.cleaned_data.get("driver_license_document"),
+            "Driver license",
+        )
+
+    def clean_insurance_document(self):
+        return validate_verification_upload(
+            self.cleaned_data.get("insurance_document"),
+            "Insurance document",
+        )
+
+    def clean_vehicle_registration_document(self):
+        return validate_verification_upload(
+            self.cleaned_data.get(
+                "vehicle_registration_document"
+            ),
+            "Vehicle registration",
+        )
 
     def clean_home_zip(self):
         return self._clean_zip(

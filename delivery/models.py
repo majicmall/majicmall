@@ -4,6 +4,19 @@ from django.db import models
 from merchant.models import MerchantStore, Order
 
 
+def driver_verification_upload_path(instance, filename):
+    """
+    Organize driver verification files by driver account.
+
+    Production note:
+    Sensitive verification documents should ultimately be stored
+    in private cloud storage rather than publicly accessible media.
+    """
+    user_id = instance.user_id or "unassigned"
+    safe_filename = filename.replace(" ", "_")
+    return f"driver_verification/{user_id}/{safe_filename}"
+
+
 class DeliveryPartner(models.Model):
     CONTRACTOR_AGREEMENT_VERSION = "1.0"
 
@@ -11,6 +24,12 @@ class DeliveryPartner(models.Model):
         ("offline", "Offline"),
         ("available", "Available"),
         ("busy", "Busy"),
+    ]
+
+    APPROVAL_STATUS_CHOICES = [
+        ("pending", "Pending Approval"),
+        ("approved", "Approved"),
+        ("rejected", "Rejected"),
     ]
 
     VEHICLE_CHOICES = [
@@ -56,6 +75,68 @@ class DeliveryPartner(models.Model):
         blank=True,
     )
 
+    profile_photo = models.ImageField(
+        upload_to=driver_verification_upload_path,
+        blank=True,
+        null=True,
+    )
+
+    vehicle_photo = models.ImageField(
+        upload_to=driver_verification_upload_path,
+        blank=True,
+        null=True,
+    )
+
+    driver_license_document = models.FileField(
+        upload_to=driver_verification_upload_path,
+        blank=True,
+        null=True,
+    )
+
+    insurance_document = models.FileField(
+        upload_to=driver_verification_upload_path,
+        blank=True,
+        null=True,
+    )
+
+    vehicle_registration_document = models.FileField(
+        upload_to=driver_verification_upload_path,
+        blank=True,
+        null=True,
+    )
+
+    vehicle_make = models.CharField(
+        max_length=80,
+        blank=True,
+    )
+
+    vehicle_model = models.CharField(
+        max_length=80,
+        blank=True,
+    )
+
+    vehicle_year = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+    )
+
+    vehicle_color = models.CharField(
+        max_length=50,
+        blank=True,
+    )
+
+    license_plate = models.CharField(
+        max_length=30,
+        blank=True,
+    )
+
+    documents_reviewed = models.BooleanField(default=False)
+
+    documents_reviewed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
     completed_deliveries = models.PositiveIntegerField(default=0)
 
     rating = models.DecimalField(
@@ -95,6 +176,38 @@ class DeliveryPartner(models.Model):
         blank=True,
     )
 
+    approval_status = models.CharField(
+        max_length=20,
+        choices=APPROVAL_STATUS_CHOICES,
+        default="pending",
+    )
+
+    reviewed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reviewed_delivery_partners",
+    )
+
+    deactivated_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    account_notes = models.TextField(
+        blank=True,
+        help_text=(
+            "Internal notes about approval, rejection, suspension, "
+            "or deactivation."
+        ),
+    )
+
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -125,6 +238,74 @@ class DeliveryPartner(models.Model):
         return ", ".join(piece for piece in pieces if piece)
 
     @property
+    def vehicle_description(self):
+        details = [
+            self.vehicle_year,
+            self.vehicle_make,
+            self.vehicle_model,
+            self.vehicle_color,
+        ]
+
+        return " ".join(
+            str(detail).strip()
+            for detail in details
+            if detail
+        )
+
+    @property
+    def verification_items(self):
+        return {
+            "profile_photo": bool(self.profile_photo),
+            "vehicle_information": bool(
+                self.vehicle_make
+                and self.vehicle_model
+                and self.vehicle_year
+                and self.vehicle_color
+                and self.license_plate
+            ),
+            "vehicle_photo": bool(self.vehicle_photo),
+            "driver_license": bool(self.driver_license_document),
+            "insurance": bool(self.insurance_document),
+            "vehicle_registration": bool(
+                self.vehicle_registration_document
+            ),
+        }
+
+    @property
+    def verification_completed_items(self):
+        return sum(self.verification_items.values())
+
+    @property
+    def verification_total_items(self):
+        return len(self.verification_items)
+
+    @property
+    def verification_percentage(self):
+        total = self.verification_total_items
+
+        if not total:
+            return 0
+
+        return round(
+            self.verification_completed_items / total * 100
+        )
+
+    @property
+    def verification_documents_complete(self):
+        return all(self.verification_items.values())
+
+    @property
+    def is_approved(self):
+        return self.approval_status == "approved"
+
+    @property
+    def can_accept_deliveries(self):
+        return bool(
+            self.is_ready_for_command_center
+            and self.status == "available"
+        )
+
+    @property
     def is_ready_for_command_center(self):
         return bool(
             self.onboarding_completed
@@ -136,6 +317,7 @@ class DeliveryPartner(models.Model):
             and self.home_zip
             and self.current_zip
             and self.phone
+            and self.approval_status == "approved"
             and self.is_active
         )
 

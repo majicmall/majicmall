@@ -30,6 +30,7 @@ from .models import (
     MerchantStore,
     StoreCategory,
     Product,
+    MerchantFulfillmentSettings,
     Order,
     OrderItem,
     MerchantPaymentMethod,
@@ -766,6 +767,29 @@ def public_checkout_submit(request):
         return redirect("public-checkout")
 
     context = _calculate_checkout_context(request)
+
+    try:
+        fulfillment_settings = (
+            context["store"].fulfillment_settings
+        )
+    except MerchantFulfillmentSettings.DoesNotExist:
+        fulfillment_settings = (
+            MerchantFulfillmentSettings.objects.create(
+                store=context["store"]
+            )
+        )
+
+    if not fulfillment_settings.is_accepting_orders:
+        message = (
+            fulfillment_settings.pause_message
+            or (
+                "This store is not currently accepting new orders. "
+                "Please check back soon."
+            )
+        )
+
+        messages.warning(request, message)
+        return redirect("public-checkout")
 
     if context.get("error"):
         messages.error(request, context["error"])
@@ -1902,17 +1926,30 @@ PLAN_PRICES = {
 }
 
 
-@login_required
 def plan_pricing(request):
-    store = get_current_store(request)
-    if not store:
-        messages.info(request, "Create your store to continue.")
-        return redirect("merchant-profile")
+    store = None
+    methods = []
 
-    ensure_default_payment_methods(store)
+    if request.user.is_authenticated:
+        store = get_current_store(request)
 
-    methods = list(store.payment_methods.filter(is_active=True).order_by("-is_default", "provider"))
-    return render(request, "merchant/plans.html", {"store": store, "methods": methods})
+        if store:
+            ensure_default_payment_methods(store)
+
+            methods = list(
+                store.payment_methods
+                .filter(is_active=True)
+                .order_by("-is_default", "provider")
+            )
+
+    return render(
+        request,
+        "merchant/plans.html",
+        {
+            "store": store,
+            "methods": methods,
+        },
+    )
 
 
 @login_required

@@ -13,6 +13,7 @@ from .models import Movie, Ticket
 import stripe
 from django.conf import settings
 from django.urls import reverse
+from .merchant_success_plans import get_merchant_success_plan
 
 
 # ---------------------------
@@ -153,7 +154,31 @@ def merchant_dashboard(request):
 
 
 def merchant_invite(request):
-    return render(request, "merchant/invite.html")
+    requested_plan = request.GET.get("plan")
+
+    if requested_plan:
+        selected_plan = get_merchant_success_plan(requested_plan)
+        request.session["selected_merchant_success_plan"] = selected_plan
+        request.session.modified = True
+    else:
+        selected_plan = request.session.get(
+            "selected_merchant_success_plan"
+        )
+
+        if not selected_plan:
+            selected_plan = get_merchant_success_plan("vision")
+            request.session[
+                "selected_merchant_success_plan"
+            ] = selected_plan
+            request.session.modified = True
+
+    return render(
+        request,
+        "merchant/invite.html",
+        {
+            "selected_plan": selected_plan,
+        },
+    )
 
 
 def merchant_tiers(request):

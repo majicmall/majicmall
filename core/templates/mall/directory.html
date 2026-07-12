@@ -387,8 +387,8 @@ body {
       </a>
     {% endfor %}
 
-    <a href="{% url 'merchant-invite' %}" class="px-4 py-2 bg-yellow-400 text-black font-bold rounded-xl shadow-lg hover:bg-yellow-300 transition">
-      🛍️ Become a Merchant
+    <a href="{% url 'merchant-plans' %}" class="px-4 py-2 bg-yellow-400 text-black font-bold rounded-xl shadow-lg hover:bg-yellow-300 transition">
+      🛍️ View Merchant Success Plans
     </a>
 
     <a href="/merchant/login/" class="px-4 py-2 bg-gray-700 text-white rounded-xl shadow-lg hover:bg-gray-600 transition">
@@ -473,7 +473,7 @@ body {
             {% endfor %}
 
             {% for _ in section.empty_slots %}
-              <a href="{% url 'merchant-invite' %}"
+              <a href="{% url 'merchant-plans' %}"
                  class="store-card rounded-xl p-4 flex flex-col justify-center items-center text-center hover:bg-gray-700 transition no-underline">
                 <div class="text-yellow-400 text-2xl mb-2">★</div>
                 <div class="text-yellow-400 font-bold">Claim This Spot</div>

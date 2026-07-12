@@ -147,6 +147,41 @@ def driver_onboarding(request):
         partner.home_zip,
     )
 
+    previous_verification = {
+        "profile_photo": (
+            partner.profile_photo.name
+            if partner.profile_photo
+            else ""
+        ),
+        "vehicle_photo": (
+            partner.vehicle_photo.name
+            if partner.vehicle_photo
+            else ""
+        ),
+        "driver_license_document": (
+            partner.driver_license_document.name
+            if partner.driver_license_document
+            else ""
+        ),
+        "insurance_document": (
+            partner.insurance_document.name
+            if partner.insurance_document
+            else ""
+        ),
+        "vehicle_registration_document": (
+            partner.vehicle_registration_document.name
+            if partner.vehicle_registration_document
+            else ""
+        ),
+        "vehicle_information": (
+            partner.vehicle_make,
+            partner.vehicle_model,
+            partner.vehicle_year,
+            partner.vehicle_color,
+            partner.license_plate,
+        ),
+    }
+
     if request.method == "POST":
         form = DeliveryPartnerOnboardingForm(
             request.POST,
@@ -177,6 +212,75 @@ def driver_onboarding(request):
 
                 if not agreement_was_already_accepted:
                     partner.contractor_agreement_accepted_at = now
+
+                new_verification = {
+                    "profile_photo": (
+                        partner.profile_photo.name
+                        if partner.profile_photo
+                        else ""
+                    ),
+                    "vehicle_photo": (
+                        partner.vehicle_photo.name
+                        if partner.vehicle_photo
+                        else ""
+                    ),
+                    "driver_license_document": (
+                        partner.driver_license_document.name
+                        if partner.driver_license_document
+                        else ""
+                    ),
+                    "insurance_document": (
+                        partner.insurance_document.name
+                        if partner.insurance_document
+                        else ""
+                    ),
+                    "vehicle_registration_document": (
+                        partner.vehicle_registration_document.name
+                        if partner.vehicle_registration_document
+                        else ""
+                    ),
+                    "vehicle_information": (
+                        partner.vehicle_make,
+                        partner.vehicle_model,
+                        partner.vehicle_year,
+                        partner.vehicle_color,
+                        partner.license_plate,
+                    ),
+                }
+
+                review_reset = False
+
+                review_field_map = {
+                    "profile_photo": "profile_photo_reviewed",
+                    "vehicle_photo": "vehicle_photo_reviewed",
+                    "driver_license_document": (
+                        "driver_license_reviewed"
+                    ),
+                    "insurance_document": "insurance_reviewed",
+                    "vehicle_registration_document": (
+                        "vehicle_registration_reviewed"
+                    ),
+                    "vehicle_information": (
+                        "vehicle_information_reviewed"
+                    ),
+                }
+
+                for item_name, reviewed_field in review_field_map.items():
+                    if (
+                        previous_verification[item_name]
+                        != new_verification[item_name]
+                    ):
+                        setattr(partner, reviewed_field, False)
+                        review_reset = True
+
+                if review_reset:
+                    partner.documents_reviewed = False
+                    partner.documents_reviewed_at = None
+                    partner.documents_reviewed_by = None
+
+                    if partner.approval_status == "approved":
+                        partner.approval_status = "pending"
+                        partner.status = "offline"
 
                 partner.contractor_agreement_accepted = True
                 partner.contractor_agreement_version = AGREEMENT_VERSION

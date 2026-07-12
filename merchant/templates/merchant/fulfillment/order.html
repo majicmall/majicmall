@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Order #{{ order.id }} |
+    MajicMall Megaverse Fulfillment Center
+  </title>
+
+  <style>
+    :root {
+      --black: #030303;
+      --panel: rgba(16, 16, 18, 0.96);
+      --gold: #e8bd45;
+      --gold-light: #ffe9a4;
+      --white: #ffffff;
+      --muted: #bcbcbc;
+      --green: #7be49e;
+      --yellow: #ffda70;
+      --red: #ff8989;
+      --border: rgba(232, 189, 69, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--black);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(
+          circle at 50% 0,
+          rgba(232, 189, 69, 0.17),
+          transparent 34%
+        ),
+        linear-gradient(
+          145deg,
+          #020202,
+          #101014 50%,
+          #020202
+        );
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2, 2, 2, 0.94);
+      backdrop-filter: blur(16px);
+    }
+
+    .header-inner {
+      width: min(1120px, calc(100% - 30px));
+      min-height: 74px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      text-decoration: none;
+    }
+
+    .brand strong {
+      display: block;
+      color: var(--gold-light);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.25rem;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .68rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .nav {
+      display: flex;
+      gap: 9px;
+    }
+
+    .nav a,
+    .button {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 17px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--white);
+      background: rgba(255, 255, 255, .05);
+      text-decoration: none;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .button.primary {
+      color: #050505;
+      border-color: var(--gold);
+      background: linear-gradient(
+        135deg,
+        var(--gold-light),
+        var(--gold)
+      );
+    }
+
+    .button.danger {
+      color: var(--red);
+      border-color: rgba(255, 137, 137, .45);
+      background: rgba(255, 137, 137, .07);
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 30px));
+      margin: auto;
+      padding: 36px 0 80px;
+    }
+
+    .messages {
+      margin-bottom: 18px;
+    }
+
+    .message {
+      margin-bottom: 9px;
+      padding: 14px 17px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(232, 189, 69, .07);
+    }
+
+    .hero,
+    .panel {
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, .065),
+          rgba(255, 255, 255, .015)
+        ),
+        var(--panel);
+      box-shadow: 0 22px 65px rgba(0, 0, 0, .4);
+    }
+
+    .hero {
+      padding: clamp(25px, 6vw, 52px);
+      border-radius: 27px;
+    }
+
+    .eyebrow {
+      margin: 0 0 11px;
+      color: var(--gold);
+      font-size: .75rem;
+      font-weight: 900;
+      letter-spacing: .19em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      overflow-wrap: anywhere;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 7vw, 4.3rem);
+      line-height: 1;
+    }
+
+    h2 {
+      margin: 0;
+      color: var(--gold-light);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .lead {
+      margin: 17px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .status-strip {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(170px, 1fr)
+      );
+      gap: 13px;
+      margin-top: 24px;
+    }
+
+    .status-box {
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .status-box span {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: .72rem;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .status-box strong {
+      color: var(--gold-light);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(285px, .75fr);
+      gap: 22px;
+      margin-top: 23px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 24px;
+      border-radius: 21px;
+    }
+
+    .panel + .panel {
+      margin-top: 20px;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .1);
+    }
+
+    .item:last-child {
+      border-bottom: 0;
+    }
+
+    .muted {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .workflow {
+      display: grid;
+      gap: 11px;
+      margin-top: 20px;
+    }
+
+    .workflow-step {
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 13px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .025);
+    }
+
+    .workflow-step.current {
+      color: var(--gold-light);
+      border-color: var(--border);
+      background: rgba(232, 189, 69, .07);
+    }
+
+    .form-control {
+      width: 100%;
+      min-height: 46px;
+      margin-top: 7px;
+      padding: 11px 13px;
+      border: 1px solid rgba(232, 189, 69, .38);
+      border-radius: 11px;
+      color: var(--white);
+      background: rgba(255, 255, 255, .055);
+    }
+
+    select.form-control option {
+      color: #111;
+      background: white;
+    }
+
+    .form-block {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, .1);
+    }
+
+    .form-block label {
+      display: block;
+      color: var(--gold-light);
+      font-weight: 800;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 17px;
+    }
+
+    .notice {
+      margin-top: 18px;
+      padding: 15px;
+      border: 1px solid rgba(123, 228, 158, .36);
+      border-radius: 13px;
+      color: var(--green);
+      background: rgba(123, 228, 158, .06);
+      line-height: 1.6;
+    }
+
+    .warning {
+      border-color: rgba(255, 218, 112, .36);
+      color: var(--yellow);
+      background: rgba(255, 218, 112, .06);
+    }
+
+    @media (max-width: 820px) {
+      .header-inner {
+        padding: 14px 0;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        width: 100%;
+      }
+
+      .nav a {
+        flex: 1;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .shell {
+        padding-top: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a
+        class="brand"
+        href="{% url 'merchant-fulfillment-center' %}"
+      >
+        <strong>MajicMall Megaverse</strong>
+        <span>Fulfillment Center</span>
+      </a>
+
+      <nav class="nav">
+        <a href="{% url 'merchant-dashboard' %}">
+          Dashboard
+        </a>
+
+        <a href="{% url 'merchant-fulfillment-center' %}">
+          All Fulfillment
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <section class="hero">
+      <p class="eyebrow">
+        {{ store.store_name }}
+      </p>
+
+      <h1>
+        Order #{{ order.id }}
+      </h1>
+
+      <p class="lead">
+        Manage this order from merchant acceptance through its
+        customer-selected fulfillment method.
+      </p>
+
+      <div class="status-strip">
+        <div class="status-box">
+          <span>Payment Status</span>
+          <strong>{{ order.status|title }}</strong>
+        </div>
+
+        <div class="status-box">
+          <span>Fulfillment Method</span>
+          <strong>{{ workflow_label }}</strong>
+        </div>
+
+        <div class="status-box">
+          <span>Fulfillment Status</span>
+          <strong>
+            {{ order.get_fulfillment_status_display }}
+          </strong>
+        </div>
+
+        <div class="status-box">
+          <span>Order Total</span>
+          <strong>${{ order.total|floatformat:2 }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <div>
+        <section class="panel">
+          <p class="eyebrow">Order Contents</p>
+          <h2>Items</h2>
+
+          <div style="margin-top:17px;">
+            {% for item in order.items.all %}
+              <div class="item">
+                <div>
+                  <strong>
+                    {{ item.product.name|default:"Product" }}
+                  </strong>
+
+                  <div class="muted">
+                    Quantity: {{ item.quantity }}
+                  </div>
+                </div>
+
+                <strong>
+                  ${{ item.price|floatformat:2 }}
+                </strong>
+              </div>
+            {% empty %}
+              <p class="muted">
+                No item details are available.
+              </p>
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">Customer</p>
+          <h2>Delivery Information</h2>
+
+          <div class="status-strip">
+            <div class="status-box">
+              <span>Name</span>
+              <strong>
+                {{ order.customer_name|default:"Customer" }}
+              </strong>
+            </div>
+
+            <div class="status-box">
+              <span>Email</span>
+              <strong>
+                {{ order.customer_email|default:"Not provided" }}
+              </strong>
+            </div>
+
+            <div class="status-box">
+              <span>Phone</span>
+              <strong>
+                {{ order.customer_phone|default:"Not provided" }}
+              </strong>
+            </div>
+
+            <div class="status-box">
+              <span>Destination ZIP</span>
+              <strong>
+                {{ order.shipping_zip|default:"Store pickup" }}
+              </strong>
+            </div>
+          </div>
+
+          {% if order.fulfillment_method != "pickup" %}
+            <p class="muted" style="margin-top:18px;">
+              {{ order.shipping_address }}<br>
+              {{ order.shipping_city }},
+              {{ order.shipping_state }}
+              {{ order.shipping_zip }}
+            </p>
+          {% endif %}
+
+          {% if order.delivery_notes %}
+            <div class="notice warning">
+              <strong>Customer Notes:</strong><br>
+              {{ order.delivery_notes|linebreaksbr }}
+            </div>
+          {% endif %}
+        </section>
+      </div>
+
+      <aside>
+        <section class="panel">
+          <p class="eyebrow">Merchant Actions</p>
+          <h2>Fulfillment Workflow</h2>
+
+          <div class="workflow">
+            <div
+              class="workflow-step
+              {% if order.fulfillment_status == 'awaiting_acceptance' %}
+                current
+              {% endif %}"
+            >
+              1. Merchant Acceptance
+            </div>
+
+            <div
+              class="workflow-step
+              {% if order.fulfillment_status == 'preparing' or order.fulfillment_status == 'picking' %}
+                current
+              {% endif %}"
+            >
+              2. Preparing or Picking
+            </div>
+
+            <div
+              class="workflow-step
+              {% if order.fulfillment_status == 'packing' %}
+                current
+              {% endif %}"
+            >
+              3. Packing
+            </div>
+
+            <div
+              class="workflow-step
+              {% if order.fulfillment_status == 'ready_for_pickup' or order.fulfillment_status == 'driver_requested' or order.fulfillment_status == 'customer_pickup_ready' or order.fulfillment_status == 'shipped' %}
+                current
+              {% endif %}"
+            >
+              4. {{ ready_action_label }}
+            </div>
+
+            <div
+              class="workflow-step
+              {% if order.fulfillment_status == 'fulfilled' %}
+                current
+              {% endif %}"
+            >
+              5. Fulfilled
+            </div>
+          </div>
+
+          {% if order.fulfillment_status == "awaiting_acceptance" %}
+            {% if order.status == "paid" or order.status == "completed" %}
+              <form
+                class="form-block"
+                method="post"
+                action="{% url 'merchant-fulfillment-accept' order.id %}"
+              >
+                {% csrf_token %}
+
+                <label for="ready_minutes">
+                  Estimated Preparation / Packing Time
+                </label>
+
+                <select
+                  class="form-control"
+                  id="ready_minutes"
+                  name="ready_minutes"
+                >
+                  <option value="10">10 minutes</option>
+                  <option value="15" selected>15 minutes</option>
+                  <option value="20">20 minutes</option>
+                  <option value="30">30 minutes</option>
+                  <option value="45">45 minutes</option>
+                  <option value="60">60 minutes</option>
+                </select>
+
+                <button
+                  class="button primary"
+                  type="submit"
+                  style="margin-top:12px;"
+                >
+                  Accept Order
+                </button>
+              </form>
+
+              <form
+                class="form-block"
+                method="post"
+                action="{% url 'merchant-fulfillment-decline' order.id %}"
+              >
+                {% csrf_token %}
+
+                <label for="rejection_reason">
+                  Decline Reason
+                </label>
+
+                <textarea
+                  class="form-control"
+                  id="rejection_reason"
+                  name="rejection_reason"
+                  rows="3"
+                  placeholder="Explain why this order cannot be fulfilled."
+                ></textarea>
+
+                <button
+                  class="button danger"
+                  type="submit"
+                  style="margin-top:12px;"
+                >
+                  Decline Order
+                </button>
+              </form>
+            {% else %}
+              <div class="notice warning">
+                This order cannot enter fulfillment until payment
+                status is Paid.
+              </div>
+            {% endif %}
+
+          {% elif order.fulfillment_status == "declined" %}
+            <div class="notice warning">
+              This order was declined.
+
+              {% if order.rejection_reason %}
+                <br><br>
+                <strong>Reason:</strong><br>
+                {{ order.rejection_reason|linebreaksbr }}
+              {% endif %}
+            </div>
+
+          {% elif order.fulfillment_status == "fulfilled" %}
+            <div class="notice">
+              This order has been fulfilled.
+            </div>
+
+          {% else %}
+            <form
+              class="form-block"
+              method="post"
+              action="{% url 'merchant-fulfillment-status' order.id %}"
+            >
+              {% csrf_token %}
+
+              <label for="fulfillment_status">
+                Update Current Stage
+              </label>
+
+              <select
+                class="form-control"
+                id="fulfillment_status"
+                name="fulfillment_status"
+              >
+                <option value="preparing">
+                  Preparing
+                </option>
+
+                <option value="picking">
+                  Picking Items
+                </option>
+
+                <option value="packing">
+                  Packing
+                </option>
+
+                {% if order.fulfillment_method == "pickup" %}
+                  <option value="customer_pickup_ready">
+                    Customer Pickup Ready
+                  </option>
+
+                {% elif order.fulfillment_method == "local_delivery" %}
+                  <option value="ready_for_pickup">
+                    Ready for Driver Pickup
+                  </option>
+
+                {% else %}
+                  <option value="shipped">
+                    Shipped
+                  </option>
+                {% endif %}
+
+                <option value="out_for_delivery">
+                  Out for Delivery
+                </option>
+
+                <option value="fulfilled">
+                  Fulfilled
+                </option>
+              </select>
+
+              <button
+                class="button primary"
+                type="submit"
+                style="margin-top:12px;"
+              >
+                Update Fulfillment
+              </button>
+            </form>
+          {% endif %}
+        </section>
+
+        {% if order.fulfillment_method == "local_delivery" %}
+          <section class="panel">
+            <p class="eyebrow">
+              MajicMall Megaverse Driver Network
+            </p>
+
+            <h2>Driver Dispatch</h2>
+
+            {% if delivery_job %}
+              <div class="status-strip">
+                <div class="status-box">
+                  <span>Delivery Job</span>
+                  <strong>#{{ delivery_job.id }}</strong>
+                </div>
+
+                <div class="status-box">
+                  <span>Dispatch Status</span>
+                  <strong>
+                    {{ delivery_job.get_status_display }}
+                  </strong>
+                </div>
+              </div>
+
+              {% if delivery_job.partner %}
+                <div class="notice">
+                  <strong>Driver Assigned:</strong><br>
+                  {{ delivery_job.partner.full_name }}
+                </div>
+              {% elif delivery_job.status == "pending" %}
+                <div class="notice">
+                  This package is visible to available drivers in
+                  ZIP {{ delivery_job.delivery_zip }}.
+                </div>
+              {% else %}
+                <div class="notice warning">
+                  The delivery request remains hidden from drivers
+                  until you select <strong>Ready for Driver Pickup</strong>.
+                </div>
+              {% endif %}
+            {% else %}
+              <div class="notice warning">
+                A delivery request will be prepared after payment.
+                It becomes visible to drivers only when you select
+                <strong>Ready for Driver Pickup</strong>.
+              </div>
+            {% endif %}
+          </section>
+        {% endif %}
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

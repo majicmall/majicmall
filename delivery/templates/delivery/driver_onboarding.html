@@ -232,6 +232,70 @@
         </div>
       </div>
 
+      <div
+        style="
+          margin-top:20px;
+          padding:20px;
+          border:1px solid rgba(255,255,255,.14);
+          border-radius:16px;
+          background:rgba(255,255,255,.03);
+        "
+      >
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:16px;
+            flex-wrap:wrap;
+          "
+        >
+          <div>
+            <span class="verification-progress-label">
+              Administrative Review
+            </span>
+
+            <strong>
+              {% if partner.verification_review_complete %}
+                Verification Review Complete
+              {% elif partner.documents_reviewed %}
+                Documents Reviewed
+              {% else %}
+                Awaiting Review
+              {% endif %}
+            </strong>
+          </div>
+
+          <span class="verification-percentage">
+            {{ partner.verification_review_percentage }}%
+          </span>
+        </div>
+
+        <div class="verification-progress-track">
+          <div
+            class="verification-progress-fill"
+            style="width:{{ partner.verification_review_percentage }}%;"
+          ></div>
+        </div>
+
+        {% if partner.verification_review_notes %}
+          <div
+            style="
+              margin-top:16px;
+              padding:14px;
+              border:1px solid rgba(255,190,90,.32);
+              border-radius:12px;
+              color:#ffe0a0;
+              background:rgba(255,190,90,.06);
+              line-height:1.6;
+            "
+          >
+            <strong>Review Notes:</strong><br>
+            {{ partner.verification_review_notes|linebreaksbr }}
+          </div>
+        {% endif %}
+      </div>
+
       {% if partner.profile_photo or partner.vehicle_photo %}
         <div class="verification-preview-grid">
           {% if partner.profile_photo %}

@@ -1,0 +1,127 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Choose a Plan | Majic Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+  <header class="bg-gray-900 px-6 py-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold text-yellow-400">Choose Your Plan</h1>
+    <nav class="space-x-4 text-sm">
+      <a href="{% url 'merchant-dashboard' %}" class="text-gray-300 hover:text-yellow-400">← Back to Dashboard</a>
+    </nav>
+  </header>
+
+  {% if messages %}
+    <div class="max-w-6xl mx-auto px-6 mt-4 space-y-2">
+      {% for message in messages %}
+        <div class="rounded-xl px-4 py-3
+                    {% if message.tags == 'success' %}bg-green-900/40 text-green-200
+                    {% elif message.tags == 'error' %}bg-red-900/40 text-red-200
+                    {% elif message.tags == 'warning' %}bg-yellow-900/40 text-yellow-200
+                    {% else %}bg-gray-800 text-gray-200{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    <!-- Payment method picker -->
+    <div class="mb-8 bg-gray-900 rounded-2xl p-6">
+      <h2 class="text-lg font-semibold mb-3">Pay with</h2>
+      {% if methods %}
+        <form id="provider-form" class="flex items-center gap-3">
+          <select id="provider" name="provider" class="text-black rounded px-3 py-2">
+            {% for m in methods %}
+              <option value="{{ m.provider }}">{{ m.display_name|default:m.get_provider_display }}</option>
+            {% endfor %}
+          </select>
+          <span class="text-sm text-gray-400">You can manage methods in <a class="text-yellow-400 hover:underline" href="{% url 'merchant-payment-settings' %}">Payment Settings</a>.</span>
+        </form>
+      {% else %}
+        <p class="text-gray-300 text-sm">
+          No active payment methods. Please add one in
+          <a class="text-yellow-400 hover:underline" href="{% url 'merchant-payment-settings' %}">Payment Settings</a>.
+        </p>
+      {% endif %}
+    </div>
+
+    <!-- Plans -->
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Starter -->
+      <div class="bg-gray-900 rounded-2xl p-6 flex flex-col">
+        <h3 class="text-xl font-semibold">Starter</h3>
+        <p class="text-gray-400 mt-1">Everything to launch a small shop.</p>
+        <div class="text-3xl font-bold mt-4">$9<span class="text-base text-gray-400">/mo</span></div>
+        <ul class="mt-4 space-y-2 text-sm text-gray-300">
+          <li>• Up to 50 products</li>
+          <li>• Basic analytics</li>
+          <li>• Email support</li>
+        </ul>
+        <a
+          {% if methods %}
+          href="{% url 'merchant-plan-checkout' 'starter' %}?provider={{ methods.0.provider }}"
+          onclick="this.href=this.href.replace('provider={{ methods.0.provider }}','provider='+encodeURIComponent(document.getElementById('provider').value))"
+          {% else %}
+          href="{% url 'merchant-payment-settings' %}"
+          {% endif %}
+          class="mt-auto inline-block text-center px-4 py-2 bg-yellow-400 text-black rounded-xl hover:opacity-90 mt-6">
+          Choose Starter
+        </a>
+      </div>
+
+      <!-- Pro -->
+      <div class="bg-gray-900 rounded-2xl p-6 flex flex-col ring-2 ring-yellow-400">
+        <h3 class="text-xl font-semibold">Pro</h3>
+        <p class="text-gray-400 mt-1">Growing stores with more power.</p>
+        <div class="text-3xl font-bold mt-4">$29<span class="text-base text-gray-400">/mo</span></div>
+        <ul class="mt-4 space-y-2 text-sm text-gray-300">
+          <li>• Unlimited products</li>
+          <li>• Advanced analytics</li>
+          <li>• Priority support</li>
+        </ul>
+        <a
+          {% if methods %}
+          href="{% url 'merchant-plan-checkout' 'pro' %}?provider={{ methods.0.provider }}"
+          onclick="this.href=this.href.replace('provider={{ methods.0.provider }}','provider='+encodeURIComponent(document.getElementById('provider').value))"
+          {% else %}
+          href="{% url 'merchant-payment-settings' %}"
+          {% endif %}
+          class="mt-auto inline-block text-center px-4 py-2 bg-yellow-400 text-black rounded-xl hover:opacity-90 mt-6">
+          Choose Pro
+        </a>
+      </div>
+
+      <!-- Elite -->
+      <div class="bg-gray-900 rounded-2xl p-6 flex flex-col">
+        <h3 class="text-xl font-semibold">Elite</h3>
+        <p class="text-gray-400 mt-1">Everything + concierge support.</p>
+        <div class="text-3xl font-bold mt-4">$79<span class="text-base text-gray-400">/mo</span></div>
+        <ul class="mt-4 space-y-2 text-sm text-gray-300">
+          <li>• Unlimited products</li>
+          <li>• Real-time reports</li>
+          <li>• 1:1 onboarding</li>
+        </ul>
+        <a
+          {% if methods %}
+          href="{% url 'merchant-plan-checkout' 'elite' %}?provider={{ methods.0.provider }}"
+          onclick="this.href=this.href.replace('provider={{ methods.0.provider }}','provider='+encodeURIComponent(document.getElementById('provider').value))"
+          {% else %}
+          href="{% url 'merchant-payment-settings' %}"
+          {% endif %}
+          class="mt-auto inline-block text-center px-4 py-2 bg-yellow-400 text-black rounded-xl hover:opacity-90 mt-6">
+          Choose Elite
+        </a>
+      </div>
+    </div>
+
+    <p class="text-xs text-gray-500 mt-6">
+      Prices are examples for demo flow. Replace with your real pricing/intervals.
+    </p>
+  </main>
+</body>
+</html>

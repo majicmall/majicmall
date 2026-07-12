@@ -245,7 +245,7 @@
               <td class="px-6 py-3">{{ order.created_at|date:"M d, Y" }}</td>
               <td class="px-6 py-3">${{ order.total|floatformat:2 }}</td>
               <td class="px-6 py-3">
-                <a href="{% url 'order-detail' order.id %}" class="text-yellow-400 hover:underline">View</a>
+                <a href="{% url 'merchant-fulfillment-order' order.id %}" class="text-yellow-400 hover:underline">Open Fulfillment</a>
               </td>
             </tr>
             {% empty %}
@@ -285,7 +285,7 @@
               </div>
             </div>
 
-            <a href="{% url 'order-detail' order.id %}" class="mt-4 inline-flex w-full justify-center px-4 py-3 rounded-xl bg-yellow-400 text-black font-bold">
+            <a href="{% url 'merchant-fulfillment-order' order.id %}" class="mt-4 inline-flex w-full justify-center px-4 py-3 rounded-xl bg-yellow-400 text-black font-bold">
               View Order
             </a>
           </div>
@@ -479,5 +479,73 @@
       });
     })();
   </script>
+
+<a
+  href="{% url 'merchant-fulfillment-center' %}"
+  class="mm-fulfillment-launcher"
+  aria-label="Open MajicMall Megaverse Fulfillment Center"
+>
+  <span class="mm-fulfillment-launcher-icon">📦</span>
+
+  <span>
+    <strong>Fulfillment Center</strong>
+    <small>Orders • Alerts • Pickup • Delivery</small>
+  </span>
+</a>
+
+<style>
+  .mm-fulfillment-launcher {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 62px;
+    padding: 11px 18px;
+    border: 1px solid rgba(255, 225, 145, .8);
+    border-radius: 18px;
+    color: #fff;
+    background:
+      linear-gradient(
+        145deg,
+        rgba(255,255,255,.1),
+        rgba(255,255,255,.025)
+      ),
+      rgba(5,5,7,.97);
+    box-shadow:
+      0 0 30px rgba(232,189,69,.18),
+      0 18px 55px rgba(0,0,0,.5);
+    text-decoration: none;
+    backdrop-filter: blur(14px);
+  }
+
+  .mm-fulfillment-launcher-icon {
+    font-size: 1.7rem;
+  }
+
+  .mm-fulfillment-launcher strong {
+    display: block;
+    color: #ffe9a4;
+  }
+
+  .mm-fulfillment-launcher small {
+    display: block;
+    margin-top: 4px;
+    color: rgba(255,255,255,.7);
+    font-size: .72rem;
+  }
+
+  @media (max-width: 650px) {
+    .mm-fulfillment-launcher {
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      justify-content: center;
+    }
+  }
+</style>
+
 </body>
 </html>

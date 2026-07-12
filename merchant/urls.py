@@ -1,8 +1,55 @@
 from django.urls import path
 from django.views.generic import RedirectView
-from . import views
+from . import views, fulfillment_views
 
 urlpatterns = [
+    # MajicMall Megaverse Fulfillment Center
+    path(
+        "fulfillment/orders/<int:order_id>/",
+        fulfillment_views.fulfillment_order_detail,
+        name="merchant-fulfillment-order",
+    ),
+    path(
+        "fulfillment/",
+        fulfillment_views.fulfillment_center,
+        name="merchant-fulfillment-center",
+    ),
+    path(
+        "fulfillment/availability/",
+        fulfillment_views.update_availability,
+        name="merchant-fulfillment-availability",
+    ),
+    path(
+        "fulfillment/preferences/",
+        fulfillment_views.update_notification_preferences,
+        name="merchant-fulfillment-preferences",
+    ),
+    path(
+        "fulfillment/alerts/",
+        fulfillment_views.fulfillment_alert_feed,
+        name="merchant-fulfillment-alert-feed",
+    ),
+    path(
+        "fulfillment/orders/<int:order_id>/acknowledge/",
+        fulfillment_views.acknowledge_order_alert,
+        name="merchant-fulfillment-acknowledge",
+    ),
+    path(
+        "fulfillment/orders/<int:order_id>/accept/",
+        fulfillment_views.accept_order,
+        name="merchant-fulfillment-accept",
+    ),
+    path(
+        "fulfillment/orders/<int:order_id>/decline/",
+        fulfillment_views.decline_order,
+        name="merchant-fulfillment-decline",
+    ),
+    path(
+        "fulfillment/orders/<int:order_id>/status/",
+        fulfillment_views.update_fulfillment_status,
+        name="merchant-fulfillment-status",
+    ),
+
 path("operations/", views.operations_center, name="operations-center"),
 path("webhooks/coinbase/", views.webhook_coinbase, name="webhook-coinbase"),
     # =========================

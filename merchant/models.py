@@ -211,6 +211,72 @@ class Product(models.Model):
         return self.product_type == "physical"
 
 
+class MerchantFulfillmentSettings(models.Model):
+    AVAILABILITY_CHOICES = [
+        ("accepting", "Accepting Orders"),
+        ("busy", "Busy"),
+        ("paused", "Temporarily Paused"),
+        ("closed", "Closed"),
+    ]
+
+    MERCHANT_TYPE_CHOICES = [
+        ("retail", "Retail / Product Merchant"),
+        ("restaurant", "Restaurant / Food Merchant"),
+        ("creator", "Creator Merchandise"),
+        ("florist", "Florist / Custom Preparation"),
+        ("service", "Service Merchant"),
+        ("other", "Other"),
+    ]
+
+    store = models.OneToOneField(
+        MerchantStore,
+        on_delete=models.CASCADE,
+        related_name="fulfillment_settings",
+    )
+
+    availability_status = models.CharField(
+        max_length=20,
+        choices=AVAILABILITY_CHOICES,
+        default="accepting",
+    )
+
+    merchant_type = models.CharField(
+        max_length=20,
+        choices=MERCHANT_TYPE_CHOICES,
+        default="retail",
+    )
+
+    pause_message = models.CharField(
+        max_length=255,
+        blank=True,
+    )
+
+    sound_alerts_enabled = models.BooleanField(default=True)
+    browser_notifications_enabled = models.BooleanField(default=True)
+    email_alerts_enabled = models.BooleanField(default=True)
+
+    default_preparation_minutes = models.PositiveIntegerField(
+        default=15,
+    )
+
+    last_status_change_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Merchant Fulfillment Setting"
+        verbose_name_plural = "Merchant Fulfillment Settings"
+
+    def __str__(self):
+        return (
+            f"{self.store.store_name} — "
+            f"{self.get_availability_status_display()}"
+        )
+
+    @property
+    def is_accepting_orders(self):
+        return self.availability_status == "accepting"
+
+
 class Order(models.Model):
     STATUS_CHOICES = [
         ("pending", "Pending"),
@@ -237,6 +303,56 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="paid")
     shipping_status = models.CharField(max_length=30, default="processing")
     fulfillment_method = models.CharField(max_length=30, default="shipping")
+
+    FULFILLMENT_STATUS_CHOICES = [
+        ("awaiting_acceptance", "Awaiting Merchant Acceptance"),
+        ("accepted", "Accepted"),
+        ("preparing", "Preparing"),
+        ("picking", "Picking Items"),
+        ("packing", "Packing"),
+        ("ready_for_pickup", "Ready for Pickup"),
+        ("driver_requested", "Driver Requested"),
+        ("driver_assigned", "Driver Assigned"),
+        ("customer_pickup_ready", "Customer Pickup Ready"),
+        ("shipped", "Shipped"),
+        ("out_for_delivery", "Out for Delivery"),
+        ("fulfilled", "Fulfilled"),
+        ("declined", "Declined"),
+        ("canceled", "Canceled"),
+    ]
+
+    fulfillment_status = models.CharField(
+        max_length=40,
+        choices=FULFILLMENT_STATUS_CHOICES,
+        default="awaiting_acceptance",
+    )
+
+    merchant_response_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    estimated_ready_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    ready_for_pickup_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    fulfillment_updated_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    alert_acknowledged_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    rejection_reason = models.TextField(blank=True)
     shipping_carrier = models.CharField(max_length=80, blank=True, default="")
     tracking_number = models.CharField(max_length=120, blank=True, default="")
     tracking_url = models.URLField(blank=True, default="")

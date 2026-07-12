@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    MajicMall Megaverse Fulfillment Center
+  </title>
+
+  <style>
+    :root {
+      --black: #030303;
+      --panel: rgba(16, 16, 18, 0.96);
+      --gold: #e8bd45;
+      --gold-light: #ffe9a4;
+      --white: #ffffff;
+      --muted: #bdbdbd;
+      --green: #77e39c;
+      --yellow: #ffd86b;
+      --red: #ff8585;
+      --border: rgba(232, 189, 69, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--black);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(
+          circle at 50% 0,
+          rgba(232, 189, 69, 0.18),
+          transparent 35%
+        ),
+        linear-gradient(
+          145deg,
+          #020202,
+          #101014 50%,
+          #020202
+        );
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2, 2, 2, 0.94);
+      backdrop-filter: blur(16px);
+    }
+
+    .header-inner {
+      width: min(1240px, calc(100% - 30px));
+      min-height: 74px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      text-decoration: none;
+    }
+
+    .brand strong {
+      display: block;
+      color: var(--gold-light);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1rem, 3vw, 1.35rem);
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .68rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header-link {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      text-decoration: none;
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .shell {
+      width: min(1240px, calc(100% - 30px));
+      margin: 0 auto;
+      padding: 42px 0 80px;
+    }
+
+    .hero,
+    .panel,
+    .order-card {
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, .065),
+          rgba(255, 255, 255, .015)
+        ),
+        var(--panel);
+      box-shadow: 0 22px 65px rgba(0, 0, 0, .4);
+    }
+
+    .hero {
+      padding: clamp(26px, 6vw, 58px);
+      border-radius: 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--gold);
+      font-size: .77rem;
+      font-weight: 900;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      overflow-wrap: anywhere;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.1rem, 7vw, 4.8rem);
+      line-height: 1;
+    }
+
+    h2 {
+      margin: 0;
+      color: var(--gold-light);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .lead {
+      max-width: 780px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .messages {
+      margin-bottom: 20px;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(232, 189, 69, .07);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(190px, 1fr)
+      );
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .stat {
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, .11);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: .76rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 8px;
+      color: var(--gold-light);
+      font-size: 2rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, .7fr);
+      gap: 22px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 24px;
+      border-radius: 22px;
+    }
+
+    .panel + .panel {
+      margin-top: 20px;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: .73rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .badge.accepting,
+    .badge.ready,
+    .badge.fulfilled {
+      color: var(--green);
+      border: 1px solid rgba(119, 227, 156, .42);
+      background: rgba(119, 227, 156, .08);
+    }
+
+    .badge.busy,
+    .badge.preparing,
+    .badge.picking,
+    .badge.packing {
+      color: var(--yellow);
+      border: 1px solid rgba(255, 216, 107, .42);
+      background: rgba(255, 216, 107, .08);
+    }
+
+    .badge.paused,
+    .badge.closed,
+    .badge.declined {
+      color: var(--red);
+      border: 1px solid rgba(255, 133, 133, .42);
+      background: rgba(255, 133, 133, .08);
+    }
+
+    .order-card {
+      padding: 20px;
+      border-radius: 18px;
+      margin-bottom: 14px;
+    }
+
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .order-number {
+      color: var(--gold-light);
+      font-size: 1.15rem;
+      font-weight: 900;
+    }
+
+    .order-meta {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(150px, 1fr)
+      );
+      gap: 10px;
+      margin-top: 15px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .items {
+      margin: 16px 0 0;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .025);
+    }
+
+    .items p {
+      margin: 5px 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 16px;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 17px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--white);
+      background: rgba(255, 255, 255, .055);
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button.primary {
+      color: #070707;
+      border-color: var(--gold);
+      background: linear-gradient(
+        135deg,
+        var(--gold-light),
+        var(--gold)
+      );
+    }
+
+    .button.danger {
+      color: var(--red);
+      border-color: rgba(255, 133, 133, .45);
+      background: rgba(255, 133, 133, .06);
+    }
+
+    .form-control {
+      width: 100%;
+      min-height: 46px;
+      margin-top: 7px;
+      padding: 11px 13px;
+      border: 1px solid rgba(232, 189, 69, .38);
+      border-radius: 11px;
+      color: var(--white);
+      background: rgba(255, 255, 255, .055);
+    }
+
+    select.form-control option {
+      color: #111;
+      background: #fff;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--gold-light);
+      font-weight: 800;
+    }
+
+    .check-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 12px 0;
+      color: var(--muted);
+    }
+
+    .check-row input {
+      width: 19px;
+      height: 19px;
+      accent-color: var(--gold);
+    }
+
+    .empty {
+      padding: 24px;
+      border: 1px dashed rgba(255, 255, 255, .2);
+      border-radius: 14px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .alert-banner {
+      display: none;
+      position: fixed;
+      inset: auto 16px 16px;
+      z-index: 100;
+      max-width: 520px;
+      margin-left: auto;
+      padding: 18px;
+      border: 2px solid var(--gold-light);
+      border-radius: 18px;
+      color: var(--white);
+      background: rgba(8, 8, 8, .98);
+      box-shadow:
+        0 0 40px rgba(232, 189, 69, .25),
+        0 24px 70px rgba(0, 0, 0, .6);
+      animation: alertPulse 1.2s ease-in-out infinite;
+    }
+
+    .alert-banner.show {
+      display: block;
+    }
+
+    @keyframes alertPulse {
+      0%,
+      100% {
+        border-color: var(--gold);
+      }
+
+      50% {
+        border-color: var(--gold-light);
+        box-shadow:
+          0 0 60px rgba(232, 189, 69, .38),
+          0 24px 70px rgba(0, 0, 0, .6);
+      }
+    }
+
+    @media (max-width: 850px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-inner {
+        padding: 14px 0;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header-links {
+        width: 100%;
+      }
+
+      .header-link {
+        flex: 1;
+      }
+
+      .shell {
+        padding-top: 26px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a class="brand" href="{% url 'merchant-fulfillment-center' %}">
+        <strong>MajicMall Megaverse</strong>
+        <span>Fulfillment Center</span>
+      </a>
+
+      <div class="header-links">
+        <a class="header-link" href="{% url 'merchant-dashboard' %}">
+          Merchant Dashboard
+        </a>
+
+        <a class="header-link" href="{% url 'order-list' %}">
+          All Orders
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <section class="hero">
+      <p class="eyebrow">
+        Universal Merchant Order Operations
+      </p>
+
+      <h1>
+        Fulfillment Center
+      </h1>
+
+      <p class="lead">
+        Accept and prepare restaurant orders, pick and pack retail
+        products, coordinate customer pickup, manage shipping, and
+        dispatch local deliveries through the MajicMall Megaverse
+        Driver Network.
+      </p>
+
+      <div class="stats">
+        <div class="stat">
+          <span>Store</span>
+          <strong style="font-size:1.2rem;">
+            {{ store.store_name }}
+          </strong>
+        </div>
+
+        <div class="stat">
+          <span>Awaiting Response</span>
+          <strong>{{ awaiting_count }}</strong>
+        </div>
+
+        <div class="stat">
+          <span>Active Fulfillment</span>
+          <strong>{{ active_count }}</strong>
+        </div>
+
+        <div class="stat">
+          <span>Availability</span>
+          <strong style="font-size:1.15rem;">
+            {{ fulfillment_settings.get_availability_status_display }}
+          </strong>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <div>
+        <section class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Immediate Attention</p>
+              <h2>New Orders</h2>
+            </div>
+
+            <span class="badge accepting">
+              {{ awaiting_count }} Waiting
+            </span>
+          </div>
+
+          {% for order in awaiting_orders %}
+            <article class="order-card">
+              <div class="order-top">
+                <div>
+                  <div class="order-number">
+                    Order #{{ order.id }}
+                  </div>
+
+                  <div style="color:var(--muted);margin-top:5px;">
+                    {{ order.customer_name|default:"Customer" }}
+                  </div>
+                </div>
+
+                <span class="badge busy">
+                  Awaiting Acceptance
+                </span>
+              </div>
+
+              <div class="order-meta">
+                <div>
+                  <strong>Total:</strong>
+                  ${{ order.total|floatformat:2 }}
+                </div>
+
+                <div>
+                  <strong>Method:</strong>
+                  {{ order.fulfillment_method|title }}
+                </div>
+
+                <div>
+                  <strong>Placed:</strong>
+                  {{ order.created_at|date:"M j, g:i A" }}
+                </div>
+
+                <div>
+                  <strong>ZIP:</strong>
+                  {{ order.shipping_zip|default:"Pickup" }}
+                </div>
+              </div>
+
+              <div class="items">
+                {% for item in order.items.all %}
+                  <p>
+                    {{ item.quantity }} ×
+                    {{ item.product.name|default:"Product" }}
+                  </p>
+                {% empty %}
+                  <p>Order item details unavailable.</p>
+                {% endfor %}
+              </div>
+
+              <div class="actions">
+                <form
+                  method="post"
+                  action="{% url 'merchant-fulfillment-accept' order.id %}"
+                >
+                  {% csrf_token %}
+
+                  <select
+                    class="form-control"
+                    name="ready_minutes"
+                    aria-label="Estimated ready time"
+                  >
+                    <option value="10">Ready in 10 minutes</option>
+                    <option value="15" selected>Ready in 15 minutes</option>
+                    <option value="20">Ready in 20 minutes</option>
+                    <option value="30">Ready in 30 minutes</option>
+                    <option value="45">Ready in 45 minutes</option>
+                    <option value="60">Ready in 60 minutes</option>
+                  </select>
+
+                  <button
+                    class="button primary"
+                    type="submit"
+                    style="margin-top:10px;"
+                  >
+                    Accept Order
+                  </button>
+                </form>
+
+                <form
+                  method="post"
+                  action="{% url 'merchant-fulfillment-decline' order.id %}"
+                >
+                  {% csrf_token %}
+
+                  <input
+                    class="form-control"
+                    type="text"
+                    name="rejection_reason"
+                    placeholder="Reason for declining"
+                  >
+
+                  <button
+                    class="button danger"
+                    type="submit"
+                    style="margin-top:10px;"
+                  >
+                    Decline Order
+                  </button>
+                </form>
+
+                <a
+                  class="button"
+                  href="{% url 'merchant-fulfillment-order' order.id %}"
+                >
+                  View Details
+                </a>
+              </div>
+            </article>
+          {% empty %}
+            <div class="empty">
+              No paid orders are awaiting a response.
+            </div>
+          {% endfor %}
+        </section>
+
+        <section class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">In Progress</p>
+              <h2>Active Fulfillment</h2>
+            </div>
+          </div>
+
+          {% for order in active_orders %}
+            <article class="order-card">
+              <div class="order-top">
+                <div class="order-number">
+                  Order #{{ order.id }}
+                </div>
+
+                <span class="badge preparing">
+                  {{ order.get_fulfillment_status_display }}
+                </span>
+              </div>
+
+              <div class="order-meta">
+                <div>
+                  <strong>Customer:</strong>
+                  {{ order.customer_name|default:"Customer" }}
+                </div>
+
+                <div>
+                  <strong>Method:</strong>
+                  {{ order.fulfillment_method|title }}
+                </div>
+
+                <div>
+                  <strong>Ready estimate:</strong>
+                  {% if order.estimated_ready_at %}
+                    {{ order.estimated_ready_at|date:"g:i A" }}
+                  {% else %}
+                    Not set
+                  {% endif %}
+                </div>
+
+                <div>
+                  <strong>Total:</strong>
+                  ${{ order.total|floatformat:2 }}
+                </div>
+              </div>
+
+              <form
+                method="post"
+                action="{% url 'merchant-fulfillment-status' order.id %}"
+                class="actions"
+              >
+                {% csrf_token %}
+
+                <select
+                  class="form-control"
+                  name="fulfillment_status"
+                  style="max-width:260px;"
+                >
+                  <option value="preparing">Preparing</option>
+                  <option value="picking">Picking Items</option>
+                  <option value="packing">Packing</option>
+
+                  {% if order.fulfillment_method == "pickup" %}
+                    <option value="customer_pickup_ready">
+                      Customer Pickup Ready
+                    </option>
+                  {% else %}
+                    <option value="ready_for_pickup">
+                      Ready for Pickup / Driver
+                    </option>
+                  {% endif %}
+
+                  <option value="shipped">Shipped</option>
+                  <option value="out_for_delivery">
+                    Out for Delivery
+                  </option>
+                  <option value="fulfilled">Fulfilled</option>
+                </select>
+
+                <button class="button primary" type="submit">
+                  Update Order
+                </button>
+
+                <a
+                  class="button"
+                  href="{% url 'merchant-fulfillment-order' order.id %}"
+                >
+                  View Details
+                </a>
+              </form>
+            </article>
+          {% empty %}
+            <div class="empty">
+              No orders are actively being fulfilled.
+            </div>
+          {% endfor %}
+        </section>
+      </div>
+
+      <aside>
+        <section class="panel">
+          <p class="eyebrow">Store Availability</p>
+          <h2>Accepting Orders</h2>
+
+          <form
+            method="post"
+            action="{% url 'merchant-fulfillment-availability' %}"
+            style="margin-top:20px;"
+          >
+            {% csrf_token %}
+
+            <div class="field">
+              <label for="availability_status">
+                Current Status
+              </label>
+
+              <select
+                class="form-control"
+                id="availability_status"
+                name="availability_status"
+              >
+                {% for value, label in fulfillment_settings.AVAILABILITY_CHOICES %}
+                  <option
+                    value="{{ value }}"
+                    {% if fulfillment_settings.availability_status == value %}
+                      selected
+                    {% endif %}
+                  >
+                    {{ label }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="pause_message">
+                Customer Message
+              </label>
+
+              <textarea
+                class="form-control"
+                id="pause_message"
+                name="pause_message"
+                rows="3"
+                placeholder="Kitchen busy, reopening soon, temporary delay..."
+              >{{ fulfillment_settings.pause_message }}</textarea>
+            </div>
+
+            <button class="button primary" type="submit">
+              Update Availability
+            </button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">Alerts & Workflow</p>
+          <h2>Merchant Preferences</h2>
+
+          <form
+            method="post"
+            action="{% url 'merchant-fulfillment-preferences' %}"
+            style="margin-top:20px;"
+          >
+            {% csrf_token %}
+
+            <div class="field">
+              <label for="merchant_type">
+                Merchant Type
+              </label>
+
+              <select
+                class="form-control"
+                id="merchant_type"
+                name="merchant_type"
+              >
+                {% for value, label in fulfillment_settings.MERCHANT_TYPE_CHOICES %}
+                  <option
+                    value="{{ value }}"
+                    {% if fulfillment_settings.merchant_type == value %}
+                      selected
+                    {% endif %}
+                  >
+                    {{ label }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="default_preparation_minutes">
+                Default Preparation / Packing Time
+              </label>
+
+              <input
+                class="form-control"
+                id="default_preparation_minutes"
+                type="number"
+                min="1"
+                max="1440"
+                name="default_preparation_minutes"
+                value="{{ fulfillment_settings.default_preparation_minutes }}"
+              >
+            </div>
+
+            <label class="check-row">
+              <input
+                type="checkbox"
+                name="sound_alerts_enabled"
+                {% if fulfillment_settings.sound_alerts_enabled %}
+                  checked
+                {% endif %}
+              >
+              Repeating sound alerts
+            </label>
+
+            <label class="check-row">
+              <input
+                type="checkbox"
+                name="browser_notifications_enabled"
+                {% if fulfillment_settings.browser_notifications_enabled %}
+                  checked
+                {% endif %}
+              >
+              Browser notifications
+            </label>
+
+            <label class="check-row">
+              <input
+                type="checkbox"
+                name="email_alerts_enabled"
+                {% if fulfillment_settings.email_alerts_enabled %}
+                  checked
+                {% endif %}
+              >
+              Email notifications
+            </label>
+
+            <button class="button primary" type="submit">
+              Save Preferences
+            </button>
+
+            <button
+              class="button"
+              id="enableNotifications"
+              type="button"
+              style="margin-top:10px;"
+            >
+              Enable Device Notifications
+            </button>
+          </form>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <div class="alert-banner" id="newOrderAlert">
+    <strong style="color:var(--gold-light);font-size:1.15rem;">
+      🔔 New MajicMall Megaverse Order
+    </strong>
+
+    <p id="newOrderAlertText" style="margin:10px 0 0;">
+      A paid order is waiting for your response.
+    </p>
+
+    <a
+      class="button primary"
+      href="{% url 'merchant-fulfillment-center' %}"
+      style="margin-top:12px;"
+    >
+      Open Fulfillment Center
+    </a>
+  </div>
+
+  <script>
+    const alertFeedUrl =
+      "{% url 'merchant-fulfillment-alert-feed' %}";
+
+    const alertBanner =
+      document.getElementById("newOrderAlert");
+
+    const alertText =
+      document.getElementById("newOrderAlertText");
+
+    const enableNotifications =
+      document.getElementById("enableNotifications");
+
+    let lastOrderIds = new Set();
+    let audioContext = null;
+    let alertInterval = null;
+
+    function playOrderTone() {
+      try {
+        audioContext =
+          audioContext || new (
+            window.AudioContext || window.webkitAudioContext
+          )();
+
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(
+          880,
+          audioContext.currentTime
+        );
+
+        gain.gain.setValueAtTime(
+          0.0001,
+          audioContext.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+          0.22,
+          audioContext.currentTime + 0.02
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          audioContext.currentTime + 0.45
+        );
+
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.5);
+      } catch (error) {
+        console.debug("Audio alert unavailable:", error);
+      }
+    }
+
+    function beginRepeatingAlert() {
+      if (alertInterval) {
+        return;
+      }
+
+      playOrderTone();
+
+      alertInterval = window.setInterval(
+        playOrderTone,
+        6000
+      );
+    }
+
+    function stopRepeatingAlert() {
+      if (alertInterval) {
+        window.clearInterval(alertInterval);
+        alertInterval = null;
+      }
+    }
+
+    async function pollOrders() {
+      try {
+        const response = await fetch(
+          alertFeedUrl,
+          {
+            headers: {
+              "X-Requested-With": "XMLHttpRequest"
+            },
+            cache: "no-store"
+          }
+        );
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!data.ok) {
+          return;
+        }
+
+        const currentIds = new Set(
+          data.orders.map(order => order.id)
+        );
+
+        const newOrders = data.orders.filter(
+          order => !lastOrderIds.has(order.id)
+        );
+
+        if (data.count > 0) {
+          alertBanner.classList.add("show");
+
+          alertText.textContent =
+            data.count === 1
+              ? "One paid order is waiting for your response."
+              : `${data.count} paid orders are waiting for your response.`;
+
+          if (data.sound_enabled) {
+            beginRepeatingAlert();
+          }
+
+          if (
+            newOrders.length > 0 &&
+            data.browser_notifications_enabled &&
+            "Notification" in window &&
+            Notification.permission === "granted"
+          ) {
+            const firstOrder = newOrders[0];
+
+            new Notification(
+              "New MajicMall Megaverse Order",
+              {
+                body:
+                  `Order #${firstOrder.id} — $${firstOrder.total}`,
+                tag: `order-${firstOrder.id}`,
+                renotify: true
+              }
+            );
+          }
+        } else {
+          alertBanner.classList.remove("show");
+          stopRepeatingAlert();
+        }
+
+        lastOrderIds = currentIds;
+      } catch (error) {
+        console.debug("Order polling unavailable:", error);
+      }
+    }
+
+    enableNotifications.addEventListener(
+      "click",
+      async () => {
+        if (!("Notification" in window)) {
+          alert(
+            "This device does not support browser notifications."
+          );
+          return;
+        }
+
+        const permission =
+          await Notification.requestPermission();
+
+        if (permission === "granted") {
+          playOrderTone();
+
+          alert(
+            "MajicMall Megaverse order notifications are enabled."
+          );
+        }
+      }
+    );
+
+    document.addEventListener(
+      "click",
+      () => {
+        if (
+          audioContext &&
+          audioContext.state === "suspended"
+        ) {
+          audioContext.resume();
+        }
+      },
+      { once: true }
+    );
+
+    pollOrders();
+    window.setInterval(pollOrders, 15000);
+  </script>
+</body>
+</html>

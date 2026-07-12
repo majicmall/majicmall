@@ -122,3 +122,37 @@ class MerchantPaymentMethodAdmin(admin.ModelAdmin):
     list_display = ("store", "provider", "display_name", "mode", "is_active", "is_default")
     list_filter = ("provider", "mode", "is_active", "is_default")
     search_fields = ("store__store_name", "display_name")
+
+
+try:
+    from .models import MerchantFulfillmentSettings
+
+    @admin.register(MerchantFulfillmentSettings)
+    class MerchantFulfillmentSettingsAdmin(admin.ModelAdmin):
+        list_display = (
+            "store",
+            "availability_status",
+            "merchant_type",
+            "sound_alerts_enabled",
+            "browser_notifications_enabled",
+            "email_alerts_enabled",
+            "default_preparation_minutes",
+            "last_status_change_at",
+        )
+
+        list_filter = (
+            "availability_status",
+            "merchant_type",
+            "sound_alerts_enabled",
+            "browser_notifications_enabled",
+            "email_alerts_enabled",
+        )
+
+        search_fields = (
+            "store__store_name",
+            "store__owner__username",
+            "store__owner__email",
+        )
+
+except admin.sites.AlreadyRegistered:
+    pass

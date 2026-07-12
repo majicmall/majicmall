@@ -130,11 +130,34 @@ class DeliveryPartner(models.Model):
         blank=True,
     )
 
+    profile_photo_reviewed = models.BooleanField(default=False)
+    vehicle_information_reviewed = models.BooleanField(default=False)
+    vehicle_photo_reviewed = models.BooleanField(default=False)
+    driver_license_reviewed = models.BooleanField(default=False)
+    insurance_reviewed = models.BooleanField(default=False)
+    vehicle_registration_reviewed = models.BooleanField(default=False)
+
     documents_reviewed = models.BooleanField(default=False)
 
     documents_reviewed_at = models.DateTimeField(
         null=True,
         blank=True,
+    )
+
+    documents_reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reviewed_driver_documents",
+    )
+
+    verification_review_notes = models.TextField(
+        blank=True,
+        help_text=(
+            "Internal review notes, missing-document details, "
+            "or requested corrections."
+        ),
     )
 
     completed_deliveries = models.PositiveIntegerField(default=0)
@@ -293,6 +316,46 @@ class DeliveryPartner(models.Model):
     @property
     def verification_documents_complete(self):
         return all(self.verification_items.values())
+
+    @property
+    def verification_review_items(self):
+        return {
+            "profile_photo": self.profile_photo_reviewed,
+            "vehicle_information": self.vehicle_information_reviewed,
+            "vehicle_photo": self.vehicle_photo_reviewed,
+            "driver_license": self.driver_license_reviewed,
+            "insurance": self.insurance_reviewed,
+            "vehicle_registration": (
+                self.vehicle_registration_reviewed
+            ),
+        }
+
+    @property
+    def verification_review_completed_items(self):
+        return sum(self.verification_review_items.values())
+
+    @property
+    def verification_review_total_items(self):
+        return len(self.verification_review_items)
+
+    @property
+    def verification_review_percentage(self):
+        total = self.verification_review_total_items
+
+        if not total:
+            return 0
+
+        return round(
+            self.verification_review_completed_items / total * 100
+        )
+
+    @property
+    def verification_review_complete(self):
+        return bool(
+            self.verification_documents_complete
+            and all(self.verification_review_items.values())
+            and self.documents_reviewed
+        )
 
     @property
     def is_approved(self):

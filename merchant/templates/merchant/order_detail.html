@@ -258,5 +258,37 @@
 </section>
 
 </main>
+
+<a
+  href="{% url 'merchant-fulfillment-order' order.id %}"
+  class="mm-open-fulfillment-button"
+>
+  Open in MajicMall Megaverse Fulfillment Center
+</a>
+
+<style>
+  .mm-open-fulfillment-button {
+    display: flex;
+    width: min(100%, 520px);
+    min-height: 52px;
+    margin: 20px auto;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 22px;
+    border: 1px solid #e8bd45;
+    border-radius: 999px;
+    color: #050505;
+    background: linear-gradient(
+      135deg,
+      #ffe9a4,
+      #e8bd45
+    );
+    box-shadow: 0 0 28px rgba(232,189,69,.18);
+    text-align: center;
+    text-decoration: none;
+    font-weight: 900;
+  }
+</style>
+
 </body>
 </html>

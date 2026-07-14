@@ -1,0 +1,291 @@
+{% extends "delivery/driver_base.html" %}
+
+{% block title %}
+  Active Deliveries | MajicMall Megaverse Driver Network
+{% endblock %}
+
+{% block content %}
+<style>
+  .jobs-shell {
+    width: min(1050px, calc(100% - 28px));
+    margin: 36px auto 90px;
+  }
+
+  .jobs-hero,
+  .job-card {
+    border: 1px solid rgba(232, 189, 69, .42);
+    border-radius: 25px;
+    background:
+      linear-gradient(
+        145deg,
+        rgba(255,255,255,.07),
+        rgba(255,255,255,.018)
+      ),
+      rgba(5,5,8,.97);
+    box-shadow:
+      0 24px 70px rgba(0,0,0,.45),
+      0 0 28px rgba(232,189,69,.08);
+  }
+
+  .jobs-hero {
+    padding: clamp(25px, 6vw, 46px);
+    text-align: center;
+  }
+
+  .jobs-kicker {
+    color: #e8bd45;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .jobs-hero h1 {
+    margin: 10px 0 0;
+    color: #ffe9a4;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2rem, 7vw, 4rem);
+  }
+
+  .jobs-hero p {
+    margin: 14px 0 0;
+    color: rgba(255,255,255,.7);
+  }
+
+  .job-list {
+    display: grid;
+    gap: 18px;
+    margin-top: 20px;
+  }
+
+  .job-card {
+    padding: 23px;
+  }
+
+  .job-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .job-header h2 {
+    margin: 0;
+    color: #ffe9a4;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.55rem;
+  }
+
+  .status-pill {
+    padding: 7px 12px;
+    border: 1px solid rgba(232,189,69,.45);
+    border-radius: 999px;
+    color: #ffe9a4;
+    background: rgba(232,189,69,.08);
+    font-size: .75rem;
+    font-weight: 900;
+  }
+
+  .job-details {
+    display: grid;
+    grid-template-columns: repeat(
+      3,
+      minmax(0, 1fr)
+    );
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .detail {
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 14px;
+    background: rgba(255,255,255,.035);
+  }
+
+  .detail span {
+    display: block;
+    color: rgba(255,255,255,.5);
+    font-size: .66rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .detail strong {
+    display: block;
+    margin-top: 7px;
+    color: #fff;
+  }
+
+  .job-actions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 11px;
+    margin-top: 18px;
+  }
+
+  .button {
+    display: inline-flex;
+    min-height: 49px;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 14px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .button.primary {
+    color: #050505;
+    background: linear-gradient(
+      135deg,
+      #ffe9a4,
+      #d9a928
+    );
+  }
+
+  .button.cancel {
+    color: #fff;
+    background: linear-gradient(
+      135deg,
+      #b52f2f,
+      #741616
+    );
+  }
+
+  .button.return {
+    margin-top: 20px;
+    color: #ffe9a4;
+    border: 1px solid rgba(232,189,69,.36);
+    background: rgba(255,255,255,.04);
+  }
+
+  .empty-state {
+    margin-top: 20px;
+    padding: 38px;
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 22px;
+    color: rgba(255,255,255,.7);
+    background: rgba(255,255,255,.035);
+    text-align: center;
+  }
+
+  @media (max-width: 700px) {
+    .job-header {
+      flex-direction: column;
+    }
+
+    .job-details,
+    .job-actions {
+      grid-template-columns: 1fr;
+    }
+
+    .job-actions form,
+    .job-actions button {
+      width: 100%;
+    }
+  }
+</style>
+
+<main class="jobs-shell">
+  <section class="jobs-hero">
+    <div class="jobs-kicker">
+      MajicMall Megaverse Driver Network
+    </div>
+
+    <h1>Active Deliveries</h1>
+
+    <p>
+      {{ active_job_count }}
+      active deliver{{ active_job_count|pluralize:"y,ies" }}
+      assigned to your driver account.
+    </p>
+  </section>
+
+  {% if active_jobs %}
+    <section class="job-list">
+      {% for job in active_jobs %}
+        <article class="job-card">
+          <div class="job-header">
+            <div>
+              <h2>Delivery Job #{{ job.id }}</h2>
+            </div>
+
+            <div class="status-pill">
+              {{ job.get_status_display }}
+            </div>
+          </div>
+
+          <div class="job-details">
+            <div class="detail">
+              <span>Order</span>
+              <strong>#{{ job.order.id }}</strong>
+            </div>
+
+            <div class="detail">
+              <span>Merchant</span>
+              <strong>{{ job.store.store_name }}</strong>
+            </div>
+
+            <div class="detail">
+              <span>Delivery ZIP</span>
+              <strong>{{ job.delivery_zip }}</strong>
+            </div>
+          </div>
+
+          <div class="job-actions">
+            <a
+              class="button primary"
+              href="{% url 'delivery-active-job' job.id %}"
+            >
+              {% if job.status == "accepted" %}
+                Open Pickup Navigation
+              {% elif job.status == "picked_up" %}
+                Continue to Customer
+              {% else %}
+                Resume Active Delivery
+              {% endif %}
+            </a>
+
+            {% if job.status == "accepted" %}
+              <form
+                method="post"
+                action="{% url 'delivery-cancel-job' job.id %}"
+                onsubmit="
+                  return confirm(
+                    'Cancel Delivery #{{ job.id }} and return it to the available pool?'
+                  );
+                "
+              >
+                {% csrf_token %}
+
+                <button
+                  class="button cancel"
+                  type="submit"
+                >
+                  Cancel & Release
+                </button>
+              </form>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </section>
+  {% else %}
+    <div class="empty-state">
+      You currently have no active deliveries.
+    </div>
+  {% endif %}
+
+  <a
+    class="button return"
+    href="{% url 'delivery-dashboard' %}"
+  >
+    Return to Driver Command Center
+  </a>
+</main>
+{% endblock %}

@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from . import workflow_views
 
 
 urlpatterns = [
@@ -44,9 +45,45 @@ urlpatterns = [
         views.update_driver_status,
         name="delivery-update-status",
     ),
+
+    path(
+        "jobs/active/",
+        workflow_views.active_deliveries,
+        name="delivery-active-jobs",
+    ),
     path(
         "jobs/<int:job_id>/accept/",
-        views.accept_delivery,
+        workflow_views.accept_delivery,
         name="delivery-accept-job",
+    ),
+    path(
+        "jobs/<int:job_id>/active/",
+        workflow_views.active_delivery,
+        name="delivery-active-job",
+    ),
+    path(
+        "jobs/<int:job_id>/cancel/",
+        workflow_views.cancel_delivery,
+        name="delivery-cancel-job",
+    ),
+    path(
+        "jobs/<int:job_id>/confirm-pickup/",
+        workflow_views.confirm_pickup,
+        name="delivery-confirm-pickup",
+    ),
+    path(
+        "jobs/<int:job_id>/start-dropoff/",
+        workflow_views.start_dropoff,
+        name="delivery-start-dropoff",
+    ),
+    path(
+        "jobs/<int:job_id>/confirm-delivery/",
+        workflow_views.confirm_delivery,
+        name="delivery-confirm-delivery",
+    ),
+    path(
+        "jobs/<int:job_id>/completed/",
+        workflow_views.completed_delivery,
+        name="delivery-completed-job",
     ),
 ]

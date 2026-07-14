@@ -1,0 +1,281 @@
+{% extends "delivery/driver_base.html" %}
+
+{% block title %}
+  Merchant Pickup Location | MajicMall Megaverse
+{% endblock %}
+
+{% block content %}
+<style>
+  .pickup-shell {
+    width: min(940px, calc(100% - 28px));
+    margin: 36px auto 90px;
+  }
+
+  .pickup-hero,
+  .pickup-form-card {
+    border: 1px solid rgba(232, 189, 69, .44);
+    border-radius: 26px;
+    color: #fff;
+    background:
+      radial-gradient(
+        circle at 80% 0,
+        rgba(232, 189, 69, .12),
+        transparent 32%
+      ),
+      linear-gradient(
+        145deg,
+        rgba(255, 255, 255, .07),
+        rgba(255, 255, 255, .018)
+      ),
+      rgba(5, 5, 8, .97);
+    box-shadow:
+      0 25px 70px rgba(0, 0, 0, .46),
+      0 0 28px rgba(232, 189, 69, .1);
+  }
+
+  .pickup-hero {
+    padding: clamp(25px, 6vw, 48px);
+    text-align: center;
+  }
+
+  .pickup-kicker {
+    margin: 0;
+    color: #e8bd45;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .pickup-hero h1 {
+    margin: 10px 0 0;
+    color: #ffe9a4;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2rem, 7vw, 4rem);
+  }
+
+  .pickup-hero p {
+    max-width: 720px;
+    margin: 16px auto 0;
+    color: rgba(255, 255, 255, .72);
+    line-height: 1.7;
+  }
+
+  .pickup-form-card {
+    margin-top: 20px;
+    padding: clamp(22px, 5vw, 40px);
+  }
+
+  .store-selector {
+    margin-bottom: 25px;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 17px;
+    background: rgba(255, 255, 255, .035);
+  }
+
+  .store-selector label,
+  .field-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ffe9a4;
+    font-size: .76rem;
+    font-weight: 900;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+  }
+
+  .store-selector select {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 14px;
+    border: 1px solid #3f3f46;
+    border-radius: 12px;
+    color: #fff;
+    background: #09090b;
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(
+      2,
+      minmax(0, 1fr)
+    );
+    gap: 18px;
+  }
+
+  .field-full {
+    grid-column: 1 / -1;
+  }
+
+  .field-errors {
+    margin-top: 7px;
+    color: #ff9f9f;
+    font-size: .82rem;
+  }
+
+  .current-address {
+    margin-bottom: 24px;
+    padding: 18px;
+    border: 1px solid rgba(118, 240, 158, .28);
+    border-radius: 16px;
+    color: #b7ffcb;
+    background: rgba(75, 190, 113, .075);
+  }
+
+  .save-button {
+    display: inline-flex;
+    width: 100%;
+    min-height: 54px;
+    margin-top: 24px;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 22px;
+    border: 0;
+    border-radius: 999px;
+    color: #050505;
+    background: linear-gradient(
+      135deg,
+      #ffe9a4,
+      #d9a928
+    );
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .return-link {
+    display: block;
+    margin-top: 18px;
+    color: #ffe9a4;
+    text-align: center;
+  }
+
+  @media (max-width: 680px) {
+    .field-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .field-full {
+      grid-column: auto;
+    }
+  }
+</style>
+
+<main class="pickup-shell">
+  <section class="pickup-hero">
+    <p class="pickup-kicker">
+      MajicMall Megaverse Driver Network
+    </p>
+
+    <h1>Merchant Pickup Location</h1>
+
+    <p>
+      Enter the exact physical address where drivers collect orders.
+      This private operational address powers street-level navigation
+      and is not automatically displayed on your public storefront.
+    </p>
+  </section>
+
+  <section class="pickup-form-card">
+    {% if stores|length > 1 %}
+      <form
+        class="store-selector"
+        method="get"
+      >
+        <label for="store-selector">
+          Select Zone Storefront
+        </label>
+
+        <select
+          id="store-selector"
+          name="store"
+          onchange="this.form.submit()"
+        >
+          {% for merchant_store in stores %}
+            <option
+              value="{{ merchant_store.id }}"
+              {% if merchant_store.id == store.id %}selected{% endif %}
+            >
+              {{ merchant_store.store_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+    {% endif %}
+
+    {% if pickup_address.full_address %}
+      <div class="current-address">
+        <strong>Current Driver Pickup Destination</strong>
+        <br>
+        {{ pickup_address.full_address }}
+      </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <input
+        type="hidden"
+        name="store"
+        value="{{ store.id }}"
+      >
+
+      <div class="field-grid">
+        {% for field in form %}
+          <div
+            class="
+              {% if field.name == 'address_line_1' or field.name == 'address_line_2' or field.name == 'pickup_instructions' %}
+                field-full
+              {% endif %}
+            "
+          >
+            <label
+              class="field-label"
+              for="{{ field.id_for_label }}"
+            >
+              {{ field.label }}
+            </label>
+
+            {{ field }}
+
+            {% if field.help_text %}
+              <p
+                style="
+                  margin:7px 0 0;
+                  color:rgba(255,255,255,.52);
+                  font-size:.78rem;
+                  line-height:1.5;
+                "
+              >
+                {{ field.help_text }}
+              </p>
+            {% endif %}
+
+            {% if field.errors %}
+              <div class="field-errors">
+                {% for error in field.errors %}
+                  <div>{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <button
+        class="save-button"
+        type="submit"
+      >
+        Save Exact Pickup Location
+      </button>
+    </form>
+
+    <a
+      class="return-link"
+      href="{% url 'merchant-dashboard' %}"
+    >
+      Return to Merchant Dashboard
+    </a>
+  </section>
+</main>
+{% endblock %}

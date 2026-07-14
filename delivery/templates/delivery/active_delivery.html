@@ -1,0 +1,382 @@
+{% extends "delivery/driver_base.html" %}
+
+{% block title %}
+  Active Delivery | MajicMall Megaverse Driver Network
+{% endblock %}
+
+{% block content %}
+<style>
+  .active-shell {
+    width: min(980px, calc(100% - 28px));
+    margin: 34px auto 80px;
+  }
+
+  .active-hero,
+  .delivery-card {
+    border: 1px solid rgba(232, 189, 69, .42);
+    border-radius: 24px;
+    background:
+      linear-gradient(
+        145deg,
+        rgba(255, 255, 255, .075),
+        rgba(255, 255, 255, .018)
+      ),
+      rgba(5, 5, 8, .95);
+    box-shadow:
+      0 24px 70px rgba(0, 0, 0, .48),
+      0 0 28px rgba(232, 189, 69, .09);
+  }
+
+  .active-hero {
+    padding: clamp(24px, 5vw, 42px);
+    text-align: center;
+  }
+
+  .eyebrow {
+    color: #e8bd45;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .active-hero h1 {
+    margin: 10px 0 0;
+    color: #ffe9a4;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2rem, 7vw, 4rem);
+  }
+
+  .status-pill {
+    display: inline-flex;
+    margin-top: 18px;
+    padding: 9px 15px;
+    border: 1px solid rgba(232, 189, 69, .54);
+    border-radius: 999px;
+    color: #ffe9a4;
+    background: rgba(232, 189, 69, .08);
+    font-weight: 900;
+  }
+
+  .delivery-grid {
+    display: grid;
+    grid-template-columns: repeat(
+      2,
+      minmax(0, 1fr)
+    );
+    gap: 18px;
+    margin-top: 20px;
+  }
+
+  .delivery-card {
+    padding: 24px;
+  }
+
+  .delivery-card h2 {
+    margin: 0;
+    color: #ffe9a4;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.55rem;
+  }
+
+  .detail {
+    margin-top: 17px;
+  }
+
+  .detail span {
+    display: block;
+    color: rgba(255, 255, 255, .52);
+    font-size: .68rem;
+    font-weight: 900;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .detail strong,
+  .detail p {
+    display: block;
+    margin: 6px 0 0;
+    color: #fff;
+    line-height: 1.55;
+  }
+
+  .navigation-grid {
+    display: grid;
+    grid-template-columns: repeat(
+      3,
+      minmax(0, 1fr)
+    );
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .action-button {
+    display: inline-flex;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 14px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .action-button.gold {
+    color: #050505;
+    background: linear-gradient(135deg, #ffe9a4, #d9a928);
+  }
+
+  .action-button.dark {
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .15);
+    background: rgba(255, 255, 255, .06);
+  }
+
+  .action-button.green {
+    width: 100%;
+    color: #041007;
+    background: linear-gradient(135deg, #b7ffcb, #62d98a);
+  }
+
+  .action-button.red {
+    width: 100%;
+    color: #fff;
+    background: linear-gradient(135deg, #d94a4a, #8c1717);
+  }
+
+  .workflow-card {
+    margin-top: 20px;
+    padding: 24px;
+  }
+
+  .workflow-message {
+    margin: 0 0 18px;
+    color: rgba(255, 255, 255, .78);
+    line-height: 1.65;
+  }
+
+  .phone-link {
+    color: #ffe9a4;
+  }
+
+  @media (max-width: 760px) {
+    .delivery-grid,
+    .navigation-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<main class="active-shell">
+  <section class="active-hero">
+    <div class="eyebrow">
+      MajicMall Megaverse Driver Network
+    </div>
+
+    <h1>
+      Active Delivery #{{ job.id }}
+    </h1>
+
+    <div class="status-pill">
+      {{ job.get_status_display }}
+    </div>
+  </section>
+
+  <section class="delivery-grid">
+    <article class="delivery-card">
+      <h2>Merchant Pickup</h2>
+
+      <div class="detail">
+        <span>Store</span>
+        <strong>{{ store.store_name }}</strong>
+      </div>
+
+      <div class="detail">
+        <span>
+          Pickup Destination
+          {% if pickup_address_is_exact %}
+            • Exact Address
+          {% else %}
+            • Store and ZIP Search
+          {% endif %}
+        </span>
+
+        <p>
+          {{ pickup_address|default:"Pickup address unavailable" }}
+        </p>
+      </div>
+
+      {% if pickup_instructions %}
+        <div class="detail">
+          <span>Pickup Instructions</span>
+
+          <p>
+            {{ pickup_instructions|linebreaksbr }}
+          </p>
+        </div>
+      {% endif %}
+
+      {% if job.status == "accepted" %}
+        <div class="navigation-grid">
+          <a
+            class="action-button gold"
+            href="{{ pickup_google_maps_url }}"
+            target="_blank"
+            rel="noopener"
+          >
+            Google Maps
+          </a>
+
+          <a
+            class="action-button dark"
+            href="{{ pickup_apple_maps_url }}"
+          >
+            Apple Maps
+          </a>
+
+          <a
+            class="action-button dark"
+            href="{{ pickup_waze_url }}"
+            target="_blank"
+            rel="noopener"
+          >
+            Waze
+          </a>
+        </div>
+      {% endif %}
+    </article>
+
+    <article class="delivery-card">
+      <h2>Customer Drop-Off</h2>
+
+      <div class="detail">
+        <span>Customer</span>
+        <strong>{{ order.customer_name }}</strong>
+      </div>
+
+      <div class="detail">
+        <span>Destination</span>
+        <p>{{ dropoff_address|default:"Customer address unavailable" }}</p>
+      </div>
+
+      {% if order.customer_phone %}
+        <div class="detail">
+          <span>Customer Phone</span>
+          <a
+            class="phone-link"
+            href="tel:{{ order.customer_phone }}"
+          >
+            {{ order.customer_phone }}
+          </a>
+        </div>
+      {% endif %}
+
+      {% if order.delivery_notes or job.delivery_notes %}
+        <div class="detail">
+          <span>Delivery Instructions</span>
+
+          <p>
+            {{ order.delivery_notes|default:job.delivery_notes|linebreaksbr }}
+          </p>
+        </div>
+      {% endif %}
+
+      {% if job.status == "picked_up" or job.status == "out_for_delivery" %}
+        <div class="navigation-grid">
+          <a
+            class="action-button gold"
+            href="{{ dropoff_google_maps_url }}"
+            target="_blank"
+            rel="noopener"
+          >
+            Google Maps
+          </a>
+
+          <a
+            class="action-button dark"
+            href="{{ dropoff_apple_maps_url }}"
+          >
+            Apple Maps
+          </a>
+
+          <a
+            class="action-button dark"
+            href="{{ dropoff_waze_url }}"
+            target="_blank"
+            rel="noopener"
+          >
+            Waze
+          </a>
+        </div>
+      {% endif %}
+    </article>
+  </section>
+
+  <section class="delivery-card workflow-card">
+    {% if job.status == "accepted" %}
+      <p class="workflow-message">
+        Navigate to the merchant, verify the order number, and confirm
+        pickup only after the package has been placed in your possession.
+      </p>
+
+      <form
+        method="post"
+        action="{% url 'delivery-confirm-pickup' job.id %}"
+      >
+        {% csrf_token %}
+
+        <button
+          class="action-button green"
+          type="submit"
+        >
+          Confirm Package Pickup
+        </button>
+      </form>
+
+    {% elif job.status == "picked_up" %}
+      <p class="workflow-message">
+        The package is secured. Start the customer-delivery stage and
+        use your preferred navigation application.
+      </p>
+
+      <form
+        method="post"
+        action="{% url 'delivery-start-dropoff' job.id %}"
+      >
+        {% csrf_token %}
+
+        <button
+          class="action-button gold"
+          style="width:100%;"
+          type="submit"
+        >
+          Start Delivery to Customer
+        </button>
+      </form>
+
+    {% elif job.status == "out_for_delivery" %}
+      <p class="workflow-message">
+        Confirm delivery only after the order has reached the customer
+        or has been placed according to the delivery instructions.
+      </p>
+
+      <form
+        method="post"
+        action="{% url 'delivery-confirm-delivery' job.id %}"
+      >
+        {% csrf_token %}
+
+        <button
+          class="action-button green"
+          type="submit"
+        >
+          Confirm Delivery Complete
+        </button>
+      </form>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

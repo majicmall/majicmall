@@ -7,12 +7,22 @@ from .models import MerchantStore, MerchantPaymentMethod
 
 
 class StoreForm(forms.ModelForm):
-    remove_logo = forms.BooleanField(required=False, label="Remove current logo")
+    remove_logo = forms.BooleanField(
+        required=False,
+        label="Remove current logo",
+    )
+
+    remove_storefront_image = forms.BooleanField(
+        required=False,
+        label="Remove current storefront image",
+    )
 
     class Meta:
         model = MerchantStore
         fields = [
             "logo",
+            "storefront_image",
+            "interior_theme",
             "store_name",
             "slogan",
             "description",
@@ -56,7 +66,26 @@ class StoreForm(forms.ModelForm):
             "contact_phone": forms.TextInput(
                 attrs={"class": "w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white"}
             ),
-            "logo": ClearableFileInput(attrs={"class": "text-sm text-white"}),
+            "logo": ClearableFileInput(
+                attrs={
+                    "class": "text-sm text-white",
+                    "accept": "image/png,image/jpeg,image/webp",
+                }
+            ),
+            "storefront_image": ClearableFileInput(
+                attrs={
+                    "class": "text-sm text-white",
+                    "accept": "image/png,image/jpeg,image/webp",
+                }
+            ),
+            "interior_theme": forms.Select(
+                attrs={
+                    "class": (
+                        "w-full rounded-xl bg-gray-800 border "
+                        "border-gray-700 px-4 py-3 text-white"
+                    ),
+                }
+            ),
             "is_public": forms.CheckboxInput(
                 attrs={"class": "h-4 w-4 rounded border-gray-600 bg-gray-800"}
             ),
@@ -87,6 +116,11 @@ class StoreForm(forms.ModelForm):
             if instance.logo:
                 instance.logo.delete(save=False)
             instance.logo = None
+
+        if self.cleaned_data.get("remove_storefront_image"):
+            if instance.storefront_image:
+                instance.storefront_image.delete(save=False)
+            instance.storefront_image = None
 
         # If contact email still blank, fall back to owner email
         if not instance.contact_email and getattr(instance, "owner", None):

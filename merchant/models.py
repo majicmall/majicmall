@@ -81,7 +81,33 @@ class MerchantStore(models.Model):
         upload_to="storefronts/",
         blank=True,
         null=True,
-        help_text="Admin-controlled storefront entrance image for this merchant.",
+        help_text=(
+            "Merchant storefront entrance image. The image must "
+            "professionally represent the business and visually match "
+            "the intended MajicMall Megaverse Zone."
+        ),
+    )
+
+    interior_theme = models.CharField(
+        max_length=40,
+        default="signature",
+        choices=[
+            ("signature", "MajicMall Signature Showroom"),
+            ("fashion_boutique", "Luxury Fashion Boutique"),
+            ("tech_gallery", "Black Glass Tech Gallery"),
+            ("food_hall", "Majestic Food Hall"),
+            ("music_lounge", "Music Studio Lounge"),
+            ("automotive_gallery", "Luxury Automotive Gallery"),
+            ("creator_studio", "Creator Gallery Studio"),
+            ("sports_arena", "Championship Sports Shop"),
+            ("theater_lobby", "Premiere Theater Lobby"),
+            ("kids_adventure", "Kids Adventure Shop"),
+            ("travel_lounge", "World Travel Lounge"),
+        ],
+        help_text=(
+            "Controls the visual environment customers experience after "
+            "entering the storefront."
+        ),
     )
 
     # --- Admin / vendor contact info ---

@@ -1,12 +1,13 @@
-{% load static %}
+{% load static interior_theme_tags %}
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Store Profile | Majic Mall</title>
+  <title>Store Profile | MajicMall Megaverse</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+{% recommended_interior_theme store as recommended_theme %}
 <body class="bg-gray-950 text-white min-h-screen">
   {% include "merchant/_nav.html" %}
 
@@ -40,7 +41,7 @@
         <div>
           <h2 class="text-2xl font-bold text-yellow-400">New Merchant Checklist</h2>
           <p class="text-gray-300 mt-1">
-            Complete these steps to get your store ready for Majic Mall shoppers.
+            Complete these steps to get your store ready for MajicMall Megaverse customers and citizens.
           </p>
         </div>
 
@@ -149,6 +150,134 @@
                 </label>
               </div>
             {% endif %}
+
+            <div class="mt-8 pt-7 border-t border-gray-800">
+              <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                <div>
+                  <h3 class="text-xl font-black text-yellow-300">
+                    Storefront Entrance Image
+                  </h3>
+
+                  <p class="text-sm text-gray-400 mt-2 max-w-2xl">
+                    This image becomes the cinematic entrance to your
+                    business inside the MajicMall Megaverse.
+                  </p>
+                </div>
+
+                {% if store.zone %}
+                  <span class="inline-flex px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-200 text-sm font-bold">
+                    Designed for {{ store.zone.name }}
+                  </span>
+                {% endif %}
+              </div>
+
+              <div class="mt-5 rounded-2xl border border-yellow-400/25 bg-yellow-400/5 p-5">
+                <h4 class="text-yellow-300 font-black">
+                  MajicMall Megaverse Storefront Standards
+                </h4>
+
+                <p class="text-sm text-gray-300 mt-2 leading-relaxed">
+                  Storefront imagery must professionally represent your
+                  business, accurately reflect your products or services,
+                  and visually complement your intended MajicMall
+                  Megaverse Zone. Images must be polished, appropriate,
+                  safe, and free of misleading or unauthorized branding.
+                  MajicMall Megaverse administrators may request
+                  revisions or replace imagery that does not meet these
+                  standards.
+                </p>
+
+                <ul class="mt-4 text-sm text-gray-400 space-y-1">
+                  <li>• Recommended landscape image: 1600 × 900 pixels or larger</li>
+                  <li>• Accepted formats: JPG, PNG, or WEBP</li>
+                  <li>• Use a clear, professional, well-lit storefront presentation</li>
+                  <li>• Match the visual character of your selected Zone</li>
+                </ul>
+              </div>
+
+              <div class="mt-5">
+                <label
+                  class="block text-sm text-gray-300 mb-2"
+                  for="{{ form.storefront_image.id_for_label }}"
+                >
+                  Upload or Change Storefront Image
+                </label>
+
+                {{ form.storefront_image }}
+
+                {% if form.storefront_image.errors %}
+                  <div class="mt-2 text-sm text-red-300">
+                    {{ form.storefront_image.errors }}
+                  </div>
+                {% endif %}
+              </div>
+
+              {% if store.storefront_image %}
+                <div class="mt-5">
+                  <p class="text-sm text-gray-300 mb-2">
+                    Current Storefront Image
+                  </p>
+
+                  <img
+                    src="{{ store.storefront_image.url }}"
+                    alt="{{ store.store_name }} storefront"
+                    class="w-full max-h-[360px] object-cover rounded-2xl border border-yellow-400/25 bg-black shadow-2xl"
+                  >
+                </div>
+
+                <div class="mt-3">
+                  <label class="inline-flex items-center gap-2 text-sm text-red-300">
+                    {{ form.remove_storefront_image }}
+                    <span>Remove current storefront image</span>
+                  </label>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="border-t border-gray-800 pt-7">
+            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+              <div>
+                <h2 class="text-xl font-black text-yellow-300">
+                  Interior Design Studio
+                </h2>
+
+                <p class="text-sm text-gray-400 mt-2 max-w-2xl">
+                  Choose the environment customers and citizens
+                  experience after the storefront doors open.
+                </p>
+              </div>
+
+              <span class="inline-flex px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-200 text-sm font-bold">
+                {{ recommended_theme.icon }}
+                Recommended: {{ recommended_theme.name }}
+              </span>
+            </div>
+
+            <div class="mt-5 rounded-2xl border border-yellow-400/20 bg-black/25 p-5">
+              <label
+                class="block text-sm text-gray-300 mb-2"
+                for="{{ form.interior_theme.id_for_label }}"
+              >
+                Store Interior Theme
+              </label>
+
+              {{ form.interior_theme }}
+
+              {% if form.interior_theme.errors %}
+                <div class="mt-2 text-sm text-red-300">
+                  {{ form.interior_theme.errors }}
+                </div>
+              {% endif %}
+
+              <p class="text-xs text-gray-500 mt-3 leading-relaxed">
+                The Signature Showroom is the universal luxury
+                foundation. Zone-specific interiors will receive
+                increasingly unique fixtures, architecture, lighting,
+                displays, and customer experiences as the MajicMall
+                Megaverse Interior Theme Marketplace expands.
+              </p>
+            </div>
           </div>
 
           <!-- Contact -->
@@ -171,7 +300,7 @@
               </div>
             </div>
             <p class="text-xs text-gray-500 mt-2">
-              This information helps Majic Mall management contact you about your store, promotions, and opportunities.
+              This information helps MajicMall Megaverse management contact you about your store, promotions, and opportunities.
             </p>
           </div>
 
@@ -185,7 +314,9 @@
                 </span>
               </label>
               <p class="text-xs text-zinc-400 mt-2">
-                If OFF, your storefront link will show “Store not available”.
+                When OFF, customers and citizens cannot access the
+                store, but you can continue using Preview Mode while
+                building it.
               </p>
             </div>
           </div>
@@ -262,10 +393,25 @@
             </div>
 
             <div class="mt-2">
-              <a href="{{ public_url }}" target="_blank" rel="noopener"
-                 class="text-yellow-400 hover:underline">
-                Open storefront →
-              </a>
+              {% if store.is_public %}
+                <a
+                  href="{{ public_url }}"
+                  target="_blank"
+                  rel="noopener"
+                  class="text-yellow-400 hover:underline font-bold"
+                >
+                  🌐 View Live Store →
+                </a>
+              {% else %}
+                <a
+                  href="{% url 'storefront' store.slug %}?preview=1"
+                  target="_blank"
+                  rel="noopener"
+                  class="text-yellow-400 hover:underline font-bold"
+                >
+                  👁 Preview Draft Store →
+                </a>
+              {% endif %}
             </div>
           </div>
 

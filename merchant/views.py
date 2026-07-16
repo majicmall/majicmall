@@ -242,40 +242,120 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 
 def build_onboarding_checklist(store):
-    has_logo = bool(getattr(store, "logo", None))
-    has_contact_person = bool((getattr(store, "contact_person", "") or "").strip())
-    has_contact_email = bool((getattr(store, "contact_email", "") or "").strip())
-    has_contact_phone = bool((getattr(store, "contact_phone", "") or "").strip())
-    has_contact_info = has_contact_person and has_contact_email and has_contact_phone
-    has_product = store.products.exists() if hasattr(store, "products") else False
-    is_live = bool(getattr(store, "is_public", False))
+    has_logo = bool(
+        getattr(store, "logo", None)
+    )
+
+    has_storefront_image = bool(
+        getattr(store, "storefront_image", None)
+    )
+
+    has_business_information = bool(
+        (getattr(store, "store_name", "") or "").strip()
+        and (getattr(store, "description", "") or "").strip()
+        and (getattr(store, "category", "") or "").strip()
+    )
+
+    has_contact_person = bool(
+        (getattr(store, "contact_person", "") or "").strip()
+    )
+
+    has_contact_email = bool(
+        (getattr(store, "contact_email", "") or "").strip()
+    )
+
+    has_contact_phone = bool(
+        (getattr(store, "contact_phone", "") or "").strip()
+    )
+
+    has_contact_info = (
+        has_contact_person
+        and has_contact_email
+        and has_contact_phone
+    )
+
+    has_product = (
+        store.products.exists()
+        if hasattr(store, "products")
+        else False
+    )
+
+    is_live = bool(
+        getattr(store, "is_public", False)
+    )
 
     items = [
         {
-            "label": "Upload your logo",
-            "done": has_logo,
-            "hint": "Add a logo so your storefront stands out in the directory and on your store page.",
+            "label": "Complete business information",
+            "done": has_business_information,
+            "hint": (
+                "Add your store name, category, description, "
+                "and intended MajicMall Megaverse Zone."
+            ),
         },
         {
-            "label": "Add vendor contact info",
+            "label": "Upload your logo",
+            "done": has_logo,
+            "hint": (
+                "Add a professional logo for your directory "
+                "listing and storefront."
+            ),
+        },
+        {
+            "label": "Add your storefront entrance image",
+            "done": has_storefront_image,
+            "hint": (
+                "Choose a polished storefront image that matches "
+                "your business and intended Zone."
+            ),
+        },
+        {
+            "label": "Add merchant contact information",
             "done": has_contact_info,
-            "hint": "Add contact person, email, and phone so mall management can reach you quickly.",
+            "hint": (
+                "Add a contact person, email, and phone so the "
+                "MajicMall Megaverse team can reach you."
+            ),
         },
         {
             "label": "Add your first product",
             "done": has_product,
-            "hint": "Create at least one product so your store is ready for visitors.",
+            "hint": (
+                "Create at least one product so citizens and "
+                "customers have something to discover."
+            ),
+        },
+        {
+            "label": "Preview your storefront",
+            "done": has_storefront_image and has_business_information,
+            "hint": (
+                "Open Preview Mode and experience your store "
+                "before its Grand Opening."
+            ),
         },
         {
             "label": "Publish your storefront",
             "done": is_live,
-            "hint": "Turn on Public Storefront so shoppers can visit your store.",
+            "hint": (
+                "Turn on Public Storefront when you are ready "
+                "to welcome customers and citizens."
+            ),
         },
     ]
 
-    completed = sum(1 for item in items if item["done"])
+    completed = sum(
+        1
+        for item in items
+        if item["done"]
+    )
+
     total = len(items)
-    percent = int((completed / total) * 100) if total else 0
+
+    percent = (
+        int((completed / total) * 100)
+        if total
+        else 0
+    )
 
     return {
         "items": items,
@@ -500,29 +580,73 @@ def admin_payment_methods(request):
     return render(request, "merchant/admin_payment_methods.html", {"methods": methods})
 
 
+def _merchant_preview_allowed(request, store):
+    """
+    Allow only the authenticated store owner to preview a private store.
+    """
+    preview_requested = (
+        request.GET.get("preview", "")
+        .strip()
+        .lower()
+        in {"1", "true", "yes"}
+    )
+
+    return bool(
+        preview_requested
+        and request.user.is_authenticated
+        and store.owner_id == request.user.id
+        and not store.is_archived
+    )
+
+
 def storefront(request, slug: str):
     store = get_object_or_404(
-        Store.objects.prefetch_related("products"),
+        Store.objects.prefetch_related("products", "zone"),
         slug=slug,
     )
 
-    if store.is_archived or not store.is_public:
+    preview_mode = _merchant_preview_allowed(
+        request,
+        store,
+    )
+
+    if store.is_archived:
         raise Http404("Store not available")
 
-    products = store.products.all().order_by("-created_at")
+    if not store.is_public and not preview_mode:
+        raise Http404("Store not available")
 
-    base = (getattr(settings, "PUBLIC_BASE_URL", "") or request.build_absolute_uri("/")).rstrip("/")
-    public_url = f"{base}{reverse('storefront', args=[slug])}"
-    qr_url = reverse("storefront-qr", args=[slug])
+    storefront_image_url = None
+
+    if store.storefront_image:
+        storefront_image_url = request.build_absolute_uri(
+            store.storefront_image.url
+        )
+
+    base = (
+        getattr(settings, "PUBLIC_BASE_URL", "")
+        or request.build_absolute_uri("/")
+    ).rstrip("/")
+
+    public_url = (
+        f"{base}"
+        f"{reverse('storefront', args=[slug])}"
+    )
+
+    qr_url = reverse(
+        "storefront-qr",
+        args=[slug],
+    )
 
     return render(
         request,
-        "merchant/storefront.html",
+        "mall/storefront_entry.html",
         {
             "store": store,
-            "products": products,
+            "storefront_image_url": storefront_image_url,
             "public_url": public_url,
             "qr_url": qr_url,
+            "preview_mode": preview_mode,
         },
     )
 
@@ -533,13 +657,32 @@ def product_detail(request, slug: str, product_id: int):
         slug=slug,
     )
 
-    if store.is_archived or not store.is_public:
+    preview_mode = _merchant_preview_allowed(
+        request,
+        store,
+    )
+
+    if store.is_archived:
         raise Http404("Store not available")
 
-    product = get_object_or_404(Product, pk=product_id, store=store)
+    if not store.is_public and not preview_mode:
+        raise Http404("Store not available")
 
-    base = (getattr(settings, "PUBLIC_BASE_URL", "") or request.build_absolute_uri("/")).rstrip("/")
-    public_url = f"{base}{reverse('product-detail', args=[slug, product.id])}"
+    product = get_object_or_404(
+        Product,
+        pk=product_id,
+        store=store,
+    )
+
+    base = (
+        getattr(settings, "PUBLIC_BASE_URL", "")
+        or request.build_absolute_uri("/")
+    ).rstrip("/")
+
+    public_url = (
+        f"{base}"
+        f"{reverse('product-detail', args=[slug, product.id])}"
+    )
 
     return render(
         request,
@@ -548,6 +691,7 @@ def product_detail(request, slug: str, product_id: int):
             "store": store,
             "product": product,
             "public_url": public_url,
+            "preview_mode": preview_mode,
         },
     )
 
@@ -555,7 +699,15 @@ def product_detail(request, slug: str, product_id: int):
 def storefront_qr(request, slug: str):
     store = get_object_or_404(Store, slug=slug)
 
-    if store.is_archived or not store.is_public:
+    preview_mode = _merchant_preview_allowed(
+        request,
+        store,
+    )
+
+    if store.is_archived:
+        raise Http404("Store not available")
+
+    if not store.is_public and not preview_mode:
         raise Http404("Store not available")
 
     base = (getattr(settings, "PUBLIC_BASE_URL", "") or request.build_absolute_uri("/")).rstrip("/")

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Merchant Dashboard | Majic Mall</title>
+  <title>Merchant Dashboard | MajicMall Megaverse</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -345,16 +345,47 @@
 
     {% if store and store.slug %}
       <div class="mt-4 mb-6">
-        <a
-          href="{% url 'storefront' store.slug %}"
-          target="_blank"
-          rel="noopener"
-          class="mobile-button inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-yellow-400 text-black hover:opacity-90 font-bold"
-          title="Open your public storefront in a new tab"
-        >
-          <span aria-hidden="true">👁️</span>
-          <span>View Storefront</span>
-        </a>
+        <div class="flex flex-wrap items-center gap-3">
+          {% if store.is_public %}
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-green-400/40 bg-green-500/10 text-green-300 text-sm font-black">
+              <span aria-hidden="true">●</span>
+              LIVE
+            </span>
+
+            <a
+              href="{% url 'storefront' store.slug %}"
+              target="_blank"
+              rel="noopener"
+              class="mobile-button inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-yellow-400 text-black hover:opacity-90 font-black"
+            >
+              <span aria-hidden="true">🌐</span>
+              <span>View Live Store</span>
+            </a>
+          {% else %}
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/40 bg-yellow-400/10 text-yellow-300 text-sm font-black">
+              <span aria-hidden="true">●</span>
+              DRAFT
+            </span>
+
+            <a
+              href="{% url 'storefront' store.slug %}?preview=1"
+              target="_blank"
+              rel="noopener"
+              class="mobile-button inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-yellow-400 text-black hover:opacity-90 font-black"
+            >
+              <span aria-hidden="true">👁️</span>
+              <span>Preview Store</span>
+            </a>
+          {% endif %}
+
+          <a
+            href="{% url 'merchant-profile' %}"
+            class="mobile-button inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gray-800 text-yellow-300 hover:bg-gray-700 font-bold"
+          >
+            <span aria-hidden="true">✨</span>
+            <span>Customize Storefront</span>
+          </a>
+        </div>
       </div>
     {% endif %}
 

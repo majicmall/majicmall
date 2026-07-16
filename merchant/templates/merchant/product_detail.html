@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>{{ product.name }} | {{ store.store_name }} | Majic Mall</title>
+  <title>{{ product.name }} | {{ store.store_name }} | MajicMall Megaverse</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0b0b">
 
   <meta property="og:type" content="product">
   <meta property="og:title" content="{{ product.name }} | {{ store.store_name }}">
-  <meta property="og:description" content="{{ product.description|default:'View this product on Majic Mall.'|truncatechars:160 }}">
+  <meta property="og:description" content="{{ product.description|default:'View this product inside the MajicMall Megaverse.'|truncatechars:160 }}">
   <meta property="og:url" content="{{ public_url }}">
   {% if product.image %}
     <meta property="og:image" content="{{ product.image.url }}">
@@ -31,10 +31,32 @@
   </style>
 </head>
 <body class="bg-gray-950 text-white min-h-screen">
+  {% if preview_mode %}
+    <div class="sticky top-0 z-50 border-b border-yellow-300/50 bg-black/95">
+      <div class="max-w-6xl mx-auto px-6 py-3 flex flex-col sm:flex-row gap-3 items-center justify-between">
+        <div>
+          <strong class="text-yellow-200 uppercase tracking-widest text-sm">
+            👁 Preview Mode
+          </strong>
+          <p class="text-xs text-white/60 mt-1">
+            This product is part of your private draft storefront.
+          </p>
+        </div>
+
+        <a
+          href="{% url 'merchant-dashboard' %}"
+          class="px-4 py-2 rounded-full bg-yellow-300 text-black font-black text-sm"
+        >
+          Return to Dashboard
+        </a>
+      </div>
+    </div>
+  {% endif %}
+
 
   <div class="glass sticky top-0 z-30 border-b border-gray-800/70">
     <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
-      <a href="{% url 'storefront' store.slug %}" class="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-yellow-400">
+      <a href="{% url 'storefront' store.slug %}{% if preview_mode %}?preview=1{% endif %}" class="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-yellow-400">
         ← Back to Storefront
       </a>
 
@@ -61,7 +83,7 @@
 
       <div class="bg-gray-900 rounded-2xl p-6 card">
         <div class="mb-3">
-          <a href="{% url 'storefront' store.slug %}" class="text-sm text-yellow-400 hover:underline">
+          <a href="{% url 'storefront' store.slug %}{% if preview_mode %}?preview=1{% endif %}" class="text-sm text-yellow-400 hover:underline">
             {{ store.store_name }}
           </a>
         </div>
@@ -103,7 +125,7 @@
   </button>
 </form>
 
-          <a href="{% url 'storefront' store.slug %}"
+          <a href="{% url 'storefront' store.slug %}{% if preview_mode %}?preview=1{% endif %}"
              class="btn px-5 py-3 bg-gray-800 text-yellow-400 rounded-xl hover:bg-gray-700">
             Continue Shopping
           </a>

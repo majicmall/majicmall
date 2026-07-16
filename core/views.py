@@ -85,14 +85,63 @@ def storefront(request, store_slug):
 
 def store_inside(request, store_slug):
     store = get_object_or_404(
-        MerchantStore,
+        MerchantStore.objects.prefetch_related(
+            "products",
+            "categories",
+            "zone",
+        ),
         slug=store_slug,
-        is_public=True,
-        is_archived=False,
     )
 
-    products_manager = getattr(store, "products", None)
-    products = products_manager.all().order_by("-created_at") if products_manager else []
+    preview_requested = (
+        request.GET.get("preview", "")
+        .strip()
+        .lower()
+        in {"1", "true", "yes"}
+    )
+
+    preview_mode = bool(
+        preview_requested
+        and request.user.is_authenticated
+        and store.owner_id == request.user.id
+        and not store.is_archived
+    )
+
+    if store.is_archived:
+        raise Http404("Store not available")
+
+    if not store.is_public and not preview_mode:
+        raise Http404("Store not available")
+
+    products_manager = getattr(
+        store,
+        "products",
+        None,
+    )
+
+    products = (
+        products_manager
+        .all()
+        .select_related("category")
+        .order_by("-created_at")
+        if products_manager
+        else []
+    )
+
+    base = (
+        getattr(settings, "PUBLIC_BASE_URL", "")
+        or request.build_absolute_uri("/")
+    ).rstrip("/")
+
+    public_url = (
+        f"{base}"
+        f"{reverse('storefront', args=[store.slug])}"
+    )
+
+    qr_url = reverse(
+        "storefront-qr",
+        args=[store.slug],
+    )
 
     return render(
         request,
@@ -100,11 +149,17 @@ def store_inside(request, store_slug):
         {
             "store": store,
             "products": products,
-            "public_url": request.build_absolute_uri(),
+            "public_url": public_url,
+            "qr_url": qr_url,
+            "preview_mode": preview_mode,
         },
     )
 
 
+# ---------------------------
+# 💼 Merchant Views
+# ---------------------------
+# 💼 Merchant Views
 # ---------------------------
 # 💼 Merchant Views
 # ---------------------------

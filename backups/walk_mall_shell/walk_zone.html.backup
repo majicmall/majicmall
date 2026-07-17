@@ -1,0 +1,1050 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Walk {{ zone.name }} | MajicMall Megaverse
+  </title>
+
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-light: #fff0b0;
+      --black: #020203;
+      --glass: rgba(5, 6, 10, .82);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      color: #fff;
+      background: #020203;
+      font-family:
+        Montserrat,
+        Arial,
+        sans-serif;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    .mall-walk {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(
+          ellipse at 50% 42%,
+          rgba(255, 234, 163, .16),
+          transparent 25%
+        ),
+        linear-gradient(
+          to bottom,
+          #242833 0%,
+          #11141c 35%,
+          #07080d 68%,
+          #020203 100%
+        );
+    }
+
+    .ceiling {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 38%;
+      clip-path:
+        polygon(
+          0 0,
+          100% 0,
+          73% 100%,
+          27% 100%
+        );
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 255, 255, .035) 0 2px,
+          transparent 2px 11%
+        ),
+        linear-gradient(
+          to bottom,
+          #343946,
+          #161a24
+        );
+      box-shadow:
+        inset 0 -25px 65px rgba(0, 0, 0, .6);
+    }
+
+    .ceiling::after {
+      position: absolute;
+      inset: 18% 23% auto;
+      height: 5px;
+      content: "";
+      border-radius: 999px;
+      background: #fff4cb;
+      box-shadow:
+        0 0 18px #fff2bd,
+        0 0 58px rgba(212, 175, 55, .58);
+    }
+
+    .far-wall {
+      position: absolute;
+      z-index: 2;
+      top: 30%;
+      left: 37%;
+      width: 26%;
+      height: 31%;
+      border:
+        1px solid rgba(255, 233, 164, .24);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, .07),
+          rgba(255, 255, 255, .012)
+        ),
+        #11141b;
+      box-shadow:
+        inset 0 0 50px rgba(0, 0, 0, .65),
+        0 0 45px rgba(212, 175, 55, .08);
+    }
+
+    .far-sign {
+      position: absolute;
+      z-index: 5;
+      top: 39%;
+      left: 50%;
+      width: min(540px, 46vw);
+      transform: translateX(-50%);
+      color: var(--gold-light);
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+      font-size:
+        clamp(1.15rem, 2.6vw, 2.2rem);
+      letter-spacing: .1em;
+      text-align: center;
+      text-shadow:
+        0 0 22px rgba(212, 175, 55, .32);
+    }
+
+    .floor {
+      position: absolute;
+      z-index: 1;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 61%;
+      clip-path:
+        polygon(
+          38% 0,
+          62% 0,
+          100% 100%,
+          0 100%
+        );
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 255, 255, .035) 0 1px,
+          transparent 1px 10%
+        ),
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, .035) 0 1px,
+          transparent 1px 12%
+        ),
+        linear-gradient(
+          to bottom,
+          #282b32,
+          #101116 54%,
+          #050506
+        );
+      box-shadow:
+        inset 0 28px 70px rgba(0, 0, 0, .5);
+    }
+
+    .floor-glow {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      bottom: -10%;
+      width: 56%;
+      height: 74%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      background:
+        radial-gradient(
+          ellipse at 50% 10%,
+          rgba(255, 234, 163, .18),
+          transparent 62%
+        );
+    }
+
+    .lane-edge {
+      position: absolute;
+      z-index: 3;
+      top: 41%;
+      bottom: -4%;
+      width: 2px;
+      transform-origin: top;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(255, 238, 180, .18),
+          rgba(212, 175, 55, .62)
+        );
+      box-shadow:
+        0 0 13px rgba(212, 175, 55, .22);
+    }
+
+    .lane-edge.left {
+      left: 38%;
+      transform: rotate(17deg);
+    }
+
+    .lane-edge.right {
+      right: 38%;
+      transform: rotate(-17deg);
+    }
+
+    .store-rail {
+      position: absolute;
+      z-index: 10;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .walk-store {
+      position: absolute;
+      top: 42%;
+      left: 50%;
+      width:
+        clamp(175px, 23vw, 390px);
+      aspect-ratio: 16 / 11;
+      overflow: hidden;
+      border:
+        2px solid rgba(255, 231, 147, .54);
+      border-radius: 16px;
+      background: #090a0d;
+      box-shadow:
+        0 24px 65px rgba(0, 0, 0, .72),
+        0 0 25px rgba(212, 175, 55, .1);
+      opacity: 0;
+      pointer-events: auto;
+      cursor: pointer;
+      transform-origin: center center;
+      transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        filter .2s ease;
+      will-change:
+        transform,
+        opacity,
+        filter;
+    }
+
+    .walk-store:hover,
+    .walk-store.selected {
+      border-color: var(--gold-light);
+      box-shadow:
+        0 28px 75px rgba(0, 0, 0, .82),
+        0 0 35px rgba(212, 175, 55, .34);
+      filter:
+        brightness(1.08)
+        saturate(1.08) !important;
+    }
+
+    .store-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .store-placeholder {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background:
+        radial-gradient(
+          circle at 50% 20%,
+          rgba(212, 175, 55, .19),
+          transparent 39%
+        ),
+        linear-gradient(
+          145deg,
+          #191b22,
+          #08090d
+        );
+      color: rgba(255, 240, 176, .72);
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+      font-size:
+        clamp(1rem, 2vw, 1.45rem);
+      text-align: center;
+    }
+
+    .store-shade {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 28%,
+          rgba(0, 0, 0, .15) 52%,
+          rgba(0, 0, 0, .88)
+        );
+    }
+
+    .store-copy {
+      position: absolute;
+      z-index: 3;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding: 13px 15px;
+    }
+
+    .store-name {
+      margin: 0;
+      color: #fff;
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+      font-size:
+        clamp(1rem, 1.8vw, 1.35rem);
+      text-shadow:
+        0 3px 12px rgba(0, 0, 0, .8);
+    }
+
+    .store-action {
+      margin-top: 5px;
+      color: var(--gold-light);
+      font-size: .68rem;
+      font-weight: 900;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .hud {
+      position: fixed;
+      z-index: 100;
+      top: 16px;
+      left: 50%;
+      display: flex;
+      width: min(1120px, calc(100% - 28px));
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      transform: translateX(-50%);
+      border:
+        1px solid rgba(255, 232, 147, .4);
+      border-radius: 18px;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(4, 5, 8, .93),
+          rgba(45, 34, 7, .87)
+        );
+      box-shadow:
+        0 17px 45px rgba(0, 0, 0, .5);
+      backdrop-filter: blur(15px);
+    }
+
+    .hud-title {
+      color: var(--gold-light);
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+      font-size:
+        clamp(1rem, 2vw, 1.35rem);
+    }
+
+    .hud-subtitle {
+      margin-top: 3px;
+      color: rgba(255, 255, 255, .53);
+      font-size: .7rem;
+    }
+
+    .hud-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .hud-button {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      border:
+        1px solid rgba(255, 235, 169, .34);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(255, 255, 255, .045);
+      text-decoration: none;
+      font-size: .74rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .hud-button.primary {
+      border-color: var(--gold-light);
+      color: #080808;
+      background:
+        linear-gradient(
+          135deg,
+          #fff2ba,
+          var(--gold)
+        );
+    }
+
+    .hud-button.active {
+      color: #080808;
+      background: var(--gold-light);
+    }
+
+    .selected-panel {
+      position: fixed;
+      z-index: 110;
+      right: 20px;
+      bottom: 20px;
+      width: min(370px, calc(100% - 40px));
+      padding: 18px;
+      border:
+        1px solid rgba(255, 232, 147, .46);
+      border-radius: 22px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, .07),
+          rgba(255, 255, 255, .012)
+        ),
+        rgba(5, 6, 10, .94);
+      box-shadow:
+        0 24px 70px rgba(0, 0, 0, .65);
+      backdrop-filter: blur(16px);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+      transition:
+        opacity .25s ease,
+        visibility .25s ease,
+        transform .25s ease;
+    }
+
+    .selected-panel.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .selected-eyebrow {
+      color: var(--gold);
+      font-size: .66rem;
+      font-weight: 950;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .selected-name {
+      margin: 7px 0 0;
+      color: var(--gold-light);
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+      font-size: 1.55rem;
+    }
+
+    .selected-copy {
+      margin: 8px 0 0;
+      color: rgba(255, 255, 255, .59);
+      font-size: .8rem;
+      line-height: 1.5;
+    }
+
+    .selected-actions {
+      display: flex;
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .selected-actions a,
+    .selected-actions button {
+      flex: 1;
+    }
+
+    .walk-hint {
+      position: fixed;
+      z-index: 90;
+      bottom: 19px;
+      left: 20px;
+      max-width: 320px;
+      padding: 11px 14px;
+      border:
+        1px solid rgba(255, 232, 147, .19);
+      border-radius: 15px;
+      color: rgba(255, 255, 255, .57);
+      background: rgba(4, 5, 8, .72);
+      font-size: .72rem;
+      line-height: 1.45;
+      backdrop-filter: blur(12px);
+    }
+
+    @media (max-width: 760px) {
+      .hud {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .hud-actions {
+        justify-content: center;
+      }
+
+      .hud-button {
+        flex: 1;
+      }
+
+      .walk-store {
+        width:
+          clamp(145px, 42vw, 255px);
+      }
+
+      .walk-hint {
+        display: none;
+      }
+
+      .selected-panel {
+        right: 12px;
+        bottom: 12px;
+        width: calc(100% - 24px);
+      }
+
+      .far-sign {
+        top: 36%;
+        width: 68vw;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .walk-store {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main
+    id="mall-walk"
+    class="mall-walk"
+  >
+    <div class="ceiling"></div>
+    <div class="far-wall"></div>
+
+    <div class="far-sign">
+      {{ zone.name }}
+    </div>
+
+    <div class="floor"></div>
+    <div class="floor-glow"></div>
+
+    <div class="lane-edge left"></div>
+    <div class="lane-edge right"></div>
+
+    <section
+      id="store-rail"
+      class="store-rail"
+      aria-label="{{ zone.name }} storefronts"
+    >
+      {% for store in stores %}
+        <article
+          class="walk-store"
+          data-index="{{ forloop.counter0 }}"
+          data-name="{{ store.store_name|escape }}"
+          data-url="{% url 'storefront' store.slug %}"
+          tabindex="0"
+          role="button"
+          aria-label="View {{ store.store_name }}"
+        >
+          {% if store.storefront_image %}
+            <img
+              class="store-image"
+              src="{{ store.storefront_image.url }}"
+              alt="{{ store.store_name }} storefront"
+            >
+          {% elif store.logo %}
+            <img
+              class="store-image"
+              src="{{ store.logo.url }}"
+              alt="{{ store.store_name }}"
+            >
+          {% else %}
+            <div class="store-placeholder">
+              {{ store.store_name }}
+            </div>
+          {% endif %}
+
+          <div class="store-shade"></div>
+
+          <div class="store-copy">
+            <h2 class="store-name">
+              {{ store.store_name }}
+            </h2>
+
+            <div class="store-action">
+              Select Store
+            </div>
+          </div>
+        </article>
+      {% empty %}
+        {% for number in "12345678" %}
+          <article
+            class="walk-store"
+            data-index="{{ forloop.counter0 }}"
+            data-name="Future {{ zone.name }} Store"
+            data-url=""
+            tabindex="0"
+            role="button"
+          >
+            <div class="store-placeholder">
+              Future {{ zone.name }} Store
+            </div>
+
+            <div class="store-shade"></div>
+
+            <div class="store-copy">
+              <h2 class="store-name">
+                Claim This Storefront
+              </h2>
+
+              <div class="store-action">
+                Coming Soon
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      {% endfor %}
+    </section>
+  </main>
+
+  <header class="hud">
+    <div>
+      <div class="hud-title">
+        🚶 Walk {{ zone.name }}
+      </div>
+
+      <div class="hud-subtitle">
+        Explore storefronts on both sides of the aisle.
+      </div>
+    </div>
+
+    <div class="hud-actions">
+      <button
+        id="pause-button"
+        class="hud-button primary"
+        type="button"
+      >
+        Pause Walk
+      </button>
+
+      <button
+        id="slower-button"
+        class="hud-button"
+        type="button"
+      >
+        Slower
+      </button>
+
+      <button
+        id="faster-button"
+        class="hud-button"
+        type="button"
+      >
+        Faster
+      </button>
+
+      <a
+        class="hud-button"
+        href="{% url 'zone-interior' zone_slug=zone.slug %}"
+      >
+        Store Directory
+      </a>
+    </div>
+  </header>
+
+  <aside
+    id="selected-panel"
+    class="selected-panel"
+  >
+    <div class="selected-eyebrow">
+      Selected Store
+    </div>
+
+    <h2
+      id="selected-name"
+      class="selected-name"
+    ></h2>
+
+    <p class="selected-copy">
+      Pause here or enter the merchant’s cinematic storefront.
+    </p>
+
+    <div class="selected-actions">
+      <button
+        id="continue-button"
+        class="hud-button"
+        type="button"
+      >
+        Continue Walking
+      </button>
+
+      <a
+        id="enter-store-button"
+        class="hud-button primary"
+        href="#"
+      >
+        Enter Store
+      </a>
+    </div>
+  </aside>
+
+  <div class="walk-hint">
+    Scroll, swipe, or use the controls to move through the aisle.
+    Select any storefront to pause and enter.
+  </div>
+
+  <script>
+    (function () {
+      const stores = Array.from(
+        document.querySelectorAll(".walk-store")
+      );
+
+      const pauseButton = document.getElementById(
+        "pause-button"
+      );
+
+      const slowerButton = document.getElementById(
+        "slower-button"
+      );
+
+      const fasterButton = document.getElementById(
+        "faster-button"
+      );
+
+      const selectedPanel = document.getElementById(
+        "selected-panel"
+      );
+
+      const selectedName = document.getElementById(
+        "selected-name"
+      );
+
+      const enterStoreButton = document.getElementById(
+        "enter-store-button"
+      );
+
+      const continueButton = document.getElementById(
+        "continue-button"
+      );
+
+      if (!stores.length) {
+        return;
+      }
+
+      const prefersReducedMotion =
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+      let progress = 0;
+      let speed = prefersReducedMotion ? 0 : 0.000075;
+      let paused = prefersReducedMotion;
+      let selectedStore = null;
+      let previousTime = performance.now();
+      let touchStartY = null;
+
+      const total = stores.length;
+      const spacing = 1 / total;
+
+      function wrap(value) {
+        return ((value % 1) + 1) % 1;
+      }
+
+      function updateStores() {
+        stores.forEach(function (store, index) {
+          const depth = wrap(
+            index * spacing - progress
+          );
+
+          const side = index % 2 === 0 ? -1 : 1;
+
+          const approach = 1 - depth;
+
+          const horizontal =
+            side * (
+              9 +
+              Math.pow(approach, 1.55) * 40
+            );
+
+          const vertical =
+            -8 +
+            Math.pow(approach, 1.35) * 37;
+
+          const scale =
+            0.38 +
+            Math.pow(approach, 1.48) * 1.03;
+
+          const rotate =
+            side * (
+              29 -
+              approach * 19
+            );
+
+          const opacity =
+            Math.min(
+              1,
+              Math.max(
+                0,
+                (approach - 0.05) * 1.35
+              )
+            );
+
+          const blur =
+            depth > .74
+              ? (depth - .74) * 9
+              : 0;
+
+          store.style.transform = [
+            "translate(-50%, -50%)",
+            `translate3d(${horizontal}vw, ${vertical}vh, 0)`,
+            `scale(${scale})`,
+            `rotateY(${rotate}deg)`,
+          ].join(" ");
+
+          store.style.opacity = opacity;
+          store.style.filter =
+            `brightness(${0.62 + approach * 0.48}) ` +
+            `blur(${blur}px)`;
+
+          store.style.zIndex =
+            String(
+              20 +
+              Math.round(approach * 100)
+            );
+
+          store.style.pointerEvents =
+            opacity > .42
+              ? "auto"
+              : "none";
+        });
+      }
+
+      function animate(now) {
+        const delta = Math.min(
+          40,
+          now - previousTime
+        );
+
+        previousTime = now;
+
+        if (!paused) {
+          progress = wrap(
+            progress + speed * delta
+          );
+        }
+
+        updateStores();
+        window.requestAnimationFrame(animate);
+      }
+
+      function setPaused(value) {
+        paused = value;
+
+        pauseButton.textContent =
+          paused
+            ? "Continue Walk"
+            : "Pause Walk";
+
+        pauseButton.classList.toggle(
+          "active",
+          paused
+        );
+      }
+
+      function selectStore(store) {
+        stores.forEach(function (item) {
+          item.classList.remove("selected");
+        });
+
+        selectedStore = store;
+        selectedStore.classList.add("selected");
+
+        setPaused(true);
+
+        selectedName.textContent =
+          store.dataset.name || "Selected Store";
+
+        const url = store.dataset.url || "";
+
+        if (url) {
+          enterStoreButton.href = url;
+          enterStoreButton.style.display = "inline-flex";
+        } else {
+          enterStoreButton.removeAttribute("href");
+          enterStoreButton.style.display = "none";
+        }
+
+        selectedPanel.classList.add("open");
+      }
+
+      function closeSelection() {
+        if (selectedStore) {
+          selectedStore.classList.remove("selected");
+        }
+
+        selectedStore = null;
+        selectedPanel.classList.remove("open");
+        setPaused(false);
+      }
+
+      stores.forEach(function (store) {
+        store.addEventListener("click", function () {
+          selectStore(store);
+        });
+
+        store.addEventListener(
+          "keydown",
+          function (event) {
+            if (
+              event.key === "Enter" ||
+              event.key === " "
+            ) {
+              event.preventDefault();
+              selectStore(store);
+            }
+          }
+        );
+      });
+
+      pauseButton.addEventListener(
+        "click",
+        function () {
+          setPaused(!paused);
+        }
+      );
+
+      slowerButton.addEventListener(
+        "click",
+        function () {
+          speed = Math.max(
+            0.000025,
+            speed * 0.72
+          );
+        }
+      );
+
+      fasterButton.addEventListener(
+        "click",
+        function () {
+          speed = Math.min(
+            0.00022,
+            Math.max(
+              0.000035,
+              speed * 1.35
+            )
+          );
+        }
+      );
+
+      continueButton.addEventListener(
+        "click",
+        closeSelection
+      );
+
+      window.addEventListener(
+        "wheel",
+        function (event) {
+          progress = wrap(
+            progress + event.deltaY * 0.00016
+          );
+
+          updateStores();
+        },
+        {
+          passive: true,
+        }
+      );
+
+      window.addEventListener(
+        "touchstart",
+        function (event) {
+          touchStartY =
+            event.touches[0]?.clientY ?? null;
+        },
+        {
+          passive: true,
+        }
+      );
+
+      window.addEventListener(
+        "touchmove",
+        function (event) {
+          if (touchStartY === null) {
+            return;
+          }
+
+          const currentY =
+            event.touches[0]?.clientY ?? touchStartY;
+
+          const delta = touchStartY - currentY;
+
+          progress = wrap(
+            progress + delta * 0.00035
+          );
+
+          touchStartY = currentY;
+          updateStores();
+        },
+        {
+          passive: true,
+        }
+      );
+
+      updateStores();
+      window.requestAnimationFrame(animate);
+    })();
+  </script>
+</body>
+</html>

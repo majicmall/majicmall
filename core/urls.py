@@ -1,7 +1,14 @@
 from django.urls import path
 from . import views
+from . import walk_views
 
 urlpatterns = [
+    path(
+        "walk/<slug:zone_slug>/",
+        walk_views.walk_zone,
+        name="walk-zone",
+    ),
+
     path("command-center/", views.megaverse_command_center, name="megaverse-command-center"),
 
     # ---------------------------

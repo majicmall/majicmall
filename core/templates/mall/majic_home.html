@@ -12,15 +12,17 @@ body{
   margin:0;
   padding:0;
   min-height:100%;
-  background:#000;
+  background:
+    url("{% static 'img/inside_majic_mall.png' %}")
+    center center / cover no-repeat fixed;
   font-family:Arial,sans-serif;
 }
 
 body{
   color:#fff;
   overflow-x:hidden;
-  opacity:0;
-  animation:pageFadeIn 1.2s ease forwards;
+  opacity:1;
+  animation:none;
 }
 
 .scene{
@@ -180,7 +182,7 @@ body{
 
 @keyframes insideWalkForward{
   0%{
-    transform:scale(1.02) translateY(0);
+    transform:scale(1.025) translateY(0);
   }
 
   20%{
@@ -206,7 +208,7 @@ body{
 
 @keyframes insideWalkForwardMobile{
   0%{
-    transform:scale(1.02) translateY(0);
+    transform:scale(1.06) translateY(0);
   }
 
   20%{
@@ -293,7 +295,7 @@ body{
   }
 
   .arrival-layer{
-    animation-delay:5.8s;
+    animation-delay:2.8s;
   }
 }
 
@@ -352,7 +354,43 @@ body{
   }
 }
 
+
+/* Launch timing polish */
+.arrival-layer {
+  animation-delay: 2s !important;
+}
+
+@media (max-width:768px) {
+  .arrival-layer {
+    animation-delay: 2s !important;
+  }
+}
+
+
+/* Final no-black destination paint */
+html,
+body {
+  background:
+    url("{% static 'img/inside_majic_mall.png' %}")
+    center center / cover no-repeat fixed !important;
+}
+
+body {
+  opacity: 1 !important;
+  animation: none !important;
+}
+
+.inside-bg {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
 </style>
+<link
+  rel="preload"
+  as="image"
+  href="{% static 'img/inside_majic_mall.png' %}"
+>
 </head>
 
 <body>
@@ -391,6 +429,153 @@ body{
   </section>
 
 </main>
+
+
+<!-- MMM ARRIVAL DOORS START -->
+<style>
+  #mmm-arrival {
+    position: fixed;
+    z-index: 2147483000;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .mmm-arrival-panel {
+    position: absolute;
+    top: 0;
+    width: 50.25%;
+    height: 100%;
+    border: 1px solid rgba(255, 232, 145, .72);
+    background:
+      linear-gradient(
+        112deg,
+        rgba(255,255,255,.18),
+        rgba(255,255,255,.035) 22%,
+        rgba(8,10,16,.84) 52%,
+        rgba(212,175,55,.12) 78%,
+        rgba(0,0,0,.94)
+      );
+    box-shadow:
+      inset 0 0 90px rgba(255,255,255,.04),
+      inset 0 0 45px rgba(212,175,55,.1),
+      0 0 80px rgba(0,0,0,.85);
+    backdrop-filter: blur(16px) brightness(.62);
+    -webkit-backdrop-filter: blur(16px) brightness(.62);
+    transition:
+      transform .82s cubic-bezier(.76,0,.24,1);
+  }
+
+  .mmm-arrival-left {
+    left: 0;
+    transform: translateX(0);
+  }
+
+  .mmm-arrival-right {
+    right: 0;
+    transform: translateX(0);
+  }
+
+  #mmm-arrival.mmm-opening .mmm-arrival-left {
+    transform: translateX(-101%);
+  }
+
+  #mmm-arrival.mmm-opening .mmm-arrival-right {
+    transform: translateX(101%);
+  }
+
+  .mmm-arrival-seam {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 50%;
+    width: 3px;
+    height: 100%;
+    opacity: 1;
+    transform: translateX(-50%);
+    background:
+      linear-gradient(
+        to bottom,
+        transparent,
+        #fff6ce 18%,
+        #d4af37 50%,
+        #fff6ce 82%,
+        transparent
+      );
+    box-shadow:
+      0 0 18px rgba(255,239,177,.95),
+      0 0 46px rgba(212,175,55,.72);
+    transition: opacity .18s ease .22s;
+  }
+
+  #mmm-arrival.mmm-opening .mmm-arrival-seam {
+    opacity: 0;
+  }
+
+  .mmm-arrival-copy {
+    position: absolute;
+    z-index: 4;
+    top: 50%;
+    left: 50%;
+    width: min(90%, 760px);
+    transform: translate(-50%, -50%);
+    color: #fff1b0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.25rem, 3.6vw, 2.5rem);
+    line-height: 1.4;
+    letter-spacing: .08em;
+    text-align: center;
+    text-shadow:
+      0 0 22px rgba(212,175,55,.52);
+    transition:
+      opacity .2s ease,
+      transform .2s ease;
+  }
+
+  #mmm-arrival.mmm-opening .mmm-arrival-copy {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+
+  #mmm-arrival.mmm-finished {
+    display: none;
+  }
+</style>
+
+<script>
+  (function () {
+    function buildArrivalDoors() {
+      const overlay = document.createElement("div");
+      overlay.id = "mmm-arrival";
+
+      overlay.innerHTML = `
+        <div class="mmm-arrival-panel mmm-arrival-left"></div>
+        <div class="mmm-arrival-panel mmm-arrival-right"></div>
+        <div class="mmm-arrival-seam"></div>
+        <div class="mmm-arrival-copy">
+          Welcome Inside<br>
+          MajicMall Megaverse™
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+      return overlay;
+    }
+
+    const overlay = buildArrivalDoors();
+
+    window.addEventListener("load", function () {
+      window.setTimeout(function () {
+        overlay.classList.add("mmm-opening");
+
+        window.setTimeout(function () {
+          overlay.classList.add("mmm-finished");
+        }, 900);
+      }, 120);
+    });
+  })();
+</script>
+<!-- MMM ARRIVAL DOORS END -->
 
 </body>
 </html>

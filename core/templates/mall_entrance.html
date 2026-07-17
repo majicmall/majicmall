@@ -882,7 +882,52 @@ html, body {
   }
 }
 
+
+/* Smooth handoff from /enter/ to /mall/ */
+body {
+  transition:
+    opacity .7s ease-in-out,
+    filter .7s ease-in-out;
+}
+
+
+/* Final no-black fused transition */
+body {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.fade-bridge {
+  z-index: 99990 !important;
+  visibility: visible;
+  opacity: 0;
+  background-color: transparent !important;
+}
+
+body.mall-transition-out {
+  opacity: 1 !important;
+  filter: none !important;
+  background: transparent !important;
+}
+
+body.mall-transition-out .fade-bridge {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+body.mall-transition-out .entrance-stage,
+body.mall-transition-out .door,
+body.mall-transition-out .entrance-rays,
+body.mall-transition-out .seam-light {
+  opacity: 1;
+}
+
 </style>
+<link
+  rel="preload"
+  as="image"
+  href="{% static 'img/inside_majic_mall.png' %}"
+>
 </head>
 
 <body>
@@ -948,19 +993,158 @@ html, body {
 
 </div>
 
+
+
+
+<!-- MMM HANDOFF DOORS START -->
+<style>
+  #mmm-handoff {
+    position: fixed;
+    z-index: 2147483000;
+    inset: 0;
+    visibility: hidden;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  #mmm-handoff.mmm-visible {
+    visibility: visible;
+  }
+
+  .mmm-handoff-panel {
+    position: absolute;
+    top: 0;
+    width: 50.25%;
+    height: 100%;
+    border: 1px solid rgba(255, 232, 145, .72);
+    background:
+      linear-gradient(
+        112deg,
+        rgba(255,255,255,.18),
+        rgba(255,255,255,.035) 22%,
+        rgba(8,10,16,.84) 52%,
+        rgba(212,175,55,.12) 78%,
+        rgba(0,0,0,.94)
+      );
+    box-shadow:
+      inset 0 0 90px rgba(255,255,255,.04),
+      inset 0 0 45px rgba(212,175,55,.1),
+      0 0 80px rgba(0,0,0,.85);
+    backdrop-filter: blur(16px) brightness(.62);
+    -webkit-backdrop-filter: blur(16px) brightness(.62);
+    transition:
+      transform .82s cubic-bezier(.76,0,.24,1);
+  }
+
+  .mmm-handoff-left {
+    left: 0;
+    transform: translateX(-101%);
+  }
+
+  .mmm-handoff-right {
+    right: 0;
+    transform: translateX(101%);
+  }
+
+  #mmm-handoff.mmm-closing .mmm-handoff-panel {
+    transform: translateX(0);
+  }
+
+  .mmm-handoff-seam {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 50%;
+    width: 3px;
+    height: 100%;
+    opacity: 0;
+    transform: translateX(-50%);
+    background:
+      linear-gradient(
+        to bottom,
+        transparent,
+        #fff6ce 18%,
+        #d4af37 50%,
+        #fff6ce 82%,
+        transparent
+      );
+    box-shadow:
+      0 0 18px rgba(255,239,177,.95),
+      0 0 46px rgba(212,175,55,.72);
+    transition: opacity .18s ease .58s;
+  }
+
+  #mmm-handoff.mmm-closing .mmm-handoff-seam {
+    opacity: 1;
+  }
+
+  .mmm-handoff-copy {
+    position: absolute;
+    z-index: 4;
+    top: 50%;
+    left: 50%;
+    width: min(90%, 760px);
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.96);
+    color: #fff1b0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.25rem, 3.6vw, 2.5rem);
+    line-height: 1.4;
+    letter-spacing: .08em;
+    text-align: center;
+    text-shadow:
+      0 0 22px rgba(212,175,55,.52);
+    transition:
+      opacity .2s ease .58s,
+      transform .2s ease .58s;
+  }
+
+  #mmm-handoff.mmm-closing .mmm-handoff-copy {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+</style>
+
 <script>
-setTimeout(() => {
+  (function () {
+    function buildHandoffDoors() {
+      const overlay = document.createElement("div");
+      overlay.id = "mmm-handoff";
 
-  document.body.style.opacity = ".92";
+      overlay.innerHTML = `
+        <div class="mmm-handoff-panel mmm-handoff-left"></div>
+        <div class="mmm-handoff-panel mmm-handoff-right"></div>
+        <div class="mmm-handoff-seam"></div>
+        <div class="mmm-handoff-copy">
+          Welcome Inside<br>
+          MajicMall Megaverse™
+        </div>
+      `;
 
-  setTimeout(() => {
+      document.body.appendChild(overlay);
+      return overlay;
+    }
 
-    window.location.href = "{% url 'mall-home' %}";
+    window.addEventListener("load", function () {
+      const overlay = buildHandoffDoors();
 
-  }, 950);
+      window.setTimeout(function () {
+        overlay.classList.add("mmm-visible");
 
-}, 11800);
+        window.requestAnimationFrame(function () {
+          window.requestAnimationFrame(function () {
+            overlay.classList.add("mmm-closing");
+          });
+        });
+
+        window.setTimeout(function () {
+          window.location.href = "{% url 'mall-home' %}";
+        }, 900);
+      }, 11000);
+    });
+  })();
 </script>
+<!-- MMM HANDOFF DOORS END -->
 
 </body>
 </html>

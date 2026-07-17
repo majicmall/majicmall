@@ -1399,6 +1399,85 @@
       }
     }
 
+
+    /* Photorealistic Walk the Mall background */
+    .mall-walk {
+      background: #050505 !important;
+    }
+
+    .walk-background {
+      position: absolute;
+      z-index: 0;
+      inset: -4%;
+      width: 108%;
+      height: 108%;
+      object-fit: cover;
+      object-position: center center;
+      pointer-events: none;
+      transform-origin: center center;
+      filter:
+        brightness(.82)
+        contrast(1.08)
+        saturate(1.04);
+      animation:
+        walkMallEnvironmentForward 18s linear infinite;
+      will-change: transform;
+    }
+
+    @keyframes walkMallEnvironmentForward {
+      0% {
+        transform:
+          scale(1.01)
+          translateY(0);
+      }
+
+      50% {
+        transform:
+          scale(1.085)
+          translateY(-1.1%);
+      }
+
+      100% {
+        transform:
+          scale(1.16)
+          translateY(-2.2%);
+      }
+    }
+
+    /* Hide only the old CSS scenery. */
+    .ceiling,
+    .far-wall,
+    .floor,
+    .floor-glow,
+    .lane-edge,
+    .luxury-shell {
+      display: none !important;
+    }
+
+    .store-rail {
+      z-index: 20;
+    }
+
+    .far-sign {
+      z-index: 21;
+    }
+
+    @media (max-width: 760px) {
+      .walk-background {
+        inset: -7%;
+        width: 114%;
+        height: 114%;
+        animation-duration: 21s;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .walk-background {
+        animation: none;
+        transform: scale(1.05);
+      }
+    }
+
 </style>
 </head>
 
@@ -1406,7 +1485,14 @@
   <main
     id="mall-walk"
     class="mall-walk"
-  >    <div class="luxury-shell">
+  >
+    <img
+      class="walk-background"
+      src="{% static 'img/walk_the_mall_luxury.png' %}"
+      alt="Inside MajicMall Megaverse"
+      aria-hidden="true"
+    >
+    <div class="luxury-shell">
       <div class="mall-ceiling"></div>
 
       <div class="ceiling-rib rib-one"></div>

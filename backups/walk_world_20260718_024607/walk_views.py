@@ -94,36 +94,3 @@ def walk_zone_engine_v2(request, zone_slug):
     )
 # END WALK THE MALL ENGINE V2 VIEW
 
-# WALK THE MALL WORLD — CINEMATIC WORLD VIEW
-def walk_world(request, zone_slug):
-    """
-    Cinematic Walk the Mall world experience.
-
-    This is separate from:
-    - walk_zone.html
-    - walk_zone_engine_v2.html
-    """
-    zone = get_object_or_404(
-        MallZone,
-        slug=zone_slug,
-    )
-
-    stores = (
-        MerchantStore.objects.filter(
-            zone=zone,
-            is_public=True,
-            is_archived=False,
-        )
-        .exclude(slug="")
-        .order_by("store_name")
-    )
-
-    return render(
-        request,
-        "mall/walk_world.html",
-        {
-            "zone": zone,
-            "stores": stores,
-        },
-    )
-# END WALK THE MALL WORLD VIEW

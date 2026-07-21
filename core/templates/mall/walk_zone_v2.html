@@ -1,0 +1,2581 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Walk {{ zone.name }} 2.0 | MajicMall Megaverse
+  </title>
+
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-light: #fff0b0;
+      --black: #020203;
+      --glass: rgba(5, 6, 10, .82);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      color: #fff;
+      background: #020203;
+      font-family:
+        Montserrat,
+        Arial,
+        sans-serif;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    .mall-walk {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(
+          ellipse at 50% 42%,
+          rgba(255, 234, 163, .16),
+          transparent 25%
+        ),
+        linear-gradient(
+          to bottom,
+          #242833 0%,
+          #11141c 35%,
+          #07080d 68%,
+          #020203 100%
+        );
+    }
+
+    .ceiling {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 38%;
+      clip-path:
+        polygon(
+          0 0,
+          100% 0,
+          73% 100%,
+          27% 100%
+        );
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 255, 255, .035) 0 2px,
+          transparent 2px 11%
+        ),
+        linear-gradient(
+          to bottom,
+          #343946,
+          #161a24
+        );
+      box-shadow:
+        inset 0 -25px 65px rgba(0, 0, 0, .6);
+    }
+
+    .ceiling::after {
+      position: absolute;
+      inset: 18% 23% auto;
+      height: 5px;
+      content: "";
+      border-radius: 999px;
+      background: #fff4cb;
+      box-shadow:
+        0 0 18px #fff2bd,
+        0 0 58px rgba(212, 175, 55, .58);
+    }
+
+    .far-wall {
+      position: absolute;
+      z-index: 2;
+      top: 30%;
+      left: 37%;
+      width: 26%;
+      height: 31%;
+      border:
+        1px solid rgba(255, 233, 164, .24);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, .07),
+          rgba(255, 255, 255, .012)
+        ),
+        #11141b;
+      box-shadow:
+        inset 0 0 50px rgba(0, 0, 0, .65),
+        0 0 45px rgba(212, 175, 55, .08);
+    }
+
+    .far-sign {
+      position: absolute;
+      z-index: 5;
+      top: 39%;
+      left: 50%;
+      width: min(540px, 46vw);
+      transform: translateX(-50%);
+      color: var(--gold-light);
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+      font-size:
+        clamp(1.15rem, 2.6vw, 2.2rem);
+      letter-spacing: .1em;
+      text-align: center;
+      text-shadow:
+        0 0 22px rgba(212, 175, 55, .32);
+    }
+
+    .floor {
+      position: absolute;
+      z-index: 1;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 61%;
+      clip-path:
+        polygon(
+          38% 0,
+          62% 0,
+          100% 100%,
+          0 100%
+        );
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 255, 255, .035) 0 1px,
+          transparent 1px 10%
+        ),
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, .035) 0 1px,
+          transparent 1px 12%
+        ),
+        linear-gradient(
+          to bottom,
+          #282b32,
+          #101116 54%,
+          #050506
+        );
+      box-shadow:
+        inset 0 28px 70px rgba(0, 0, 0, .5);
+    }
+
+    .floor-glow {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      bottom: -10%;
+      width: 56%;
+      height: 74%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      background:
+        radial-gradient(
+          ellipse at 50% 10%,
+          rgba(255, 234, 163, .18),
+          transparent 62%
+        );
+    }
+
+    .lane-edge {
+      position: absolute;
+      z-index: 3;
+      top: 41%;
+      bottom: -4%;
+      width: 2px;
+      transform-origin: top;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(255, 238, 180, .18),
+          rgba(212, 175, 55, .62)
+        );
+      box-shadow:
+        0 0 13px rgba(212, 175, 55, .22);
+    }
+
+    .lane-edge.left {
+      left: 38%;
+      transform: rotate(17deg);
+    }
+
+    .lane-edge.right {
+      right: 38%;
+      transform: rotate(-17deg);
+    }
+
+    .store-rail {
+      position: absolute;
+      z-index: 10;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .walk-store {
+      position: absolute;
+      top: 42%;
+      left: 50%;
+      width:
+        clamp(175px, 23vw, 390px);
+      aspect-ratio: 16 / 11;
+      overflow: hidden;
+      border:
+        2px solid rgba(255, 231, 147, .54);
+      border-radius: 16px;
+      background: #090a0d;
+      box-shadow:
+        0 24px 65px rgba(0, 0, 0, .72),
+        0 0 25px rgba(212, 175, 55, .1);
+      opacity: 0;
+      pointer-events: auto;
+      cursor: pointer;
+      transform-origin: center center;
+      transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        filter .2s ease;
+      will-change:
+        transform,
+        opacity,
+        filter;
+    }
+
+    .walk-store:hover,
+    .walk-store.selected {
+      border-color: var(--gold-light);
+      box-shadow:
+        0 28px 75px rgba(0, 0, 0, .82),
+        0 0 35px rgba(212, 175, 55, .34);
+      filter:
+        brightness(1.08)
+        saturate(1.08) !important;
+    }
+
+    .store-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .store-placeholder {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background:
+        radial-gradient(
+          circle at 50% 20%,
+          rgba(212, 175, 55, .19),
+          transparent 39%
+        ),
+        linear-gradient(
+          145deg,
+          #191b22,
+          #08090d
+        );
+      color: rgba(255, 240, 176, .72);
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+      font-size:
+        clamp(1rem, 2vw, 1.45rem);
+      text-align: center;
+    }
+
+    .store-shade {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 28%,
+          rgba(0, 0, 0, .15) 52%,
+          rgba(0, 0, 0, .88)
+        );
+    }
+
+    .store-copy {
+      position: absolute;
+      z-index: 3;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding: 13px 15px;
+    }
+
+    .store-name {
+      margin: 0;
+      color: #fff;
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+      font-size:
+        clamp(1rem, 1.8vw, 1.35rem);
+      text-shadow:
+        0 3px 12px rgba(0, 0, 0, .8);
+    }
+
+    .store-action {
+      margin-top: 5px;
+      color: var(--gold-light);
+      font-size: .68rem;
+      font-weight: 900;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .hud {
+      position: fixed;
+      z-index: 100;
+      top: 16px;
+      left: 50%;
+      display: flex;
+      width: min(1120px, calc(100% - 28px));
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      transform: translateX(-50%);
+      border:
+        1px solid rgba(255, 232, 147, .4);
+      border-radius: 18px;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(4, 5, 8, .93),
+          rgba(45, 34, 7, .87)
+        );
+      box-shadow:
+        0 17px 45px rgba(0, 0, 0, .5);
+      backdrop-filter: blur(15px);
+    }
+
+    .hud-title {
+      color: var(--gold-light);
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+      font-size:
+        clamp(1rem, 2vw, 1.35rem);
+    }
+
+    .hud-subtitle {
+      margin-top: 3px;
+      color: rgba(255, 255, 255, .53);
+      font-size: .7rem;
+    }
+
+    .hud-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .hud-button {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      border:
+        1px solid rgba(255, 235, 169, .34);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(255, 255, 255, .045);
+      text-decoration: none;
+      font-size: .74rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .hud-button.primary {
+      border-color: var(--gold-light);
+      color: #080808;
+      background:
+        linear-gradient(
+          135deg,
+          #fff2ba,
+          var(--gold)
+        );
+    }
+
+    .hud-button.active {
+      color: #080808;
+      background: var(--gold-light);
+    }
+
+    .selected-panel {
+      position: fixed;
+      z-index: 110;
+      right: 20px;
+      bottom: 20px;
+      width: min(370px, calc(100% - 40px));
+      padding: 18px;
+      border:
+        1px solid rgba(255, 232, 147, .46);
+      border-radius: 22px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, .07),
+          rgba(255, 255, 255, .012)
+        ),
+        rgba(5, 6, 10, .94);
+      box-shadow:
+        0 24px 70px rgba(0, 0, 0, .65);
+      backdrop-filter: blur(16px);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+      transition:
+        opacity .25s ease,
+        visibility .25s ease,
+        transform .25s ease;
+    }
+
+    .selected-panel.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .selected-eyebrow {
+      color: var(--gold);
+      font-size: .66rem;
+      font-weight: 950;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .selected-name {
+      margin: 7px 0 0;
+      color: var(--gold-light);
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+      font-size: 1.55rem;
+    }
+
+    .selected-copy {
+      margin: 8px 0 0;
+      color: rgba(255, 255, 255, .59);
+      font-size: .8rem;
+      line-height: 1.5;
+    }
+
+    .selected-actions {
+      display: flex;
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .selected-actions a,
+    .selected-actions button {
+      flex: 1;
+    }
+
+    .walk-hint {
+      position: fixed;
+      z-index: 90;
+      bottom: 19px;
+      left: 20px;
+      max-width: 320px;
+      padding: 11px 14px;
+      border:
+        1px solid rgba(255, 232, 147, .19);
+      border-radius: 15px;
+      color: rgba(255, 255, 255, .57);
+      background: rgba(4, 5, 8, .72);
+      font-size: .72rem;
+      line-height: 1.45;
+      backdrop-filter: blur(12px);
+    }
+
+    @media (max-width: 760px) {
+      .hud {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .hud-actions {
+        justify-content: center;
+      }
+
+      .hud-button {
+        flex: 1;
+      }
+
+      .walk-store {
+        width:
+          clamp(145px, 42vw, 255px);
+      }
+
+      .walk-hint {
+        display: none;
+      }
+
+      .selected-panel {
+        right: 12px;
+        bottom: 12px;
+        width: calc(100% - 24px);
+      }
+
+      .far-sign {
+        top: 36%;
+        width: 68vw;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .walk-store {
+        transition: none;
+      }
+    }
+  
+    /* ========================================================
+       MAJICMALL MEGAVERSE — LUXURY MALL SHELL
+       The merchant storefront cards remain the only stores.
+       ======================================================== */
+
+    .mall-walk {
+      background:
+        radial-gradient(
+          ellipse at 50% 44%,
+          rgba(255, 241, 188, .2),
+          transparent 21%
+        ),
+        linear-gradient(
+          to bottom,
+          #353944 0%,
+          #1d2028 27%,
+          #0b0c11 64%,
+          #020203 100%
+        );
+    }
+
+    .luxury-shell {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .mall-ceiling {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 43%;
+      clip-path:
+        polygon(
+          0 0,
+          100% 0,
+          68% 100%,
+          32% 100%
+        );
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 9.7%,
+          rgba(255,255,255,.045) 9.8% 10%,
+          transparent 10.1% 20%
+        ),
+        linear-gradient(
+          to bottom,
+          #4a4e59 0%,
+          #2a2d36 36%,
+          #13151c 100%
+        );
+      box-shadow:
+        inset 0 -35px 75px rgba(0, 0, 0, .63);
+    }
+
+    .mall-ceiling::before {
+      position: absolute;
+      top: 17%;
+      left: 22%;
+      width: 56%;
+      height: 26%;
+      content: "";
+      border:
+        2px solid rgba(255, 231, 149, .32);
+      border-radius:
+        0 0 50% 50% / 0 0 24% 24%;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(214, 228, 238, .8),
+          rgba(131, 156, 172, .34)
+        );
+      box-shadow:
+        inset 0 0 45px rgba(255,255,255,.22),
+        0 0 45px rgba(255,239,178,.12);
+    }
+
+    .mall-ceiling::after {
+      position: absolute;
+      top: 24%;
+      left: 29%;
+      width: 42%;
+      height: 4px;
+      content: "";
+      border-radius: 999px;
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          #fff5cd 17%,
+          #d4af37 50%,
+          #fff5cd 83%,
+          transparent
+        );
+      box-shadow:
+        0 0 18px rgba(255, 242, 190, .92),
+        0 0 55px rgba(212, 175, 55, .48);
+    }
+
+    .ceiling-rib {
+      position: absolute;
+      z-index: 2;
+      top: 0;
+      width: 3px;
+      height: 45%;
+      transform-origin: top center;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(255, 240, 182, .7),
+          rgba(212, 175, 55, .1)
+        );
+      box-shadow:
+        0 0 12px rgba(212, 175, 55, .2);
+    }
+
+    .ceiling-rib.rib-one {
+      left: 18%;
+      transform: rotate(-16deg);
+    }
+
+    .ceiling-rib.rib-two {
+      left: 31%;
+      transform: rotate(-8deg);
+    }
+
+    .ceiling-rib.rib-three {
+      right: 31%;
+      transform: rotate(8deg);
+    }
+
+    .ceiling-rib.rib-four {
+      right: 18%;
+      transform: rotate(16deg);
+    }
+
+    .ceiling-light-strip {
+      position: absolute;
+      z-index: 3;
+      top: 13%;
+      width: 16%;
+      height: 6px;
+      border-radius: 999px;
+      background: #fff6d4;
+      box-shadow:
+        0 0 16px rgba(255, 247, 214, .92),
+        0 0 45px rgba(212, 175, 55, .42);
+    }
+
+    .ceiling-light-strip.light-left {
+      left: 15%;
+      transform: rotate(-8deg);
+    }
+
+    .ceiling-light-strip.light-center {
+      left: 50%;
+      width: 18%;
+      transform: translateX(-50%);
+    }
+
+    .ceiling-light-strip.light-right {
+      right: 15%;
+      transform: rotate(8deg);
+    }
+
+    .mall-left-wall,
+    .mall-right-wall {
+      position: absolute;
+      z-index: 2;
+      top: 25%;
+      bottom: 0;
+      width: 39%;
+      overflow: hidden;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,.025) 0 1px,
+          transparent 1px 96px
+        ),
+        linear-gradient(
+          to bottom,
+          rgba(30, 33, 41, .95),
+          rgba(8, 9, 13, .98)
+        );
+      box-shadow:
+        inset 0 0 70px rgba(0,0,0,.55);
+    }
+
+    .mall-left-wall {
+      left: 0;
+      clip-path:
+        polygon(
+          0 0,
+          100% 18%,
+          74% 100%,
+          0 100%
+        );
+      border-right:
+        1px solid rgba(255, 232, 146, .16);
+    }
+
+    .mall-right-wall {
+      right: 0;
+      clip-path:
+        polygon(
+          0 18%,
+          100% 0,
+          100% 100%,
+          26% 100%
+        );
+      border-left:
+        1px solid rgba(255, 232, 146, .16);
+    }
+
+    .wall-gold-line {
+      position: absolute;
+      z-index: 4;
+      top: 34%;
+      width: 37%;
+      height: 2px;
+      opacity: .7;
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 239, 180, .9),
+          rgba(212, 175, 55, .36)
+        );
+      box-shadow:
+        0 0 17px rgba(212,175,55,.2);
+    }
+
+    .wall-gold-line.left {
+      left: 0;
+      transform: rotate(6deg);
+      transform-origin: left center;
+    }
+
+    .wall-gold-line.right {
+      right: 0;
+      transform: rotate(-6deg);
+      transform-origin: right center;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(212, 175, 55, .36),
+          rgba(255, 239, 180, .9),
+          transparent
+        );
+    }
+
+    .mall-floor {
+      position: absolute;
+      z-index: 2;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 64%;
+      clip-path:
+        polygon(
+          37% 0,
+          63% 0,
+          100% 100%,
+          0 100%
+        );
+      background:
+        linear-gradient(
+          90deg,
+          transparent 49.82%,
+          rgba(255, 232, 143, .5) 49.9%,
+          rgba(255, 246, 204, .8) 50%,
+          rgba(255, 232, 143, .5) 50.1%,
+          transparent 50.18%
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255,255,255,.045) 0 1px,
+          transparent 1px 10%
+        ),
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,.04) 0 1px,
+          transparent 1px 13%
+        ),
+        linear-gradient(
+          to bottom,
+          #42444b 0%,
+          #24252a 34%,
+          #101115 67%,
+          #050506 100%
+        );
+      box-shadow:
+        inset 0 30px 80px rgba(0,0,0,.46);
+    }
+
+    .mall-floor::before {
+      position: absolute;
+      inset: 0;
+      content: "";
+      opacity: .5;
+      background:
+        linear-gradient(
+          105deg,
+          transparent 26%,
+          rgba(255,255,255,.06) 43%,
+          transparent 60%
+        );
+      animation:
+        floorReflectionSweep 8s linear infinite;
+    }
+
+    .mall-floor::after {
+      position: absolute;
+      right: 18%;
+      bottom: 8%;
+      left: 18%;
+      height: 28%;
+      content: "";
+      opacity: .28;
+      filter: blur(14px);
+      background:
+        radial-gradient(
+          ellipse,
+          rgba(255, 224, 123, .23),
+          transparent 70%
+        );
+      animation:
+        floorGlowPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes floorReflectionSweep {
+      from {
+        transform: translateX(-36%);
+      }
+
+      to {
+        transform: translateX(36%);
+      }
+    }
+
+    @keyframes floorGlowPulse {
+      50% {
+        opacity: .48;
+        transform: scale(1.06);
+      }
+    }
+
+    .aisle-inlay {
+      position: absolute;
+      z-index: 4;
+      top: 41%;
+      bottom: -8%;
+      width: 3px;
+      transform-origin: top center;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(255,244,201,.12),
+          rgba(212,175,55,.92)
+        );
+      box-shadow:
+        0 0 13px rgba(212,175,55,.27);
+    }
+
+    .aisle-inlay.left {
+      left: 38.5%;
+      transform: rotate(17deg);
+    }
+
+    .aisle-inlay.right {
+      right: 38.5%;
+      transform: rotate(-17deg);
+    }
+
+    .far-arch {
+      position: absolute;
+      z-index: 3;
+      top: 27%;
+      left: 37%;
+      width: 26%;
+      height: 34%;
+      border:
+        2px solid rgba(255, 232, 147, .35);
+      border-bottom: 0;
+      border-radius:
+        48% 48% 0 0 / 22% 22% 0 0;
+      background:
+        radial-gradient(
+          ellipse at 50% 28%,
+          rgba(255, 235, 162, .19),
+          transparent 39%
+        ),
+        linear-gradient(
+          to bottom,
+          #222631,
+          #0c0e13
+        );
+      box-shadow:
+        inset 0 0 55px rgba(0,0,0,.62),
+        0 0 42px rgba(212,175,55,.09);
+    }
+
+    .far-arch::after {
+      position: absolute;
+      right: 8%;
+      bottom: 9%;
+      left: 8%;
+      height: 1px;
+      content: "";
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          #d4af37,
+          transparent
+        );
+    }
+
+    .mall-column {
+      position: absolute;
+      z-index: 13;
+      top: 21%;
+      width:
+        clamp(38px, 4.5vw, 78px);
+      height: 68%;
+      border:
+        1px solid rgba(255, 235, 167, .22);
+      background:
+        linear-gradient(
+          90deg,
+          #090a0d,
+          #2e3138 25%,
+          #111216 53%,
+          #3a3421 80%,
+          #08090c
+        );
+      box-shadow:
+        inset 0 0 28px rgba(255,255,255,.035),
+        0 17px 35px rgba(0,0,0,.55);
+    }
+
+    .mall-column::before,
+    .mall-column::after {
+      position: absolute;
+      left: -12%;
+      width: 124%;
+      height: 17px;
+      content: "";
+      border:
+        1px solid rgba(255, 229, 138, .32);
+      background:
+        linear-gradient(
+          90deg,
+          #131313,
+          #d4af37 50%,
+          #131313
+        );
+      box-shadow:
+        0 0 13px rgba(212,175,55,.14);
+    }
+
+    .mall-column::before {
+      top: 0;
+    }
+
+    .mall-column::after {
+      bottom: 0;
+    }
+
+    .column-left-front {
+      left: 3%;
+    }
+
+    .column-left-mid {
+      left: 24%;
+      top: 29%;
+      height: 52%;
+      transform: scale(.78);
+    }
+
+    .column-right-front {
+      right: 3%;
+    }
+
+    .column-right-mid {
+      right: 24%;
+      top: 29%;
+      height: 52%;
+      transform: scale(.78);
+    }
+
+    .direction-sign {
+      position: absolute;
+      z-index: 28;
+      top: 14%;
+      left: 50%;
+      width: min(440px, 46vw);
+      transform: translateX(-50%);
+      padding: 13px 18px;
+      border:
+        1px solid rgba(255, 231, 146, .48);
+      border-radius: 5px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.055),
+          rgba(255,255,255,.012)
+        ),
+        rgba(4, 5, 8, .93);
+      box-shadow:
+        0 18px 45px rgba(0,0,0,.52),
+        0 0 22px rgba(212,175,55,.1);
+      color: rgba(255,255,255,.82);
+      font-size:
+        clamp(.64rem, 1.25vw, .83rem);
+      font-weight: 800;
+      letter-spacing: .07em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .direction-sign span {
+      display: inline-block;
+      margin: 0 8px;
+      color: var(--gold-light);
+    }
+
+    .direction-sign::before,
+    .direction-sign::after {
+      position: absolute;
+      top: -62px;
+      width: 2px;
+      height: 62px;
+      content: "";
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(255,255,255,.18),
+          rgba(212,175,55,.65)
+        );
+    }
+
+    .direction-sign::before {
+      left: 20%;
+    }
+
+    .direction-sign::after {
+      right: 20%;
+    }
+
+    .mall-planter {
+      position: absolute;
+      z-index: 18;
+      bottom: 8%;
+      width:
+        clamp(76px, 9vw, 145px);
+      height:
+        clamp(90px, 15vw, 200px);
+    }
+
+    .mall-planter.left {
+      left: 11%;
+    }
+
+    .mall-planter.right {
+      right: 11%;
+    }
+
+    .planter-pot {
+      position: absolute;
+      right: 15%;
+      bottom: 0;
+      left: 15%;
+      height: 32%;
+      clip-path:
+        polygon(
+          8% 0,
+          92% 0,
+          80% 100%,
+          20% 100%
+        );
+      border-top:
+        2px solid rgba(255, 230, 145, .6);
+      background:
+        linear-gradient(
+          90deg,
+          #08090c,
+          #39311d,
+          #0a0b0e
+        );
+      box-shadow:
+        0 15px 28px rgba(0,0,0,.48);
+    }
+
+    .plant-leaf {
+      position: absolute;
+      bottom: 25%;
+      left: 50%;
+      width: 19%;
+      height: 55%;
+      transform-origin: bottom center;
+      border-radius: 90% 10% 80% 20%;
+      background:
+        linear-gradient(
+          to right,
+          #0c321f,
+          #2d7750,
+          #102f22
+        );
+      box-shadow:
+        inset 4px 0 7px rgba(255,255,255,.06);
+    }
+
+    .plant-leaf:nth-child(1) {
+      transform:
+        translateX(-50%)
+        rotate(-47deg);
+    }
+
+    .plant-leaf:nth-child(2) {
+      transform:
+        translateX(-50%)
+        rotate(-24deg)
+        scale(1.12);
+    }
+
+    .plant-leaf:nth-child(3) {
+      transform:
+        translateX(-50%)
+        rotate(0deg)
+        scale(1.25);
+    }
+
+    .plant-leaf:nth-child(4) {
+      transform:
+        translateX(-50%)
+        rotate(25deg)
+        scale(1.13);
+    }
+
+    .plant-leaf:nth-child(5) {
+      transform:
+        translateX(-50%)
+        rotate(48deg);
+    }
+
+    .mall-bench {
+      position: absolute;
+      z-index: 17;
+      bottom: 7%;
+      left: 50%;
+      width:
+        clamp(170px, 22vw, 345px);
+      height:
+        clamp(46px, 6vw, 84px);
+      transform: translateX(-50%);
+      border:
+        1px solid rgba(255, 229, 139, .22);
+      border-radius: 17px 17px 8px 8px;
+      background:
+        linear-gradient(
+          to bottom,
+          #292b30,
+          #0d0e11
+        );
+      box-shadow:
+        0 22px 46px rgba(0,0,0,.58),
+        inset 0 1px rgba(255,255,255,.07);
+    }
+
+    .mall-bench::before {
+      position: absolute;
+      right: 8%;
+      bottom: -17px;
+      left: 8%;
+      height: 17px;
+      content: "";
+      background:
+        linear-gradient(
+          90deg,
+          #090909,
+          #29230f,
+          #090909
+        );
+      clip-path:
+        polygon(
+          7% 0,
+          93% 0,
+          100% 100%,
+          0 100%
+        );
+    }
+
+    .mall-bench::after {
+      position: absolute;
+      top: 12%;
+      right: 7%;
+      left: 7%;
+      height: 2px;
+      content: "";
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 235, 169, .37),
+          transparent
+        );
+    }
+
+    .ambient-light {
+      position: absolute;
+      z-index: 15;
+      top: -15%;
+      left: -28%;
+      width: 24%;
+      height: 135%;
+      transform: rotate(13deg);
+      opacity: .28;
+      filter: blur(16px);
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 245, 204, .45),
+          transparent
+        );
+      animation:
+        mallAmbientSweep 9s ease-in-out infinite;
+    }
+
+    @keyframes mallAmbientSweep {
+      0% {
+        left: -28%;
+        opacity: 0;
+      }
+
+      27% {
+        opacity: .28;
+      }
+
+      74% {
+        opacity: .22;
+      }
+
+      100% {
+        left: 112%;
+        opacity: 0;
+      }
+    }
+
+    .store-reflection-layer {
+      position: absolute;
+      z-index: 7;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 32%;
+      pointer-events: none;
+      opacity: .28;
+      filter: blur(10px);
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 9%,
+          rgba(255, 220, 105, .08) 10% 12%,
+          transparent 13% 20%
+        );
+      mask-image:
+        linear-gradient(
+          to bottom,
+          rgba(0,0,0,.75),
+          transparent
+        );
+      -webkit-mask-image:
+        linear-gradient(
+          to bottom,
+          rgba(0,0,0,.75),
+          transparent
+        );
+    }
+
+    @media (max-width: 760px) {
+      .direction-sign {
+        top: 17%;
+        width: 68vw;
+        padding: 10px 12px;
+        font-size: .56rem;
+      }
+
+      .direction-sign span {
+        margin: 0 4px;
+      }
+
+      .mall-column {
+        width: 35px;
+      }
+
+      .column-left-mid,
+      .column-right-mid {
+        display: none;
+      }
+
+      .mall-planter {
+        bottom: 9%;
+        transform: scale(.75);
+      }
+
+      .mall-planter.left {
+        left: 2%;
+      }
+
+      .mall-planter.right {
+        right: 2%;
+      }
+
+      .mall-bench {
+        bottom: 5%;
+        opacity: .8;
+      }
+
+      .mall-ceiling::before {
+        left: 16%;
+        width: 68%;
+      }
+
+      .ceiling-light-strip.light-left,
+      .ceiling-light-strip.light-right {
+        display: none;
+      }
+    }
+
+
+    /* Photorealistic Walk the Mall background */
+    .mall-walk {
+      background: #050505 !important;
+    }
+
+    .walk-background {
+      position: absolute;
+      z-index: 0;
+      inset: -4%;
+      width: 108%;
+      height: 108%;
+      object-fit: cover;
+      object-position: center center;
+      pointer-events: none;
+      transform-origin: center center;
+      filter:
+        brightness(.82)
+        contrast(1.08)
+        saturate(1.04);
+      animation:
+        walkMallEnvironmentForward 18s linear infinite;
+      will-change: transform;
+    }
+
+    @keyframes walkMallEnvironmentForward {
+      0% {
+        transform:
+          scale(1.01)
+          translateY(0);
+      }
+
+      50% {
+        transform:
+          scale(1.085)
+          translateY(-1.1%);
+      }
+
+      100% {
+        transform:
+          scale(1.16)
+          translateY(-2.2%);
+      }
+    }
+
+    /* Hide only the old CSS scenery. */
+    .ceiling,
+    .far-wall,
+    .floor,
+    .floor-glow,
+    .lane-edge,
+    .luxury-shell {
+      display: none !important;
+    }
+
+    .store-rail {
+      z-index: 20;
+    }
+
+    .far-sign {
+      z-index: 21;
+    }
+
+    @media (max-width: 760px) {
+      .walk-background {
+        inset: -7%;
+        width: 114%;
+        height: 114%;
+        animation-duration: 21s;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .walk-background {
+        animation: none;
+        transform: scale(1.05);
+      }
+    }
+
+
+    /* ========================================================
+       WALK THE MALL 2.0 ARCHITECTURE
+       Storefronts mounted into luxury wall modules
+       ======================================================== */
+
+    .walk-store {
+      overflow: visible !important;
+      border: 0 !important;
+      border-radius: 4px !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      isolation: isolate;
+      perspective: 1100px;
+    }
+
+    /*
+      Architectural wall surround.
+
+      The storefront, columns, canopy and base now travel as
+      one visual structure because they are attached directly
+      to the moving storefront element.
+    */
+    .walk-store::before {
+      position: absolute;
+      z-index: -2;
+      top: -19%;
+      right: -15%;
+      bottom: -13%;
+      left: -15%;
+      content: "";
+      pointer-events: none;
+      border:
+        1px solid rgba(255, 235, 166, .84);
+      border-radius: 7px;
+      background:
+        /* illuminated top canopy */
+        linear-gradient(
+          to bottom,
+          rgba(255, 246, 208, .96) 0 2.2%,
+          rgba(212, 175, 55, .92) 2.2% 4.2%,
+          rgba(20, 20, 24, .98) 4.2% 14%,
+          transparent 14% 84%,
+          rgba(212, 175, 55, .92) 84% 87%,
+          rgba(15, 15, 18, .98) 87% 100%
+        );
+      box-shadow:
+        /* left white marble column */
+        -31px 0 0 -10px rgba(237, 235, 226, .98),
+        -34px 0 0 -10px rgba(212, 175, 55, .92),
+
+        /* right white marble column */
+        31px 0 0 -10px rgba(237, 235, 226, .98),
+        34px 0 0 -10px rgba(212, 175, 55, .92),
+
+        /* architectural depth */
+        0 30px 70px rgba(0, 0, 0, .8),
+        0 0 28px rgba(212, 175, 55, .22),
+        inset 0 0 0 5px rgba(10, 10, 12, .96),
+        inset 0 0 0 7px rgba(212, 175, 55, .56);
+      transition:
+        filter .28s ease,
+        box-shadow .28s ease,
+        transform .28s ease;
+    }
+
+    /*
+      Gold column capitals and ceiling light.
+    */
+    .walk-store::after {
+      position: absolute;
+      z-index: 8;
+      top: -15%;
+      left: 50%;
+      width: 72%;
+      height: 5px;
+      content: "";
+      pointer-events: none;
+      border-radius: 999px;
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          #fff7d2 18%,
+          #d4af37 50%,
+          #fff7d2 82%,
+          transparent
+        );
+      box-shadow:
+        0 0 12px rgba(255, 245, 202, .88),
+        0 0 31px rgba(212, 175, 55, .56);
+      transform: translateX(-50%);
+      transition:
+        opacity .28s ease,
+        box-shadow .28s ease;
+    }
+
+    /*
+      Keep the merchant artwork contained inside the
+      architectural frame.
+    */
+    .walk-store > .store-image,
+    .walk-store > .store-placeholder,
+    .walk-store > .store-shade {
+      border:
+        2px solid rgba(255, 231, 147, .66);
+      border-radius: 3px;
+      clip-path: inset(0 round 3px);
+    }
+
+    .walk-store > .store-image,
+    .walk-store > .store-placeholder {
+      box-shadow:
+        inset 0 0 25px rgba(0, 0, 0, .25);
+    }
+
+    .walk-store .store-copy {
+      z-index: 12;
+      border-radius: 0 0 3px 3px;
+    }
+
+    /*
+      Glass display-window sheen.
+    */
+    .store-glass-sheen {
+      position: absolute;
+      z-index: 7;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      border-radius: 3px;
+      background:
+        linear-gradient(
+          112deg,
+          transparent 0 27%,
+          rgba(255, 255, 255, .075) 38%,
+          transparent 49% 100%
+        );
+      mix-blend-mode: screen;
+    }
+
+    /*
+      Gold storefront plaque mounted beneath each store.
+    */
+    .store-architecture-plaque {
+      position: absolute;
+      z-index: 15;
+      top: -12.7%;
+      left: 50%;
+      max-width: 74%;
+      overflow: hidden;
+      padding: 4px 16px;
+      transform: translateX(-50%);
+      border:
+        1px solid rgba(255, 237, 174, .76);
+      border-radius: 999px;
+      color: #fff2b8;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(7, 7, 9, .98),
+          rgba(73, 51, 5, .96)
+        );
+      box-shadow:
+        0 4px 15px rgba(0, 0, 0, .75),
+        0 0 17px rgba(212, 175, 55, .22);
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+      font-size:
+        clamp(.48rem, .8vw, .72rem);
+      font-weight: 800;
+      letter-spacing: .09em;
+      text-align: center;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /*
+      Storefront reflection on the polished marble.
+    */
+    .store-floor-reflection {
+      position: absolute;
+      z-index: -3;
+      top: 107%;
+      left: 5%;
+      width: 90%;
+      height: 56%;
+      overflow: hidden;
+      pointer-events: none;
+      transform:
+        perspective(500px)
+        rotateX(58deg)
+        scaleY(-1);
+      transform-origin: top center;
+      opacity: .22;
+      filter:
+        blur(2.2px)
+        brightness(.78)
+        saturate(.92);
+      -webkit-mask-image:
+        linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, .78),
+          transparent 82%
+        );
+      mask-image:
+        linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, .78),
+          transparent 82%
+        );
+      transition:
+        opacity .3s ease,
+        filter .3s ease,
+        transform .3s ease;
+    }
+
+    .store-floor-reflection img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .store-reflection-placeholder {
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(
+          circle at 50% 24%,
+          rgba(255, 235, 166, .42),
+          transparent 42%
+        ),
+        linear-gradient(
+          145deg,
+          rgba(79, 60, 11, .8),
+          rgba(5, 5, 7, .86)
+        );
+    }
+
+    /*
+      Gold reflection line connecting the storefront visually
+      to the polished floor.
+    */
+    .store-floor-light {
+      position: absolute;
+      z-index: -1;
+      top: 100%;
+      left: 50%;
+      width: 78%;
+      height: 4px;
+      pointer-events: none;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 240, 180, .84),
+          transparent
+        );
+      box-shadow:
+        0 3px 17px rgba(212, 175, 55, .48);
+      opacity: .58;
+      transition:
+        opacity .3s ease,
+        box-shadow .3s ease;
+    }
+
+    /*
+      The selected merchant becomes the visual focus.
+    */
+    .walk-store.selected::before {
+      filter:
+        brightness(1.18)
+        saturate(1.12);
+      box-shadow:
+        -31px 0 0 -10px rgba(250, 248, 239, 1),
+        -34px 0 0 -10px rgba(255, 224, 112, 1),
+        31px 0 0 -10px rgba(250, 248, 239, 1),
+        34px 0 0 -10px rgba(255, 224, 112, 1),
+        0 34px 85px rgba(0, 0, 0, .88),
+        0 0 52px rgba(212, 175, 55, .56),
+        inset 0 0 0 5px rgba(10, 10, 12, .98),
+        inset 0 0 0 7px rgba(255, 233, 148, .92);
+    }
+
+    .walk-store.selected::after {
+      box-shadow:
+        0 0 17px rgba(255, 248, 217, 1),
+        0 0 46px rgba(212, 175, 55, .88);
+    }
+
+    .walk-store.selected
+    .store-floor-reflection {
+      opacity: .48;
+      filter:
+        blur(1.2px)
+        brightness(1.08)
+        saturate(1.12);
+      transform:
+        perspective(500px)
+        rotateX(58deg)
+        scaleY(-1)
+        scaleX(1.08);
+    }
+
+    .walk-store.selected
+    .store-floor-light {
+      opacity: 1;
+      box-shadow:
+        0 3px 21px rgba(255, 237, 166, .88),
+        0 9px 50px rgba(212, 175, 55, .62);
+    }
+
+    .walk-store.selected
+    .store-glass-sheen {
+      animation:
+        selectedStoreGlassSweep
+        2.8s
+        ease-in-out
+        infinite;
+    }
+
+    @keyframes selectedStoreGlassSweep {
+      0% {
+        background-position: -180% 0;
+      }
+
+      52%,
+      100% {
+        background-position: 180% 0;
+      }
+    }
+
+    /*
+      Luxury black-marble foreground treatment.
+    */
+    .mall-walk::after {
+      position: absolute;
+      z-index: 4;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 44%;
+      content: "";
+      pointer-events: none;
+      background:
+        linear-gradient(
+          103deg,
+          transparent 0 17%,
+          rgba(255, 255, 255, .025) 18%,
+          transparent 20% 46%,
+          rgba(212, 175, 55, .025) 48%,
+          transparent 51% 100%
+        ),
+        linear-gradient(
+          to bottom,
+          transparent,
+          rgba(0, 0, 0, .22)
+        );
+      mix-blend-mode: screen;
+    }
+
+    /*
+      Preview badge so V2 is never confused with the live
+      original while we perfect it.
+    */
+    .walk-v2-preview-badge {
+      position: fixed;
+      z-index: 150;
+      top: 105px;
+      left: 50%;
+      padding: 7px 14px;
+      transform: translateX(-50%);
+      border:
+        1px solid rgba(255, 235, 168, .5);
+      border-radius: 999px;
+      color: #fff0ae;
+      background:
+        rgba(5, 5, 8, .86);
+      box-shadow:
+        0 8px 25px rgba(0, 0, 0, .45),
+        0 0 19px rgba(212, 175, 55, .17);
+      font-size: .61rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      backdrop-filter: blur(12px);
+      pointer-events: none;
+    }
+
+    @media (max-width: 760px) {
+      .walk-store::before {
+        right: -12%;
+        left: -12%;
+        box-shadow:
+          -23px 0 0 -8px rgba(237, 235, 226, .98),
+          -26px 0 0 -8px rgba(212, 175, 55, .92),
+          23px 0 0 -8px rgba(237, 235, 226, .98),
+          26px 0 0 -8px rgba(212, 175, 55, .92),
+          0 22px 55px rgba(0, 0, 0, .78),
+          0 0 22px rgba(212, 175, 55, .18),
+          inset 0 0 0 4px rgba(10, 10, 12, .96),
+          inset 0 0 0 6px rgba(212, 175, 55, .5);
+      }
+
+      .walk-store.selected::before {
+        box-shadow:
+          -23px 0 0 -8px rgba(250, 248, 239, 1),
+          -26px 0 0 -8px rgba(255, 224, 112, 1),
+          23px 0 0 -8px rgba(250, 248, 239, 1),
+          26px 0 0 -8px rgba(255, 224, 112, 1),
+          0 27px 65px rgba(0, 0, 0, .86),
+          0 0 38px rgba(212, 175, 55, .5),
+          inset 0 0 0 4px rgba(10, 10, 12, .98),
+          inset 0 0 0 6px rgba(255, 233, 148, .88);
+      }
+
+      .walk-v2-preview-badge {
+        top: 150px;
+        font-size: .53rem;
+      }
+
+      .store-architecture-plaque {
+        max-width: 70%;
+        padding: 3px 10px;
+        font-size: .46rem;
+      }
+
+      .store-floor-reflection {
+        height: 43%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .walk-store::before,
+      .walk-store::after,
+      .store-floor-reflection,
+      .store-floor-light {
+        transition: none;
+      }
+
+      .walk-store.selected
+      .store-glass-sheen {
+        animation: none;
+      }
+    }
+
+</style>
+</head>
+
+<body>
+
+  <!-- WALK V2 PREVIEW BADGE -->
+  <div class="walk-v2-preview-badge">
+    Walk the Mall™ 2.0 Architectural Preview
+  </div>
+
+  <main
+    id="mall-walk"
+    class="mall-walk"
+  >
+    <img
+      class="walk-background"
+      src="{% static 'img/walk_the_mall_luxury.png' %}"
+      alt="Inside MajicMall Megaverse"
+      aria-hidden="true"
+    >
+    <div class="luxury-shell">
+      <div class="mall-ceiling"></div>
+
+      <div class="ceiling-rib rib-one"></div>
+      <div class="ceiling-rib rib-two"></div>
+      <div class="ceiling-rib rib-three"></div>
+      <div class="ceiling-rib rib-four"></div>
+
+      <div class="ceiling-light-strip light-left"></div>
+      <div class="ceiling-light-strip light-center"></div>
+      <div class="ceiling-light-strip light-right"></div>
+
+      <div class="mall-left-wall"></div>
+      <div class="mall-right-wall"></div>
+
+      <div class="wall-gold-line left"></div>
+      <div class="wall-gold-line right"></div>
+
+      <div class="mall-floor"></div>
+      <div class="store-reflection-layer"></div>
+
+      <div class="aisle-inlay left"></div>
+      <div class="aisle-inlay right"></div>
+
+      <div class="far-arch"></div>
+
+      <div class="mall-column column-left-front"></div>
+      <div class="mall-column column-left-mid"></div>
+      <div class="mall-column column-right-front"></div>
+      <div class="mall-column column-right-mid"></div>
+
+      <div class="direction-sign">
+        <span>↑ Directory</span>
+        <span>← Elevators</span>
+        <span>Escalators →</span>
+        <span>Food Court →</span>
+      </div>
+
+      <div class="mall-planter left">
+        <div class="plant-leaf"></div>
+        <div class="plant-leaf"></div>
+        <div class="plant-leaf"></div>
+        <div class="plant-leaf"></div>
+        <div class="plant-leaf"></div>
+        <div class="planter-pot"></div>
+      </div>
+
+      <div class="mall-planter right">
+        <div class="plant-leaf"></div>
+        <div class="plant-leaf"></div>
+        <div class="plant-leaf"></div>
+        <div class="plant-leaf"></div>
+        <div class="plant-leaf"></div>
+        <div class="planter-pot"></div>
+      </div>
+
+      <div class="mall-bench"></div>
+      <div class="ambient-light"></div>
+    </div>
+
+    <div class="far-sign">
+      {{ zone.name }}
+    </div>
+
+    <section
+      id="store-rail"
+      class="store-rail"
+      aria-label="{{ zone.name }} storefronts"
+    >
+      {% for store in stores %}
+        <article
+          class="walk-store"
+          data-index="{{ forloop.counter0 }}"
+          data-name="{{ store.store_name|escape }}"
+          data-url="{% url 'storefront' store.slug %}"
+          tabindex="0"
+          role="button"
+          aria-label="View {{ store.store_name }}"
+        >
+          {% if store.storefront_image %}
+            <img
+              class="store-image"
+              src="{{ store.storefront_image.url }}"
+              alt="{{ store.store_name }} storefront"
+            >
+          {% elif store.logo %}
+            <img
+              class="store-image"
+              src="{{ store.logo.url }}"
+              alt="{{ store.store_name }}"
+            >
+          {% else %}
+            <div class="store-placeholder">
+              {{ store.store_name }}
+            </div>
+          {% endif %}
+
+          <div class="store-shade"></div>
+
+          <div class="store-copy">
+            <h2 class="store-name">
+              {{ store.store_name }}
+            </h2>
+
+            <div class="store-action">
+              Select Store
+            </div>
+          </div>
+        </article>
+      {% empty %}
+        {% for number in "12345678" %}
+          <article
+            class="walk-store"
+            data-index="{{ forloop.counter0 }}"
+            data-name="Future {{ zone.name }} Store"
+            data-url=""
+            tabindex="0"
+            role="button"
+          >
+            <div class="store-placeholder">
+              Future {{ zone.name }} Store
+            </div>
+
+            <div class="store-shade"></div>
+
+            <div class="store-copy">
+              <h2 class="store-name">
+                Claim This Storefront
+              </h2>
+
+              <div class="store-action">
+                Coming Soon
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      {% endfor %}
+    </section>
+  </main>
+
+  <header class="hud">
+    <div>
+      <div class="hud-title">
+        🚶 Walk {{ zone.name }}
+      </div>
+
+      <div class="hud-subtitle">
+        Explore storefronts on both sides of the aisle.
+      </div>
+    </div>
+
+    <div class="hud-actions">
+      <button
+        id="pause-button"
+        class="hud-button primary"
+        type="button"
+      >
+        Pause Walk
+      </button>
+
+      <button
+        id="slower-button"
+        class="hud-button"
+        type="button"
+      >
+        Slower
+      </button>
+
+      <button
+        id="faster-button"
+        class="hud-button"
+        type="button"
+      >
+        Faster
+      </button>
+
+      <a
+        class="hud-button"
+        href="{% url 'zone-interior' zone_slug=zone.slug %}"
+      >
+        Store Directory
+      </a>
+    </div>
+  </header>
+
+  <aside
+    id="selected-panel"
+    class="selected-panel"
+  >
+    <div class="selected-eyebrow">
+      Selected Store
+    </div>
+
+    <h2
+      id="selected-name"
+      class="selected-name"
+    ></h2>
+
+    <p class="selected-copy">
+      Pause here or enter the merchant’s cinematic storefront.
+    </p>
+
+    <div class="selected-actions">
+      <button
+        id="continue-button"
+        class="hud-button"
+        type="button"
+      >
+        Continue Walking
+      </button>
+
+      <a
+        id="enter-store-button"
+        class="hud-button primary"
+        href="#"
+      >
+        Enter Store
+      </a>
+    </div>
+  </aside>
+
+  <div class="walk-hint">
+    Scroll, swipe, or use the controls to move through the aisle.
+    Select any storefront to pause and enter.
+  </div>
+
+  <script>
+    (function () {
+      const stores = Array.from(
+        document.querySelectorAll(".walk-store")
+      );
+
+      const pauseButton = document.getElementById(
+        "pause-button"
+      );
+
+      const slowerButton = document.getElementById(
+        "slower-button"
+      );
+
+      const fasterButton = document.getElementById(
+        "faster-button"
+      );
+
+      const selectedPanel = document.getElementById(
+        "selected-panel"
+      );
+
+      const selectedName = document.getElementById(
+        "selected-name"
+      );
+
+      const enterStoreButton = document.getElementById(
+        "enter-store-button"
+      );
+
+      const continueButton = document.getElementById(
+        "continue-button"
+      );
+
+
+      /* =====================================================
+         BUILD STOREFRONT ARCHITECTURE
+         Creates the glass, plaque and marble reflection
+         for every real or placeholder merchant storefront.
+         ===================================================== */
+
+      stores.forEach(function (store) {
+        if (
+          store.querySelector(
+            ".store-glass-sheen"
+          )
+        ) {
+          return;
+        }
+
+        const glassSheen =
+          document.createElement("div");
+
+        glassSheen.className =
+          "store-glass-sheen";
+
+        store.appendChild(glassSheen);
+
+
+        const plaque =
+          document.createElement("div");
+
+        plaque.className =
+          "store-architecture-plaque";
+
+        plaque.textContent =
+          store.dataset.name ||
+          "MajicMall Megaverse";
+
+        store.appendChild(plaque);
+
+
+        const floorLight =
+          document.createElement("div");
+
+        floorLight.className =
+          "store-floor-light";
+
+        store.appendChild(floorLight);
+
+
+        const reflection =
+          document.createElement("div");
+
+        reflection.className =
+          "store-floor-reflection";
+
+        const storeImage =
+          store.querySelector(".store-image");
+
+        if (storeImage) {
+          const reflectedImage =
+            document.createElement("img");
+
+          reflectedImage.src =
+            storeImage.currentSrc ||
+            storeImage.src;
+
+          reflectedImage.alt = "";
+
+          reflectedImage.setAttribute(
+            "aria-hidden",
+            "true"
+          );
+
+          reflection.appendChild(
+            reflectedImage
+          );
+        } else {
+          const placeholderReflection =
+            document.createElement("div");
+
+          placeholderReflection.className =
+            "store-reflection-placeholder";
+
+          reflection.appendChild(
+            placeholderReflection
+          );
+        }
+
+        store.appendChild(reflection);
+      });
+
+
+      if (!stores.length) {
+        return;
+      }
+
+      const prefersReducedMotion =
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+      let progress = 0;
+      let speed = prefersReducedMotion ? 0 : 0.000075;
+      let paused = prefersReducedMotion;
+      let selectedStore = null;
+      let previousTime = performance.now();
+      let touchStartY = null;
+
+      const total = stores.length;
+      const spacing = 1 / total;
+
+      function wrap(value) {
+        return ((value % 1) + 1) % 1;
+      }
+
+      function updateStores() {
+        stores.forEach(function (store, index) {
+          const depth = wrap(
+            index * spacing - progress
+          );
+
+          const side = index % 2 === 0 ? -1 : 1;
+
+          const approach = 1 - depth;
+
+          const horizontal =
+            side * (
+              9 +
+              Math.pow(approach, 1.55) * 40
+            );
+
+          const vertical =
+            -8 +
+            Math.pow(approach, 1.35) * 37;
+
+          const scale =
+            0.38 +
+            Math.pow(approach, 1.48) * 1.03;
+
+          const rotate =
+            side * (
+              29 -
+              approach * 19
+            );
+
+          const opacity =
+            Math.min(
+              1,
+              Math.max(
+                0,
+                (approach - 0.05) * 1.35
+              )
+            );
+
+          const blur =
+            depth > .74
+              ? (depth - .74) * 9
+              : 0;
+
+          store.style.transform = [
+            "translate(-50%, -50%)",
+            `translate3d(${horizontal}vw, ${vertical}vh, 0)`,
+            `scale(${scale})`,
+            `rotateY(${rotate}deg)`,
+          ].join(" ");
+
+          store.style.opacity = opacity;
+          const selectedLightBoost =
+            store === selectedStore
+              ? 0.24
+              : 0;
+
+          store.style.filter =
+            `brightness(${
+              0.62 +
+              approach * 0.48 +
+              selectedLightBoost
+            }) ` +
+            `blur(${blur}px)`;
+
+          store.style.zIndex =
+            String(
+              20 +
+              Math.round(approach * 100)
+            );
+
+          store.style.pointerEvents =
+            opacity > .42
+              ? "auto"
+              : "none";
+        });
+      }
+
+      function animate(now) {
+        const delta = Math.min(
+          40,
+          now - previousTime
+        );
+
+        previousTime = now;
+
+        if (!paused) {
+          progress = wrap(
+            progress + speed * delta
+          );
+        }
+
+        updateStores();
+        window.requestAnimationFrame(animate);
+      }
+
+      function setPaused(value) {
+        paused = value;
+
+        pauseButton.textContent =
+          paused
+            ? "Continue Walk"
+            : "Pause Walk";
+
+        pauseButton.classList.toggle(
+          "active",
+          paused
+        );
+      }
+
+      function selectStore(store) {
+        stores.forEach(function (item) {
+          item.classList.remove("selected");
+        });
+
+        selectedStore = store;
+        selectedStore.classList.add("selected");
+
+        setPaused(true);
+
+        selectedName.textContent =
+          store.dataset.name || "Selected Store";
+
+        const url = store.dataset.url || "";
+
+        if (url) {
+          enterStoreButton.href = url;
+          enterStoreButton.style.display = "inline-flex";
+        } else {
+          enterStoreButton.removeAttribute("href");
+          enterStoreButton.style.display = "none";
+        }
+
+        selectedPanel.classList.add("open");
+      }
+
+      function closeSelection() {
+        if (selectedStore) {
+          selectedStore.classList.remove("selected");
+        }
+
+        selectedStore = null;
+        selectedPanel.classList.remove("open");
+        setPaused(false);
+      }
+
+      stores.forEach(function (store) {
+        store.addEventListener("click", function () {
+          selectStore(store);
+        });
+
+        store.addEventListener(
+          "keydown",
+          function (event) {
+            if (
+              event.key === "Enter" ||
+              event.key === " "
+            ) {
+              event.preventDefault();
+              selectStore(store);
+            }
+          }
+        );
+      });
+
+      pauseButton.addEventListener(
+        "click",
+        function () {
+          setPaused(!paused);
+        }
+      );
+
+      slowerButton.addEventListener(
+        "click",
+        function () {
+          speed = Math.max(
+            0.000025,
+            speed * 0.72
+          );
+        }
+      );
+
+      fasterButton.addEventListener(
+        "click",
+        function () {
+          speed = Math.min(
+            0.00022,
+            Math.max(
+              0.000035,
+              speed * 1.35
+            )
+          );
+        }
+      );
+
+      continueButton.addEventListener(
+        "click",
+        closeSelection
+      );
+
+      window.addEventListener(
+        "wheel",
+        function (event) {
+          progress = wrap(
+            progress + event.deltaY * 0.00016
+          );
+
+          updateStores();
+        },
+        {
+          passive: true,
+        }
+      );
+
+      window.addEventListener(
+        "touchstart",
+        function (event) {
+          touchStartY =
+            event.touches[0]?.clientY ?? null;
+        },
+        {
+          passive: true,
+        }
+      );
+
+      window.addEventListener(
+        "touchmove",
+        function (event) {
+          if (touchStartY === null) {
+            return;
+          }
+
+          const currentY =
+            event.touches[0]?.clientY ?? touchStartY;
+
+          const delta = touchStartY - currentY;
+
+          progress = wrap(
+            progress + delta * 0.00035
+          );
+
+          touchStartY = currentY;
+          updateStores();
+        },
+        {
+          passive: true,
+        }
+      );
+
+      updateStores();
+      window.requestAnimationFrame(animate);
+    })();
+  </script>
+</body>
+</html>

@@ -5,13 +5,6 @@ from . import walk_views
 urlpatterns = [
 
     path(
-        "walk-world/<slug:zone_slug>/",
-        walk_views.walk_world,
-        name="walk-world",
-    ),
-
-
-    path(
         "walk-engine-v2/<slug:zone_slug>/",
         walk_views.walk_zone_engine_v2,
         name="walk-zone-engine-v2",

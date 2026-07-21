@@ -59,6 +59,26 @@ class MerchantStore(models.Model):
     offers_local_delivery = models.BooleanField(default=False)
     offers_pickup = models.BooleanField(default=True)
     offers_shipping = models.BooleanField(default=True)
+    business_address = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+    )
+    business_address_line_2 = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+    )
+    business_city = models.CharField(
+        max_length=120,
+        blank=True,
+        default="",
+    )
+    business_state = models.CharField(
+        max_length=2,
+        blank=True,
+        default="",
+    )
     business_zip = models.CharField(max_length=20, blank=True, default="")
     delivery_radius_miles = models.PositiveIntegerField(default=10)
     delivery_fee = models.DecimalField(max_digits=8, decimal_places=2, default=0)

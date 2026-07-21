@@ -545,23 +545,23 @@
                   </strong>
 
                   <p class="route-address">
-                    {% if job.store.street_address %}
-                      {{ job.store.street_address }}
+                    {% if job.store.business_address %}
+                      {{ job.store.business_address }}
 
-                      {% if job.store.address_line_2 %}
-                        <br>{{ job.store.address_line_2 }}
+                      {% if job.store.business_address_line_2 %}
+                        <br>{{ job.store.business_address_line_2 }}
                       {% endif %}
 
-                      {% if job.store.city or job.store.state or job.pickup_zip %}
+                      {% if job.store.business_city or job.store.business_state or job.store.business_zip %}
                         <br>
-                        {{ job.store.city }}
-                        {% if job.store.city and job.store.state %}, {% endif %}
-                        {{ job.store.state }}
-                        {{ job.pickup_zip }}
+                        {{ job.store.business_city }}
+                        {% if job.store.business_city and job.store.business_state %}, {% endif %}
+                        {{ job.store.business_state }}
+                        {{ job.store.business_zip }}
                       {% endif %}
 
-                    {% elif job.store.address %}
-                      {{ job.store.address }}
+                    {% elif job.store.business_zip %}
+                      Pickup ZIP: {{ job.store.business_zip }}
 
                     {% elif job.pickup_zip %}
                       Pickup ZIP: {{ job.pickup_zip }}
@@ -582,26 +582,19 @@
                   </strong>
 
                   <p class="route-address">
-                    {% if job.order.delivery_address %}
-                      {{ job.order.delivery_address }}
-
-                    {% elif job.order.shipping_address %}
+                    {% if job.order.shipping_address %}
                       {{ job.order.shipping_address }}
 
-                    {% elif job.order.street_address %}
-                      {{ job.order.street_address }}
-
-                      {% if job.order.address_line_2 %}
-                        <br>{{ job.order.address_line_2 }}
-                      {% endif %}
-
-                      {% if job.order.city or job.order.state or job.delivery_zip %}
+                      {% if job.order.shipping_city or job.order.shipping_state or job.order.shipping_zip %}
                         <br>
-                        {{ job.order.city }}
-                        {% if job.order.city and job.order.state %}, {% endif %}
-                        {{ job.order.state }}
-                        {{ job.delivery_zip }}
+                        {{ job.order.shipping_city }}
+                        {% if job.order.shipping_city and job.order.shipping_state %}, {% endif %}
+                        {{ job.order.shipping_state }}
+                        {{ job.order.shipping_zip }}
                       {% endif %}
+
+                    {% elif job.order.shipping_zip %}
+                      Delivery ZIP: {{ job.order.shipping_zip }}
 
                     {% elif job.delivery_zip %}
                       Delivery ZIP: {{ job.delivery_zip }}
@@ -1005,46 +998,6 @@
         <p class="empty-state">
           No delivery jobs are currently available in
           {{ partner.current_zip }}.
-        </p>
-      {% endfor %}
-    </section>
-
-    <section class="panel">
-      <h2>
-        Active Deliveries
-      </h2>
-
-      {% for job in active_delivery_jobs %}
-        <article class="job">
-          <div class="job-title">
-            Delivery Job #{{ job.id }}
-          </div>
-
-          <div class="job-details">
-            <div>
-              <strong>Order:</strong>
-              #{{ job.order_id }}
-            </div>
-
-            <div>
-              <strong>Store:</strong>
-              {{ job.store.store_name }}
-            </div>
-
-            <div>
-              <strong>Delivery ZIP:</strong>
-              {{ job.delivery_zip }}
-            </div>
-
-            <div>
-              <strong>Status:</strong>
-              {{ job.get_status_display }}
-            </div>
-          </div>
-        </article>
-      {% empty %}
-        <p class="empty-state">
-          You do not have an active delivery.
         </p>
       {% endfor %}
     </section>

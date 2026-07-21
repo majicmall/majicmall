@@ -714,7 +714,21 @@ html, body {
   box-shadow:
       0 0 18px rgba(255,215,0,.35),
       0 8px 25px rgba(0,0,0,.35);
-  transition: .25s ease;
+  transition:
+    opacity .8s ease,
+    visibility .8s ease,
+    transform .25s ease,
+    box-shadow .25s ease;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.skip-directory.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .skip-directory:hover {
@@ -1061,6 +1075,18 @@ html, body {
       requestAnimationFrame(autoScroll);
     }, 7000);
   })();
+
+  /* SKIP TO DIRECTORY — 15 SECOND REVEAL */
+  (function () {
+    const skipButton = document.querySelector(".skip-directory");
+
+    if (!skipButton) return;
+
+    window.setTimeout(function () {
+      skipButton.classList.add("is-visible");
+    }, 15000);
+  })();
+
 
 </script>
 

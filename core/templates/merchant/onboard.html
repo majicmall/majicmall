@@ -1,3 +1,4 @@
+{% extends "base.html" %}
 
 {% with selected_plan=request.session.selected_merchant_success_plan %}
   {% if selected_plan %}
@@ -98,7 +99,6 @@
 </style>
 
 <!-- merchant/templates/merchant/onboard.html --> 
-{% extends "base.html" %}
 {% load static %}
 
 {% block content %}

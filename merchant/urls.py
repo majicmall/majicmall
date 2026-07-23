@@ -1,8 +1,20 @@
+from . import empire_flow
 from django.urls import path
 from django.views.generic import RedirectView
 from . import views, fulfillment_views
 
 urlpatterns = [
+
+    # =========================
+    # Build Your Empire™
+    # =========================
+    path("build-your-empire/", empire_flow.build_empire, name="merchant-build-empire"),
+    path("build-your-empire/payment/", empire_flow.empire_checkout, name="merchant-empire-checkout"),
+    path("build-your-empire/payment/success/", empire_flow.empire_checkout_success, name="merchant-empire-success"),
+    path("build-your-empire/payment/cancel/", empire_flow.empire_checkout_cancel, name="merchant-empire-cancel"),
+    path("build-your-empire/welcome/", empire_flow.empire_welcome, name="merchant-empire-welcome"),
+
+
     # MajicMall Megaverse Fulfillment Center
     path(
         "fulfillment/orders/<int:order_id>/",

@@ -209,32 +209,19 @@ def merchant_dashboard(request):
 
 
 def merchant_invite(request):
-    requested_plan = request.GET.get("plan")
-
-    if requested_plan:
-        selected_plan = get_merchant_success_plan(requested_plan)
-        request.session["selected_merchant_success_plan"] = selected_plan
-        request.session.modified = True
-    else:
-        selected_plan = request.session.get(
-            "selected_merchant_success_plan"
-        )
-
-        if not selected_plan:
-            selected_plan = get_merchant_success_plan("vision")
-            request.session[
-                "selected_merchant_success_plan"
-            ] = selected_plan
-            request.session.modified = True
-
-    return render(
-        request,
-        "merchant/invite.html",
-        {
-            "selected_plan": selected_plan,
-        },
+    requested_plan = (
+        request.GET.get("plan")
+        or request.session.get("selected_merchant_success_plan")
+        or "vision"
     )
 
+    selected_plan = get_merchant_success_plan(requested_plan)
+    request.session["selected_merchant_success_plan"] = selected_plan
+    request.session.modified = True
+
+    return redirect(
+        f"{reverse('merchant-build-empire')}?plan={selected_plan}"
+    )
 
 def merchant_tiers(request):
     return render(request, "merchant/tiers.html")

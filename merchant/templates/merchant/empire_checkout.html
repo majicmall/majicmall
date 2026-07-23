@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Secure Payment | MajicMall Megaverse{% endblock %}
+
+{% block content %}
+<style>
+  .checkout-world {
+    min-height: 100vh;
+    padding: 80px 18px;
+    color: white;
+    text-align: center;
+    background:
+      radial-gradient(circle at top, rgba(212,175,55,.18), transparent 34%),
+      #030303;
+  }
+
+  .checkout-box {
+    width: min(760px, 100%);
+    margin: auto;
+    padding: clamp(25px, 5vw, 48px);
+    border: 1px solid rgba(244,214,117,.55);
+    border-radius: 22px;
+    background: rgba(10,10,10,.95);
+    box-shadow: 0 25px 70px rgba(0,0,0,.7);
+  }
+
+  .checkout-box h1 {
+    margin-top: 0;
+    color: #f4d675;
+    font-family: Georgia, serif;
+    font-size: clamp(2rem, 6vw, 3.7rem);
+  }
+
+  .purchase-summary {
+    margin: 24px 0 30px;
+    padding: 20px;
+    border: 1px solid #725c1f;
+    border-radius: 14px;
+    background: rgba(212,175,55,.08);
+  }
+
+  .provider-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .provider-button {
+    padding: 19px 12px;
+    border: 1px solid #f4d675;
+    border-radius: 11px;
+    color: #fff;
+    background: linear-gradient(145deg, #181818, #050505);
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: .2s ease;
+  }
+
+  .provider-button:hover {
+    color: #111;
+    background: linear-gradient(135deg, #fff0ad, #c79624);
+    transform: translateY(-2px);
+  }
+
+  .secure {
+    margin-top: 24px;
+    color: #aaa;
+  }
+
+  @media (max-width: 580px) {
+    .provider-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<section class="checkout-world">
+  <div class="checkout-box">
+    <h1>Secure Your Empire</h1>
+
+    <p>
+      Choose how you would like to activate your
+      MajicMall Megaverse Success Plan.
+    </p>
+
+    <div class="purchase-summary">
+      <strong>{{ plan|title }} Success Plan</strong><br>
+      ${{ plan_price|floatformat:2 }} per month
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="provider-grid">
+        {% for key, label in providers.items %}
+          <button class="provider-button"
+                  type="submit"
+                  name="provider"
+                  value="{{ key }}">
+            {{ label }}
+          </button>
+        {% endfor %}
+      </div>
+    </form>
+
+    <p class="secure">
+      Secure checkout powered by your selected payment provider.
+    </p>
+  </div>
+</section>
+{% endblock %}

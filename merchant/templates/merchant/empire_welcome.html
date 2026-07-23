@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to MajicMall Megaverse{% endblock %}
+
+{% block content %}
+<style>
+  .welcome-world {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 60px 18px;
+    color: white;
+    text-align: center;
+    background:
+      radial-gradient(circle, rgba(244,214,117,.20), transparent 35%),
+      linear-gradient(145deg, #000, #111, #000);
+  }
+
+  .welcome-card {
+    width: min(850px, 100%);
+    padding: clamp(30px, 7vw, 70px);
+    border: 1px solid rgba(244,214,117,.65);
+    border-radius: 26px;
+    background: rgba(5,5,5,.92);
+    box-shadow: 0 0 55px rgba(212,175,55,.18);
+  }
+
+  .welcome-card h1 {
+    margin: 0 0 18px;
+    color: #f4d675;
+    font-family: Georgia, serif;
+    font-size: clamp(2.4rem, 7vw, 5rem);
+    text-shadow: 0 0 25px rgba(244,214,117,.38);
+  }
+
+  .welcome-card h2 {
+    margin: 0 0 22px;
+    font-size: clamp(1.35rem, 4vw, 2.2rem);
+  }
+
+  .welcome-card p {
+    color: #d4d4d4;
+    font-size: 1.05rem;
+    line-height: 1.75;
+  }
+
+  .instructions {
+    margin: 30px 0;
+    padding: 22px;
+    border: 1px solid #705b21;
+    border-radius: 14px;
+    text-align: left;
+    background: rgba(212,175,55,.07);
+  }
+
+  .command-button {
+    display: inline-block;
+    padding: 17px 25px;
+    border: 1px solid #fff0ad;
+    border-radius: 11px;
+    color: #080808;
+    text-decoration: none;
+    background: linear-gradient(135deg, #fff0ad, #c79624);
+    font-weight: 900;
+    letter-spacing: .07em;
+  }
+</style>
+
+<section class="welcome-world">
+  <div class="welcome-card">
+    <h1>WELCOME</h1>
+
+    <h2>Your Empire Has Officially Begun.</h2>
+
+    <p>
+      Congratulations{% if request.user.first_name %},
+      {{ request.user.first_name }}{% endif %}.
+      Your {{ plan|title }} Success Plan is active inside
+      MajicMall Megaverse.
+    </p>
+
+    {% if store %}
+      <p><strong>{{ store }}</strong> is ready for its next chapter.</p>
+    {% endif %}
+
+    <div class="instructions">
+      <strong>Your next steps:</strong>
+      <p>
+        Complete your storefront profile, choose your zone, upload your logo,
+        add your products or services, configure fulfillment, and prepare your
+        business for customers throughout MajicMall Megaverse.
+      </p>
+    </div>
+
+    <a class="command-button" href="{% url 'merchant-dashboard' %}">
+      ENTER YOUR MERCHANT COMMAND CENTER
+    </a>
+  </div>
+</section>
+{% endblock %}

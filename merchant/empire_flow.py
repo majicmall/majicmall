@@ -1,5 +1,7 @@
+import ast
 import os
 import secrets
+from decimal import Decimal, InvalidOperation
 
 from django.conf import settings
 from django.contrib import messages
@@ -13,7 +15,7 @@ from django.utils.text import slugify
 
 from .models import MerchantStore
 from .payments.adapters import PaymentAdapterError, build_adapter
-from .views import PLAN_PRICES
+from .success_plans import get_success_plan
 
 
 SUPPORTED_PROVIDERS = {
@@ -24,14 +26,63 @@ SUPPORTED_PROVIDERS = {
 }
 
 
+def _extract_plan_slug(value):
+    """
+    Accept a slug, a plan dictionary, or a stale string representation
+    of a dictionary and return one clean Success Plan slug.
+    """
+    if isinstance(value, dict):
+        value = value.get("slug")
+
+    if isinstance(value, str):
+        cleaned = value.strip()
+
+        # Repair stale session/URL values such as:
+        # "{'slug': 'pro', 'name': 'Pro', ...}"
+        if cleaned.startswith("{") and cleaned.endswith("}"):
+            try:
+                parsed = ast.literal_eval(cleaned)
+            except (ValueError, SyntaxError):
+                parsed = None
+
+            if isinstance(parsed, dict):
+                cleaned = str(parsed.get("slug", "")).strip()
+
+        value = cleaned
+
+    return str(value or "vision").strip().lower()
+
+
+def _plan_details(value):
+    requested_slug = _extract_plan_slug(value)
+    details = get_success_plan(requested_slug)
+
+    if not isinstance(details, dict):
+        details = get_success_plan("vision")
+
+    if not isinstance(details, dict):
+        raise RuntimeError(
+            "Merchant Success Plan configuration did not return a plan dictionary."
+        )
+
+    return details
+
+
 def _normalized_plan(value):
-    plan = (value or "").strip().lower()
+    return str(_plan_details(value).get("slug") or "vision").lower()
 
-    if plan not in PLAN_PRICES:
-        return "vision" if "vision" in PLAN_PRICES else next(iter(PLAN_PRICES))
 
-    return plan
+def _plan_price_dollars(value):
+    details = _plan_details(value)
 
+    try:
+        return Decimal(str(details.get("monthly_price", 0)))
+    except (InvalidOperation, TypeError, ValueError):
+        return Decimal("0.00")
+
+
+def _plan_price_cents(value):
+    return int(_plan_price_dollars(value) * 100)
 
 def _selected_plan(request):
     return _normalized_plan(
@@ -269,7 +320,7 @@ def build_empire(request):
                 "merchant/build_empire.html",
                 {
                     "plan": plan,
-                    "plan_price": PLAN_PRICES[plan] / 100,
+                    "plan_price": _plan_price_dollars(plan),
                 },
             )
 
@@ -329,7 +380,7 @@ def build_empire(request):
         "merchant/build_empire.html",
         {
             "plan": plan,
-            "plan_price": PLAN_PRICES[plan] / 100,
+            "plan_price": _plan_price_dollars(plan),
         },
     )
 
@@ -369,7 +420,7 @@ def empire_checkout(request):
             )
 
             result = adapter.start_checkout(
-                amount_cents=PLAN_PRICES[plan],
+                amount_cents=_plan_price_cents(plan),
                 currency="usd",
                 metadata={
                     "user_id": request.user.pk,
@@ -402,7 +453,7 @@ def empire_checkout(request):
         "merchant/empire_checkout.html",
         {
             "plan": plan,
-            "plan_price": PLAN_PRICES[plan] / 100,
+            "plan_price": _plan_price_dollars(plan),
             "providers": SUPPORTED_PROVIDERS,
             "pending": pending,
         },

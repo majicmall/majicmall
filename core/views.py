@@ -215,12 +215,22 @@ def merchant_invite(request):
         or "vision"
     )
 
+    # Handle any stale session value left by the former flow.
+    if isinstance(requested_plan, dict):
+        requested_plan = requested_plan.get("slug", "vision")
+
     selected_plan = get_merchant_success_plan(requested_plan)
-    request.session["selected_merchant_success_plan"] = selected_plan
+
+    if isinstance(selected_plan, dict):
+        plan_slug = selected_plan.get("slug", "vision")
+    else:
+        plan_slug = str(selected_plan or "vision").strip().lower()
+
+    request.session["selected_merchant_success_plan"] = plan_slug
     request.session.modified = True
 
     return redirect(
-        f"{reverse('merchant-build-empire')}?plan={selected_plan}"
+        f"{reverse('merchant-build-empire')}?plan={plan_slug}"
     )
 
 def merchant_tiers(request):

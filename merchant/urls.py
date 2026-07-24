@@ -4,6 +4,17 @@ from django.views.generic import RedirectView
 from . import views, fulfillment_views
 
 urlpatterns = [
+    path(
+        "foundation/apply/",
+        empire_flow.foundation_apply,
+        name="merchant-foundation-apply",
+    ),
+
+    path(
+        "build-your-empire/foundation/welcome/",
+        empire_flow.foundation_welcome,
+        name="merchant-foundation-welcome",
+    ),
 
     # =========================
     # Build Your Empire™

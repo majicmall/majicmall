@@ -1,4 +1,5 @@
 import ast
+import hmac
 import os
 import secrets
 from decimal import Decimal, InvalidOperation
@@ -14,6 +15,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 from .models import MerchantStore
+from .membership_service import activate_membership
 from .payments.adapters import PaymentAdapterError, build_adapter
 from .success_plans import get_success_plan
 
@@ -83,6 +85,39 @@ def _plan_price_dollars(value):
 
 def _plan_price_cents(value):
     return int(_plan_price_dollars(value) * 100)
+
+
+def _foundation_majic_key():
+    """
+    Read the private Foundation Merchant PassKey.
+
+    Render and production should use FOUNDATION_MAJIC_KEY.
+    Empire2026 is available only while DEBUG is enabled.
+    """
+    configured_key = (
+        getattr(settings, "FOUNDATION_MAJIC_KEY", "")
+        or os.getenv("FOUNDATION_MAJIC_KEY", "")
+    )
+
+    if configured_key:
+        return str(configured_key).strip()
+
+    if settings.DEBUG:
+        return "Empire2026"
+
+    return ""
+
+
+def _foundation_key_is_valid(submitted_key):
+    submitted = str(submitted_key or "").strip()
+    expected = _foundation_majic_key()
+
+    return bool(
+        submitted
+        and expected
+        and hmac.compare_digest(submitted, expected)
+    )
+
 
 def _selected_plan(request):
     return _normalized_plan(
@@ -242,24 +277,43 @@ def _find_existing_store(user):
     return None
 
 
-def _create_store(user, pending, plan):
+def _create_store(
+    user,
+    pending,
+    plan,
+    foundation_pass_verified=False,
+):
     existing = _find_existing_store(user)
 
     if existing:
-        if hasattr(existing, "plan"):
-            existing.plan = plan
-            existing.save(update_fields=["plan"])
+        store = existing
 
-        return existing
+        if hasattr(store, "plan") and store.plan != plan:
+            store.plan = plan
+            store.save(update_fields=["plan"])
+    else:
+        kwargs = _required_store_defaults(user, pending, plan)
+        store = MerchantStore.objects.create(**kwargs)
 
-    kwargs = _required_store_defaults(user, pending, plan)
-    return MerchantStore.objects.create(**kwargs)
+    activate_membership(
+        user=user,
+        store=store,
+        plan=plan,
+        foundation_pass_verified=foundation_pass_verified,
+    )
+
+    return store
 
 
 def build_empire(request):
     plan = _selected_plan(request)
     request.session["selected_merchant_success_plan"] = plan
     request.session.modified = True
+
+    # Foundation Merchants have an exclusive application gateway.
+    # They must never enter the paid Success Plan checkout pipeline.
+    if plan == "foundation":
+        return redirect("merchant-foundation-apply")
 
     if request.user.is_authenticated:
         return redirect("merchant-empire-checkout")
@@ -276,6 +330,10 @@ def build_empire(request):
             "",
         ).strip()
         phone = request.POST.get("phone", "").strip()
+        foundation_majic_key = request.POST.get(
+            "foundation_majic_key",
+            "",
+        ).strip()
         agreement = request.POST.get("agreement")
 
         errors = []
@@ -292,6 +350,38 @@ def build_empire(request):
             errors.append("Password must contain at least 8 characters.")
         if password != password_confirm:
             errors.append("The passwords do not match.")
+        if plan == "foundation":
+            if not _foundation_majic_key():
+                errors.append(
+                    "Foundation Merchant enrollment is not configured."
+                )
+            elif not foundation_majic_key:
+                errors.append(
+                    "Enter your approved PassKey MajicKey."
+                )
+            elif not _foundation_key_is_valid(
+                foundation_majic_key
+            ):
+                errors.append(
+                    "The PassKey MajicKey is not valid."
+                )
+
+        if plan == "foundation":
+            if not _foundation_majic_key():
+                errors.append(
+                    "Foundation Merchant enrollment is not configured."
+                )
+            elif not foundation_majic_key:
+                errors.append(
+                    "Enter your approved PassKey MajicKey."
+                )
+            elif not _foundation_key_is_valid(
+                foundation_majic_key
+            ):
+                errors.append(
+                    "The PassKey MajicKey is not valid."
+                )
+
         if not agreement:
             errors.append("Accept the Merchant Agreement to continue.")
 
@@ -358,6 +448,12 @@ def build_empire(request):
             "business_category": business_category,
             "phone": phone,
             "plan": plan,
+            "foundation_pass_verified": (
+                plan == "foundation"
+                and _foundation_key_is_valid(
+                    foundation_majic_key
+                )
+            ),
         }
 
         request.session.modified = True
@@ -373,6 +469,30 @@ def build_empire(request):
             "Your MajicMall Megaverse account has been created.",
         )
 
+        if plan == "foundation":
+            pending = request.session.get(
+                "pending_merchant_empire"
+            ) or {}
+
+            with transaction.atomic():
+                store = _create_store(
+                    user=user,
+                    pending=pending,
+                    plan="foundation",
+                    foundation_pass_verified=True,
+                )
+
+            request.session["active_store_id"] = store.pk
+            request.session["foundation_membership_activated"] = True
+            request.session.modified = True
+
+            messages.success(
+                request,
+                "Your Foundation Merchant membership is active.",
+            )
+
+            return redirect("merchant-foundation-welcome")
+
         return redirect("merchant-empire-checkout")
 
     return render(
@@ -386,7 +506,29 @@ def build_empire(request):
 
 
 @login_required
+
+@login_required
 def empire_checkout(request):
+    pending = request.session.get("pending_merchant_empire") or {}
+    plan = _normalized_plan(
+        pending.get("plan")
+        or request.session.get(
+            "selected_merchant_success_plan"
+        )
+    )
+
+    if plan == "foundation":
+        membership = getattr(
+            request.user,
+            "merchant_membership",
+            None,
+        )
+
+        if membership and membership.is_foundation_member:
+            return redirect(
+                "merchant-foundation-welcome"
+            )
+
     pending = request.session.get("pending_merchant_empire") or {}
     plan = _normalized_plan(
         pending.get("plan")
@@ -518,5 +660,258 @@ def empire_welcome(request):
         {
             "store": store,
             "plan": plan,
+        },
+    )
+
+
+
+def foundation_apply(request):
+    """
+    Dedicated invitation-only Foundation Merchant registration.
+
+    This controller performs Foundation account creation, PassKey
+    verification, storefront creation, membership activation, and the
+    Majestic Coins welcome award without entering a payment controller.
+    """
+    if request.user.is_authenticated:
+        membership = getattr(
+            request.user,
+            "merchant_membership",
+            None,
+        )
+
+        if membership and membership.is_foundation_member:
+            return redirect("merchant-foundation-welcome")
+
+        messages.info(
+            request,
+            "Please sign out before creating a new Foundation Merchant account.",
+        )
+        return redirect("account_logout")
+
+    if request.method == "POST":
+        first_name = request.POST.get("first_name", "").strip()
+        last_name = request.POST.get("last_name", "").strip()
+        email = request.POST.get("email", "").strip().lower()
+        password = request.POST.get("password", "")
+        password_confirm = request.POST.get(
+            "password_confirm",
+            "",
+        )
+        business_name = request.POST.get(
+            "business_name",
+            "",
+        ).strip()
+        business_category = request.POST.get(
+            "business_category",
+            "",
+        ).strip()
+        phone = request.POST.get("phone", "").strip()
+        foundation_majic_key = request.POST.get(
+            "foundation_majic_key",
+            "",
+        ).strip()
+        agreement = request.POST.get("agreement")
+
+        errors = []
+
+        if not first_name:
+            errors.append("Enter your first name.")
+
+        if not last_name:
+            errors.append("Enter your last name.")
+
+        if not business_name:
+            errors.append("Enter your business or store name.")
+
+        if not email:
+            errors.append("Enter your email address.")
+
+        if len(password) < 8:
+            errors.append(
+                "Password must contain at least 8 characters."
+            )
+
+        if password != password_confirm:
+            errors.append("The passwords do not match.")
+
+        if not _foundation_majic_key():
+            errors.append(
+                "Foundation Merchant enrollment is not configured."
+            )
+        elif not foundation_majic_key:
+            errors.append(
+                "Enter your approved PassKey MajicKey."
+            )
+        elif not _foundation_key_is_valid(
+            foundation_majic_key
+        ):
+            errors.append(
+                "The PassKey MajicKey is not valid."
+            )
+
+        if not agreement:
+            errors.append(
+                "Accept the Foundation Merchant Agreement to continue."
+            )
+
+        User = get_user_model()
+        email_field = None
+
+        try:
+            email_field = User._meta.get_field("email")
+        except Exception:
+            pass
+
+        if (
+            email_field
+            and email
+            and User._default_manager.filter(
+                email__iexact=email
+            ).exists()
+        ):
+            errors.append(
+                "An account already exists with this email. "
+                "Please sign in instead."
+            )
+
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+
+            return render(
+                request,
+                "merchant/foundation_apply.html",
+            )
+
+        username_field = getattr(
+            User,
+            "USERNAME_FIELD",
+            "username",
+        )
+        create_values = {}
+
+        if username_field == "email":
+            create_values["email"] = email
+        else:
+            create_values[username_field] = _unique_username(
+                User,
+                email,
+            )
+
+            if email_field:
+                create_values["email"] = email
+
+        user_field_names = {
+            field.name for field in User._meta.fields
+        }
+
+        if "first_name" in user_field_names:
+            create_values["first_name"] = first_name
+
+        if "last_name" in user_field_names:
+            create_values["last_name"] = last_name
+
+        pending = {
+            "token": secrets.token_urlsafe(24),
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "business_name": business_name,
+            "business_category": business_category,
+            "phone": phone,
+            "plan": "foundation",
+            "foundation_pass_verified": True,
+        }
+
+        try:
+            with transaction.atomic():
+                user = User._default_manager.create_user(
+                    password=password,
+                    **create_values,
+                )
+
+                store = _create_store(
+                    user=user,
+                    pending=pending,
+                    plan="foundation",
+                    foundation_pass_verified=True,
+                )
+        except Exception as exc:
+            messages.error(
+                request,
+                "Your Foundation Merchant account could not be "
+                f"created: {exc}",
+            )
+
+            return render(
+                request,
+                "merchant/foundation_apply.html",
+            )
+
+        login(
+            request,
+            user,
+            backend="django.contrib.auth.backends.ModelBackend",
+        )
+
+        request.session[
+            "selected_merchant_success_plan"
+        ] = "foundation"
+        request.session["active_store_id"] = store.pk
+        request.session[
+            "foundation_membership_activated"
+        ] = True
+        request.session.pop(
+            "pending_merchant_empire",
+            None,
+        )
+        request.session.modified = True
+
+        messages.success(
+            request,
+            "Welcome, Foundation Merchant. Your complimentary "
+            "membership is now active.",
+        )
+
+        return redirect("merchant-foundation-welcome")
+
+    return render(
+        request,
+        "merchant/foundation_apply.html",
+    )
+
+
+@login_required
+def foundation_welcome(request):
+    membership = getattr(
+        request.user,
+        "merchant_membership",
+        None,
+    )
+
+    if (
+        membership is None
+        or not membership.is_foundation_member
+    ):
+        messages.info(
+            request,
+            "Foundation Merchant membership is required.",
+        )
+        return redirect("merchant-dashboard")
+
+    wallet = getattr(
+        request.user,
+        "majestic_coin_wallet",
+        None,
+    )
+
+    return render(
+        request,
+        "merchant/foundation_welcome.html",
+        {
+            "membership": membership,
+            "wallet": wallet,
+            "store": membership.primary_store,
         },
     )

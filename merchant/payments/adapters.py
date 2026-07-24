@@ -294,3 +294,22 @@ def build_adapter(provider, credentials=None, success_url=None, cancel_url=None)
         return CardDemoAdapter(credentials, success_url, cancel_url)
 
     raise PaymentAdapterError(f"Unsupported payment provider: {provider}")
+
+
+###############################################################
+# LEO SEASON
+# Square Checkout Adapter
+###############################################################
+
+class SquareCheckoutAdapter(BasePaymentAdapter):
+
+    provider = "square"
+
+    def start_checkout(self, amount_cents, currency="usd", metadata=None):
+
+        return {
+            "redirect_url": "#square-checkout-coming-soon",
+            "provider": "square",
+            "status": "configured"
+        }
+

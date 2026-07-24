@@ -151,6 +151,44 @@
     background: rgba(141,116,39,.18);
   }
 
+
+  .foundation-access {
+    grid-column: 1 / -1;
+    padding: 22px;
+    border: 1px solid rgba(244,214,117,.65);
+    border-radius: 16px;
+    background:
+      radial-gradient(
+        circle at top,
+        rgba(244,214,117,.16),
+        transparent 68%
+      ),
+      rgba(18,14,4,.78);
+    box-shadow:
+      inset 0 0 28px rgba(244,214,117,.06),
+      0 0 22px rgba(244,214,117,.07);
+  }
+
+  .foundation-access h2 {
+    margin: 0 0 8px;
+    color: #f4d675;
+    font-family: Georgia, serif;
+    letter-spacing: .07em;
+  }
+
+  .foundation-access p {
+    margin: 0 0 16px;
+    color: #ddd;
+    line-height: 1.65;
+  }
+
+  .foundation-benefits {
+    margin: 0 0 18px;
+    padding-left: 20px;
+    color: #f5e6ac;
+    line-height: 1.8;
+  }
+
   @media (max-width: 700px) {
     .empire-grid {
       grid-template-columns: 1fr;
@@ -247,18 +285,63 @@
             <input id="password_confirm" name="password_confirm"
                    type="password" minlength="8" required>
           </div>
+
+
+          {% if plan == "foundation" %}
+            <section class="foundation-access">
+              <h2>🏅 Foundation Merchant Access</h2>
+
+              <p>
+                This protected membership is reserved for approved
+                original merchants of the MajicMall Megaverse.
+              </p>
+
+              <ul class="foundation-benefits">
+                <li>Vision Success Plan equivalent benefits</li>
+                <li>Complimentary membership for one full year</li>
+                <li>One included Zone Storefront</li>
+                <li>100 Majestic Coins welcome award</li>
+                <li>Permanent Foundation Merchant recognition</li>
+              </ul>
+
+              <div class="empire-field">
+                <label for="foundation_majic_key">
+                  PassKey MajicKey
+                </label>
+
+                <input
+                  id="foundation_majic_key"
+                  name="foundation_majic_key"
+                  type="password"
+                  autocomplete="off"
+                  required
+                  placeholder="Enter your approved MajicKey"
+                >
+              </div>
+            </section>
+          {% endif %}
         </div>
 
         <label class="agreement">
           <input type="checkbox" name="agreement" value="yes" required>
           <span>
-            I agree to the MajicMall Megaverse Merchant Agreement
-            and authorize recurring billing for my selected Success Plan.
+            I agree to the MajicMall Megaverse Merchant Agreement.
+            {% if plan == "foundation" %}
+              I understand that my complimentary Foundation year
+              transitions to the Vision Success Plan after one year,
+              subject to advance notice and payment authorization.
+            {% else %}
+              I authorize recurring billing for my selected Success Plan.
+            {% endif %}
           </span>
         </label>
 
         <button class="empire-submit" type="submit">
-          CONTINUE TO SECURE PAYMENT
+          {% if plan == "foundation" %}
+            ACTIVATE FOUNDATION MEMBERSHIP
+          {% else %}
+            CONTINUE TO SECURE PAYMENT
+          {% endif %}
         </button>
       </form>
 

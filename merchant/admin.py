@@ -156,3 +156,137 @@ try:
 
 except admin.sites.AlreadyRegistered:
     pass
+
+
+# ============================================================
+# MajicMall Megaverse Membership Administration
+# ============================================================
+
+from .models import (
+    MajesticCoinTransaction,
+    MajesticCoinWallet,
+    MerchantMembership,
+    MerchantMembershipHistory,
+)
+
+
+@admin.register(MerchantMembership)
+class MerchantMembershipAdmin(admin.ModelAdmin):
+    list_display = (
+        "owner",
+        "current_plan",
+        "status",
+        "member_since",
+        "anniversary_date",
+        "next_billing_date",
+        "foundation_expires_on",
+        "majestic_coins_awarded",
+    )
+
+    list_filter = (
+        "current_plan",
+        "status",
+        "is_foundation_member",
+        "foundation_pass_verified",
+        "majestic_coins_awarded",
+    )
+
+    search_fields = (
+        "owner__username",
+        "owner__email",
+        "foundation_member_number",
+        "primary_store__store_name",
+    )
+
+    readonly_fields = (
+        "created_at",
+        "updated_at",
+        "majestic_coins_awarded_at",
+    )
+
+
+@admin.register(MerchantMembershipHistory)
+class MerchantMembershipHistoryAdmin(admin.ModelAdmin):
+    list_display = (
+        "membership",
+        "change_type",
+        "previous_plan",
+        "new_plan",
+        "previous_status",
+        "new_status",
+        "effective_date",
+    )
+
+    list_filter = (
+        "change_type",
+        "new_plan",
+        "new_status",
+        "effective_date",
+    )
+
+    search_fields = (
+        "membership__owner__username",
+        "membership__owner__email",
+        "note",
+    )
+
+    readonly_fields = (
+        "membership",
+        "change_type",
+        "previous_plan",
+        "new_plan",
+        "previous_status",
+        "new_status",
+        "effective_date",
+        "note",
+        "created_at",
+    )
+
+
+@admin.register(MajesticCoinWallet)
+class MajesticCoinWalletAdmin(admin.ModelAdmin):
+    list_display = (
+        "owner",
+        "balance",
+        "updated_at",
+    )
+
+    search_fields = (
+        "owner__username",
+        "owner__email",
+    )
+
+
+@admin.register(MajesticCoinTransaction)
+class MajesticCoinTransactionAdmin(admin.ModelAdmin):
+    list_display = (
+        "wallet",
+        "amount",
+        "transaction_type",
+        "reason",
+        "balance_after",
+        "created_at",
+    )
+
+    list_filter = (
+        "transaction_type",
+        "created_at",
+    )
+
+    search_fields = (
+        "wallet__owner__username",
+        "wallet__owner__email",
+        "reason",
+        "reference",
+    )
+
+    readonly_fields = (
+        "wallet",
+        "amount",
+        "transaction_type",
+        "reason",
+        "reference",
+        "balance_after",
+        "created_at",
+    )
+

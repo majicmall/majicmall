@@ -1,0 +1,671 @@
+{% extends "base.html" %}
+
+{% block title %}
+Foundation Merchant Application | MajicMall Megaverse
+{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --foundation-gold: #f4d675;
+    --foundation-deep-gold: #b9891c;
+    --foundation-white: #ffffff;
+    --foundation-muted: #d2d2d2;
+    --foundation-black: #020202;
+    --foundation-glass: rgba(8, 8, 10, .94);
+    --foundation-border: rgba(244, 214, 117, .55);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .foundation-page {
+    min-height: 100vh;
+    padding: 54px 18px 90px;
+    color: var(--foundation-white);
+    background:
+      radial-gradient(
+        circle at 50% -8%,
+        rgba(244, 214, 117, .24),
+        transparent 35%
+      ),
+      radial-gradient(
+        circle at 12% 38%,
+        rgba(122, 87, 14, .13),
+        transparent 30%
+      ),
+      linear-gradient(
+        145deg,
+        #010101,
+        #101014 52%,
+        #020202
+      );
+  }
+
+  .foundation-shell {
+    width: min(1080px, 100%);
+    margin: 0 auto;
+  }
+
+  .foundation-hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(30px, 6vw, 62px);
+    border: 1px solid var(--foundation-border);
+    border-radius: 30px;
+    text-align: center;
+    background:
+      linear-gradient(
+        145deg,
+        rgba(255, 255, 255, .075),
+        rgba(255, 255, 255, .015)
+      ),
+      rgba(5, 5, 7, .94);
+    box-shadow:
+      0 30px 90px rgba(0, 0, 0, .62),
+      0 0 48px rgba(244, 214, 117, .12);
+  }
+
+  .foundation-hero::before {
+    content: "";
+    position: absolute;
+    top: -180%;
+    left: -45%;
+    width: 32%;
+    height: 450%;
+    transform: rotate(25deg);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, .13),
+      transparent
+    );
+    animation: foundationGleam 9s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes foundationGleam {
+    from {
+      left: -45%;
+    }
+
+    to {
+      left: 140%;
+    }
+  }
+
+  .foundation-seal {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 17px;
+    border: 1px solid var(--foundation-gold);
+    border-radius: 999px;
+    color: var(--foundation-gold);
+    background: rgba(244, 214, 117, .07);
+    font-size: .75rem;
+    font-weight: 900;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  .foundation-hero h1 {
+    margin: 22px 0 0;
+    color: var(--foundation-white);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2.5rem, 8vw, 5.4rem);
+    line-height: 1;
+    text-shadow: 0 0 26px rgba(244, 214, 117, .21);
+  }
+
+  .foundation-hero h1 span {
+    color: var(--foundation-gold);
+  }
+
+  .foundation-lead {
+    max-width: 850px;
+    margin: 22px auto 0;
+    color: var(--foundation-muted);
+    font-size: clamp(1rem, 2.2vw, 1.18rem);
+    line-height: 1.75;
+  }
+
+  .foundation-congratulations {
+    max-width: 900px;
+    margin: 25px auto 0;
+    padding: 20px;
+    border: 1px solid rgba(244, 214, 117, .36);
+    border-radius: 18px;
+    color: #f7e8b4;
+    background: rgba(244, 214, 117, .06);
+    font-size: 1.02rem;
+    line-height: 1.75;
+  }
+
+  .foundation-layout {
+    display: grid;
+    grid-template-columns: .92fr 1.08fr;
+    gap: 24px;
+    margin-top: 28px;
+    align-items: start;
+  }
+
+  .foundation-panel {
+    min-width: 0;
+    padding: clamp(23px, 4vw, 38px);
+    border: 1px solid var(--foundation-border);
+    border-radius: 25px;
+    background:
+      linear-gradient(
+        145deg,
+        rgba(255, 255, 255, .055),
+        rgba(255, 255, 255, .012)
+      ),
+      var(--foundation-glass);
+    box-shadow: 0 24px 72px rgba(0, 0, 0, .5);
+  }
+
+  .foundation-panel h2 {
+    margin: 0;
+    color: var(--foundation-gold);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.65rem, 4vw, 2.5rem);
+  }
+
+  .foundation-panel-intro {
+    margin: 12px 0 0;
+    color: var(--foundation-muted);
+    line-height: 1.7;
+  }
+
+  .benefit-list,
+  .toolbox-list {
+    display: grid;
+    gap: 12px;
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .benefit-list li,
+  .toolbox-list li {
+    position: relative;
+    padding: 15px 15px 15px 45px;
+    border: 1px solid rgba(255, 255, 255, .09);
+    border-radius: 14px;
+    color: #ededed;
+    background: rgba(255, 255, 255, .035);
+    line-height: 1.55;
+  }
+
+  .benefit-list li::before,
+  .toolbox-list li::before {
+    position: absolute;
+    top: 15px;
+    left: 16px;
+    font-size: 1.1rem;
+  }
+
+  .benefit-list li::before {
+    content: "✓";
+    color: #91efb4;
+    font-weight: 900;
+  }
+
+  .toolbox-list li::before {
+    content: "◆";
+    color: var(--foundation-gold);
+  }
+
+  .toolbox {
+    margin-top: 23px;
+    padding-top: 23px;
+    border-top: 1px solid rgba(244, 214, 117, .24);
+  }
+
+  .toolbox h3 {
+    margin: 0;
+    color: var(--foundation-white);
+    font-size: 1.15rem;
+  }
+
+  .toolbox p {
+    margin: 9px 0 0;
+    color: var(--foundation-muted);
+    line-height: 1.65;
+  }
+
+  .foundation-note {
+    margin-top: 22px;
+    padding: 17px;
+    border: 1px solid rgba(244, 214, 117, .28);
+    border-radius: 14px;
+    color: #f5e7b6;
+    background: rgba(244, 214, 117, .055);
+    line-height: 1.65;
+  }
+
+  .messages {
+    margin-bottom: 20px;
+  }
+
+  .message {
+    margin-bottom: 10px;
+    padding: 13px 15px;
+    border: 1px solid rgba(244, 214, 117, .42);
+    border-radius: 11px;
+    color: #fff;
+    background: rgba(141, 116, 39, .18);
+    line-height: 1.5;
+  }
+
+  .foundation-form {
+    margin-top: 25px;
+  }
+
+  .foundation-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 17px;
+  }
+
+  .foundation-field.full {
+    grid-column: 1 / -1;
+  }
+
+  .foundation-field label {
+    display: block;
+    margin-bottom: 7px;
+    color: #f2dc94;
+    font-weight: 800;
+  }
+
+  .foundation-field input {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1px solid #555;
+    border-radius: 11px;
+    outline: none;
+    color: #fff;
+    background: #101012;
+  }
+
+  .foundation-field input:focus {
+    border-color: var(--foundation-gold);
+    box-shadow: 0 0 0 3px rgba(244, 214, 117, .12);
+  }
+
+  .majic-key {
+    margin-top: 21px;
+    padding: 21px;
+    border: 1px solid rgba(244, 214, 117, .55);
+    border-radius: 17px;
+    background:
+      radial-gradient(
+        circle at top,
+        rgba(244, 214, 117, .14),
+        transparent 70%
+      ),
+      rgba(22, 17, 4, .68);
+  }
+
+  .majic-key h3 {
+    margin: 0 0 7px;
+    color: var(--foundation-gold);
+    font-family: Georgia, "Times New Roman", serif;
+  }
+
+  .majic-key p {
+    margin: 0 0 16px;
+    color: var(--foundation-muted);
+    line-height: 1.55;
+  }
+
+  .agreement {
+    display: flex;
+    gap: 11px;
+    margin: 23px 0;
+    color: #dedede;
+    line-height: 1.6;
+  }
+
+  .agreement input {
+    margin-top: 5px;
+    flex: 0 0 auto;
+  }
+
+  .foundation-submit {
+    width: 100%;
+    min-height: 55px;
+    padding: 15px 20px;
+    border: 1px solid #fff0ad;
+    border-radius: 12px;
+    color: #080808;
+    background: linear-gradient(
+      135deg,
+      #fff0ad,
+      #c79624
+    );
+    font-weight: 900;
+    letter-spacing: .09em;
+    cursor: pointer;
+    box-shadow: 0 0 28px rgba(244, 214, 117, .22);
+    transition:
+      transform .25s ease,
+      box-shadow .25s ease;
+  }
+
+  .foundation-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 38px rgba(244, 214, 117, .32);
+  }
+
+  .signin {
+    margin-top: 21px;
+    color: var(--foundation-muted);
+    text-align: center;
+  }
+
+  .signin a {
+    color: var(--foundation-gold);
+    font-weight: 900;
+  }
+
+  @media (max-width: 850px) {
+    .foundation-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 650px) {
+    .foundation-page {
+      padding: 30px 13px 70px;
+    }
+
+    .foundation-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .foundation-field.full {
+      grid-column: auto;
+    }
+  }
+</style>
+
+<section class="foundation-page">
+  <div class="foundation-shell">
+    <header class="foundation-hero">
+      <span class="foundation-seal">
+        Invitation Only • First 50 Merchants
+      </span>
+
+      <h1>
+        Foundation Merchant
+        <span>Gateway</span>
+      </h1>
+
+      <p class="foundation-lead">
+        Become one of the original businesses helping establish the
+        MajicMall Megaverse and receive permanent recognition as a
+        Foundation Merchant.
+      </p>
+
+      <div class="foundation-congratulations">
+        <strong>Congratulations!</strong>
+        If approved, you will receive one complimentary year as a
+        Foundation Merchant. After your complimentary year, you will
+        have the opportunity to continue with the Vision Success Plan
+        while retaining your permanent Foundation Merchant recognition.
+        You may also upgrade at any time or select à la carte services
+        from your Merchant Toolbox to build your storefront, market your
+        business, advertise your products, and expand throughout the
+        MajicMall Megaverse.
+      </div>
+    </header>
+
+    <div class="foundation-layout">
+      <aside class="foundation-panel">
+        <h2>Your Foundation Advantage</h2>
+
+        <p class="foundation-panel-intro">
+          Your Foundation Membership gives your business a prestigious
+          starting point and the freedom to grow at its own pace.
+        </p>
+
+        <ul class="benefit-list">
+          <li>
+            One complimentary year of Vision-level merchant benefits
+          </li>
+          <li>
+            One included MajicMall Megaverse Zone Storefront
+          </li>
+          <li>
+            Permanent Foundation Merchant recognition
+          </li>
+          <li>
+            100 Majestic Coins welcome award
+          </li>
+          <li>
+            Early access to selected merchant opportunities
+          </li>
+          <li>
+            Access to the connected merchant growth ecosystem
+          </li>
+        </ul>
+
+        <section class="toolbox">
+          <h3>🧰 Your Merchant Toolbox</h3>
+
+          <p>
+            Your complimentary year does not limit your ambition.
+            Add individual tools or upgrade whenever your business is
+            ready.
+          </p>
+
+          <ul class="toolbox-list">
+            <li>
+              Upgrade to Pro, Elite, Enterprise, or Majestic
+            </li>
+            <li>
+              Add additional Zone Storefronts
+            </li>
+            <li>
+              Launch Digital Billboard and banner campaigns
+            </li>
+            <li>
+              Add a Branded Business Media Channel
+            </li>
+            <li>
+              Unlock additional AI business assistance
+            </li>
+            <li>
+              Select premium themes and future growth services
+            </li>
+          </ul>
+        </section>
+
+        <div class="foundation-note">
+          <strong>Your Foundation Membership marks where your journey
+          began.</strong>
+          How far you build your empire is entirely up to you.
+        </div>
+      </aside>
+
+      <section class="foundation-panel">
+        <h2>Activate Your Foundation Membership</h2>
+
+        <p class="foundation-panel-intro">
+          Enter your approved MajicKey and business information to
+          establish your Foundation Merchant account.
+        </p>
+
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="message">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <form method="post" class="foundation-form">
+          {% csrf_token %}
+
+          <div class="foundation-grid">
+            <div class="foundation-field">
+              <label for="first_name">First Name</label>
+              <input
+                id="first_name"
+                name="first_name"
+                required
+                autocomplete="given-name"
+                value="{{ request.POST.first_name }}"
+              >
+            </div>
+
+            <div class="foundation-field">
+              <label for="last_name">Last Name</label>
+              <input
+                id="last_name"
+                name="last_name"
+                required
+                autocomplete="family-name"
+                value="{{ request.POST.last_name }}"
+              >
+            </div>
+
+            <div class="foundation-field full">
+              <label for="business_name">
+                Business / Store Name
+              </label>
+              <input
+                id="business_name"
+                name="business_name"
+                required
+                value="{{ request.POST.business_name }}"
+              >
+            </div>
+
+            <div class="foundation-field">
+              <label for="business_category">
+                Business Category
+              </label>
+              <input
+                id="business_category"
+                name="business_category"
+                placeholder="Fashion, Food, Entertainment..."
+                value="{{ request.POST.business_category }}"
+              >
+            </div>
+
+            <div class="foundation-field">
+              <label for="phone">Phone</label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                autocomplete="tel"
+                value="{{ request.POST.phone }}"
+              >
+            </div>
+
+            <div class="foundation-field full">
+              <label for="email">Email Address</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                autocomplete="email"
+                value="{{ request.POST.email }}"
+              >
+            </div>
+
+            <div class="foundation-field">
+              <label for="password">Create Password</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                minlength="8"
+                required
+                autocomplete="new-password"
+              >
+            </div>
+
+            <div class="foundation-field">
+              <label for="password_confirm">
+                Confirm Password
+              </label>
+              <input
+                id="password_confirm"
+                name="password_confirm"
+                type="password"
+                minlength="8"
+                required
+                autocomplete="new-password"
+              >
+            </div>
+          </div>
+
+          <section class="majic-key">
+            <h3>🔐 Foundation PassKey MajicKey</h3>
+
+            <p>
+              This protected gateway is reserved for merchants who
+              received an approved Foundation invitation.
+            </p>
+
+            <div class="foundation-field">
+              <label for="foundation_majic_key">
+                Enter Your Approved MajicKey
+              </label>
+
+              <input
+                id="foundation_majic_key"
+                name="foundation_majic_key"
+                type="password"
+                required
+                autocomplete="off"
+                placeholder="Enter your private MajicKey"
+              >
+            </div>
+          </section>
+
+          <label class="agreement">
+            <input
+              type="checkbox"
+              name="agreement"
+              value="yes"
+              required
+            >
+
+            <span>
+              I agree to the MajicMall Megaverse Merchant Agreement.
+              I understand that my complimentary Foundation year may
+              transition to the Vision Success Plan after one year,
+              subject to advance notice and payment authorization. I
+              may upgrade or purchase eligible à la carte Merchant
+              Toolbox services at any time.
+            </span>
+          </label>
+
+          <button class="foundation-submit" type="submit">
+            ACTIVATE FOUNDATION MEMBERSHIP
+          </button>
+        </form>
+
+        <div class="signin">
+          Already have a MajicMall Megaverse account?
+          <a href="{% url 'account_login' %}">
+            Sign In
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+{% endblock %}

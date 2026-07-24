@@ -25,6 +25,17 @@ SECRET_KEY = os.getenv(
 )
 
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
+
+
+# ============================================================
+# Foundation Merchant PassKey
+# ============================================================
+
+FOUNDATION_MAJIC_KEY = os.getenv(
+    "FOUNDATION_MAJIC_KEY",
+    "Empire2026",
+)
+
 PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "").rstrip("/")
 
 ALLOWED_HOSTS = [

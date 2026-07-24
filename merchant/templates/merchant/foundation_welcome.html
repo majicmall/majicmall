@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}
+Welcome, Foundation Merchant | MajicMall Megaverse
+{% endblock %}
+
+{% block content %}
+<style>
+  .foundation-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 60px 18px;
+    color: #fff;
+    text-align: center;
+    background:
+      radial-gradient(
+        circle at top,
+        rgba(244,214,117,.24),
+        transparent 38%
+      ),
+      linear-gradient(145deg, #020202, #111 54%, #000);
+  }
+
+  .foundation-card {
+    width: min(850px, 100%);
+    padding: clamp(28px, 6vw, 62px);
+    border: 1px solid rgba(244,214,117,.75);
+    border-radius: 28px;
+    background: rgba(5,5,5,.95);
+    box-shadow:
+      0 28px 95px rgba(0,0,0,.82),
+      0 0 55px rgba(244,214,117,.16);
+  }
+
+  .foundation-seal {
+    width: 120px;
+    height: 120px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 24px;
+    border: 3px double #f4d675;
+    border-radius: 50%;
+    color: #f4d675;
+    background:
+      radial-gradient(
+        circle,
+        rgba(244,214,117,.20),
+        rgba(0,0,0,.96)
+      );
+    font-size: 3.5rem;
+    box-shadow:
+      0 0 30px rgba(244,214,117,.30),
+      inset 0 0 26px rgba(244,214,117,.12);
+  }
+
+  .foundation-card h1 {
+    margin: 0;
+    color: #f4d675;
+    font-family: Georgia, serif;
+    font-size: clamp(2.2rem, 7vw, 4.7rem);
+    letter-spacing: .055em;
+    text-shadow: 0 0 25px rgba(244,214,117,.36);
+  }
+
+  .foundation-number {
+    margin: 12px 0 26px;
+    color: #f8e6a5;
+    font-weight: 900;
+    letter-spacing: .17em;
+  }
+
+  .foundation-message {
+    max-width: 700px;
+    margin: auto;
+    color: #ddd;
+    font-size: 1.08rem;
+    line-height: 1.85;
+  }
+
+  .membership-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 34px 0;
+    text-align: left;
+  }
+
+  .membership-item {
+    padding: 18px;
+    border: 1px solid rgba(244,214,117,.30);
+    border-radius: 14px;
+    background: rgba(244,214,117,.055);
+  }
+
+  .membership-item small {
+    display: block;
+    margin-bottom: 7px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+  }
+
+  .membership-item strong {
+    color: #f4d675;
+    font-size: 1.06rem;
+  }
+
+  .command-button {
+    display: inline-flex;
+    justify-content: center;
+    width: min(480px, 100%);
+    box-sizing: border-box;
+    padding: 18px 25px;
+    border: 1px solid #fff0ad;
+    border-radius: 12px;
+    color: #080808;
+    text-decoration: none;
+    background: linear-gradient(135deg, #fff0ad, #c79624);
+    font-weight: 900;
+    letter-spacing: .08em;
+    box-shadow: 0 0 28px rgba(244,214,117,.27);
+  }
+
+  @media (max-width: 640px) {
+    .membership-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<section class="foundation-page">
+  <article class="foundation-card">
+    <div class="foundation-seal">🏅</div>
+
+    <h1>Welcome, Foundation Merchant</h1>
+
+    {% if membership.foundation_member_number %}
+      <div class="foundation-number">
+        {{ membership.foundation_member_number }}
+      </div>
+    {% endif %}
+
+    <div class="foundation-message">
+      <p>
+        You are officially recognized as one of the original
+        businesses helping establish the MajicMall Megaverse.
+      </p>
+
+      <p>
+        Your Foundation Membership includes Vision Success Plan
+        equivalent benefits, complimentary for one full year.
+      </p>
+
+      <p>
+        Your account has also received a
+        <strong>100 Majestic Coins</strong> welcome award.
+      </p>
+
+      <p>
+        Your place in MajicMall Megaverse history begins now.
+        <strong>Welcome to your Empire.</strong>
+      </p>
+    </div>
+
+    <div class="membership-grid">
+      <div class="membership-item">
+        <small>Membership</small>
+        <strong>Foundation Merchant</strong>
+      </div>
+
+      <div class="membership-item">
+        <small>Equivalent Benefits</small>
+        <strong>Vision Success Plan</strong>
+      </div>
+
+      <div class="membership-item">
+        <small>Member Since</small>
+        <strong>
+          {{ membership.member_since|date:"F j, Y" }}
+        </strong>
+      </div>
+
+      <div class="membership-item">
+        <small>Complimentary Through</small>
+        <strong>
+          {{ membership.complimentary_until|date:"F j, Y" }}
+        </strong>
+      </div>
+
+      <div class="membership-item">
+        <small>Next Success Plan</small>
+        <strong>Vision</strong>
+      </div>
+
+      <div class="membership-item">
+        <small>Majestic Coins</small>
+        <strong>
+          {% if wallet %}
+            {{ wallet.balance }}
+          {% else %}
+            0
+          {% endif %}
+        </strong>
+      </div>
+    </div>
+
+    <a
+      class="command-button"
+      href="{% url 'merchant-dashboard' %}"
+    >
+      ENTER MERCHANT COMMAND CENTER
+    </a>
+  </article>
+</section>
+{% endblock %}

@@ -133,12 +133,7 @@
     .welcome-section {
       position: relative;
       display: grid;
-      min-height:
-        {% if preview_mode %}
-          calc(100vh - 62px)
-        {% else %}
-          100vh
-        {% endif %};
+      min-height: 100vh;
       place-items: center;
       overflow: hidden;
       padding: 70px 20px;
@@ -160,6 +155,10 @@
           #050507 58%,
           #010101
         );
+    }
+
+    .welcome-section.preview-mode {
+      min-height: calc(100vh - 62px);
     }
 
     .welcome-section::before {
@@ -720,12 +719,31 @@
 
       .share-card {
         grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 10px;
         text-align: center;
       }
 
       .qr-frame {
         width: fit-content;
         margin: 0 auto;
+        padding: 2px;
+        border-radius: 8px;
+      }
+
+      .qr-frame img {
+        width: 42px;
+        height: 42px;
+      }
+
+      .share-title {
+        font-size: .88rem;
+      }
+
+      .share-copy {
+        margin-top: 4px;
+        font-size: .72rem;
+        line-height: 1.35;
       }
     }
 
@@ -860,7 +878,9 @@
     </section>
   {% endif %}
 
-  <section class="welcome-section">
+  <section
+    class="welcome-section{% if preview_mode %} preview-mode{% endif %}"
+  >
     <div class="stars"></div>
     <div class="welcome-glow"></div>
 
@@ -1082,4 +1102,4 @@
     })();
   </script>
 </body>
-</html>
+</html>     

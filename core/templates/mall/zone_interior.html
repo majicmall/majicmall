@@ -8,6 +8,11 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
+<link
+        rel="stylesheet"
+        href="{% static 'css/grand_concourse.css' %}">
+
+
     <style>
         body {
             background-color: #050505;
@@ -287,60 +292,83 @@
         </div>
 
         {% if stores %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {% for store in stores %}
-                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl flex flex-col h-full hover:scale-[1.02] transition">
 
-                        {% if store.plan == "elite" %}
-                            <div class="mb-3">
-                                <span class="inline-block text-xs bg-yellow-400 text-black px-3 py-1 rounded-full font-black tracking-wide">
-                                    ELITE
-                                </span>
-                            </div>
-                        {% endif %}
+        <section class="grand-concourse">
 
-                        {% if store.logo %}
-                            <img
-                                src="{{ store.logo.url }}"
-                                alt="{{ store.store_name }} logo"
-                                class="h-32 w-32 object-cover rounded-2xl mb-5 bg-white border border-gray-700 shadow-md"
-                            >
-                        {% else %}
-                            <div class="h-32 w-32 bg-gray-800 rounded-2xl mb-5 flex items-center justify-center text-4xl border border-gray-700">
-                                🏬
-                            </div>
-                        {% endif %}
+            <div class="grand-content">
 
-                        <h2 class="text-2xl font-black text-white mb-2">
-                            {{ store.store_name }}
-                        </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                
+{% for store in stores %}
 
-                        {% if store.slogan %}
-                            <p class="text-gray-300 text-base leading-relaxed mb-3">
-                                {{ store.slogan }}
-                            </p>
-                        {% elif store.description %}
-                            <p class="text-gray-400 text-base leading-relaxed mb-3">
-                                {{ store.description|truncatewords:20 }}
-                            </p>
-                        {% else %}
-                            <p class="text-gray-400 text-base leading-relaxed mb-3">
-                                Explore this merchant inside {{ zone_name }}.
-                            </p>
-                        {% endif %}
+<div class="storefront-card">
 
-                        <div class="mt-auto pt-4">
-                            <a
-                                href="{% url 'storefront' store.slug %}"
-                                class="block w-full text-center px-4 py-3 bg-yellow-400 text-black rounded-2xl font-black text-lg hover:bg-yellow-300 transition"
-                            >
-                                Visit Store
-                            </a>
-                        </div>
+    <div class="storefront-image">
 
-                    </div>
-                {% endfor %}
+        {% if store.storefront_image %}
+            <img src="{{ store.storefront_image.url }}" alt="{{ store.name }}">
+        {% else %}
+            <img src="{% static 'img/storefront_placeholder.png' %}" alt="{{ store.name }}">
+        {% endif %}
+
+        <div class="storefront-overlay"></div>
+
+    </div>
+
+    <div class="storefront-logo">
+
+        {% if store.logo %}
+            <img src="{{ store.logo.url }}" alt="{{ store.name }}">
+        {% else %}
+            <div class="logo-placeholder">MM</div>
+        {% endif %}
+
+    </div>
+
+    {% if store.plan == "elite" %}
+    <div class="elite-badge">
+        ELITE
+    </div>
+    {% endif %}
+
+    <div class="storefront-content">
+
+        <h2>
+            {{ store.name }}
+        </h2>
+
+        {% if store.slogan %}
+        <p class="storefront-slogan">
+            {{ store.slogan }}
+        </p>
+        {% endif %}
+
+        {% if store.description %}
+        <p class="storefront-description">
+            {{ store.description|truncatewords:22 }}
+        </p>
+        {% endif %}
+
+        <a
+        href="{% url 'storefront' store.slug %}"
+        class="enter-store-btn">
+
+            ENTER STORE
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+                </div>
+
             </div>
+
+        </section>
+
         {% else %}
             <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 md:p-12 text-center shadow-xl">
                 <div class="text-4xl mb-4">✨</div>

@@ -1,0 +1,364 @@
+/* ==========================================
+   MAJESTICMALL GRAND CONCOURSE
+========================================== */
+
+.grand-concourse{
+    position:relative;
+    width:100%;
+    overflow:hidden;
+    padding:70px 30px;
+    background:url("../img/grand_concourse_desktop.png") center center/cover no-repeat;
+}
+
+.grand-concourse::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        rgba(0,0,0,.20),
+        rgba(0,0,0,.55)
+    );
+    backdrop-filter:blur(2px);
+}
+
+.grand-content{
+    position:relative;
+    z-index:5;
+    max-width:1600px;
+    margin:auto;
+}
+
+@media(max-width:768px){
+
+.grand-concourse{
+    padding:35px 14px;
+    background-image:url("../img/grand_concourse_mobile.png");
+    background-position:center top;
+}
+
+}
+
+.storefront-card{
+position:relative;
+background:rgba(8,8,8,.78);
+border:1px solid rgba(255,215,0,.35);
+border-radius:26px;
+overflow:hidden;
+backdrop-filter:blur(14px);
+transition:.45s;
+box-shadow:
+0 0 30px rgba(255,215,0,.12);
+}
+
+.storefront-card:hover{
+
+transform:translateY(-10px);
+
+box-shadow:
+0 0 60px rgba(255,215,0,.35);
+
+}
+
+.storefront-image{
+
+height:240px;
+position:relative;
+overflow:hidden;
+
+}
+
+.storefront-image img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+transition:1s;
+
+}
+
+.storefront-card:hover img{
+
+transform:scale(1.08);
+
+}
+
+.storefront-overlay{
+
+position:absolute;
+inset:0;
+
+background:
+
+linear-gradient(
+
+transparent,
+rgba(0,0,0,.82)
+
+);
+
+}
+
+.storefront-logo{
+
+position:absolute;
+
+top:185px;
+left:25px;
+
+width:82px;
+height:82px;
+
+border-radius:50%;
+
+overflow:hidden;
+
+border:4px solid gold;
+
+background:black;
+
+z-index:5;
+
+}
+
+.storefront-logo img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+
+}
+
+.logo-placeholder{
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+height:100%;
+
+color:white;
+
+font-weight:bold;
+
+}
+
+.elite-badge{
+
+position:absolute;
+
+top:20px;
+right:20px;
+
+padding:8px 18px;
+
+border-radius:30px;
+
+background:gold;
+
+color:black;
+
+font-weight:700;
+
+z-index:5;
+
+}
+
+.storefront-content{
+
+padding:
+
+55px
+25px
+28px;
+
+}
+
+.storefront-content h2{
+
+color:white;
+
+font-size:28px;
+
+margin-bottom:12px;
+
+}
+
+.storefront-slogan{
+
+color:gold;
+
+margin-bottom:12px;
+
+font-style:italic;
+
+}
+
+.storefront-description{
+
+color:#ddd;
+
+line-height:1.6;
+
+margin-bottom:22px;
+
+}
+
+.enter-store-btn{
+
+display:inline-block;
+
+padding:
+
+14px
+28px;
+
+border-radius:40px;
+
+background:linear-gradient(
+90deg,
+#8b0000,
+#ff3030);
+
+color:white;
+
+font-weight:bold;
+
+text-decoration:none;
+
+transition:.35s;
+
+}
+
+.enter-store-btn:hover{
+
+background:
+
+linear-gradient(
+90deg,
+gold,
+#ffd700);
+
+color:black;
+
+}
+
+@media(max-width:768px){
+
+.storefront-image{
+
+height:190px;
+
+}
+
+.storefront-logo{
+
+top:145px;
+
+width:70px;
+height:70px;
+
+}
+
+.storefront-content h2{
+
+font-size:22px;
+
+}
+
+}
+
+
+/* ==========================================
+   SAFE STOREFRONT IMAGE FALLBACK
+========================================== */
+
+.storefront-image-fallback {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 50% 15%, rgba(255, 215, 90, 0.22), transparent 34%),
+        linear-gradient(145deg, #191919 0%, #050505 56%, #140d02 100%);
+}
+
+.storefront-image-fallback::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            115deg,
+            transparent 20%,
+            rgba(255, 255, 255, 0.08) 44%,
+            transparent 62%
+        );
+    transform: translateX(-120%);
+    animation: storefrontFallbackGleam 6s ease-in-out infinite;
+}
+
+.storefront-image-fallback > img {
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.75));
+}
+
+.storefront-fallback-mark {
+    position: relative;
+    z-index: 2;
+    min-height: 150px;
+    width: min(82%, 320px);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    text-align: center;
+    border: 1px solid rgba(255, 215, 90, 0.42);
+    background: rgba(0, 0, 0, 0.48);
+    box-shadow:
+        inset 0 0 24px rgba(255, 215, 90, 0.06),
+        0 12px 32px rgba(0, 0, 0, 0.42);
+    backdrop-filter: blur(8px);
+}
+
+.storefront-fallback-icon {
+    color: #f6d978;
+    font-size: 24px;
+    line-height: 1;
+    text-shadow: 0 0 18px rgba(246, 217, 120, 0.65);
+}
+
+.storefront-fallback-mark strong {
+    color: #ffffff;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.1rem, 2vw, 1.45rem);
+    letter-spacing: 0.04em;
+}
+
+.storefront-fallback-mark small {
+    color: #dfc36d;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+@keyframes storefrontFallbackGleam {
+    0%,
+    58% {
+        transform: translateX(-120%);
+    }
+
+    78%,
+    100% {
+        transform: translateX(120%);
+    }
+}

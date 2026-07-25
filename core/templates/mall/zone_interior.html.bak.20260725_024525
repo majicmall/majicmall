@@ -264,53 +264,32 @@
             </a>
         </div>
 
-        {% static "img/zones/" as zone_images_base %}
-
-        <section
-            class="zone-identity-banner"
-            aria-labelledby="zone-identity-title"
-        >
-            <img
-                class="zone-identity-image"
-                src="{{ zone_images_base }}{{ zone.slug }}.png"
-                alt="{{ zone_name }} destination"
-                onerror="this.onerror=null;this.src='{% static 'img/grand_concourse_desktop.png' %}';"
-            >
-
-            <div
-                class="zone-identity-shadow"
-                aria-hidden="true"
-            ></div>
-
-            <div
-                class="zone-identity-light"
-                aria-hidden="true"
-            ></div>
-
-            <div class="zone-identity-content">
-                <div class="zone-identity-copy">
-                    <div class="zone-identity-label">
-                        MajicMall Megaverse Zone
+        <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-10 shadow-2xl mb-10">
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                <div>
+                    <div class="uppercase tracking-[0.25em] text-yellow-400 font-bold text-sm md:text-base mb-3">
+                        MajicMall Zone
                     </div>
 
-                    <h1 id="zone-identity-title">
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-black leading-tight text-white mb-3">
                         {{ zone_name }}
                     </h1>
 
-                    <p>
+                    <p class="text-lg md:text-2xl text-gray-300 leading-relaxed">
                         Explore merchants currently inside this zone.
                     </p>
                 </div>
 
-                <div class="zone-identity-count">
-                    <strong>{{ store_count }}</strong>
-
-                    <span>
+                <div class="text-left lg:text-right">
+                    <div class="text-yellow-400 font-black text-3xl md:text-4xl">
+                        {{ store_count }}
+                    </div>
+                    <div class="text-gray-400 text-base md:text-lg">
                         Store{{ store_count|pluralize }}
-                    </span>
+                    </div>
                 </div>
             </div>
-        </section>
+        </div>
 
         {% if stores %}
 

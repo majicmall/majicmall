@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.db.models import Case, When, Value, IntegerField
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import Http404
 
 from merchant.models import MallZone, MerchantStore
 from .forms import MerchantSignupForm, CommunityMemberForm
@@ -210,29 +209,32 @@ def merchant_dashboard(request):
 
 
 def merchant_invite(request):
-    requested_plan = (
-        request.GET.get("plan")
-        or request.session.get("selected_merchant_success_plan")
-        or "vision"
-    )
+    requested_plan = request.GET.get("plan")
 
-    # Handle any stale session value left by the former flow.
-    if isinstance(requested_plan, dict):
-        requested_plan = requested_plan.get("slug", "vision")
-
-    selected_plan = get_merchant_success_plan(requested_plan)
-
-    if isinstance(selected_plan, dict):
-        plan_slug = selected_plan.get("slug", "vision")
+    if requested_plan:
+        selected_plan = get_merchant_success_plan(requested_plan)
+        request.session["selected_merchant_success_plan"] = selected_plan
+        request.session.modified = True
     else:
-        plan_slug = str(selected_plan or "vision").strip().lower()
+        selected_plan = request.session.get(
+            "selected_merchant_success_plan"
+        )
 
-    request.session["selected_merchant_success_plan"] = plan_slug
-    request.session.modified = True
+        if not selected_plan:
+            selected_plan = get_merchant_success_plan("vision")
+            request.session[
+                "selected_merchant_success_plan"
+            ] = selected_plan
+            request.session.modified = True
 
-    return redirect(
-        f"{reverse('merchant-build-empire')}?plan={plan_slug}"
+    return render(
+        request,
+        "merchant/invite.html",
+        {
+            "selected_plan": selected_plan,
+        },
     )
+
 
 def merchant_tiers(request):
     return render(request, "merchant/tiers.html")

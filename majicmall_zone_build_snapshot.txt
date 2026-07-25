@@ -1,0 +1,921 @@
+]633;E;echo "===== zone_interior.html =====";81c86e61-16e8-413d-a776-a6e37f6acf45]633;C===== zone_interior.html =====
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ zone_name }} | MajicMall</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+<link
+        rel="stylesheet"
+        href="{% static 'css/grand_concourse.css' %}">
+
+
+    <style>
+        body {
+            background-color: #050505;
+            font-family: Arial, sans-serif;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    
+/* =========================================================
+   MAJICMALL WALK THE MALL LAUNCH
+   ========================================================= */
+
+.majicmall-walk-launch {
+  position: relative;
+  z-index: 50;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin: 22px auto 34px;
+  padding: 0 16px;
+}
+
+.majicmall-walk-button {
+  position: relative;
+  display: flex;
+  width: min(460px, 100%);
+  min-height: 78px;
+  align-items: center;
+  gap: 14px;
+  overflow: hidden;
+  padding: 13px 20px;
+  border: 1px solid rgba(255, 231, 145, .88);
+  border-radius: 18px;
+  color: #fff;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(5, 5, 7, .98),
+      rgba(56, 39, 5, .97)
+    );
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, .58),
+    0 0 28px rgba(212, 175, 55, .25),
+    inset 0 1px 0 rgba(255, 255, 255, .14);
+  text-decoration: none;
+  isolation: isolate;
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease;
+}
+
+.majicmall-walk-button::before {
+  position: absolute;
+  z-index: -1;
+  top: -75%;
+  left: -35%;
+  width: 30%;
+  height: 250%;
+  content: "";
+  transform: rotate(22deg);
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 247, 207, .4),
+      transparent
+    );
+  animation:
+    majicmallWalkGleam
+    4.8s
+    ease-in-out
+    infinite;
+}
+
+.majicmall-walk-button:hover,
+.majicmall-walk-button:focus-visible {
+  transform: translateY(-3px) scale(1.015);
+  border-color: #fff2b3;
+  box-shadow:
+    0 24px 62px rgba(0, 0, 0, .68),
+    0 0 42px rgba(212, 175, 55, .42);
+  outline: none;
+}
+
+.majicmall-walk-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  place-items: center;
+  border: 1px solid rgba(255, 241, 184, .64);
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      #fff6c9,
+      #d4af37 58%,
+      #705000
+    );
+  box-shadow:
+    0 0 22px rgba(212, 175, 55, .36);
+  font-size: 1.35rem;
+}
+
+.majicmall-walk-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.majicmall-walk-copy strong {
+  color: #fff0aa;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(1.1rem, 2.5vw, 1.45rem);
+  letter-spacing: .025em;
+}
+
+.majicmall-walk-copy small {
+  overflow: hidden;
+  color: rgba(255, 255, 255, .68);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .045em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.majicmall-walk-arrow {
+  color: #fff0aa;
+  font-size: 1.6rem;
+  transition: transform .25s ease;
+}
+
+.majicmall-walk-button:hover
+.majicmall-walk-arrow {
+  transform: translateX(6px);
+}
+
+@keyframes majicmallWalkGleam {
+  0%,
+  56% {
+    left: -35%;
+    opacity: 0;
+  }
+
+  68% {
+    opacity: 1;
+  }
+
+  90%,
+  100% {
+    left: 130%;
+    opacity: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .majicmall-walk-launch {
+    margin: 18px auto 28px;
+    padding: 0 12px;
+  }
+
+  .majicmall-walk-button {
+    min-height: 70px;
+    gap: 11px;
+    padding: 11px 14px;
+    border-radius: 15px;
+  }
+
+  .majicmall-walk-icon {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+    font-size: 1.15rem;
+  }
+
+  .majicmall-walk-copy small {
+    font-size: .64rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .majicmall-walk-button,
+  .majicmall-walk-arrow {
+    transition: none;
+  }
+
+  .majicmall-walk-button::before {
+    animation: none;
+  }
+}
+
+</style>
+</head>
+<body class="text-white min-h-screen">
+
+<!-- MAJICMALL WALK THE MALL LAUNCH -->
+<div class="majicmall-walk-launch">
+  <a
+    class="majicmall-walk-button"
+    href="{% url 'walk-zone' zone_slug=zone.slug %}"
+    aria-label="Walk through {{ zone.name }}"
+  >
+    <span
+      class="majicmall-walk-icon"
+      aria-hidden="true"
+    >
+      🚶
+    </span>
+
+    <span class="majicmall-walk-copy">
+      <strong>Walk the Mall™</strong>
+
+      <small>
+        Experience {{ zone.name }} in motion
+      </small>
+    </span>
+
+    <span
+      class="majicmall-walk-arrow"
+      aria-hidden="true"
+    >
+      →
+    </span>
+  </a>
+</div>
+
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+
+        <div class="mb-8">
+            <a
+                href="{% url 'mall-directory' %}"
+                class="inline-block text-yellow-400 font-bold text-base md:text-lg hover:text-yellow-300 transition"
+            >
+                ← Back to Directory
+            </a>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-10 shadow-2xl mb-10">
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                <div>
+                    <div class="uppercase tracking-[0.25em] text-yellow-400 font-bold text-sm md:text-base mb-3">
+                        MajicMall Zone
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-black leading-tight text-white mb-3">
+                        {{ zone_name }}
+                    </h1>
+
+                    <p class="text-lg md:text-2xl text-gray-300 leading-relaxed">
+                        Explore merchants currently inside this zone.
+                    </p>
+                </div>
+
+                <div class="text-left lg:text-right">
+                    <div class="text-yellow-400 font-black text-3xl md:text-4xl">
+                        {{ store_count }}
+                    </div>
+                    <div class="text-gray-400 text-base md:text-lg">
+                        Store{{ store_count|pluralize }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if stores %}
+
+        <section class="grand-concourse">
+
+            <div class="grand-content">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                
+{% for store in stores %}
+
+<div class="storefront-card">
+
+    <div class="storefront-image">
+
+        {% if store.storefront_image %}
+            <img src="{{ store.storefront_image.url }}" alt="{{ store.name }}">
+        {% else %}
+            <img src="{% static 'img/storefront_placeholder.png' %}" alt="{{ store.name }}">
+        {% endif %}
+
+        <div class="storefront-overlay"></div>
+
+    </div>
+
+    <div class="storefront-logo">
+
+        {% if store.logo %}
+            <img src="{{ store.logo.url }}" alt="{{ store.name }}">
+        {% else %}
+            <div class="logo-placeholder">MM</div>
+        {% endif %}
+
+    </div>
+
+    {% if store.plan == "elite" %}
+    <div class="elite-badge">
+        ELITE
+    </div>
+    {% endif %}
+
+    <div class="storefront-content">
+
+        <h2>
+            {{ store.name }}
+        </h2>
+
+        {% if store.slogan %}
+        <p class="storefront-slogan">
+            {{ store.slogan }}
+        </p>
+        {% endif %}
+
+        {% if store.description %}
+        <p class="storefront-description">
+            {{ store.description|truncatewords:22 }}
+        </p>
+        {% endif %}
+
+        <a
+        href="{% url 'storefront' store.slug %}"
+        class="enter-store-btn">
+
+            ENTER STORE
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+        {% else %}
+            <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 md:p-12 text-center shadow-xl">
+                <div class="text-4xl mb-4">✨</div>
+                <h2 class="text-2xl md:text-3xl font-black text-yellow-400 mb-3">
+                    This Zone Is Ready
+                </h2>
+                <p class="text-gray-300 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-6">
+                    No public stores are showing in {{ zone_name }} yet, but this space is prepared for merchants and experiences to arrive.
+                </p>
+                <a
+                    href="{% url 'mall-directory' %}"
+                    class="inline-flex items-center justify-center px-8 py-4 bg-yellow-400 text-black font-black text-lg rounded-2xl hover:bg-yellow-300 transition"
+                >
+                    Return to Directory
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>
+===== grand_concourse.css =====
+/* ==========================================
+   MAJESTICMALL GRAND CONCOURSE
+========================================== */
+
+.grand-concourse{
+    position:relative;
+    width:100%;
+    overflow:hidden;
+    padding:70px 30px;
+    background:url("../img/grand_concourse_desktop.png") center center/cover no-repeat;
+}
+
+.grand-concourse::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        rgba(0,0,0,.20),
+        rgba(0,0,0,.55)
+    );
+    backdrop-filter:blur(2px);
+}
+
+.grand-content{
+    position:relative;
+    z-index:5;
+    max-width:1600px;
+    margin:auto;
+}
+
+@media(max-width:768px){
+
+.grand-concourse{
+    padding:35px 14px;
+    background-image:url("../img/grand_concourse_mobile.png");
+    background-position:center top;
+}
+
+}
+
+.storefront-card{
+position:relative;
+background:rgba(8,8,8,.78);
+border:1px solid rgba(255,215,0,.35);
+border-radius:26px;
+overflow:hidden;
+backdrop-filter:blur(14px);
+transition:.45s;
+box-shadow:
+0 0 30px rgba(255,215,0,.12);
+}
+
+.storefront-card:hover{
+
+transform:translateY(-10px);
+
+box-shadow:
+0 0 60px rgba(255,215,0,.35);
+
+}
+
+.storefront-image{
+
+height:240px;
+position:relative;
+overflow:hidden;
+
+}
+
+.storefront-image img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+transition:1s;
+
+}
+
+.storefront-card:hover img{
+
+transform:scale(1.08);
+
+}
+
+.storefront-overlay{
+
+position:absolute;
+inset:0;
+
+background:
+
+linear-gradient(
+
+transparent,
+rgba(0,0,0,.82)
+
+);
+
+}
+
+.storefront-logo{
+
+position:absolute;
+
+top:185px;
+left:25px;
+
+width:82px;
+height:82px;
+
+border-radius:50%;
+
+overflow:hidden;
+
+border:4px solid gold;
+
+background:black;
+
+z-index:5;
+
+}
+
+.storefront-logo img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+
+}
+
+.logo-placeholder{
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+height:100%;
+
+color:white;
+
+font-weight:bold;
+
+}
+
+.elite-badge{
+
+position:absolute;
+
+top:20px;
+right:20px;
+
+padding:8px 18px;
+
+border-radius:30px;
+
+background:gold;
+
+color:black;
+
+font-weight:700;
+
+z-index:5;
+
+}
+
+.storefront-content{
+
+padding:
+
+55px
+25px
+28px;
+
+}
+
+.storefront-content h2{
+
+color:white;
+
+font-size:28px;
+
+margin-bottom:12px;
+
+}
+
+.storefront-slogan{
+
+color:gold;
+
+margin-bottom:12px;
+
+font-style:italic;
+
+}
+
+.storefront-description{
+
+color:#ddd;
+
+line-height:1.6;
+
+margin-bottom:22px;
+
+}
+
+.enter-store-btn{
+
+display:inline-block;
+
+padding:
+
+14px
+28px;
+
+border-radius:40px;
+
+background:linear-gradient(
+90deg,
+#8b0000,
+#ff3030);
+
+color:white;
+
+font-weight:bold;
+
+text-decoration:none;
+
+transition:.35s;
+
+}
+
+.enter-store-btn:hover{
+
+background:
+
+linear-gradient(
+90deg,
+gold,
+#ffd700);
+
+color:black;
+
+}
+
+@media(max-width:768px){
+
+.storefront-image{
+
+height:190px;
+
+}
+
+.storefront-logo{
+
+top:145px;
+
+width:70px;
+height:70px;
+
+}
+
+.storefront-content h2{
+
+font-size:22px;
+
+}
+
+}
+
+
+/* ==========================================
+   SAFE STOREFRONT IMAGE FALLBACK
+========================================== */
+
+.storefront-image-fallback {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 50% 15%, rgba(255, 215, 90, 0.22), transparent 34%),
+        linear-gradient(145deg, #191919 0%, #050505 56%, #140d02 100%);
+}
+
+.storefront-image-fallback::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            115deg,
+            transparent 20%,
+            rgba(255, 255, 255, 0.08) 44%,
+            transparent 62%
+        );
+    transform: translateX(-120%);
+    animation: storefrontFallbackGleam 6s ease-in-out infinite;
+}
+
+.storefront-image-fallback > img {
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.75));
+}
+
+.storefront-fallback-mark {
+    position: relative;
+    z-index: 2;
+    min-height: 150px;
+    width: min(82%, 320px);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    text-align: center;
+    border: 1px solid rgba(255, 215, 90, 0.42);
+    background: rgba(0, 0, 0, 0.48);
+    box-shadow:
+        inset 0 0 24px rgba(255, 215, 90, 0.06),
+        0 12px 32px rgba(0, 0, 0, 0.42);
+    backdrop-filter: blur(8px);
+}
+
+.storefront-fallback-icon {
+    color: #f6d978;
+    font-size: 24px;
+    line-height: 1;
+    text-shadow: 0 0 18px rgba(246, 217, 120, 0.65);
+}
+
+.storefront-fallback-mark strong {
+    color: #ffffff;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.1rem, 2vw, 1.45rem);
+    letter-spacing: 0.04em;
+}
+
+.storefront-fallback-mark small {
+    color: #dfc36d;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+@keyframes storefrontFallbackGleam {
+    0%,
+    58% {
+        transform: translateX(-120%);
+    }
+
+    78%,
+    100% {
+        transform: translateX(120%);
+    }
+}
+
+===== MerchantStore model =====
+
+--- merchant/models.py ---
+class MerchantStore(models.Model):
+    PLAN_CHOICES = [
+        ("starter", "Starter"),
+        ("pro", "Pro"),
+        ("elite", "Elite"),
+    ]
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="stores",
+    )
+    zone = models.ForeignKey(
+        "merchant.MallZone",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="stores",
+    )
+
+    store_name = models.CharField(max_length=255)
+    slogan = models.CharField(max_length=150, blank=True)
+    description = models.TextField(blank=True)
+    category = models.CharField(max_length=100)
+    offers_local_delivery = models.BooleanField(default=False)
+    offers_pickup = models.BooleanField(default=True)
+    offers_shipping = models.BooleanField(default=True)
+    business_address = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+    )
+    business_address_line_2 = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+    )
+    business_city = models.CharField(
+        max_length=120,
+        blank=True,
+        default="",
+    )
+    business_state = models.CharField(
+        max_length=2,
+        blank=True,
+        default="",
+    )
+    business_zip = models.CharField(max_length=20, blank=True, default="")
+    delivery_radius_miles = models.PositiveIntegerField(default=10)
+    delivery_fee = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    delivery_minimum = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    average_prep_minutes = models.PositiveIntegerField(default=30)
+    logo = models.ImageField(upload_to="merchant_logos/", blank=True, null=True)
+
+    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default="starter")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    is_public = models.BooleanField(
+        default=getattr(settings, "AUTO_PUBLIC_STOREFRONTS", False)
+    )
+
+    is_archived = models.BooleanField(default=False)
+    archived_at = models.DateTimeField(blank=True, null=True)
+
+    storefront_image = models.ImageField(
+        upload_to="storefronts/",
+        blank=True,
+        null=True,
+        help_text=(
+            "Merchant storefront entrance image. The image must "
+            "professionally represent the business and visually match "
+            "the intended MajicMall Megaverse Zone."
+        ),
+    )
+
+    interior_theme = models.CharField(
+        max_length=40,
+        default="signature",
+        choices=[
+            ("signature", "MajicMall Signature Showroom"),
+            ("fashion_boutique", "Luxury Fashion Boutique"),
+            ("tech_gallery", "Black Glass Tech Gallery"),
+            ("food_hall", "Majestic Food Hall"),
+            ("music_lounge", "Music Studio Lounge"),
+            ("automotive_gallery", "Luxury Automotive Gallery"),
+            ("creator_studio", "Creator Gallery Studio"),
+            ("sports_arena", "Championship Sports Shop"),
+            ("theater_lobby", "Premiere Theater Lobby"),
+            ("kids_adventure", "Kids Adventure Shop"),
+            ("travel_lounge", "World Travel Lounge"),
+        ],
+        help_text=(
+            "Controls the visual environment customers experience after "
+            "entering the storefront."
+        ),
+    )
+
+    # --- Admin / vendor contact info ---
+    contact_person = models.CharField(max_length=255, blank=True)
+    contact_email = models.EmailField(blank=True)
+    contact_phone = models.CharField(max_length=50, blank=True)
+
+    # --- Featured slot controls ---
+    is_featured = models.BooleanField(default=False)
+    featured_slot = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        help_text="Optional manual featured slot position within the zone (1-5).",
+    )
+
+    # --- Internal admin notes ---
+    admin_notes = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.store_name
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.store_name:
+            base = slugify(self.store_name) or "store"
+            candidate = base
+            n = 1
+            while MerchantStore.objects.filter(slug=candidate).exclude(pk=self.pk).exists():
+                n += 1
+                candidate = f"{base}-{n}"
+            self.slug = candidate
+        super().save(*args, **kwargs)
+
+    def archive(self):
+        self.is_archived = True
+        self.archived_at = now()
+        self.save(update_fields=["is_archived", "archived_at"])
+
+    def can_restore(self) -> bool:
+        return bool(
+            self.is_archived
+            and self.archived_at
+            and now() <= self.archived_at + timedelta(days=7)
+        )
+
+    def restore_deadline(self):
+        return self.archived_at + timedelta(days=7) if self.archived_at else None
+
+    def restore(self):
+        self.is_archived = False
+        self.archived_at = None
+        self.save(update_fields=["is_archived", "archived_at"])
+
+
+
+
+===== Storefront URL routes =====
+./core/urls.py:51:    path("store/<slug:store_slug>/", views.storefront, name="storefront"),
+./core/urls.py:57:    path("zones/<slug:zone_slug>/inside/", views.zone_interior, name="zone-interior"),
+./majicmall/urls.py:8:from merchant.views import storefront, storefront_qr, product_detail
+./majicmall/urls.py:29:    # Public storefront URLs
+./majicmall/urls.py:30:    path("store/<slug:slug>/", storefront, name="storefront"),
+./majicmall/urls.py:32:    path("store/<slug:slug>/qr.png", storefront_qr, name="storefront-qr"),

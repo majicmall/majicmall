@@ -4,17 +4,6 @@ from django.views.generic import RedirectView
 from . import views, fulfillment_views
 
 urlpatterns = [
-    path(
-        "foundation/apply/",
-        empire_flow.foundation_apply,
-        name="merchant-foundation-apply",
-    ),
-
-    path(
-        "build-your-empire/foundation/welcome/",
-        empire_flow.foundation_welcome,
-        name="merchant-foundation-welcome",
-    ),
 
     # =========================
     # Build Your Empire™
@@ -92,12 +81,6 @@ path("webhooks/coinbase/", views.webhook_coinbase, name="webhook-coinbase"),
     # Dashboard / Reports
     # =========================
     path("dashboard/", views.dashboard, name="merchant-dashboard"),
-    path(
-        "wallet/",
-        views.majestic_wallet,
-        name="merchant-majestic-wallet",
-    ),
-
     path("reports/", views.reports, name="merchant-reports"),
     path("reports/export/", views.reports_export, name="merchant-reports-export"),
 

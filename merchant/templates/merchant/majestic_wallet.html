@@ -1,0 +1,529 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>Majestic Wallet | MajicMall Megaverse</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --wallet-gold: #d4af37;
+      --wallet-bright: #fff0ad;
+      --wallet-soft: #f4d675;
+      --wallet-black: #030303;
+      --wallet-panel: rgba(10, 10, 12, .94);
+      --wallet-muted: rgba(255, 255, 255, .65);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: #fff;
+      background:
+        radial-gradient(
+          circle at 50% -10%,
+          rgba(212, 175, 55, .22),
+          transparent 34%
+        ),
+        radial-gradient(
+          circle at 8% 55%,
+          rgba(80, 55, 12, .17),
+          transparent 32%
+        ),
+        linear-gradient(145deg, #020202, #111 54%, #000);
+      font-family: Arial, sans-serif;
+    }
+
+    .wallet-shell {
+      width: min(1120px, calc(100% - 30px));
+      margin: auto;
+      padding: 34px 0 70px;
+    }
+
+    .wallet-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+
+    .wallet-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 16px;
+      border: 1px solid rgba(244, 214, 117, .36);
+      border-radius: 999px;
+      color: var(--wallet-soft);
+      text-decoration: none;
+      background: rgba(255, 255, 255, .035);
+      font-weight: 800;
+    }
+
+    .wallet-brand {
+      color: rgba(255, 255, 255, .68);
+      font-size: .82rem;
+      font-weight: 900;
+      letter-spacing: .13em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .wallet-hero {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 30px;
+      min-height: 330px;
+      padding: clamp(28px, 6vw, 58px);
+      border: 1px solid rgba(244, 214, 117, .64);
+      border-radius: 30px;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, .055),
+          transparent 48%
+        ),
+        rgba(5, 5, 6, .95);
+      box-shadow:
+        0 34px 100px rgba(0, 0, 0, .7),
+        0 0 48px rgba(212, 175, 55, .13),
+        inset 0 0 45px rgba(212, 175, 55, .035);
+    }
+
+    .wallet-hero::after {
+      position: absolute;
+      top: -90%;
+      left: -30%;
+      width: 24%;
+      height: 280%;
+      content: "";
+      transform: rotate(25deg);
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, .11),
+          transparent
+        );
+      animation: walletGleam 9s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes walletGleam {
+      from {
+        left: -35%;
+      }
+
+      to {
+        left: 125%;
+      }
+    }
+
+    .wallet-eyebrow {
+      margin: 0 0 11px;
+      color: var(--wallet-soft);
+      font-size: .76rem;
+      font-weight: 900;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    .wallet-title {
+      margin: 0;
+      color: #fff;
+      font-family: Georgia, serif;
+      font-size: clamp(2.2rem, 6vw, 4.4rem);
+      line-height: .98;
+    }
+
+    .wallet-balance-label {
+      margin-top: 34px;
+      color: var(--wallet-muted);
+      font-size: .8rem;
+      font-weight: 900;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .wallet-balance {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 12px;
+      margin-top: 5px;
+    }
+
+    .wallet-balance strong {
+      color: var(--wallet-bright);
+      font-family: Georgia, serif;
+      font-size: clamp(3.4rem, 10vw, 7rem);
+      line-height: .92;
+      text-shadow: 0 0 30px rgba(244, 214, 117, .30);
+    }
+
+    .wallet-balance span {
+      color: var(--wallet-soft);
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .wallet-owner {
+      margin: 22px 0 0;
+      color: rgba(255, 255, 255, .66);
+      line-height: 1.7;
+    }
+
+    .coin-stage {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: clamp(180px, 25vw, 270px);
+      aspect-ratio: 1;
+    }
+
+    .coin-aura {
+      position: absolute;
+      inset: 3%;
+      border-radius: 50%;
+      background:
+        radial-gradient(
+          circle,
+          rgba(255, 225, 125, .28),
+          rgba(212, 175, 55, .08) 42%,
+          transparent 72%
+        );
+      filter: blur(7px);
+      animation: coinAura 3.2s ease-in-out infinite;
+    }
+
+    @keyframes coinAura {
+      50% {
+        transform: scale(1.08);
+        opacity: .72;
+      }
+    }
+
+    .coin-image {
+      position: relative;
+      z-index: 2;
+      width: 88%;
+      max-height: 88%;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 25px 28px rgba(0, 0, 0, .62))
+        drop-shadow(0 0 22px rgba(244, 214, 117, .30));
+      animation: coinFloat 4.8s ease-in-out infinite;
+    }
+
+    @keyframes coinFloat {
+      50% {
+        transform: translateY(-9px) rotate(1.5deg);
+      }
+    }
+
+    .coin-fallback {
+      position: relative;
+      z-index: 1;
+      display: none;
+      place-items: center;
+      width: 82%;
+      aspect-ratio: 1;
+      border: 7px double var(--wallet-bright);
+      border-radius: 50%;
+      color: #201400;
+      background:
+        radial-gradient(
+          circle at 34% 28%,
+          #fff5bd,
+          #dfb638 42%,
+          #94620a 76%
+        );
+      font-size: clamp(4rem, 10vw, 7rem);
+      box-shadow:
+        0 26px 35px rgba(0, 0, 0, .55),
+        0 0 30px rgba(244, 214, 117, .30);
+    }
+
+    .wallet-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 15px;
+      margin: 24px 0;
+    }
+
+    .wallet-stat {
+      padding: 21px;
+      border: 1px solid rgba(244, 214, 117, .22);
+      border-radius: 18px;
+      background: rgba(8, 8, 10, .88);
+      box-shadow: 0 17px 42px rgba(0, 0, 0, .25);
+    }
+
+    .wallet-stat small {
+      display: block;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, .48);
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .wallet-stat strong {
+      color: var(--wallet-soft);
+      font-family: Georgia, serif;
+      font-size: 1.7rem;
+    }
+
+    .history-panel {
+      overflow: hidden;
+      border: 1px solid rgba(244, 214, 117, .28);
+      border-radius: 24px;
+      background: var(--wallet-panel);
+      box-shadow: 0 22px 70px rgba(0, 0, 0, .38);
+    }
+
+    .history-heading {
+      padding: 23px 25px;
+      border-bottom: 1px solid rgba(244, 214, 117, .19);
+    }
+
+    .history-heading h2 {
+      margin: 0;
+      color: var(--wallet-soft);
+      font-family: Georgia, serif;
+      font-size: 1.55rem;
+    }
+
+    .history-heading p {
+      margin: 7px 0 0;
+      color: rgba(255, 255, 255, .54);
+    }
+
+    .transaction {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      padding: 22px 25px;
+      border-bottom: 1px solid rgba(255, 255, 255, .065);
+    }
+
+    .transaction:last-child {
+      border-bottom: 0;
+    }
+
+    .transaction-reason {
+      margin: 0 0 7px;
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .transaction-meta {
+      color: rgba(255, 255, 255, .48);
+      font-size: .82rem;
+      line-height: 1.55;
+    }
+
+    .transaction-amount {
+      text-align: right;
+    }
+
+    .transaction-amount strong {
+      display: block;
+      color: #8ef0ae;
+      font-size: 1.25rem;
+    }
+
+    .transaction-amount strong.debit {
+      color: #ff9a9a;
+    }
+
+    .transaction-amount small {
+      display: block;
+      margin-top: 6px;
+      color: rgba(255, 255, 255, .47);
+    }
+
+    .empty-wallet {
+      padding: 48px 25px;
+      color: rgba(255, 255, 255, .55);
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .wallet-topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .wallet-brand {
+        text-align: left;
+      }
+
+      .wallet-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .coin-stage {
+        grid-row: 1;
+        width: min(215px, 74vw);
+        margin: auto;
+      }
+
+      .wallet-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .transaction {
+        grid-template-columns: 1fr;
+      }
+
+      .transaction-amount {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wallet-shell">
+    <header class="wallet-topbar">
+      <a
+        class="wallet-back"
+        href="{% url 'merchant-dashboard' %}"
+      >
+        ← Merchant Dashboard
+      </a>
+
+      <div class="wallet-brand">
+        MajicMall Megaverse<br>
+        Merchant Financial Center
+      </div>
+    </header>
+
+    <section class="wallet-hero">
+      <div>
+        <p class="wallet-eyebrow">
+          Official Merchant Wallet
+        </p>
+
+        <h1 class="wallet-title">
+          Majestic Wallet
+        </h1>
+
+        <div class="wallet-balance-label">
+          Available Balance
+        </div>
+
+        <div class="wallet-balance">
+          <strong>{{ wallet.balance }}</strong>
+          <span>Majestic Coins</span>
+        </div>
+
+        <p class="wallet-owner">
+          Wallet owner:
+          <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+          <br>
+          Active store:
+          <strong>{{ store.store_name|default:"Your MajicMall Megaverse Store" }}</strong>
+        </p>
+      </div>
+
+      <div class="coin-stage">
+        <div class="coin-aura"></div>
+
+        <img
+          class="coin-image"
+          src="{% static 'img/majestic_coin.png' %}"
+          alt="Official Majestic Coin"
+          onerror="
+            this.style.display='none';
+            this.nextElementSibling.style.display='grid';
+          "
+        >
+
+        <div class="coin-fallback" aria-hidden="true">
+          🪙
+        </div>
+      </div>
+    </section>
+
+    <section class="wallet-stats">
+      <article class="wallet-stat">
+        <small>Current Balance</small>
+        <strong>{{ wallet.balance }}</strong>
+      </article>
+
+      <article class="wallet-stat">
+        <small>Total Received</small>
+        <strong>{{ total_awarded }}</strong>
+      </article>
+
+      <article class="wallet-stat">
+        <small>Total Used</small>
+        <strong>{{ total_spent }}</strong>
+      </article>
+    </section>
+
+    <section class="history-panel">
+      <header class="history-heading">
+        <h2>Wallet Activity</h2>
+        <p>
+          Every Majestic Coin award, credit, purchase, and adjustment
+          is recorded here.
+        </p>
+      </header>
+
+      {% for transaction in transactions %}
+        <article class="transaction">
+          <div>
+            <p class="transaction-reason">
+              {{ transaction.reason }}
+            </p>
+
+            <div class="transaction-meta">
+              {{ transaction.get_transaction_type_display }}
+              • {{ transaction.created_at|date:"F j, Y" }}
+              at {{ transaction.created_at|time:"g:i A" }}
+            </div>
+          </div>
+
+          <div class="transaction-amount">
+            <strong
+              {% if transaction.amount < 0 %}
+                class="debit"
+              {% endif %}
+            >
+              {% if transaction.amount > 0 %}+{% endif %}
+              {{ transaction.amount }}
+            </strong>
+
+            <small>
+              Balance: {{ transaction.balance_after }}
+            </small>
+          </div>
+        </article>
+      {% empty %}
+        <div class="empty-wallet">
+          Your wallet is active. Wallet activity will appear here.
+        </div>
+      {% endfor %}
+    </section>
+  </main>
+</body>
+</html>

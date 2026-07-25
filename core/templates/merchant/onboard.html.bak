@@ -1,0 +1,127 @@
+
+{% with selected_plan=request.session.selected_merchant_success_plan %}
+  {% if selected_plan %}
+    <section class="onboarding-plan-summary">
+      <div class="onboarding-plan-summary-inner">
+        <div>
+          <p class="onboarding-plan-label">
+            Your Success Plan
+          </p>
+
+          <h2 class="onboarding-plan-name">
+            {{ selected_plan.icon }}
+            {{ selected_plan.name }}
+          </h2>
+        </div>
+
+        <div class="onboarding-plan-allocation">
+          Zone Storefront Allocation
+
+          <strong>
+            {% if selected_plan.storefronts %}
+              {{ selected_plan.storefronts }} Included
+            {% else %}
+              {{ selected_plan.storefront_label }}
+            {% endif %}
+          </strong>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+{% endwith %}
+
+
+<style>
+  .onboarding-plan-summary {
+    width: min(920px, calc(100% - 28px));
+    margin: 22px auto;
+    padding: 18px 20px;
+    border: 1px solid rgba(217, 173, 56, .5);
+    border-radius: 18px;
+    color: #fff;
+    background:
+      linear-gradient(
+        145deg,
+        rgba(255, 255, 255, .065),
+        rgba(255, 255, 255, .015)
+      ),
+      rgba(6, 6, 8, .94);
+    box-shadow:
+      0 18px 48px rgba(0, 0, 0, .35),
+      0 0 24px rgba(217, 173, 56, .1);
+  }
+
+  .onboarding-plan-summary-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  .onboarding-plan-label {
+    margin: 0 0 5px;
+    color: #d9ad38;
+    font-size: .68rem;
+    font-weight: 900;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+
+  .onboarding-plan-name {
+    margin: 0;
+    color: #ffe7a0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.3rem, 4vw, 1.85rem);
+  }
+
+  .onboarding-plan-allocation {
+    color: rgba(255, 255, 255, .76);
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  .onboarding-plan-allocation strong {
+    display: block;
+    color: #ffe7a0;
+  }
+
+  @media (max-width: 620px) {
+    .onboarding-plan-summary-inner {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .onboarding-plan-allocation {
+      text-align: left;
+    }
+  }
+</style>
+
+<!-- merchant/templates/merchant/onboard.html --> 
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-yellow-100 to-red-200 flex items-center justify-center py-16 px-6">
+  <div class="bg-white p-10 rounded-xl shadow-xl max-w-xl w-full text-center">
+    <img src="{% static 'img/majicmall_logo.png' %}" alt="Majic Mall Logo" class="mx-auto mb-6 w-32 h-auto">
+
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-4">Welcome to Majic Mall! 🎉</h1>
+    <p class="text-gray-600 mb-6">You’ve just unlocked your path to online success. Let’s build your storefront now!</p>
+    
+    <!-- Signup with redirect -->
+    <a href="{% url 'account_signup' %}?next={% url 'merchant-setup' %}" 
+       class="inline-block px-6 py-3 bg-black text-white font-semibold rounded-lg shadow hover:bg-gray-800 transition">
+      🚀 Start Building My Store
+    </a>
+
+    <!-- Already have account? -->
+    <div class="mt-4">
+      <a href="{% url 'account_login' %}?next={% url 'merchant-setup' %}" 
+         class="text-sm text-gray-600 underline hover:text-gray-800">
+        Already have an account? Sign in here
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

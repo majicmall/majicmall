@@ -12,6 +12,7 @@ def healthz(request):
     return HttpResponse("OK", content_type="text/plain")
 
 
+
 urlpatterns = [
     path("identity-gateway/", core_views.identity_gateway, name="identity-gateway"),
     path("healthz/", healthz, name="healthz"),

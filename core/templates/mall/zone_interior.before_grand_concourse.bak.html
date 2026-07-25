@@ -1,0 +1,365 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ zone_name }} | MajicMall</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background-color: #050505;
+            font-family: Arial, sans-serif;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    
+/* =========================================================
+   MAJICMALL WALK THE MALL LAUNCH
+   ========================================================= */
+
+.majicmall-walk-launch {
+  position: relative;
+  z-index: 50;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin: 22px auto 34px;
+  padding: 0 16px;
+}
+
+.majicmall-walk-button {
+  position: relative;
+  display: flex;
+  width: min(460px, 100%);
+  min-height: 78px;
+  align-items: center;
+  gap: 14px;
+  overflow: hidden;
+  padding: 13px 20px;
+  border: 1px solid rgba(255, 231, 145, .88);
+  border-radius: 18px;
+  color: #fff;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(5, 5, 7, .98),
+      rgba(56, 39, 5, .97)
+    );
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, .58),
+    0 0 28px rgba(212, 175, 55, .25),
+    inset 0 1px 0 rgba(255, 255, 255, .14);
+  text-decoration: none;
+  isolation: isolate;
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease;
+}
+
+.majicmall-walk-button::before {
+  position: absolute;
+  z-index: -1;
+  top: -75%;
+  left: -35%;
+  width: 30%;
+  height: 250%;
+  content: "";
+  transform: rotate(22deg);
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 247, 207, .4),
+      transparent
+    );
+  animation:
+    majicmallWalkGleam
+    4.8s
+    ease-in-out
+    infinite;
+}
+
+.majicmall-walk-button:hover,
+.majicmall-walk-button:focus-visible {
+  transform: translateY(-3px) scale(1.015);
+  border-color: #fff2b3;
+  box-shadow:
+    0 24px 62px rgba(0, 0, 0, .68),
+    0 0 42px rgba(212, 175, 55, .42);
+  outline: none;
+}
+
+.majicmall-walk-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  place-items: center;
+  border: 1px solid rgba(255, 241, 184, .64);
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      #fff6c9,
+      #d4af37 58%,
+      #705000
+    );
+  box-shadow:
+    0 0 22px rgba(212, 175, 55, .36);
+  font-size: 1.35rem;
+}
+
+.majicmall-walk-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.majicmall-walk-copy strong {
+  color: #fff0aa;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(1.1rem, 2.5vw, 1.45rem);
+  letter-spacing: .025em;
+}
+
+.majicmall-walk-copy small {
+  overflow: hidden;
+  color: rgba(255, 255, 255, .68);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .045em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.majicmall-walk-arrow {
+  color: #fff0aa;
+  font-size: 1.6rem;
+  transition: transform .25s ease;
+}
+
+.majicmall-walk-button:hover
+.majicmall-walk-arrow {
+  transform: translateX(6px);
+}
+
+@keyframes majicmallWalkGleam {
+  0%,
+  56% {
+    left: -35%;
+    opacity: 0;
+  }
+
+  68% {
+    opacity: 1;
+  }
+
+  90%,
+  100% {
+    left: 130%;
+    opacity: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .majicmall-walk-launch {
+    margin: 18px auto 28px;
+    padding: 0 12px;
+  }
+
+  .majicmall-walk-button {
+    min-height: 70px;
+    gap: 11px;
+    padding: 11px 14px;
+    border-radius: 15px;
+  }
+
+  .majicmall-walk-icon {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+    font-size: 1.15rem;
+  }
+
+  .majicmall-walk-copy small {
+    font-size: .64rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .majicmall-walk-button,
+  .majicmall-walk-arrow {
+    transition: none;
+  }
+
+  .majicmall-walk-button::before {
+    animation: none;
+  }
+}
+
+</style>
+</head>
+<body class="text-white min-h-screen">
+
+<!-- MAJICMALL WALK THE MALL LAUNCH -->
+<div class="majicmall-walk-launch">
+  <a
+    class="majicmall-walk-button"
+    href="{% url 'walk-zone' zone_slug=zone.slug %}"
+    aria-label="Walk through {{ zone.name }}"
+  >
+    <span
+      class="majicmall-walk-icon"
+      aria-hidden="true"
+    >
+      🚶
+    </span>
+
+    <span class="majicmall-walk-copy">
+      <strong>Walk the Mall™</strong>
+
+      <small>
+        Experience {{ zone.name }} in motion
+      </small>
+    </span>
+
+    <span
+      class="majicmall-walk-arrow"
+      aria-hidden="true"
+    >
+      →
+    </span>
+  </a>
+</div>
+
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+
+        <div class="mb-8">
+            <a
+                href="{% url 'mall-directory' %}"
+                class="inline-block text-yellow-400 font-bold text-base md:text-lg hover:text-yellow-300 transition"
+            >
+                ← Back to Directory
+            </a>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-10 shadow-2xl mb-10">
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                <div>
+                    <div class="uppercase tracking-[0.25em] text-yellow-400 font-bold text-sm md:text-base mb-3">
+                        MajicMall Zone
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-black leading-tight text-white mb-3">
+                        {{ zone_name }}
+                    </h1>
+
+                    <p class="text-lg md:text-2xl text-gray-300 leading-relaxed">
+                        Explore merchants currently inside this zone.
+                    </p>
+                </div>
+
+                <div class="text-left lg:text-right">
+                    <div class="text-yellow-400 font-black text-3xl md:text-4xl">
+                        {{ store_count }}
+                    </div>
+                    <div class="text-gray-400 text-base md:text-lg">
+                        Store{{ store_count|pluralize }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if stores %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {% for store in stores %}
+                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl flex flex-col h-full hover:scale-[1.02] transition">
+
+                        {% if store.plan == "elite" %}
+                            <div class="mb-3">
+                                <span class="inline-block text-xs bg-yellow-400 text-black px-3 py-1 rounded-full font-black tracking-wide">
+                                    ELITE
+                                </span>
+                            </div>
+                        {% endif %}
+
+                        {% if store.logo %}
+                            <img
+                                src="{{ store.logo.url }}"
+                                alt="{{ store.store_name }} logo"
+                                class="h-32 w-32 object-cover rounded-2xl mb-5 bg-white border border-gray-700 shadow-md"
+                            >
+                        {% else %}
+                            <div class="h-32 w-32 bg-gray-800 rounded-2xl mb-5 flex items-center justify-center text-4xl border border-gray-700">
+                                🏬
+                            </div>
+                        {% endif %}
+
+                        <h2 class="text-2xl font-black text-white mb-2">
+                            {{ store.store_name }}
+                        </h2>
+
+                        {% if store.slogan %}
+                            <p class="text-gray-300 text-base leading-relaxed mb-3">
+                                {{ store.slogan }}
+                            </p>
+                        {% elif store.description %}
+                            <p class="text-gray-400 text-base leading-relaxed mb-3">
+                                {{ store.description|truncatewords:20 }}
+                            </p>
+                        {% else %}
+                            <p class="text-gray-400 text-base leading-relaxed mb-3">
+                                Explore this merchant inside {{ zone_name }}.
+                            </p>
+                        {% endif %}
+
+                        <div class="mt-auto pt-4">
+                            <a
+                                href="{% url 'storefront' store.slug %}"
+                                class="block w-full text-center px-4 py-3 bg-yellow-400 text-black rounded-2xl font-black text-lg hover:bg-yellow-300 transition"
+                            >
+                                Visit Store
+                            </a>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 md:p-12 text-center shadow-xl">
+                <div class="text-4xl mb-4">✨</div>
+                <h2 class="text-2xl md:text-3xl font-black text-yellow-400 mb-3">
+                    This Zone Is Ready
+                </h2>
+                <p class="text-gray-300 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-6">
+                    No public stores are showing in {{ zone_name }} yet, but this space is prepared for merchants and experiences to arrive.
+                </p>
+                <a
+                    href="{% url 'mall-directory' %}"
+                    class="inline-flex items-center justify-center px-8 py-4 bg-yellow-400 text-black font-black text-lg rounded-2xl hover:bg-yellow-300 transition"
+                >
+                    Return to Directory
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

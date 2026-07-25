@@ -1,0 +1,1109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Choose Your Success Plan | MajicMall Megaverse
+  </title>
+
+  <style>
+    :root {
+      --black: #020202;
+      --glass: rgba(14, 14, 17, 0.9);
+      --glass-light: rgba(255, 255, 255, 0.055);
+      --gold: #d9ad38;
+      --gold-bright: #ffe7a0;
+      --white: #ffffff;
+      --muted: #c6c6c6;
+      --green: #88ecad;
+      --red: #ff8f8f;
+      --border: rgba(217, 173, 56, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      margin: 0;
+      background: var(--black);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(
+          circle at 50% -10%,
+          rgba(217, 173, 56, 0.22),
+          transparent 34%
+        ),
+        radial-gradient(
+          circle at 12% 32%,
+          rgba(93, 70, 15, 0.14),
+          transparent 30%
+        ),
+        linear-gradient(
+          145deg,
+          #010101,
+          #101014 50%,
+          #020202
+        );
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2, 2, 2, 0.93);
+      backdrop-filter: blur(16px);
+    }
+
+    .topbar-inner {
+      width: min(1380px, calc(100% - 30px));
+      min-height: 76px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      text-decoration: none;
+    }
+
+    .brand strong {
+      display: block;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1rem, 3vw, 1.35rem);
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .68rem;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+
+    .top-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .top-link,
+    .plan-button,
+    .secondary-button {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 17px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--white);
+      background: rgba(255, 255, 255, .045);
+      text-decoration: none;
+      font-weight: 800;
+      text-align: center;
+      transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
+    }
+
+    .top-link:hover,
+    .secondary-button:hover {
+      transform: translateY(-2px);
+      border-color: var(--gold-bright);
+    }
+
+    .shell {
+      width: min(1380px, calc(100% - 30px));
+      margin: 0 auto;
+      padding: 50px 0 90px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(32px, 7vw, 76px);
+      border: 1px solid var(--border);
+      border-radius: 34px;
+      text-align: center;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, .075),
+          rgba(255, 255, 255, .018)
+        ),
+        rgba(6, 6, 8, .92);
+      box-shadow:
+        0 30px 95px rgba(0, 0, 0, .55),
+        0 0 55px rgba(217, 173, 56, .11);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -160%;
+      left: -35%;
+      width: 34%;
+      height: 410%;
+      transform: rotate(24deg);
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, .1),
+        transparent
+      );
+      animation: heroGleam 9s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes heroGleam {
+      from {
+        left: -45%;
+      }
+
+      to {
+        left: 135%;
+      }
+    }
+
+    .eyebrow {
+      margin: 0 0 13px;
+      color: var(--gold);
+      font-size: .78rem;
+      font-weight: 900;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      overflow-wrap: anywhere;
+    }
+
+    h1 {
+      max-width: 1050px;
+      margin: 0 auto;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.5rem, 8vw, 6.2rem);
+      line-height: .97;
+    }
+
+    .hero-subtitle {
+      max-width: 900px;
+      margin: 23px auto 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.75;
+    }
+
+    .hero-promise {
+      margin-top: 24px;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.15rem, 3vw, 1.55rem);
+    }
+
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(250px, 1fr)
+      );
+      gap: 20px;
+      margin-top: 32px;
+      align-items: stretch;
+    }
+
+    .plan-card {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 26px;
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, .07),
+          rgba(255, 255, 255, .016)
+        ),
+        var(--glass);
+      box-shadow:
+        0 22px 65px rgba(0, 0, 0, .45),
+        inset 0 1px 0 rgba(255, 255, 255, .055);
+      transition:
+        transform .28s ease,
+        border-color .28s ease,
+        box-shadow .28s ease;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-7px);
+      border-color: var(--gold-bright);
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, .56),
+        0 0 35px rgba(217, 173, 56, .15);
+    }
+
+    .plan-card.featured {
+      border-color: rgba(255, 231, 160, .82);
+      box-shadow:
+        0 28px 85px rgba(0, 0, 0, .55),
+        0 0 38px rgba(217, 173, 56, .2);
+    }
+
+    .plan-card.majestic {
+      background:
+        radial-gradient(
+          circle at 50% 0,
+          rgba(217, 173, 56, .15),
+          transparent 36%
+        ),
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, .08),
+          rgba(255, 255, 255, .018)
+        ),
+        #080809;
+    }
+
+    .popular-label {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      padding: 7px 11px;
+      border: 1px solid rgba(255, 231, 160, .68);
+      border-radius: 999px;
+      color: #080808;
+      background: linear-gradient(
+        135deg,
+        var(--gold-bright),
+        var(--gold)
+      );
+      font-size: .68rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .plan-icon {
+      font-size: 2rem;
+    }
+
+    .plan-name {
+      margin: 15px 0 0;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2rem;
+    }
+
+    .plan-tagline {
+      min-height: 48px;
+      margin: 9px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .price {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      margin-top: 21px;
+    }
+
+    .price strong {
+      color: var(--white);
+      font-size: 2.65rem;
+      line-height: 1;
+    }
+
+    .price span {
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    .allocation {
+      margin-top: 18px;
+      padding: 14px;
+      border: 1px solid rgba(217, 173, 56, .28);
+      border-radius: 15px;
+      color: var(--gold-bright);
+      background: rgba(217, 173, 56, .055);
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .feature-group {
+      margin-top: 20px;
+    }
+
+    .feature-heading {
+      margin: 0 0 9px;
+      color: var(--gold);
+      font-size: .7rem;
+      font-weight: 900;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .features {
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .features li {
+      position: relative;
+      padding-left: 23px;
+      color: #e3e3e3;
+      font-size: .91rem;
+      line-height: 1.45;
+    }
+
+    .features li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .features li.coming::before {
+      content: "◆";
+      color: var(--gold);
+    }
+
+    .coming-label {
+      display: inline-block;
+      margin-left: 4px;
+      color: var(--gold);
+      font-size: .64rem;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .card-bottom {
+      margin-top: auto;
+      padding-top: 24px;
+    }
+
+    .plan-button {
+      width: 100%;
+      min-height: 50px;
+      color: #080808;
+      border-color: var(--gold);
+      background: linear-gradient(
+        135deg,
+        var(--gold-bright),
+        var(--gold)
+      );
+      box-shadow: 0 0 22px rgba(217, 173, 56, .13);
+    }
+
+    .plan-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 32px rgba(217, 173, 56, .24);
+    }
+
+    .section {
+      margin-top: 34px;
+      padding: clamp(25px, 5vw, 46px);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, .055),
+          rgba(255, 255, 255, .012)
+        ),
+        rgba(8, 8, 10, .91);
+      box-shadow: 0 22px 70px rgba(0, 0, 0, .42);
+    }
+
+    .section-heading {
+      max-width: 850px;
+    }
+
+    .section h2 {
+      margin: 0;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+    }
+
+    .section-description {
+      margin: 13px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .benefit-grid,
+    .addon-grid,
+    .foundation-grid {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(220px, 1fr)
+      );
+      gap: 15px;
+      margin-top: 24px;
+    }
+
+    .benefit-card,
+    .addon-card,
+    .foundation-item {
+      padding: 19px;
+      border: 1px solid rgba(255, 255, 255, .11);
+      border-radius: 17px;
+      background: var(--glass-light);
+    }
+
+    .benefit-card strong,
+    .addon-card strong,
+    .foundation-item strong {
+      display: block;
+      color: var(--gold-bright);
+    }
+
+    .benefit-card p,
+    .addon-card p,
+    .foundation-item p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .addon-price {
+      margin-top: 11px !important;
+      color: var(--white) !important;
+      font-size: 1.1rem;
+      font-weight: 900;
+    }
+
+    .foundation {
+      border-color: rgba(255, 231, 160, .72);
+      background:
+        radial-gradient(
+          circle at 15% 10%,
+          rgba(217, 173, 56, .15),
+          transparent 30%
+        ),
+        rgba(8, 8, 10, .94);
+    }
+
+    .foundation-badge {
+      display: inline-flex;
+      margin-bottom: 14px;
+      padding: 8px 13px;
+      border: 1px solid var(--gold);
+      border-radius: 999px;
+      color: var(--gold-bright);
+      background: rgba(217, 173, 56, .07);
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .foundation-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .footer-note {
+      max-width: 900px;
+      margin: 38px auto 0;
+      color: var(--muted);
+      line-height: 1.65;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        padding: 14px 0;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-links {
+        width: 100%;
+      }
+
+      .top-link {
+        flex: 1;
+      }
+
+      .shell {
+        padding-top: 28px;
+      }
+
+      .plan-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .popular-label {
+        position: static;
+        align-self: flex-start;
+        margin-bottom: 4px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/">
+        <strong>MajicMall Megaverse</strong>
+        <span>Merchant Success Platform</span>
+      </a>
+
+      <nav class="top-links">
+        <a class="top-link" href="/directory/">
+          Explore the Megaverse
+        </a>
+
+        <a class="top-link" href="/merchant/login/">
+          Merchant Sign In
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">
+        Build • Promote • Grow • Succeed
+      </p>
+
+      <h1>
+        Choose Your Success Plan
+      </h1>
+
+      <p class="hero-subtitle">
+        Launch a professional Zone Storefront, manage orders,
+        promote your brand, reach new customers, and grow through
+        one connected MajicMall Megaverse business ecosystem.
+      </p>
+
+      <p class="hero-promise">
+        More than a storefront. A complete path to business growth.
+      </p>
+    </section>
+
+    <section class="plan-grid" aria-label="Merchant Success Plans">
+      <article class="plan-card">
+        <div class="plan-icon">🌟</div>
+        <h2 class="plan-name">Vision</h2>
+
+        <p class="plan-tagline">
+          Turn your business vision into a professional presence
+          inside the MajicMall Megaverse.
+        </p>
+
+        <div class="price">
+          <strong>$19</strong>
+          <span>/ month</span>
+        </div>
+
+        <div class="allocation">
+          1 Zone Storefront
+        </div>
+
+        <div class="feature-group">
+          <p class="feature-heading">Commerce</p>
+
+          <ul class="features">
+            <li>Full customizable Zone Storefront</li>
+            <li>Product catalog and secure checkout</li>
+            <li>Customer pickup workflow</li>
+            <li>Merchant shipping support and tracking entry</li>
+            <li>MajicMall Megaverse local delivery eligibility</li>
+            <li>Fulfillment Center and new-order alerts</li>
+          </ul>
+        </div>
+
+        <div class="feature-group">
+          <p class="feature-heading">Business Growth</p>
+
+          <ul class="features">
+            <li>Basic sales and order analytics</li>
+            <li>Theme Marketplace access</li>
+            <li>Customer account integration</li>
+            <li>Standard merchant support</li>
+          </ul>
+        </div>
+
+        <div class="card-bottom">
+          <a
+            class="plan-button"
+            href="{% url 'merchant-invite' %}?plan=vision"
+          >
+            Choose Vision
+          </a>
+        </div>
+      </article>
+
+      <article class="plan-card featured">
+        <span class="popular-label">Growth Favorite</span>
+
+        <div class="plan-icon">🚀</div>
+        <h2 class="plan-name">Pro</h2>
+
+        <p class="plan-tagline">
+          Expand into additional zones and create professional
+          promotional campaigns in minutes.
+        </p>
+
+        <div class="price">
+          <strong>$49</strong>
+          <span>/ month</span>
+        </div>
+
+        <div class="allocation">
+          3 Zone Storefronts
+        </div>
+
+        <div class="feature-group">
+          <p class="feature-heading">Everything in Vision, plus</p>
+
+          <ul class="features">
+            <li>Expand into 3 MajicMall Megaverse zones</li>
+            <li>AI Store Manager access</li>
+            <li>AI Marketing Director campaign assistance</li>
+            <li>
+              Create professional Billboard and banner advertising
+              campaigns in minutes
+            </li>
+            <li>Coupons and promotional tools</li>
+            <li>Enhanced sales analytics</li>
+            <li>Priority email support</li>
+          </ul>
+        </div>
+
+        <div class="card-bottom">
+          <a
+            class="plan-button"
+            href="{% url 'merchant-invite' %}?plan=pro"
+          >
+            Choose Pro
+          </a>
+        </div>
+      </article>
+
+      <article class="plan-card">
+        <div class="plan-icon">💎</div>
+        <h2 class="plan-name">Elite</h2>
+
+        <p class="plan-tagline">
+          Premium visibility, media, AI promotion, and multi-zone
+          growth for ambitious brands.
+        </p>
+
+        <div class="price">
+          <strong>$99</strong>
+          <span>/ month</span>
+        </div>
+
+        <div class="allocation">
+          6 Zone Storefronts
+        </div>
+
+        <div class="feature-group">
+          <p class="feature-heading">Everything in Pro, plus</p>
+
+          <ul class="features">
+            <li>Expand into 6 MajicMall Megaverse zones</li>
+            <li>Digital Billboard Advertising credits</li>
+            <li>Premium banner promotion opportunities</li>
+            <li>AI Brand Ambassador tools</li>
+            <li>Advanced customer and sales analytics</li>
+            <li>Priority support</li>
+            <li>
+              Branded Business Media Channel
+              <span class="coming-label">Managed Service</span>
+            </li>
+            <li>Branded video player and scheduled programming</li>
+          </ul>
+        </div>
+
+        <div class="card-bottom">
+          <a
+            class="plan-button"
+            href="{% url 'merchant-invite' %}?plan=elite"
+          >
+            Choose Elite
+          </a>
+        </div>
+      </article>
+
+      <article class="plan-card">
+        <div class="plan-icon">🏢</div>
+        <h2 class="plan-name">Enterprise</h2>
+
+        <p class="plan-tagline">
+          Multi-brand operations, deeper reporting, advanced
+          permissions, and concierge business support.
+        </p>
+
+        <div class="price">
+          <strong>$199</strong>
+          <span>/ month</span>
+        </div>
+
+        <div class="allocation">
+          12 Zone Storefronts
+        </div>
+
+        <div class="feature-group">
+          <p class="feature-heading">Everything in Elite, plus</p>
+
+          <ul class="features">
+            <li>Expand into 12 MajicMall Megaverse zones</li>
+            <li>Multi-brand and multi-department operations</li>
+            <li>Advanced staff roles and permissions</li>
+            <li>Executive reporting and financial analytics</li>
+            <li>Expanded AI business team access</li>
+            <li>Priority Billboard placement opportunities</li>
+            <li>Concierge onboarding</li>
+            <li>Multi-location fulfillment preparation</li>
+            <li class="coming">
+              Business communications tools
+              <span class="coming-label">Coming Soon</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-bottom">
+          <a
+            class="plan-button"
+            href="{% url 'merchant-invite' %}?plan=enterprise"
+          >
+            Choose Enterprise
+          </a>
+        </div>
+      </article>
+
+      <article class="plan-card majestic">
+        <div class="plan-icon">👑</div>
+        <h2 class="plan-name">Majestic</h2>
+
+        <p class="plan-tagline">
+          The complete MajesticMall Megaverse merchant experience
+          for high-volume brands and visionary organizations.
+        </p>
+
+        <div class="price">
+          <strong>$499</strong>
+          <span>/ month</span>
+        </div>
+
+        <div class="allocation">
+          Custom High-Volume Zone Allocation
+        </div>
+
+        <div class="feature-group">
+          <p class="feature-heading">The Package of All Packages</p>
+
+          <ul class="features">
+            <li>Custom multi-zone and multi-brand expansion</li>
+            <li>Full available AI Executive Team access</li>
+            <li>Premium homepage and directory visibility</li>
+            <li>Priority Digital Billboard opportunities</li>
+            <li>Premium Business Media services</li>
+            <li>White-glove onboarding</li>
+            <li>Dedicated Merchant Success guidance</li>
+            <li>Custom integrations and enterprise planning</li>
+            <li>First access to new platform capabilities</li>
+            <li class="coming">
+              Expanded media and communications services
+              <span class="coming-label">Coming Soon</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-bottom">
+          <a
+            class="plan-button"
+            href="{% url 'merchant-invite' %}?plan=majestic"
+          >
+            Choose Majestic
+          </a>
+        </div>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">Why MajicMall Megaverse</p>
+
+        <h2>
+          One ecosystem built to help your business succeed
+        </h2>
+
+        <p class="section-description">
+          Your Success Plan can connect commerce, promotion,
+          fulfillment, media, advertising, AI assistance, customer
+          engagement, and multi-zone expansion under one merchant
+          experience.
+        </p>
+      </div>
+
+      <div class="benefit-grid">
+        <article class="benefit-card">
+          <strong>🏪 Zone Storefront Expansion</strong>
+          <p>
+            Expand into more MajicMall Megaverse zones and reach new
+            customer audiences without creating disconnected accounts.
+          </p>
+        </article>
+
+        <article class="benefit-card">
+          <strong>📣 Digital Billboard Advertising</strong>
+          <p>
+            Promote your business through prestigious digital
+            Billboard displays, banners, and featured placements.
+          </p>
+        </article>
+
+        <article class="benefit-card">
+          <strong>🤖 AI Business Assistance</strong>
+          <p>
+            Develop campaigns, promotional concepts, product content,
+            and business recommendations with specialized AI staff.
+          </p>
+        </article>
+
+        <article class="benefit-card">
+          <strong>🎥 Branded Business Media</strong>
+          <p>
+            Present scheduled product videos, commercials, interviews,
+            demonstrations, and promotional programming in a branded
+            player.
+          </p>
+        </article>
+
+        <article class="benefit-card">
+          <strong>🚚 Local Delivery Network</strong>
+          <p>
+            Qualifying local orders can connect to the MajicMall
+            Megaverse Driver Network after the merchant marks them
+            ready for pickup.
+          </p>
+        </article>
+
+        <article class="benefit-card">
+          <strong>📦 Universal Fulfillment Center</strong>
+          <p>
+            Manage pickup, merchant-arranged shipping, preparation,
+            packing, alerts, and local driver dispatch from one center.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">Optional Growth Services</p>
+
+        <h2>
+          Add what your business needs
+        </h2>
+
+        <p class="section-description">
+          Add individual growth services without immediately changing
+          your complete Success Plan. Availability may depend on
+          capacity, eligibility, and platform rollout.
+        </p>
+      </div>
+
+      <div class="addon-grid">
+        <article class="addon-card">
+          <strong>Additional Zone Storefront</strong>
+          <p>
+            Add another specialized storefront under your company and
+            feature a different product category in another zone.
+          </p>
+          <p class="addon-price">$15/month</p>
+        </article>
+
+        <article class="addon-card">
+          <strong>Branded Business Media Channel</strong>
+          <p>
+            A managed branded video player with scheduled programming,
+            rotating content, and product promotion.
+          </p>
+          <p class="addon-price">$35/month</p>
+        </article>
+
+        <article class="addon-card">
+          <strong>Digital Billboard Campaign</strong>
+          <p>
+            Promote your brand through premium MajicMall Megaverse
+            Billboard inventory and featured promotional displays.
+          </p>
+          <p class="addon-price">Starting at $35</p>
+        </article>
+
+        <article class="addon-card">
+          <strong>Premium Themes</strong>
+          <p>
+            Upgrade your storefront presentation through the future
+            MajicMall Megaverse Theme Marketplace.
+          </p>
+          <p class="addon-price">Marketplace pricing</p>
+        </article>
+
+        <article class="addon-card">
+          <strong>Business Phone Services</strong>
+          <p>
+            A future managed business number, messaging, voicemail,
+            and communications experience.
+          </p>
+          <p class="addon-price">Coming Soon</p>
+        </article>
+
+        <article class="addon-card">
+          <strong>Radio Promotion</strong>
+          <p>
+            Future audio advertising and artist or merchant promotion
+            through the planned MajicMall Megaverse Music Zone.
+          </p>
+          <p class="addon-price">Coming Soon</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section foundation">
+      <span class="foundation-badge">
+        Invitation Only • First 50 Merchants
+      </span>
+
+      <div class="section-heading">
+        <h2>
+          Foundation Merchant Program
+        </h2>
+
+        <p class="section-description">
+          Fifty qualifying original merchants will be recognized as
+          Foundation Merchants and receive a complimentary Vision-level
+          merchant account for one year.
+        </p>
+      </div>
+
+      <div class="foundation-grid">
+        <article class="foundation-item">
+          <strong>One Complimentary Year</strong>
+          <p>
+            One Vision-level Zone Storefront account is complimentary
+            during the first year.
+          </p>
+        </article>
+
+        <article class="foundation-item">
+          <strong>25% Lifetime Active Discount</strong>
+          <p>
+            Maintain active MajicMall Megaverse citizen status and
+            receive 25% off eligible merchant Success Plans.
+          </p>
+        </article>
+
+        <article class="foundation-item">
+          <strong>Discounted Zone Expansion</strong>
+          <p>
+            Foundation Merchants receive preferred pricing on eligible
+            additional Zone Storefronts.
+          </p>
+        </article>
+
+        <article class="foundation-item">
+          <strong>Foundation Recognition</strong>
+          <p>
+            Receive a distinctive Foundation Merchant designation and
+            recognition as an original business in the ecosystem.
+          </p>
+        </article>
+
+        <article class="foundation-item">
+          <strong>Early Feature Access</strong>
+          <p>
+            Receive priority opportunities to evaluate selected new
+            tools, experiences, and merchant services.
+          </p>
+        </article>
+
+        <article class="foundation-item">
+          <strong>Merchant Community Access</strong>
+          <p>
+            Participate in future merchant networking, feedback, and
+            growth opportunities.
+          </p>
+        </article>
+      </div>
+
+      <div class="foundation-cta">
+        <a
+          class="plan-button"
+          style="width:auto;"
+          href="{% url 'merchant-invite' %}?plan=foundation"
+        >
+          Apply for Foundation Merchant Consideration
+        </a>
+
+        <a
+          class="secondary-button"
+          href="/command-center/"
+        >
+          Return to Command Center
+        </a>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      Success Plan services are subject to availability, eligibility,
+      fair-use limits, advertising inventory, local delivery coverage,
+      and applicable merchant terms. Merchants remain responsible for
+      carrier selection and costs when using merchant-arranged shipping.
+    </p>
+  </main>
+</body>
+</html>

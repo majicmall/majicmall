@@ -1,0 +1,548 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        MajicMall Media Network | The Majestic Megaverse
+    </title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'advertising/css/dashboard.css' %}"
+    >
+</head>
+
+<body>
+    <div class="page-shell">
+
+        <div class="ambient ambient-one"></div>
+        <div class="ambient ambient-two"></div>
+
+        <header class="network-header">
+            <div class="header-reflection"></div>
+
+            <div class="network-mark" aria-hidden="true">
+                MM
+            </div>
+
+            <p class="eyebrow">
+                Advertising Command Center
+            </p>
+
+            <h1>
+                MajicMall Media Network
+            </h1>
+
+            <p class="network-tagline">
+                The Voice of the Majestic Megaverse
+            </p>
+
+            <div class="gold-divider">
+                <span></span>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+
+            <section
+                class="statistics-section"
+                aria-labelledby="network-overview-heading"
+            >
+                <div class="section-heading compact-heading">
+                    <div>
+                        <p class="section-kicker">
+                            Live Network Overview
+                        </p>
+
+                        <h2 id="network-overview-heading">
+                            Campaign Activity
+                        </h2>
+                    </div>
+
+                    <div class="live-status">
+                        <span class="live-dot"></span>
+                        Network Online
+                    </div>
+                </div>
+
+                <div class="statistics-grid">
+
+                    <article class="stat-card">
+                        <div class="stat-reflection"></div>
+
+                        <div class="stat-icon" aria-hidden="true">
+                            C
+                        </div>
+
+                        <div class="stat-value">
+                            {{ campaigns }}
+                        </div>
+
+                        <div class="stat-label">
+                            Total Campaigns
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-reflection"></div>
+
+                        <div class="stat-icon" aria-hidden="true">
+                            A
+                        </div>
+
+                        <div class="stat-value">
+                            {{ active_campaigns }}
+                        </div>
+
+                        <div class="stat-label">
+                            Active Campaigns
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-reflection"></div>
+
+                        <div class="stat-icon" aria-hidden="true">
+                            M
+                        </div>
+
+                        <div class="stat-value">
+                            {{ creatives }}
+                        </div>
+
+                        <div class="stat-label">
+                            Creative Assets
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-reflection"></div>
+
+                        <div class="stat-icon" aria-hidden="true">
+                            ✓
+                        </div>
+
+                        <div class="stat-value">
+                            {{ approved }}
+                        </div>
+
+                        <div class="stat-label">
+                            Approved Ads
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+
+            <section
+                class="department-section"
+                aria-labelledby="advertising-department-heading"
+            >
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">
+                            MajicMall Media Network
+                        </p>
+
+                        <h2 id="advertising-department-heading">
+                            Advertising Department
+                        </h2>
+
+                        <p class="section-description">
+                            Centralized campaign management, creative production,
+                            audience targeting and media distribution throughout
+                            the MajicMall Megaverse and the greater Majestic
+                            Megaverse.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="department-grid">
+
+                    <article class="department-card featured-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            01
+                        </div>
+
+                        <div class="department-icon">
+                            CM
+                        </div>
+
+                        <h3>Campaign Manager</h3>
+
+                        <p>
+                            Create, schedule, approve and manage advertising
+                            campaigns across the complete media network.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            02
+                        </div>
+
+                        <div class="department-icon">
+                            CS
+                        </div>
+
+                        <h3>Creative Studio</h3>
+
+                        <p>
+                            Develop and prepare visual, audio, video and
+                            interactive advertising creative.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            03
+                        </div>
+
+                        <div class="department-icon">
+                            ML
+                        </div>
+
+                        <h3>Media Library</h3>
+
+                        <p>
+                            Central storage for approved images, commercials,
+                            audio spots, logos and campaign assets.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            04
+                        </div>
+
+                        <div class="department-icon">
+                            MT
+                        </div>
+
+                        <h3>Media Types</h3>
+
+                        <p>
+                            Define each advertising format and ensure every
+                            creative is delivered through the correct channel.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            05
+                        </div>
+
+                        <div class="department-icon">
+                            PM
+                        </div>
+
+                        <h3>Placement Manager</h3>
+
+                        <p>
+                            Manage billboards, screens and advertising inventory
+                            throughout every destination and zone.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            06
+                        </div>
+
+                        <div class="department-icon">
+                            AM
+                        </div>
+
+                        <h3>Audience Manager</h3>
+
+                        <p>
+                            Match campaigns with the destinations, interests and
+                            audiences most likely to respond.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            07
+                        </div>
+
+                        <div class="department-icon">
+                            BB
+                        </div>
+
+                        <h3>Billboard Manager</h3>
+
+                        <p>
+                            Operate digital billboards throughout the MajicMall
+                            Megaverse and future Majestic destinations.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            08
+                        </div>
+
+                        <div class="department-icon">
+                            BA
+                        </div>
+
+                        <h3>Banner Advertising</h3>
+
+                        <p>
+                            Manage responsive promotional banners across
+                            directories, zones, stores and special events.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            09
+                        </div>
+
+                        <div class="department-icon">
+                            TV
+                        </div>
+
+                        <h3>TV Ads</h3>
+
+                        <p>
+                            Schedule commercials, sponsorships and promotional
+                            rotations across MajicMall TV channels.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            10
+                        </div>
+
+                        <div class="department-icon">
+                            TH
+                        </div>
+
+                        <h3>Theater Ads</h3>
+
+                        <p>
+                            Control pre-roll commercials, lobby displays,
+                            premiere sponsorships and theater promotions.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            11
+                        </div>
+
+                        <div class="department-icon">
+                            MZ
+                        </div>
+
+                        <h3>Music Zone Ads</h3>
+
+                        <p>
+                            Distribute radio spots, audio promotions, artist
+                            campaigns and sponsored programming.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            12
+                        </div>
+
+                        <div class="department-icon">
+                            RA
+                        </div>
+
+                        <h3>Receipt Advertising</h3>
+
+                        <p>
+                            Place targeted advertising on printed, digital,
+                            emailed and eligible text-message receipts.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            13
+                        </div>
+
+                        <div class="department-icon">
+                            AN
+                        </div>
+
+                        <h3>Analytics</h3>
+
+                        <p>
+                            Review impressions, clicks, completion rates,
+                            conversions and campaign performance.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            14
+                        </div>
+
+                        <div class="department-icon">
+                            RC
+                        </div>
+
+                        <h3>Revenue Center</h3>
+
+                        <p>
+                            Track advertising sales, campaign value, placement
+                            revenue and media-network earnings.
+                        </p>
+
+                        <span class="module-status">
+                            Coming Soon
+                        </span>
+                    </article>
+
+                    <article class="department-card ai-card">
+                        <div class="card-shine"></div>
+
+                        <div class="department-number">
+                            15
+                        </div>
+
+                        <div class="department-icon">
+                            AI
+                        </div>
+
+                        <h3>AI Marketing Director</h3>
+
+                        <p>
+                            Future intelligent campaign creation, targeting,
+                            optimization and creative-performance guidance.
+                        </p>
+
+                        <span class="module-status future-status">
+                            Future Intelligence
+                        </span>
+                    </article>
+
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="network-footer">
+            <p>
+                MajicMall Media Network
+            </p>
+
+            <span>
+                Advertising infrastructure for the MajicMall Megaverse and
+                the greater Majestic Megaverse.
+            </span>
+        </footer>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,683 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ campaign.name }} |
+        MajicMall Megaverse Media Network
+    </title>
+
+    <style>
+        :root {
+            --black: #030303;
+            --black-soft: #090909;
+            --glass: rgba(16, 16, 18, 0.88);
+            --glass-light: rgba(255, 255, 255, 0.055);
+            --gold: #d7b25a;
+            --gold-bright: #f4d889;
+            --gold-dark: #8c681f;
+            --white: #ffffff;
+            --muted: #b8b8bd;
+            --green: #69d89b;
+            --amber: #f0c86b;
+            --red: #ef7a7a;
+            --border: rgba(215, 178, 90, 0.34);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+            background: var(--black);
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            color: var(--white);
+            font-family:
+                Montserrat,
+                Arial,
+                Helvetica,
+                sans-serif;
+            background:
+                radial-gradient(
+                    circle at 15% 5%,
+                    rgba(215, 178, 90, 0.13),
+                    transparent 31rem
+                ),
+                radial-gradient(
+                    circle at 90% 15%,
+                    rgba(255, 255, 255, 0.055),
+                    transparent 30rem
+                ),
+                linear-gradient(
+                    145deg,
+                    #020202 0%,
+                    #090909 48%,
+                    #020202 100%
+                );
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .page-shell {
+            width: min(1240px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 34px 0 60px;
+        }
+
+        .top-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            min-height: 44px;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--gold-bright);
+            background: rgba(0, 0, 0, 0.42);
+            text-decoration: none;
+            transition:
+                border-color 180ms ease,
+                background 180ms ease,
+                transform 180ms ease;
+        }
+
+        .back-link:hover {
+            border-color: var(--gold-bright);
+            background: rgba(215, 178, 90, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .network-name {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.78rem;
+            letter-spacing: 0.16em;
+            text-align: right;
+            text-transform: uppercase;
+        }
+
+        .campaign-hero {
+            position: relative;
+            overflow: hidden;
+            padding: clamp(26px, 5vw, 54px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255, 255, 255, 0.075),
+                    rgba(255, 255, 255, 0.012) 48%,
+                    rgba(215, 178, 90, 0.055)
+                ),
+                var(--glass);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.09),
+                0 24px 70px rgba(0, 0, 0, 0.46);
+        }
+
+        .campaign-hero::before {
+            position: absolute;
+            top: -75%;
+            left: -28%;
+            width: 34%;
+            height: 240%;
+            content: "";
+            pointer-events: none;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.085),
+                transparent
+            );
+            transform: rotate(19deg);
+            animation: glassSweep 9s ease-in-out infinite;
+        }
+
+        @keyframes glassSweep {
+            0%,
+            58% {
+                transform: translateX(-110%) rotate(19deg);
+            }
+
+            100% {
+                transform: translateX(520%) rotate(19deg);
+            }
+        }
+
+        .hero-row {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 28px;
+        }
+
+        .eyebrow {
+            margin: 0 0 11px;
+            color: var(--gold);
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            max-width: 850px;
+            margin: 0;
+            font-family:
+                "Playfair Display",
+                Georgia,
+                serif;
+            font-size: clamp(2.15rem, 6vw, 4.55rem);
+            font-weight: 600;
+            line-height: 0.98;
+            overflow-wrap: anywhere;
+        }
+
+        .campaign-description {
+            position: relative;
+            z-index: 1;
+            max-width: 850px;
+            margin: 24px 0 0;
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1.72;
+            white-space: pre-line;
+        }
+
+        .status-badge {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 8px 15px;
+            border: 1px solid rgba(215, 178, 90, 0.5);
+            border-radius: 999px;
+            color: var(--gold-bright);
+            background: rgba(215, 178, 90, 0.09);
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.11em;
+            text-transform: uppercase;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            min-height: 132px;
+            padding: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.095);
+            border-radius: 15px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.058),
+                    rgba(255, 255, 255, 0.014)
+                ),
+                rgba(8, 8, 9, 0.86);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.055),
+                0 14px 35px rgba(0, 0, 0, 0.26);
+        }
+
+        .metric-label {
+            display: block;
+            margin-bottom: 11px;
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            display: block;
+            color: var(--white);
+            font-family:
+                "Playfair Display",
+                Georgia,
+                serif;
+            font-size: clamp(1.7rem, 3vw, 2.3rem);
+            line-height: 1;
+            overflow-wrap: anywhere;
+        }
+
+        .metric-subtext {
+            display: block;
+            margin-top: 9px;
+            color: var(--gold);
+            font-size: 0.78rem;
+        }
+
+        .section-panel {
+            margin-top: 25px;
+            padding: clamp(22px, 4vw, 36px);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 18px;
+            background: rgba(7, 7, 8, 0.84);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                0 22px 60px rgba(0, 0, 0, 0.28);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.085);
+        }
+
+        .section-heading {
+            margin: 0;
+            font-family:
+                "Playfair Display",
+                Georgia,
+                serif;
+            font-size: clamp(1.65rem, 4vw, 2.35rem);
+            font-weight: 600;
+        }
+
+        .section-subtitle {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .primary-button {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 11px 21px;
+            border: 1px solid var(--gold-bright);
+            border-radius: 10px;
+            color: #080602;
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--gold-bright),
+                    var(--gold),
+                    #b8892d
+                );
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.48),
+                0 10px 28px rgba(215, 178, 90, 0.19);
+            font-size: 0.84rem;
+            font-weight: 900;
+            letter-spacing: 0.055em;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition:
+                transform 180ms ease,
+                filter 180ms ease;
+        }
+
+        .primary-button:hover {
+            filter: brightness(1.08);
+            transform: translateY(-2px);
+        }
+
+        .creative-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+            gap: 17px;
+            margin-top: 22px;
+        }
+
+        .creative-card {
+            min-width: 0;
+            padding: 21px;
+            border: 1px solid rgba(215, 178, 90, 0.21);
+            border-radius: 14px;
+            background:
+                linear-gradient(
+                    150deg,
+                    rgba(255, 255, 255, 0.052),
+                    rgba(255, 255, 255, 0.01)
+                ),
+                #09090a;
+        }
+
+        .creative-type {
+            margin: 0 0 11px;
+            color: var(--gold);
+            font-size: 0.69rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .creative-title {
+            margin: 0;
+            font-size: 1.05rem;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+
+        .creative-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .creative-chip {
+            padding: 6px 9px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.035);
+            font-size: 0.7rem;
+        }
+
+        .empty-state {
+            margin-top: 22px;
+            padding: 44px 22px;
+            border: 1px dashed rgba(215, 178, 90, 0.38);
+            border-radius: 14px;
+            text-align: center;
+            background: rgba(215, 178, 90, 0.025);
+        }
+
+        .empty-icon {
+            display: block;
+            margin-bottom: 12px;
+            color: var(--gold);
+            font-family:
+                Georgia,
+                serif;
+            font-size: 2rem;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 8px;
+            font-family:
+                "Playfair Display",
+                Georgia,
+                serif;
+            font-size: 1.35rem;
+        }
+
+        .empty-state p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .footer-note {
+            margin: 30px 0 0;
+            color: #85858b;
+            font-size: 0.74rem;
+            letter-spacing: 0.1em;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 960px) {
+            .metric-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .creative-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 650px) {
+            .page-shell {
+                width: min(100% - 20px, 1240px);
+                padding-top: 17px;
+            }
+
+            .top-navigation,
+            .hero-row,
+            .section-header {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .network-name {
+                text-align: left;
+            }
+
+            .status-badge {
+                align-self: flex-start;
+            }
+
+            .metric-grid,
+            .creative-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .primary-button {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="page-shell">
+        <nav class="top-navigation">
+            <a
+                class="back-link"
+                href="{% url 'advertising:campaign_list' %}"
+            >
+                ← Campaign Manager
+            </a>
+
+            <p class="network-name">
+                MajicMall Megaverse Media Network
+            </p>
+        </nav>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div role="status">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <section class="campaign-hero">
+            <div class="hero-row">
+                <div>
+                    <p class="eyebrow">
+                        Campaign Command Center
+                    </p>
+
+                    <h1>{{ campaign.name }}</h1>
+                </div>
+
+                <span class="status-badge">
+                    {{ campaign.get_status_display }}
+                </span>
+            </div>
+
+            <p class="campaign-description">
+                {% if campaign.description %}
+                    {{ campaign.description }}
+                {% else %}
+                    No campaign description has been entered.
+                {% endif %}
+            </p>
+        </section>
+
+        <section
+            class="metric-grid"
+            aria-label="Campaign summary"
+        >
+            <article class="metric-card">
+                <span class="metric-label">Budget</span>
+
+                <strong class="metric-value">
+                    {% if campaign.budget != None %}
+                        ${{ campaign.budget|floatformat:2 }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </strong>
+
+                <span class="metric-subtext">
+                    Total campaign budget
+                </span>
+            </article>
+
+            <article class="metric-card">
+                <span class="metric-label">
+                    Creative Count
+                </span>
+
+                <strong class="metric-value">
+                    {{ creative_count }}
+                </strong>
+
+                <span class="metric-subtext">
+                    Total campaign creatives
+                </span>
+            </article>
+
+            <article class="metric-card">
+                <span class="metric-label">Approved</span>
+
+                <strong class="metric-value">
+                    {{ approved_count }}
+                </strong>
+
+                <span class="metric-subtext">
+                    Ready for placement
+                </span>
+            </article>
+
+            <article class="metric-card">
+                <span class="metric-label">
+                    Pending Review
+                </span>
+
+                <strong class="metric-value">
+                    {{ pending_count }}
+                </strong>
+
+                <span class="metric-subtext">
+                    Awaiting approval
+                </span>
+            </article>
+        </section>
+
+        <section class="section-panel">
+            <header class="section-header">
+                <div>
+                    <h2 class="section-heading">
+                        Campaign Creatives
+                    </h2>
+
+                    <p class="section-subtitle">
+                        Advertising assets assigned to this campaign.
+                    </p>
+                </div>
+
+                <a
+                    class="primary-button"
+                    href="#"
+                    aria-label="Add a creative to this campaign"
+                >
+                    + Add Creative
+                </a>
+            </header>
+
+            {% if creatives %}
+                <div class="creative-grid">
+                    {% for creative in creatives %}
+                        <article class="creative-card">
+                            <p class="creative-type">
+                                {{ creative.get_media_type_display }}
+                            </p>
+
+                            <h3 class="creative-title">
+                                {{ creative.title }}
+                            </h3>
+
+                            <div class="creative-meta">
+                                <span class="creative-chip">
+                                    {{ creative.get_approval_status_display }}
+                                </span>
+
+                                {% if creative.headline %}
+                                    <span class="creative-chip">
+                                        {{ creative.headline|truncatechars:32 }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <span
+                        class="empty-icon"
+                        aria-hidden="true"
+                    >
+                        ◇
+                    </span>
+
+                    <h3>No creatives have been added yet.</h3>
+
+                    <p>
+                        This campaign is ready for its first billboard,
+                        banner, video, audio spot, or other media asset.
+                    </p>
+                </div>
+            {% endif %}
+        </section>
+
+        <p class="footer-note">
+            The Voice of the Majestic Megaverse
+        </p>
+    </main>
+</body>
+</html>

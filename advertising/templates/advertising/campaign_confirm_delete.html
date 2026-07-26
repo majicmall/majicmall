@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Delete Campaign | MajicMall Megaverse Media Network
+    </title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'advertising/css/campaign_manager.css' %}"
+    >
+</head>
+
+<body>
+    <div class="network-shell">
+
+        <main class="confirmation-page">
+            <section class="confirmation-card">
+                <div class="warning-emblem">!</div>
+
+                <p class="eyebrow">
+                    Campaign Manager
+                </p>
+
+                <h1>Delete Campaign?</h1>
+
+                <p>
+                    You are about to delete
+                    <strong>{{ campaign }}</strong>.
+                    This action cannot be reversed.
+                </p>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="form-actions centered-actions">
+                        <a
+                            class="secondary-button"
+                            href="{% url 'advertising:campaign_list' %}"
+                        >
+                            Keep Campaign
+                        </a>
+
+                        <button
+                            class="danger-button"
+                            type="submit"
+                        >
+                            Delete Campaign
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+    </div>
+</body>
+</html>

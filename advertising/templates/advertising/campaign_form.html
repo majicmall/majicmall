@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ page_title }} | MajicMall Megaverse Media Network
+    </title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'advertising/css/campaign_manager.css' %}"
+    >
+</head>
+
+<body>
+    <div class="network-shell">
+
+        <header class="network-topbar">
+            <a
+                class="network-brand"
+                href="{% url 'advertising:dashboard' %}"
+            >
+                <span class="network-emblem">MM</span>
+
+                <span>
+                    <strong>
+                        MajicMall Megaverse Media Network
+                    </strong>
+
+                    <small>
+                        The Voice of the Majestic Megaverse
+                    </small>
+                </span>
+            </a>
+
+            <a
+                class="topbar-button"
+                href="{% url 'advertising:campaign_list' %}"
+            >
+                Campaign Manager
+            </a>
+        </header>
+
+        <main class="campaign-page narrow-page">
+
+            <section class="form-heading">
+                <p class="eyebrow">
+                    Campaign Manager
+                </p>
+
+                <h1>{{ page_title }}</h1>
+
+                <p>{{ page_subtitle }}</p>
+            </section>
+
+            <form
+                class="campaign-form-panel"
+                method="post"
+                enctype="multipart/form-data"
+            >
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="form-error-summary">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="campaign-form-grid">
+                    {% for field in form %}
+                        <div
+                            class="campaign-field
+                            {% if field.field.widget.input_type == 'checkbox' %}
+                                checkbox-field
+                            {% endif %}"
+                        >
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+
+                                {% if field.field.required %}
+                                    <span class="required-mark">*</span>
+                                {% endif %}
+                            </label>
+
+                            {{ field }}
+
+                            {% if field.help_text %}
+                                <small class="field-help">
+                                    {{ field.help_text|safe }}
+                                </small>
+                            {% endif %}
+
+                            {% if field.errors %}
+                                <div class="field-errors">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-actions">
+                    <a
+                        class="secondary-button"
+                        href="{% url 'advertising:campaign_list' %}"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        class="primary-button"
+                        type="submit"
+                    >
+                        {{ submit_label }}
+                    </button>
+                </div>
+            </form>
+
+        </main>
+    </div>
+</body>
+</html>

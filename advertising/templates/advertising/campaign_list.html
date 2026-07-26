@@ -1,0 +1,299 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Campaign Manager | MajicMall Megaverse Media Network
+    </title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'advertising/css/campaign_manager.css' %}"
+    >
+</head>
+
+<body>
+    <div class="network-shell">
+
+        <header class="network-topbar">
+            <div>
+                <a
+                    class="network-brand"
+                    href="{% url 'advertising:dashboard' %}"
+                >
+                    <span class="network-emblem">MM</span>
+
+                    <span>
+                        <strong>
+                            MajicMall Megaverse Media Network
+                        </strong>
+
+                        <small>
+                            The Voice of the Majestic Megaverse
+                        </small>
+                    </span>
+                </a>
+            </div>
+
+            <a
+                class="topbar-button"
+                href="{% url 'advertising:dashboard' %}"
+            >
+                Media Network Dashboard
+            </a>
+        </header>
+
+        <main class="campaign-page">
+
+            {% if messages %}
+                <div class="message-stack">
+                    {% for message in messages %}
+                        <div class="system-message">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <section class="campaign-hero">
+                <div>
+                    <p class="eyebrow">
+                        Advertising Department
+                    </p>
+
+                    <h1>Campaign Manager</h1>
+
+                    <p>
+                        Create, organize and manage advertising campaigns
+                        across the MajicMall Megaverse and future destinations
+                        throughout the Majestic Megaverse.
+                    </p>
+                </div>
+
+                <a
+                    class="primary-button"
+                    href="{% url 'advertising:campaign_create' %}"
+                >
+                    + Create Campaign
+                </a>
+            </section>
+
+            <section class="campaign-stat-grid">
+                <article class="campaign-stat">
+                    <span>Total Campaigns</span>
+                    <strong>{{ total_campaigns }}</strong>
+                </article>
+
+                <article class="campaign-stat">
+                    <span>Active Campaigns</span>
+                    <strong>{{ active_campaigns }}</strong>
+                </article>
+
+                <article class="campaign-stat">
+                    <span>Current Results</span>
+                    <strong>{{ campaigns|length }}</strong>
+                </article>
+            </section>
+
+            <section class="campaign-panel">
+                <form
+                    class="campaign-filters"
+                    method="get"
+                >
+                    <div class="filter-group search-group">
+                        <label for="campaign-search">
+                            Search Campaigns
+                        </label>
+
+                        <input
+                            id="campaign-search"
+                            type="search"
+                            name="q"
+                            value="{{ search_query }}"
+                            placeholder="Search by campaign name..."
+                        >
+                    </div>
+
+                    {% if status_choices %}
+                        <div class="filter-group">
+                            <label for="campaign-status">
+                                Status
+                            </label>
+
+                            <select
+                                id="campaign-status"
+                                name="status"
+                            >
+                                <option value="">
+                                    All Statuses
+                                </option>
+
+                                {% for value, label in status_choices %}
+                                    <option
+                                        value="{{ value }}"
+                                        {% if status_filter == value %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+
+                    <button
+                        class="filter-button"
+                        type="submit"
+                    >
+                        Apply Filters
+                    </button>
+
+                    {% if search_query or status_filter %}
+                        <a
+                            class="clear-button"
+                            href="{% url 'advertising:campaign_list' %}"
+                        >
+                            Clear
+                        </a>
+                    {% endif %}
+                </form>
+
+                {% if campaigns %}
+                    <div class="campaign-table-wrap">
+                        <table class="campaign-table">
+                            <thead>
+                                <tr>
+                                    <th>Campaign</th>
+                                    <th>Status</th>
+                                    <th>Schedule</th>
+                                    <th>Budget</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for campaign in campaigns %}
+                                    <tr>
+                                        <td>
+                                            <div class="campaign-name">
+                                                {{ campaign }}
+                                            </div>
+
+                                            {% if campaign.description %}
+                                                <div class="campaign-description">
+                                                    {{ campaign.description|truncatechars:90 }}
+                                                </div>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if campaign.status %}
+                                                <span
+                                                    class="status-pill status-{{ campaign.status|lower }}"
+                                                >
+                                                    {{ campaign.get_status_display|default:campaign.status }}
+                                                </span>
+                                            {% else %}
+                                                <span class="status-pill">
+                                                    Not Set
+                                                </span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            <div class="schedule-value">
+                                                {% if campaign.start_date %}
+                                                    {{ campaign.start_date }}
+                                                {% else %}
+                                                    —
+                                                {% endif %}
+
+                                                <span>to</span>
+
+                                                {% if campaign.end_date %}
+                                                    {{ campaign.end_date }}
+                                                {% else %}
+                                                    —
+                                                {% endif %}
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            {% if campaign.budget %}
+                                                ${{ campaign.budget }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            <div class="table-actions">
+                                                <a
+                                                    class="edit-action"
+                                                    href="{% url 'advertising:campaign_edit' campaign.pk %}"
+                                                >
+                                                    Edit
+                                                </a>
+
+                                                <a
+                                                    class="delete-action"
+                                                    href="{% url 'advertising:campaign_delete' campaign.pk %}"
+                                                >
+                                                    Delete
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-campaign-state">
+                        <div class="empty-icon">CM</div>
+
+                        <h2>No campaigns found</h2>
+
+                        <p>
+                            Create the first campaign for the MajicMall
+                            Megaverse Media Network.
+                        </p>
+
+                        <a
+                            class="primary-button"
+                            href="{% url 'advertising:campaign_create' %}"
+                        >
+                            Create First Campaign
+                        </a>
+                    </div>
+                {% endif %}
+            </section>
+
+        </main>
+    </div>
+</body>
+</html>

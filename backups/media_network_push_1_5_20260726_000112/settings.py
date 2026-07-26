@@ -80,7 +80,6 @@ if IS_HTTPS_SITE and not DEBUG:
         SECURE_HSTS_PRELOAD = True
 
 INSTALLED_APPS = [
-    "advertising.apps.AdvertisingConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

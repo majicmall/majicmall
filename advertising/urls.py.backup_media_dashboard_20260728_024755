@@ -5,7 +5,6 @@ from . import views
 app_name = "advertising"
 
 urlpatterns = [
-    path("", views.media_network_dashboard, name="media-network-dashboard"),
     path("", views.dashboard, name="dashboard"),
 
     path(

@@ -792,42 +792,6 @@
           </div>
         </article>
 
-
-        <article
-          class="launcher-card"
-          id="majicmall-media-network-launcher"
-        >
-          <div class="card-icon">📣</div>
-
-          <h3>
-            Advertise with MajicMall Megaverse
-          </h3>
-
-          <p class="card-description">
-            Launch premium advertising campaigns through the
-            MajicMall Megaverse Media Network. Promote businesses,
-            products, services, events, music, movies, nonprofits,
-            organizations, destinations, and brands throughout the
-            MajicMall Megaverse.
-          </p>
-
-          <div class="button-stack">
-            <a
-              class="launch-button primary"
-              href="/advertising/campaigns/create/"
-            >
-              Create Ad
-            </a>
-
-            <a
-              class="launch-button"
-              href="/advertising/campaigns/"
-            >
-              Campaign Manager
-            </a>
-          </div>
-        </article>
-
         <article class="launcher-card">
           <div class="card-icon">⚙️</div>
 

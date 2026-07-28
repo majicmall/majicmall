@@ -5,21 +5,6 @@ from . import views
 app_name = "advertising"
 
 urlpatterns = [
-    path(
-        "creatives/",
-        views.creative_studio,
-        name="creative-studio",
-    ),
-    path(
-        "creatives/create/",
-        views.creative_create,
-        name="creative-create",
-    ),
-    path(
-        "campaigns/<int:campaign_id>/creatives/create/",
-        views.creative_create,
-        name="campaign-creative-create",
-    ),
     path("", views.media_network_dashboard, name="media-network-dashboard"),
     path("", views.dashboard, name="dashboard"),
 

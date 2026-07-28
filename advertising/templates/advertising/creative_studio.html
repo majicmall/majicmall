@@ -1,0 +1,545 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Creative Studio | MajicMall Megaverse Media Network
+  </title>
+
+  <style>
+    :root {
+      --black: #020202;
+      --panel: rgba(13, 13, 17, 0.93);
+      --gold: #e8bd45;
+      --gold-bright: #ffe7a0;
+      --white: #fff;
+      --muted: rgba(255, 255, 255, 0.7);
+      --border: rgba(232, 189, 69, 0.38);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--black);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(
+          circle at 50% -8%,
+          rgba(232, 189, 69, 0.22),
+          transparent 34%
+        ),
+        radial-gradient(
+          circle at 12% 55%,
+          rgba(90, 52, 170, 0.12),
+          transparent 30%
+        ),
+        linear-gradient(
+          145deg,
+          #020202,
+          #0b0b10 48%,
+          #020202
+        );
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.55;
+      background-image:
+        radial-gradient(circle, white 0 1px, transparent 1.5px),
+        radial-gradient(circle, #ffe6a1 0 1px, transparent 1.5px);
+      background-position: 0 0, 55px 75px;
+      background-size: 145px 145px, 195px 195px;
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(16px);
+    }
+
+    .topbar-inner {
+      width: min(1320px, calc(100% - 32px));
+      min-height: 78px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1rem, 3vw, 1.4rem);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.17em;
+      text-transform: uppercase;
+    }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .button {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 18px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.05);
+      text-decoration: none;
+      font-weight: 900;
+    }
+
+    .button.primary {
+      color: #050505;
+      background: linear-gradient(
+        135deg,
+        var(--gold-bright),
+        var(--gold)
+      );
+    }
+
+    .shell {
+      position: relative;
+      z-index: 2;
+      width: min(1320px, calc(100% - 32px));
+      margin: auto;
+      padding: 46px 0 90px;
+    }
+
+    .hero {
+      padding: clamp(30px, 6vw, 68px);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.07),
+          rgba(255, 255, 255, 0.015)
+        ),
+        rgba(5, 5, 8, 0.92);
+      box-shadow:
+        0 32px 90px rgba(0, 0, 0, 0.55),
+        0 0 60px rgba(232, 189, 69, 0.08);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--gold);
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.4rem, 7vw, 5.3rem);
+      line-height: 1;
+    }
+
+    .tagline {
+      margin: 16px 0 0;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.05rem, 3vw, 1.55rem);
+      font-style: italic;
+    }
+
+    .description {
+      max-width: 790px;
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.75;
+    }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 26px;
+    }
+
+    .summary-card {
+      min-width: 180px;
+      padding: 18px 22px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .summary-label {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .summary-value {
+      margin-top: 7px;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2rem;
+    }
+
+    .section {
+      margin-top: 48px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.8rem, 4vw, 2.75rem);
+    }
+
+    .section-heading p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(270px, 1fr)
+      );
+      gap: 20px;
+    }
+
+    .creative-card {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.06),
+          rgba(255, 255, 255, 0.015)
+        ),
+        var(--panel);
+      box-shadow: 0 20px 54px rgba(0, 0, 0, 0.38);
+    }
+
+    .preview {
+      min-height: 180px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+      background:
+        radial-gradient(
+          circle at 50% 20%,
+          rgba(232, 189, 69, 0.14),
+          transparent 45%
+        ),
+        #070708;
+    }
+
+    .preview img,
+    .preview video {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .preview audio {
+      width: calc(100% - 28px);
+    }
+
+    .placeholder {
+      padding: 30px;
+      color: var(--gold-bright);
+      font-size: 3rem;
+    }
+
+    .creative-body {
+      padding: 22px;
+    }
+
+    .creative-body h3 {
+      margin: 0;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.35rem;
+    }
+
+    .meta {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      padding: 54px 24px;
+      border: 1px dashed var(--border);
+      border-radius: 22px;
+      color: var(--muted);
+      text-align: center;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.5rem;
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        padding: 14px 0;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        width: 100%;
+      }
+
+      .button {
+        flex: 1;
+      }
+
+      .shell {
+        padding-top: 28px;
+      }
+
+      .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .section-heading .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/advertising/">
+        MajicMall Megaverse Media Network
+
+        <span>
+          The Voice of the Majestic Megaverse
+        </span>
+      </a>
+
+      <div class="top-actions">
+        <a class="button" href="/advertising/">
+          Headquarters
+        </a>
+
+        <a
+          class="button"
+          href="/advertising/campaigns/"
+        >
+          Campaign Manager
+        </a>
+
+        <a
+          class="button primary"
+          href="/advertising/creatives/create/"
+        >
+          Add Creative
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">
+        Design • Upload • Organize • Activate
+      </p>
+
+      <h1>
+        Creative Studio
+      </h1>
+
+      <p class="tagline">
+        Build the voice, look, and energy of your campaign.
+      </p>
+
+      <p class="description">
+        Create and organize advertising assets for billboards,
+        banners, videos, audio promotions, events, stores,
+        entertainment, destinations, and digital experiences
+        throughout the MajicMall Megaverse.
+      </p>
+
+      <div class="summary">
+        <div class="summary-card">
+          <div class="summary-label">
+            Creative Assets
+          </div>
+
+          <div class="summary-value">
+            {{ creative_count }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <div>
+          <h2>
+            Creative Gallery
+          </h2>
+
+          <p>
+            Your MajicMall Megaverse Media Network asset library.
+          </p>
+        </div>
+
+        <a
+          class="button primary"
+          href="/advertising/creatives/create/"
+        >
+          Create New Asset
+        </a>
+      </div>
+
+      <div class="gallery">
+        {% for creative in creatives %}
+          <article class="creative-card">
+            <div class="preview">
+              {% if creative.file %}
+                {% with url=creative.file.url|lower %}
+                  {% if ".jpg" in url or ".jpeg" in url or ".png" in url or ".gif" in url or ".webp" in url %}
+                    <img
+                      src="{{ creative.file.url }}"
+                      alt="{{ creative.name|default:'Creative asset' }}"
+                    >
+                  {% elif ".mp4" in url or ".webm" in url or ".mov" in url %}
+                    <video controls preload="metadata">
+                      <source src="{{ creative.file.url }}">
+                    </video>
+                  {% elif ".mp3" in url or ".wav" in url or ".ogg" in url %}
+                    <audio controls>
+                      <source src="{{ creative.file.url }}">
+                    </audio>
+                  {% else %}
+                    <div class="placeholder">
+                      📄
+                    </div>
+                  {% endif %}
+                {% endwith %}
+              {% elif creative.image %}
+                <img
+                  src="{{ creative.image.url }}"
+                  alt="{{ creative.name|default:'Creative asset' }}"
+                >
+              {% elif creative.video %}
+                <video controls preload="metadata">
+                  <source src="{{ creative.video.url }}">
+                </video>
+              {% elif creative.audio %}
+                <audio controls>
+                  <source src="{{ creative.audio.url }}">
+                </audio>
+              {% else %}
+                <div class="placeholder">
+                  🎨
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="creative-body">
+              <h3>
+                {{ creative.name|default:creative.title|default:"Untitled Creative" }}
+              </h3>
+
+              {% if creative.campaign %}
+                <p class="meta">
+                  Campaign: {{ creative.campaign }}
+                </p>
+              {% endif %}
+
+              {% if creative.creative_type %}
+                <p class="meta">
+                  Type: {{ creative.creative_type }}
+                </p>
+              {% elif creative.asset_type %}
+                <p class="meta">
+                  Type: {{ creative.asset_type }}
+                </p>
+              {% endif %}
+
+              {% if creative.status %}
+                <p class="meta">
+                  Status: {{ creative.status }}
+                </p>
+              {% endif %}
+            </div>
+          </article>
+        {% empty %}
+          <div class="empty-state">
+            <strong>
+              Your Creative Studio is ready.
+            </strong>
+
+            No creative assets have been added yet.
+            Select “Create New Asset” to upload the first
+            MajicMall Megaverse Media Network creative.
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+</body>
+</html>

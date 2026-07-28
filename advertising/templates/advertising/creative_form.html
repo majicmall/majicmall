@@ -1,0 +1,303 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Add Creative | MajicMall Megaverse Media Network
+  </title>
+
+  <style>
+    :root {
+      --black: #020202;
+      --panel: rgba(13, 13, 17, 0.94);
+      --gold: #e8bd45;
+      --gold-bright: #ffe7a0;
+      --white: #fff;
+      --muted: rgba(255, 255, 255, 0.7);
+      --border: rgba(232, 189, 69, 0.38);
+      --danger: #ff9999;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(
+          circle at 50% -8%,
+          rgba(232, 189, 69, 0.23),
+          transparent 35%
+        ),
+        linear-gradient(
+          145deg,
+          #020202,
+          #0b0b10 50%,
+          #020202
+        );
+    }
+
+    .shell {
+      width: min(900px, calc(100% - 32px));
+      margin: auto;
+      padding: 42px 0 90px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .breadcrumb a {
+      color: var(--gold-bright);
+      text-decoration: none;
+    }
+
+    .panel {
+      padding: clamp(26px, 6vw, 54px);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.07),
+          rgba(255, 255, 255, 0.015)
+        ),
+        var(--panel);
+      box-shadow:
+        0 32px 90px rgba(0, 0, 0, 0.55),
+        0 0 60px rgba(232, 189, 69, 0.08);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--gold);
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--gold-bright);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.1rem, 6vw, 4rem);
+      line-height: 1;
+    }
+
+    .description {
+      margin: 18px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .campaign-banner {
+      margin-top: 22px;
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      color: var(--gold-bright);
+      background: rgba(232, 189, 69, 0.07);
+    }
+
+    form {
+      margin-top: 32px;
+    }
+
+    .field {
+      margin-bottom: 22px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gold-bright);
+      font-weight: 900;
+    }
+
+    .help {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+
+    .creative-input,
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px;
+      border: 1px solid rgba(232, 189, 69, 0.34);
+      border-radius: 14px;
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.055);
+      font: inherit;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      min-height: auto;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+    }
+
+    option {
+      color: #111;
+    }
+
+    .errorlist {
+      margin: 7px 0;
+      padding-left: 20px;
+      color: var(--danger);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .button {
+      min-height: 50px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 22px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.05);
+      text-decoration: none;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .button.primary {
+      color: #050505;
+      background: linear-gradient(
+        135deg,
+        var(--gold-bright),
+        var(--gold)
+      );
+    }
+
+    @media (max-width: 620px) {
+      .actions {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="shell">
+    <nav class="breadcrumb">
+      <a href="/advertising/">
+        Media Network Headquarters
+      </a>
+
+      <span>›</span>
+
+      <a href="/advertising/creatives/">
+        Creative Studio
+      </a>
+
+      <span>›</span>
+
+      <span>Add Creative</span>
+    </nav>
+
+    <section class="panel">
+      <p class="eyebrow">
+        MajicMall Megaverse Media Network
+      </p>
+
+      <h1>
+        Add Creative Asset
+      </h1>
+
+      <p class="description">
+        Upload or define an advertising asset for use across
+        campaigns, placements, digital billboards, banners,
+        video channels, audio promotions, and other approved
+        MajicMall Megaverse destinations.
+      </p>
+
+      {% if campaign %}
+        <div class="campaign-banner">
+          Adding creative to campaign:
+          <strong>{{ campaign }}</strong>
+        </div>
+      {% endif %}
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        {% for field in form %}
+          <div class="field">
+            <label for="{{ field.id_for_label }}">
+              {{ field.label }}
+            </label>
+
+            {{ field }}
+
+            {% if field.help_text %}
+              <div class="help">
+                {{ field.help_text|safe }}
+              </div>
+            {% endif %}
+
+            {{ field.errors }}
+          </div>
+        {% endfor %}
+
+        <div class="actions">
+          <button class="button primary" type="submit">
+            Save Creative Asset
+          </button>
+
+          <a
+            class="button"
+            href="/advertising/creatives/"
+          >
+            Cancel
+          </a>
+        </div>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

@@ -81,7 +81,6 @@ if IS_HTTPS_SITE and not DEBUG:
 
 INSTALLED_APPS = [
     "advertising.apps.AdvertisingConfig",
-    "digital_property",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -104,8 +103,6 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.facebook",
-
-    "majestian_economy.apps.MajestianEconomyConfig",
 ]
 
 MIDDLEWARE = [

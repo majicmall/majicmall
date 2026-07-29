@@ -1,31 +1,26 @@
-# Python
+# ----------------------------
+# Local Backup Files
+# ----------------------------
+
+.mm_backups/
+backups/
+
+*.bak
+*.backup_*
+*.before
+
+# Python cache
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
 
-# Virtual env
-venv/
-.env
-
-# Django
-db.sqlite3
-media/
-staticfiles/
-
-# IDE
-.vscode/
-.idea/
-staticfiles/
+# Virtual Environment
 .venv/
-venv/
-__pycache__/
-*.pyc
-staticfiles/
-.env
 
-# Large local video files
-core/static/videos/trailers/*.mov
-core/static/videos/trailers/*.mp4
-staticfiles/videos/trailers/*.mov
-staticfiles/videos/trailers/*.mp4
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Installer Logs
+*.log

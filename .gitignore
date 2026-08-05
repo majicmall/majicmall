@@ -24,3 +24,26 @@ __pycache__/
 
 # Installer Logs
 *.log
+
+# MajicMall Megaverse local environment
+.env
+db.sqlite3
+media/
+staticfiles/
+venv/
+.venv/
+
+# Local video assets not stored in Git
+core/static/videos/trailers/
+
+# Local installers, diagnostics, and reports
+MM_*.sh
+advertising_audit.txt
+
+# Local backup files
+*.bak
+*.bak_*
+*.backup
+*.backup_*
+.mm_backups/
+backups/

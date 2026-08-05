@@ -1,0 +1,885 @@
+<section
+  class="ad-inventory"
+  id="advertising-inventory"
+  aria-labelledby="advertising-inventory-title"
+>
+  <header class="ad-inventory-header">
+    <div>
+      <span class="ad-inventory-eyebrow">
+        Live Network Inventory
+      </span>
+
+      <h2 id="advertising-inventory-title">
+        Advertising Inventory
+      </h2>
+
+      <p>
+        Search and review every active advertising location across
+        the MajicMall Megaverse.
+      </p>
+    </div>
+
+    <div class="ad-inventory-total">
+      <strong>{{ inventory_count }}</strong>
+      <span>Locations</span>
+    </div>
+  </header>
+
+  <div class="ad-inventory-controls">
+    <label class="ad-control ad-control-search">
+      <span>Search Inventory</span>
+
+      <input
+        id="adInventorySearch"
+        type="search"
+        placeholder="Property code, name, zone, advertiser..."
+        autocomplete="off"
+      >
+    </label>
+
+    <label class="ad-control">
+      <span>Zone</span>
+
+      <select id="adInventoryZone">
+        <option value="">All Zones</option>
+
+        {% for zone in zones %}
+          <option value="{{ zone|lower }}">
+            {{ zone }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label class="ad-control">
+      <span>Property Type</span>
+
+      <select id="adInventoryType">
+        <option value="">All Property Types</option>
+
+        {% for property_type in property_types %}
+          <option value="{{ property_type|lower }}">
+            {{ property_type }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label class="ad-control">
+      <span>Status</span>
+
+      <select id="adInventoryStatus">
+        <option value="">All Statuses</option>
+        <option value="available">Available</option>
+        <option value="reserved">Reserved</option>
+        <option value="leased">Leased</option>
+        <option value="maintenance">Maintenance</option>
+        <option value="coming_soon">Coming Soon</option>
+      </select>
+    </label>
+
+    <button
+      id="adInventoryReset"
+      class="ad-inventory-reset"
+      type="button"
+    >
+      Reset
+    </button>
+  </div>
+
+  <div class="ad-inventory-results">
+    <span id="adInventoryResultCount">
+      {{ inventory_count }}
+    </span>
+    matching location{{ inventory_count|pluralize }}
+  </div>
+
+  {% if inventory_items %}
+    <div class="ad-inventory-desktop">
+      <div class="ad-inventory-table-wrap">
+        <table class="ad-inventory-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Type</th>
+              <th>Zone</th>
+              <th>Status</th>
+              <th>Advertiser</th>
+              <th>Capabilities</th>
+              <th>Lease Ends</th>
+            </tr>
+          </thead>
+
+          <tbody id="adInventoryTableBody">
+            {% for item in inventory_items %}
+              <tr
+                class="ad-inventory-item"
+                data-search="{{ item.property_code|lower }} {{ item.name|lower }} {{ item.property_type|lower }} {{ item.zone|lower }} {{ item.advertiser_name|lower }} {{ item.location_label|lower }}"
+                data-zone="{{ item.zone|lower }}"
+                data-type="{{ item.property_type|lower }}"
+                data-status="{{ item.status }}"
+              >
+                <td>
+                  <div class="ad-property-primary">
+                    <div>
+                      <span class="ad-property-code">
+                        {{ item.property_code }}
+                      </span>
+
+                      <strong>{{ item.name }}</strong>
+
+                      {% if item.location_label %}
+                        <small>{{ item.location_label }}</small>
+                      {% endif %}
+                    </div>
+
+                    {% if item.featured %}
+                      <span class="ad-featured-badge">
+                        Featured
+                      </span>
+                    {% endif %}
+                  </div>
+                </td>
+
+                <td>{{ item.property_type }}</td>
+
+                <td>{{ item.zone }}</td>
+
+                <td>
+                  <span class="ad-status ad-status-{{ item.status }}">
+                    {{ item.status_label }}
+                  </span>
+                </td>
+
+                <td>
+                  {% if item.advertiser_name %}
+                    <strong class="ad-advertiser-name">
+                      {{ item.advertiser_name }}
+                    </strong>
+
+                    {% if item.lease_plan_name %}
+                      <small class="ad-plan-name">
+                        {{ item.lease_plan_name }}
+                      </small>
+                    {% endif %}
+                  {% else %}
+                    <span class="ad-empty-value">
+                      Available
+                    </span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  <div class="ad-capability-list">
+                    {% if item.supports_image %}
+                      <span>Image</span>
+                    {% endif %}
+
+                    {% if item.supports_video %}
+                      <span>Video</span>
+                    {% endif %}
+
+                    {% if item.interactive %}
+                      <span>Interactive</span>
+                    {% endif %}
+                  </div>
+
+                  <small class="ad-resolution">
+                    {{ item.width }} × {{ item.height }}
+                  </small>
+                </td>
+
+                <td>
+                  {% if item.lease_end_date %}
+                    {{ item.lease_end_date|date:"M j, Y" }}
+                  {% else %}
+                    <span class="ad-empty-value">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div
+      class="ad-inventory-mobile"
+      id="adInventoryMobileGrid"
+    >
+      {% for item in inventory_items %}
+        <article
+          class="ad-inventory-card ad-inventory-item"
+          data-search="{{ item.property_code|lower }} {{ item.name|lower }} {{ item.property_type|lower }} {{ item.zone|lower }} {{ item.advertiser_name|lower }} {{ item.location_label|lower }}"
+          data-zone="{{ item.zone|lower }}"
+          data-type="{{ item.property_type|lower }}"
+          data-status="{{ item.status }}"
+        >
+          <div class="ad-card-topline">
+            <span class="ad-property-code">
+              {{ item.property_code }}
+            </span>
+
+            <span class="ad-status ad-status-{{ item.status }}">
+              {{ item.status_label }}
+            </span>
+          </div>
+
+          <h3>{{ item.name }}</h3>
+
+          {% if item.location_label %}
+            <p>{{ item.location_label }}</p>
+          {% endif %}
+
+          <dl>
+            <div>
+              <dt>Property Type</dt>
+              <dd>{{ item.property_type }}</dd>
+            </div>
+
+            <div>
+              <dt>Zone</dt>
+              <dd>{{ item.zone }}</dd>
+            </div>
+
+            <div>
+              <dt>Advertiser</dt>
+              <dd>
+                {% if item.advertiser_name %}
+                  {{ item.advertiser_name }}
+                {% else %}
+                  Available
+                {% endif %}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Resolution</dt>
+              <dd>{{ item.width }} × {{ item.height }}</dd>
+            </div>
+
+            {% if item.lease_end_date %}
+              <div>
+                <dt>Lease Ends</dt>
+                <dd>
+                  {{ item.lease_end_date|date:"M j, Y" }}
+                </dd>
+              </div>
+            {% endif %}
+          </dl>
+
+          <div class="ad-capability-list">
+            {% if item.supports_image %}
+              <span>Image</span>
+            {% endif %}
+
+            {% if item.supports_video %}
+              <span>Video</span>
+            {% endif %}
+
+            {% if item.interactive %}
+              <span>Interactive</span>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    <div
+      id="adInventoryEmpty"
+      class="ad-inventory-empty"
+      hidden
+    >
+      <strong>No matching advertising locations.</strong>
+      <span>Try changing or clearing the filters.</span>
+    </div>
+  {% else %}
+    <div class="ad-inventory-empty">
+      <strong>No advertising inventory has been added yet.</strong>
+      <span>
+        Add Digital Property records to begin managing inventory.
+      </span>
+    </div>
+  {% endif %}
+</section>
+
+<style>
+  .ad-inventory {
+    position: relative;
+    z-index: 5;
+    width: min(1460px, calc(100% - 32px));
+    margin: 0 auto 45px;
+    padding: clamp(22px, 4vw, 38px);
+    overflow: hidden;
+    border: 1px solid rgba(239, 205, 111, 0.34);
+    border-radius: 25px;
+    color: #ffffff;
+    background:
+      linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.055),
+        rgba(255, 255, 255, 0.012)
+      ),
+      rgba(4, 4, 6, 0.94);
+    box-shadow:
+      0 25px 75px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.055);
+    backdrop-filter: blur(20px);
+  }
+
+  .ad-inventory-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 25px;
+    margin-bottom: 25px;
+  }
+
+  .ad-inventory-eyebrow {
+    display: block;
+    margin-bottom: 7px;
+    color: #e8c967;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .ad-inventory-header h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1;
+  }
+
+  .ad-inventory-header p {
+    max-width: 690px;
+    margin: 12px 0 0;
+    color: rgba(255, 255, 255, 0.62);
+    line-height: 1.65;
+  }
+
+  .ad-inventory-total {
+    min-width: 130px;
+    padding: 14px 18px;
+    border: 1px solid rgba(239, 205, 111, 0.34);
+    border-radius: 15px;
+    text-align: center;
+    background: rgba(224, 181, 61, 0.075);
+  }
+
+  .ad-inventory-total strong {
+    display: block;
+    color: #f4d675;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 2rem;
+  }
+
+  .ad-inventory-total span {
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .ad-inventory-controls {
+    display: grid;
+    grid-template-columns: minmax(250px, 1.7fr) repeat(3, minmax(150px, 1fr)) auto;
+    gap: 10px;
+    align-items: end;
+    margin-bottom: 13px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.085);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.027);
+  }
+
+  .ad-control {
+    display: block;
+  }
+
+  .ad-control span {
+    display: block;
+    margin-bottom: 7px;
+    color: rgba(255, 255, 255, 0.56);
+    font-size: 0.66rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .ad-control input,
+  .ad-control select {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 9px;
+    outline: none;
+    color: #ffffff;
+    background: #101013;
+  }
+
+  .ad-control input:focus,
+  .ad-control select:focus {
+    border-color: #e3c363;
+    box-shadow: 0 0 0 3px rgba(227, 195, 99, 0.11);
+  }
+
+  .ad-inventory-reset {
+    min-height: 44px;
+    padding: 10px 17px;
+    border: 1px solid rgba(239, 205, 111, 0.45);
+    border-radius: 9px;
+    color: #f3d575;
+    background: rgba(228, 187, 68, 0.06);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .ad-inventory-reset:hover {
+    background: rgba(228, 187, 68, 0.12);
+  }
+
+  .ad-inventory-results {
+    margin: 0 0 13px;
+    color: rgba(255, 255, 255, 0.51);
+    font-size: 0.8rem;
+  }
+
+  .ad-inventory-results span {
+    color: #f1d170;
+    font-weight: 900;
+  }
+
+  .ad-inventory-table-wrap {
+    overflow-x: auto;
+    border: 1px solid rgba(255, 255, 255, 0.075);
+    border-radius: 16px;
+  }
+
+  .ad-inventory-table {
+    width: 100%;
+    min-width: 1120px;
+    border-collapse: collapse;
+  }
+
+  .ad-inventory-table th {
+    padding: 14px 16px;
+    color: #d8bd68;
+    background: rgba(220, 177, 57, 0.06);
+    font-size: 0.67rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  .ad-inventory-table td {
+    padding: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.065);
+    color: rgba(255, 255, 255, 0.74);
+    vertical-align: middle;
+  }
+
+  .ad-inventory-table tbody tr {
+    transition:
+      background 160ms ease,
+      transform 160ms ease;
+  }
+
+  .ad-inventory-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.032);
+  }
+
+  .ad-property-primary {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .ad-property-primary strong,
+  .ad-inventory-card h3 {
+    display: block;
+    color: #ffffff;
+  }
+
+  .ad-property-primary small,
+  .ad-plan-name {
+    display: block;
+    margin-top: 5px;
+    color: rgba(255, 255, 255, 0.44);
+  }
+
+  .ad-property-code {
+    display: block;
+    margin-bottom: 5px;
+    color: #e9cb6d;
+    font-family: monospace;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+  }
+
+  .ad-featured-badge {
+    padding: 5px 7px;
+    border: 1px solid rgba(243, 211, 112, 0.42);
+    border-radius: 999px;
+    color: #f4d675;
+    background: rgba(225, 183, 62, 0.075);
+    font-size: 0.59rem;
+    font-weight: 900;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .ad-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 9px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .ad-status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 10px currentColor;
+  }
+
+  .ad-status-available {
+    color: #63d891;
+    border-color: rgba(99, 216, 145, 0.32);
+    background: rgba(42, 145, 84, 0.09);
+  }
+
+  .ad-status-reserved {
+    color: #f0c65e;
+    border-color: rgba(240, 198, 94, 0.32);
+    background: rgba(155, 112, 18, 0.09);
+  }
+
+  .ad-status-leased {
+    color: #69aef5;
+    border-color: rgba(105, 174, 245, 0.32);
+    background: rgba(49, 103, 169, 0.10);
+  }
+
+  .ad-status-maintenance {
+    color: #f18484;
+    border-color: rgba(241, 132, 132, 0.32);
+    background: rgba(157, 50, 50, 0.09);
+  }
+
+  .ad-status-coming_soon {
+    color: #c9a9ff;
+    border-color: rgba(201, 169, 255, 0.32);
+    background: rgba(106, 65, 168, 0.09);
+  }
+
+  .ad-advertiser-name {
+    display: block;
+    color: #ffffff;
+  }
+
+  .ad-empty-value {
+    color: rgba(255, 255, 255, 0.34);
+  }
+
+  .ad-capability-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .ad-capability-list span {
+    padding: 4px 7px;
+    border: 1px solid rgba(255, 255, 255, 0.095);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.62);
+    background: rgba(255, 255, 255, 0.035);
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .ad-resolution {
+    display: block;
+    margin-top: 7px;
+    color: rgba(255, 255, 255, 0.38);
+    font-family: monospace;
+  }
+
+  .ad-inventory-mobile {
+    display: none;
+  }
+
+  .ad-inventory-empty {
+    padding: 40px 20px;
+    border: 1px dashed rgba(239, 205, 111, 0.23);
+    border-radius: 15px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .ad-inventory-empty strong,
+  .ad-inventory-empty span {
+    display: block;
+  }
+
+  .ad-inventory-empty strong {
+    color: #f0d273;
+  }
+
+  .ad-inventory-empty span {
+    margin-top: 7px;
+    color: rgba(255, 255, 255, 0.49);
+  }
+
+  @media (max-width: 1180px) {
+    .ad-inventory-controls {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ad-control-search {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 780px) {
+    .ad-inventory-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .ad-inventory-total {
+      min-width: 110px;
+    }
+
+    .ad-inventory-controls {
+      grid-template-columns: 1fr;
+    }
+
+    .ad-control-search {
+      grid-column: auto;
+    }
+
+    .ad-inventory-desktop {
+      display: none;
+    }
+
+    .ad-inventory-mobile {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 11px;
+    }
+
+    .ad-inventory-card {
+      padding: 17px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 15px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.055),
+          rgba(255, 255, 255, 0.015)
+        ),
+        rgba(0, 0, 0, 0.28);
+    }
+
+    .ad-card-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .ad-inventory-card h3 {
+      margin: 14px 0 5px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.45rem;
+    }
+
+    .ad-inventory-card p {
+      margin: 0 0 14px;
+      color: rgba(255, 255, 255, 0.48);
+      line-height: 1.5;
+    }
+
+    .ad-inventory-card dl {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .ad-inventory-card dl div {
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.065);
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.022);
+    }
+
+    .ad-inventory-card dt {
+      margin-bottom: 5px;
+      color: rgba(255, 255, 255, 0.42);
+      font-size: 0.61rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .ad-inventory-card dd {
+      margin: 0;
+      color: #ffffff;
+      font-size: 0.83rem;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .ad-inventory {
+      width: min(100% - 18px, 1460px);
+      padding: 20px 14px;
+      border-radius: 18px;
+    }
+
+    .ad-inventory-card dl {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("adInventorySearch");
+    const zoneSelect = document.getElementById("adInventoryZone");
+    const typeSelect = document.getElementById("adInventoryType");
+    const statusSelect = document.getElementById("adInventoryStatus");
+    const resetButton = document.getElementById("adInventoryReset");
+    const resultCount = document.getElementById("adInventoryResultCount");
+    const emptyState = document.getElementById("adInventoryEmpty");
+
+    if (
+      !searchInput ||
+      !zoneSelect ||
+      !typeSelect ||
+      !statusSelect ||
+      !resetButton ||
+      !resultCount
+    ) {
+      return;
+    }
+
+    function filterInventory() {
+      const searchValue = searchInput.value.trim().toLowerCase();
+      const zoneValue = zoneSelect.value;
+      const typeValue = typeSelect.value;
+      const statusValue = statusSelect.value;
+
+      const desktopItems = Array.from(
+        document.querySelectorAll(
+          "#adInventoryTableBody .ad-inventory-item"
+        )
+      );
+
+      const mobileItems = Array.from(
+        document.querySelectorAll(
+          "#adInventoryMobileGrid .ad-inventory-item"
+        )
+      );
+
+      let visibleCount = 0;
+
+      desktopItems.forEach(function (item) {
+        const matchesSearch =
+          !searchValue ||
+          item.dataset.search.includes(searchValue);
+
+        const matchesZone =
+          !zoneValue ||
+          item.dataset.zone === zoneValue;
+
+        const matchesType =
+          !typeValue ||
+          item.dataset.type === typeValue;
+
+        const matchesStatus =
+          !statusValue ||
+          item.dataset.status === statusValue;
+
+        const visible =
+          matchesSearch &&
+          matchesZone &&
+          matchesType &&
+          matchesStatus;
+
+        item.hidden = !visible;
+
+        if (visible) {
+          visibleCount += 1;
+        }
+      });
+
+      mobileItems.forEach(function (item) {
+        const matchesSearch =
+          !searchValue ||
+          item.dataset.search.includes(searchValue);
+
+        const matchesZone =
+          !zoneValue ||
+          item.dataset.zone === zoneValue;
+
+        const matchesType =
+          !typeValue ||
+          item.dataset.type === typeValue;
+
+        const matchesStatus =
+          !statusValue ||
+          item.dataset.status === statusValue;
+
+        item.hidden = !(
+          matchesSearch &&
+          matchesZone &&
+          matchesType &&
+          matchesStatus
+        );
+      });
+
+      resultCount.textContent = visibleCount;
+
+      if (emptyState) {
+        emptyState.hidden = visibleCount !== 0;
+      }
+    }
+
+    searchInput.addEventListener("input", filterInventory);
+    zoneSelect.addEventListener("change", filterInventory);
+    typeSelect.addEventListener("change", filterInventory);
+    statusSelect.addEventListener("change", filterInventory);
+
+    resetButton.addEventListener("click", function () {
+      searchInput.value = "";
+      zoneSelect.value = "";
+      typeSelect.value = "";
+      statusSelect.value = "";
+
+      filterInventory();
+      searchInput.focus();
+    });
+  });
+</script>

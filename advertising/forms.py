@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 from digital_property.models import (
     DigitalProperty,
@@ -16,6 +17,26 @@ from .models import (
 
 
 class CampaignForm(forms.ModelForm):
+    booking_mode = forms.ChoiceField(
+        choices=CampaignPlacement.BookingMode.choices,
+        initial=CampaignPlacement.BookingMode.ROTATING,
+        label="Advertising Display Option",
+        help_text=(
+            "Purchase the entire property exclusively or share a "
+            "time-based rotation with other advertisers."
+        ),
+    )
+
+    positions_requested = forms.IntegerField(
+        min_value=1,
+        initial=1,
+        label="Rotation Positions Requested",
+        help_text=(
+            "One position displays once during each complete rotation. "
+            "Buying additional positions increases frequency."
+        ),
+    )
+
     advertising_locations = forms.ModelMultipleChoiceField(
         queryset=DigitalProperty.objects.none(),
         required=False,
@@ -40,6 +61,8 @@ class CampaignForm(forms.ModelForm):
     class Meta:
         model = Campaign
         fields = (
+            "booking_mode",
+            "positions_requested",
             "name",
             "advertiser_name",
             "description",
@@ -89,8 +112,8 @@ class CampaignForm(forms.ModelForm):
             )
 
             available = DigitalProperty.objects.filter(
-                forms.models.Q(active=True)
-                | forms.models.Q(pk__in=current_ids)
+                Q(active=True)
+                | Q(pk__in=current_ids)
             ).select_related(
                 "property_type",
                 "mall_zone",
@@ -110,6 +133,14 @@ class CampaignForm(forms.ModelForm):
             first_placement = placements.first()
 
             if first_placement:
+                self.fields["booking_mode"].initial = (
+                    first_placement.booking_mode
+                )
+
+                self.fields["positions_requested"].initial = (
+                    first_placement.positions_reserved
+                )
+
                 self.fields["lease_plan"].initial = (
                     first_placement.lease_plan_id
                 )
@@ -202,6 +233,8 @@ class CampaignForm(forms.ModelForm):
 
         locations = cleaned.get("advertising_locations")
         lease_plan = cleaned.get("lease_plan")
+        booking_mode = cleaned.get("booking_mode")
+        positions_requested = cleaned.get("positions_requested") or 1
         budget = cleaned.get("budget")
         start_at = cleaned.get("start_at")
         end_at = cleaned.get("end_at")
@@ -270,6 +303,13 @@ class CampaignForm(forms.ModelForm):
 
             location_count = locations.count()
 
+            billable_units = (
+                location_count
+                if booking_mode
+                == CampaignPlacement.BookingMode.EXCLUSIVE
+                else location_count * positions_requested
+            )
+
             network_minimum = Decimal(location_count * 25)
 
             property_minimum = max(
@@ -281,7 +321,7 @@ class CampaignForm(forms.ModelForm):
             )
 
             combined_lease_cost = (
-                lease_plan.price * location_count
+                lease_plan.price * billable_units
             )
 
             required_budget = max(
@@ -330,13 +370,36 @@ class CampaignForm(forms.ModelForm):
         return campaign
 
     def save_placements(self, campaign):
-        locations = self.cleaned_data.get("advertising_locations")
+        """
+        Save complete placement selections without allowing an
+        unfinished draft to create invalid CampaignPlacement rows.
+        """
+
+        locations = self.cleaned_data.get(
+            "advertising_locations"
+        )
+
         lease_plan = self.cleaned_data.get("lease_plan")
+        booking_mode = self.cleaned_data.get(
+            "booking_mode"
+        )
 
-        if not locations or not lease_plan:
-            if self.submit_action == "submit":
-                campaign.placements.all().delete()
+        positions_requested = self.cleaned_data.get(
+            "positions_requested"
+        ) or 1
 
+        start_at = self.cleaned_data.get("start_at")
+        end_at = self.cleaned_data.get("end_at")
+
+        # A draft may be saved before placements, dates, or a lease
+        # plan have been selected. Keep the Campaign itself, but do
+        # not create incomplete placement records.
+        if (
+            not locations
+            or not lease_plan
+            or not start_at
+            or not end_at
+        ):
             return
 
         selected_ids = list(
@@ -348,24 +411,41 @@ class CampaignForm(forms.ModelForm):
         ).delete()
 
         for location in locations:
-            placement, created = CampaignPlacement.objects.get_or_create(
-                campaign=campaign,
-                digital_property=location,
-                defaults={
-                    "lease_plan": lease_plan,
-                    "start_at": campaign.start_at,
-                    "end_at": campaign.end_at,
-                    "agreed_price": lease_plan.price,
-                },
+            placement, created = (
+                CampaignPlacement.objects.get_or_create(
+                    campaign=campaign,
+                    digital_property=location,
+                    defaults={
+                        "lease_plan": lease_plan,
+                        "booking_mode": booking_mode,
+                        "positions_reserved": (
+                            location.rotation_capacity
+                            if booking_mode
+                            == CampaignPlacement.BookingMode.EXCLUSIVE
+                            else positions_requested
+                        ),
+                        "start_at": start_at,
+                        "end_at": end_at,
+                        "agreed_price": lease_plan.price,
+                    },
+                )
             )
 
             if not created:
                 placement.lease_plan = lease_plan
-                placement.start_at = campaign.start_at
-                placement.end_at = campaign.end_at
+                placement.booking_mode = booking_mode
+                placement.positions_reserved = (
+                    location.rotation_capacity
+                    if booking_mode
+                    == CampaignPlacement.BookingMode.EXCLUSIVE
+                    else positions_requested
+                )
+                placement.start_at = start_at
+                placement.end_at = end_at
                 placement.agreed_price = lease_plan.price
-                placement.full_clean()
-                placement.save()
+
+            placement.full_clean()
+            placement.save()
 
 
 class AdvertisingCreativeForm(forms.ModelForm):
@@ -458,6 +538,9 @@ class DigitalPropertyForm(forms.ModelForm):
             "description",
             "location_label",
             "inventory_tier",
+            "inventory_mode",
+            "display_seconds",
+            "rotation_capacity",
             "minimum_spend",
             "width",
             "height",

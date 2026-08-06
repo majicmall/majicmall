@@ -80,6 +80,12 @@ class DigitalProperty(models.Model):
         PREMIUM = "premium", "Premium"
         SIGNATURE = "signature", "Majestic Square Signature"
 
+    class InventoryMode(models.TextChoices):
+        EXCLUSIVE = "exclusive", "Exclusive"
+        ROTATING = "rotating", "Rotating"
+        HYBRID = "hybrid", "Hybrid"
+
+
     class AvailabilityStatus(models.TextChoices):
         AVAILABLE = "available", "Available"
         RESERVED = "reserved", "Reserved"
@@ -145,6 +151,33 @@ class DigitalProperty(models.Model):
 
     interactive = models.BooleanField(default=False)
 
+    inventory_mode = models.CharField(
+        max_length=20,
+        choices=InventoryMode.choices,
+        default=InventoryMode.HYBRID,
+        db_index=True,
+        help_text=(
+            "Exclusive allows one advertiser, Rotating allows shared "
+            "positions, and Hybrid supports either option."
+        ),
+    )
+
+    display_seconds = models.PositiveIntegerField(
+        default=10,
+        help_text=(
+            "Number of seconds each advertisement remains visible "
+            "during a rotation."
+        ),
+    )
+
+    rotation_capacity = models.PositiveIntegerField(
+        default=10,
+        help_text=(
+            "Maximum number of advertiser positions available in "
+            "the rotation."
+        ),
+    )
+
     inventory_tier = models.CharField(
         max_length=20,
         choices=InventoryTier.choices,
@@ -185,6 +218,143 @@ class DigitalProperty(models.Model):
         ordering = ["display_order", "name"]
         verbose_name = "Digital Property"
         verbose_name_plural = "Digital Properties"
+
+    @property
+    def rotation_loop_seconds(self):
+        if self.inventory_mode == self.InventoryMode.EXCLUSIVE:
+            return self.display_seconds
+
+        return self.display_seconds * self.rotation_capacity
+
+    @property
+    def total_plays_per_hour(self):
+        if not self.display_seconds:
+            return 0
+
+        return int(3600 / self.display_seconds)
+
+    @property
+    def total_plays_per_day(self):
+        return self.total_plays_per_hour * 24
+
+    @property
+    def total_plays_per_month(self):
+        return self.total_plays_per_day * 30
+
+    @property
+    def advertiser_plays_per_hour(self):
+        if self.inventory_mode == self.InventoryMode.EXCLUSIVE:
+            return self.total_plays_per_hour
+
+        if not self.rotation_loop_seconds:
+            return 0
+
+        return int(3600 / self.rotation_loop_seconds)
+
+    @property
+    def advertiser_plays_per_day(self):
+        return self.advertiser_plays_per_hour * 24
+
+    @property
+    def advertiser_plays_per_month(self):
+        return self.advertiser_plays_per_day * 30
+
+    @property
+    def reserved_rotation_positions(self):
+        return sum(
+            placement.positions_reserved
+            for placement in self.campaign_placements.filter(
+                campaign__status__in=(
+                    "approved",
+                    "scheduled",
+                    "active",
+                ),
+                booking_mode="rotating",
+            )
+        )
+
+    @property
+    def has_exclusive_booking(self):
+        return self.campaign_placements.filter(
+            campaign__status__in=(
+                "approved",
+                "scheduled",
+                "active",
+            ),
+            booking_mode="exclusive",
+        ).exists()
+
+    @property
+    def available_rotation_positions(self):
+        if self.has_exclusive_booking:
+            return 0
+
+        return max(
+            self.rotation_capacity
+            - self.reserved_rotation_positions,
+            0,
+        )
+
+    @property
+    def rotation_occupancy_percent(self):
+        if self.has_exclusive_booking:
+            return 100.0
+
+        if not self.rotation_capacity:
+            return 0.0
+
+        return round(
+            (
+                self.reserved_rotation_positions
+                / self.rotation_capacity
+            )
+            * 100,
+            1,
+        )
+
+    @property
+    def current_rotation_revenue(self):
+        return sum(
+            placement.agreed_price
+            * placement.positions_reserved
+            for placement in self.campaign_placements.filter(
+                campaign__status__in=(
+                    "approved",
+                    "scheduled",
+                    "active",
+                ),
+                booking_mode="rotating",
+            )
+        )
+
+    @property
+    def exclusive_revenue(self):
+        return sum(
+            placement.agreed_price
+            for placement in self.campaign_placements.filter(
+                campaign__status__in=(
+                    "approved",
+                    "scheduled",
+                    "active",
+                ),
+                booking_mode="exclusive",
+            )
+        )
+
+    @property
+    def current_revenue(self):
+        return self.current_rotation_revenue + self.exclusive_revenue
+
+    @property
+    def potential_rotation_revenue(self):
+        plan = self.lease_plans.filter(
+            active=True,
+        ).order_by("price").first()
+
+        if plan is None:
+            return 0
+
+        return plan.price * self.rotation_capacity
 
     def __str__(self):
         return f"{self.property_code} — {self.name}"

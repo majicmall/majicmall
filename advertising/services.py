@@ -45,12 +45,19 @@ def refresh_property_status(
     save=True,
 ):
     """
-    Determine inventory status from approved, scheduled, or active
-    campaign placements.
+    Rotation-aware inventory status.
 
-    Rotation-aware occupancy arrives in MM_PUSH_005F. Until then,
-    an approved or scheduled placement reserves the property, and
-    an active placement marks it leased.
+    Exclusive active booking:
+        leased
+
+    Rotating active booking with remaining capacity:
+        available
+
+    Fully occupied rotating property:
+        leased
+
+    Scheduled booking:
+        reserved
     """
 
     open_placements = (
@@ -65,17 +72,50 @@ def refresh_property_status(
         )
     )
 
-    has_active = open_placements.filter(
+    exclusive_active = open_placements.filter(
         campaign__status=Campaign.Status.ACTIVE,
+        booking_mode="exclusive",
     ).exists()
 
-    has_reserved = open_placements.exclude(
-        campaign__status=Campaign.Status.ACTIVE,
+    exclusive_reserved = open_placements.filter(
+        campaign__status__in=[
+            Campaign.Status.APPROVED,
+            Campaign.Status.SCHEDULED,
+        ],
+        booking_mode="exclusive",
     ).exists()
 
-    if has_active:
+    rotating_active_positions = sum(
+        placement.positions_reserved
+        for placement in open_placements.filter(
+            campaign__status=Campaign.Status.ACTIVE,
+            booking_mode="rotating",
+        )
+    )
+
+    rotating_reserved_positions = sum(
+        placement.positions_reserved
+        for placement in open_placements.filter(
+            campaign__status__in=[
+                Campaign.Status.APPROVED,
+                Campaign.Status.SCHEDULED,
+            ],
+            booking_mode="rotating",
+        )
+    )
+
+    total_positions = (
+        rotating_active_positions
+        + rotating_reserved_positions
+    )
+
+    if exclusive_active:
         new_status = "leased"
-    elif has_reserved:
+    elif exclusive_reserved:
+        new_status = "reserved"
+    elif total_positions >= digital_property.rotation_capacity:
+        new_status = "leased"
+    elif rotating_reserved_positions:
         new_status = "reserved"
     else:
         new_status = "available"

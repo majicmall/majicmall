@@ -127,8 +127,25 @@
 
             <p class="meta">
               {{ item.get_inventory_tier_display }}
+              · {{ item.get_inventory_mode_display }}
               · Minimum ${{ item.minimum_spend }}
               · {{ item.get_availability_status_display }}
+            </p>
+
+            <p class="meta">
+              Display: {{ item.display_seconds }} sec
+              · Capacity: {{ item.rotation_capacity }} positions
+              · Loop: {{ item.rotation_loop_seconds }} sec
+              · Occupancy: {{ item.rotation_occupancy_percent }}%
+            </p>
+
+            <p class="meta">
+              Reserved: {{ item.reserved_rotation_positions }}
+              · Available: {{ item.available_rotation_positions }}
+              · Advertiser plays/day:
+              {{ item.advertiser_plays_per_day }}
+              · Current revenue: ${{ item.current_revenue }}
+              · Potential: ${{ item.potential_rotation_revenue }}
             </p>
           </div>
 

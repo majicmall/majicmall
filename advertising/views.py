@@ -161,6 +161,20 @@ def campaign_create(request):
                     pk=campaign.pk,
                 )
 
+            if submit_action == "upload":
+                messages.success(
+                    request,
+                    (
+                        f'Campaign "{campaign}" was saved. '
+                        "Upload your creative now."
+                    ),
+                )
+
+                return redirect(
+                    "advertising:campaign-creative-create",
+                    campaign_id=campaign.pk,
+                )
+
             messages.success(
                 request,
                 f'Campaign "{campaign}" was saved as a draft.',
@@ -216,6 +230,20 @@ def campaign_edit(request, pk):
                 return redirect(
                     "advertising:campaign_detail",
                     pk=campaign.pk,
+                )
+
+            if submit_action == "upload":
+                messages.success(
+                    request,
+                    (
+                        f'Campaign "{campaign}" was saved. '
+                        "Upload your creative now."
+                    ),
+                )
+
+                return redirect(
+                    "advertising:campaign-creative-create",
+                    campaign_id=campaign.pk,
                 )
 
             messages.success(

@@ -364,6 +364,16 @@
           {% endfor %}
 
           <div class="budget-rule">
+            <strong>How rotation works:</strong>
+            Each position receives one display during every complete
+            rotation loop. For example, a property with a 10-second
+            display time and 10 positions has a 100-second loop.
+            Purchasing two positions gives the advertiser two displays
+            during every loop. Exclusive campaigns reserve the entire
+            property.
+          </div>
+
+          <div class="budget-rule">
             <strong>Campaign budget rules:</strong>
             Standard inventory begins at $25. Up to two standard
             locations requires at least $50. Premium inventory such as
@@ -374,12 +384,19 @@
           </div>
 
           <section class="carole-card">
-            <h2>🎨 Need help with artwork?</h2>
+            <h2>🎨 Creative Options</h2>
 
             <p>
-              Work with Carole, the MajicMall Megaverse AI Marketing
-              Director, on billboard concepts, headlines, promotional
-              copy and calls to action.
+              Already have approved artwork? Use
+              <strong>Upload My Creative</strong> below to save this
+              campaign and continue directly to the upload form.
+            </p>
+
+            <p>
+              Need artwork or advertising copy? Work with Carole,
+              the MajicMall Megaverse AI Marketing Director, on
+              billboard concepts, headlines, promotional copy and
+              calls to action.
             </p>
 
             <a
@@ -406,6 +423,15 @@
             value="draft"
           >
             Save Draft
+          </button>
+
+          <button
+            class="button"
+            type="submit"
+            name="submit_action"
+            value="upload"
+          >
+            Upload My Creative
           </button>
 
           <button

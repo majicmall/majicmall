@@ -422,10 +422,29 @@ class AdvertisingCreative(models.Model):
 
 
 class CampaignPlacement(models.Model):
+    class BookingMode(models.TextChoices):
+        EXCLUSIVE = "exclusive", "Exclusive Property"
+        ROTATING = "rotating", "Rotating Position"
+
     """
     Connect an advertising campaign to a DigitalProperty and LeasePlan.
     One campaign budget may fund multiple placement records.
     """
+
+    booking_mode = models.CharField(
+        max_length=20,
+        choices=BookingMode.choices,
+        default=BookingMode.ROTATING,
+        db_index=True,
+    )
+
+    positions_reserved = models.PositiveIntegerField(
+        default=1,
+        help_text=(
+            "Number of rotating advertising positions purchased. "
+            "Exclusive bookings always reserve the full property."
+        ),
+    )
 
     campaign = models.ForeignKey(
         Campaign,
@@ -486,6 +505,93 @@ class CampaignPlacement(models.Model):
         super().clean()
 
         errors = {}
+
+        if self.positions_reserved < 1:
+            errors["positions_reserved"] = (
+                "At least one rotation position is required."
+            )
+
+        if self.digital_property_id:
+            property_mode = self.digital_property.inventory_mode
+
+            if (
+                self.booking_mode == self.BookingMode.EXCLUSIVE
+                and property_mode
+                == self.digital_property.InventoryMode.ROTATING
+            ):
+                errors["booking_mode"] = (
+                    "This property only accepts rotating bookings."
+                )
+
+            if (
+                self.booking_mode == self.BookingMode.ROTATING
+                and property_mode
+                == self.digital_property.InventoryMode.EXCLUSIVE
+            ):
+                errors["booking_mode"] = (
+                    "This property only accepts exclusive bookings."
+                )
+
+            open_placements = type(self).objects.filter(
+                digital_property=self.digital_property,
+                campaign__status__in=(
+                    "approved",
+                    "scheduled",
+                    "active",
+                ),
+            ).exclude(pk=self.pk)
+
+            if self.campaign_id:
+                open_placements = open_placements.exclude(
+                    campaign_id=self.campaign_id,
+                )
+
+            exclusive_exists = open_placements.filter(
+                booking_mode=self.BookingMode.EXCLUSIVE,
+            ).exists()
+
+            rotating_reserved = sum(
+                placement.positions_reserved
+                for placement in open_placements.filter(
+                    booking_mode=self.BookingMode.ROTATING,
+                )
+            )
+
+            if (
+                self.booking_mode == self.BookingMode.EXCLUSIVE
+                and open_placements.exists()
+            ):
+                errors["booking_mode"] = (
+                    "This property already has active or scheduled "
+                    "advertising bookings."
+                )
+
+            if (
+                self.booking_mode == self.BookingMode.ROTATING
+                and exclusive_exists
+            ):
+                errors["booking_mode"] = (
+                    "This property currently has an exclusive booking."
+                )
+
+            if self.booking_mode == self.BookingMode.EXCLUSIVE:
+                self.positions_reserved = (
+                    self.digital_property.rotation_capacity
+                )
+
+            if self.booking_mode == self.BookingMode.ROTATING:
+                remaining = max(
+                    self.digital_property.rotation_capacity
+                    - rotating_reserved,
+                    0,
+                )
+
+                if self.positions_reserved > remaining:
+                    errors["positions_reserved"] = (
+                        f"Only {remaining} rotation position"
+                        f"{'s are' if remaining != 1 else ' is'} "
+                        "currently available."
+                    )
 
         if self.start_at and self.end_at:
             if self.end_at <= self.start_at:

@@ -287,6 +287,8 @@ class CampaignPlacementAdmin(admin.ModelAdmin):
     list_display = (
         "campaign",
         "digital_property",
+        "booking_mode",
+        "positions_reserved",
         "lease_plan",
         "start_at",
         "end_at",

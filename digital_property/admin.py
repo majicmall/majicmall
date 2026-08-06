@@ -56,6 +56,8 @@ class DigitalPropertyAdmin(admin.ModelAdmin):
         "property_type",
         "mall_zone",
         "availability_status",
+        "inventory_tier",
+        "minimum_spend",
         "featured",
         "active",
     )
@@ -64,6 +66,7 @@ class DigitalPropertyAdmin(admin.ModelAdmin):
         "property_type",
         "mall_zone",
         "availability_status",
+        "inventory_tier",
         "supports_image",
         "supports_video",
         "interactive",

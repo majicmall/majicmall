@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>
+    Carole | AI Marketing Director
+  </title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: #fff;
+      font-family: Arial,sans-serif;
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(169,93,240,.28),
+          transparent 38%
+        ),
+        linear-gradient(145deg,#020202,#150d1d,#020202);
+    }
+
+    .shell {
+      width: min(900px,calc(100% - 28px));
+      margin: auto;
+      padding: 40px 0 80px;
+    }
+
+    .panel {
+      padding: clamp(25px,6vw,52px);
+      border: 1px solid rgba(211,170,255,.48);
+      border-radius: 27px;
+      background: rgba(15,10,20,.94);
+      box-shadow: 0 30px 90px rgba(0,0,0,.58);
+    }
+
+    h1 {
+      margin: 0;
+      color: #f1dcff;
+      font-family: Georgia,serif;
+      font-size: clamp(2.5rem,7vw,5rem);
+    }
+
+    .role {
+      color: #c992fa;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .field {
+      margin-top: 19px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #ead2ff;
+      font-weight: 900;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px;
+      border: 1px solid rgba(211,170,255,.36);
+      border-radius: 12px;
+      color: #fff;
+      background: rgba(255,255,255,.055);
+    }
+
+    textarea {
+      min-height: 110px;
+    }
+
+    option {
+      color: #111;
+    }
+
+    .button {
+      display: inline-flex;
+      margin-top: 24px;
+      padding: 13px 22px;
+      border: 1px solid #e7c9ff;
+      border-radius: 999px;
+      color: #12071c;
+      background: linear-gradient(135deg,#f1dcff,#bd76ee);
+      font-weight: 900;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .brief {
+      margin-top: 28px;
+      padding: 22px;
+      border: 1px solid rgba(211,170,255,.35);
+      border-radius: 17px;
+      background: rgba(136,67,197,.13);
+    }
+
+    .brief dt {
+      margin-top: 13px;
+      color: #c992fa;
+      font-weight: 900;
+    }
+
+    .brief dd {
+      margin: 5px 0 0;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <p>
+      <a href="{% url 'advertising:media-network-dashboard' %}">
+        ← Digital Advertising Command Center
+      </a>
+    </p>
+
+    <section class="panel">
+      <p class="role">AI Marketing Director</p>
+      <h1>Meet Carole</h1>
+
+      <p>
+        Develop a focused creative brief for billboard artwork,
+        promotional copy and campaign messaging.
+      </p>
+
+      {% if campaign %}
+        <p>
+          Campaign: <strong>{{ campaign.name }}</strong>
+        </p>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+
+        {% if campaign %}
+          <input
+            type="hidden"
+            name="campaign"
+            value="{{ campaign.pk }}"
+          >
+        {% endif %}
+
+        <div class="field">
+          <label for="promotion">
+            What are you promoting?
+          </label>
+
+          <input
+            id="promotion"
+            name="promotion"
+            required
+            placeholder="Grand opening, new product, event..."
+          >
+        </div>
+
+        <div class="field">
+          <label for="audience">
+            Who should the advertisement reach?
+          </label>
+
+          <input
+            id="audience"
+            name="audience"
+            placeholder="Families, luxury shoppers, music fans..."
+          >
+        </div>
+
+        <div class="field">
+          <label for="offer">
+            What is the offer or strongest benefit?
+          </label>
+
+          <textarea
+            id="offer"
+            name="offer"
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label for="tone">Creative tone</label>
+
+          <select id="tone" name="tone">
+            <option>Luxury and confident</option>
+            <option>Bold and energetic</option>
+            <option>Warm and welcoming</option>
+            <option>Elegant and cinematic</option>
+            <option>Fun and playful</option>
+          </select>
+        </div>
+
+        <button class="button" type="submit">
+          Create My Creative Brief
+        </button>
+      </form>
+
+      {% if creative_brief %}
+        <section class="brief">
+          <h2>Carole’s Creative Direction</h2>
+
+          <dl>
+            <dt>Headline</dt>
+            <dd>{{ creative_brief.headline }}</dd>
+
+            <dt>Supporting Copy</dt>
+            <dd>{{ creative_brief.supporting_copy }}</dd>
+
+            <dt>Offer</dt>
+            <dd>{{ creative_brief.offer }}</dd>
+
+            <dt>Call to Action</dt>
+            <dd>{{ creative_brief.call_to_action }}</dd>
+
+            <dt>Recommended Format</dt>
+            <dd>{{ creative_brief.recommended_format }}</dd>
+          </dl>
+
+          {% if campaign %}
+            <a
+              class="button"
+              href="{% url 'advertising:campaign-creative-create' campaign.pk %}"
+            >
+              Continue to Upload Creative
+            </a>
+          {% endif %}
+        </section>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>

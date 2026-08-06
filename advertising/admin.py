@@ -277,3 +277,80 @@ class AdvertisingCreativeAdmin(admin.ModelAdmin):
     @admin.action(description="Disable selected creatives")
     def disable_selected(self, request, queryset):
         queryset.update(is_enabled=False)
+
+# MM_PUSH_005D
+from .models import CampaignPlacement
+
+
+@admin.register(CampaignPlacement)
+class CampaignPlacementAdmin(admin.ModelAdmin):
+    list_display = (
+        "campaign",
+        "digital_property",
+        "lease_plan",
+        "start_at",
+        "end_at",
+        "agreed_price",
+    )
+
+    list_filter = (
+        "lease_plan",
+        "digital_property__inventory_tier",
+        "digital_property__mall_zone",
+        "start_at",
+        "end_at",
+    )
+
+    search_fields = (
+        "campaign__name",
+        "campaign__advertiser_name",
+        "digital_property__property_code",
+        "digital_property__name",
+    )
+
+    autocomplete_fields = (
+        "campaign",
+        "digital_property",
+        "lease_plan",
+    )
+
+
+# MM_PUSH_005E
+try:
+    from .services import sync_campaign_states
+
+    @admin.action(
+        description="Synchronize advertising campaign schedules"
+    )
+    def synchronize_campaign_schedules(
+        modeladmin,
+        request,
+        queryset,
+    ):
+        result = sync_campaign_states()
+
+        modeladmin.message_user(
+            request,
+            (
+                "Advertising schedules synchronized. "
+                f"Activated: {result.activated}; "
+                f"Completed: {result.completed}; "
+                f"Inventory updated: {result.inventory_updated}."
+            ),
+        )
+
+    if Campaign in admin.site._registry:
+        campaign_admin = admin.site._registry[Campaign]
+
+        existing_actions = list(
+            getattr(campaign_admin, "actions", [])
+            or []
+        )
+
+        if synchronize_campaign_schedules not in existing_actions:
+            campaign_admin.actions = (
+                existing_actions
+                + [synchronize_campaign_schedules]
+            )
+except Exception:
+    pass

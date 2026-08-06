@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>{{ page_title }} | Advertising</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: #fff;
+      font-family: Arial,sans-serif;
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(229,189,82,.18),
+          transparent 34%
+        ),
+        #030303;
+    }
+
+    .shell {
+      width: min(940px,calc(100% - 28px));
+      margin: auto;
+      padding: 35px 0 80px;
+    }
+
+    .panel {
+      padding: clamp(24px,5vw,48px);
+      border: 1px solid rgba(229,189,82,.36);
+      border-radius: 24px;
+      background: rgba(12,12,15,.95);
+    }
+
+    h1 {
+      color: #ffe69a;
+      font-family: Georgia,serif;
+      font-size: clamp(2.2rem,6vw,4rem);
+    }
+
+    .field {
+      margin-top: 19px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #ffe69a;
+      font-weight: 900;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 47px;
+      padding: 12px;
+      border: 1px solid rgba(229,189,82,.3);
+      border-radius: 12px;
+      color: #fff;
+      background: rgba(255,255,255,.055);
+    }
+
+    textarea {
+      min-height: 120px;
+    }
+
+    option {
+      color: #111;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      min-height: auto;
+    }
+
+    .help {
+      color: rgba(255,255,255,.6);
+    }
+
+    .button {
+      display: inline-flex;
+      margin-top: 25px;
+      padding: 13px 22px;
+      border: 1px solid #ffe69a;
+      border-radius: 999px;
+      color: #080808;
+      background: linear-gradient(135deg,#ffe69a,#d4a635);
+      font-weight: 900;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <p>
+      <a href="{% url 'advertising:inventory-manager' %}">
+        ← Advertising Inventory
+      </a>
+    </p>
+
+    <section class="panel">
+      <h1>{{ page_title }}</h1>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        {% for field in form %}
+          <div class="field">
+            <label for="{{ field.id_for_label }}">
+              {{ field.label }}
+            </label>
+
+            {{ field }}
+
+            {% if field.help_text %}
+              <p class="help">{{ field.help_text|safe }}</p>
+            {% endif %}
+
+            {{ field.errors }}
+          </div>
+        {% endfor %}
+
+        <button class="button" type="submit">
+          {{ submit_label }}
+        </button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

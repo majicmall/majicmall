@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>
+    Advertising Inventory | Digital Advertising Command Center
+  </title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: #fff;
+      font-family: Arial,sans-serif;
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(229,189,82,.17),
+          transparent 32%
+        ),
+        #030303;
+    }
+
+    .shell {
+      width: min(1300px,calc(100% - 28px));
+      margin: auto;
+      padding: 35px 0 70px;
+    }
+
+    .header,
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    h1 {
+      color: #ffe69a;
+      font-family: Georgia,serif;
+      font-size: clamp(2.3rem,6vw,4.5rem);
+    }
+
+    .button {
+      display: inline-flex;
+      padding: 12px 18px;
+      border: 1px solid #e5bd52;
+      border-radius: 999px;
+      color: #080808;
+      background: linear-gradient(135deg,#ffe69a,#d5a936);
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .inventory {
+      display: grid;
+      gap: 11px;
+    }
+
+    .row {
+      padding: 17px;
+      border: 1px solid rgba(229,189,82,.25);
+      border-radius: 14px;
+      background: rgba(255,255,255,.04);
+    }
+
+    .code {
+      color: #e5bd52;
+      font-family: monospace;
+    }
+
+    .meta {
+      color: rgba(255,255,255,.6);
+    }
+
+    .edit {
+      color: #ffe69a;
+    }
+
+    @media(max-width:700px) {
+      .header,
+      .row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <p>
+      <a href="{% url 'advertising:media-network-dashboard' %}">
+        ← Digital Advertising Command Center
+      </a>
+    </p>
+
+    <header class="header">
+      <div>
+        <h1>Advertising Inventory</h1>
+        <p>
+          Add and manage billboards, banners, screens,
+          Majestic Square placements and other inventory.
+        </p>
+      </div>
+
+      <a
+        class="button"
+        href="{% url 'advertising:inventory-create' %}"
+      >
+        + Add New Inventory
+      </a>
+    </header>
+
+    <section class="inventory">
+      {% for item in properties %}
+        <article class="row">
+          <div>
+            <span class="code">{{ item.property_code }}</span>
+            <h2>{{ item.name }}</h2>
+
+            <p class="meta">
+              {{ item.get_inventory_tier_display }}
+              · Minimum ${{ item.minimum_spend }}
+              · {{ item.get_availability_status_display }}
+            </p>
+          </div>
+
+          <a
+            class="edit"
+            href="{% url 'advertising:inventory-edit' item.pk %}"
+          >
+            Edit Inventory
+          </a>
+        </article>
+      {% empty %}
+        <p>No advertising inventory exists yet.</p>
+      {% endfor %}
+    </section>
+  </main>
+</body>
+</html>

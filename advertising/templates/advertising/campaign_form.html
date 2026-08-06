@@ -2,144 +2,423 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+  <title>
+    {{ page_title }} | Digital Advertising Command Center
+  </title>
 
-    <title>
-        {{ page_title }} | MajicMall Megaverse Media Network
-    </title>
+  <style>
+    :root {
+      --gold: #e5bd52;
+      --gold-bright: #ffe69a;
+      --border: rgba(229, 189, 82, .35);
+      --muted: rgba(255,255,255,.66);
+      --panel: rgba(10,10,13,.94);
+    }
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    * {
+      box-sizing: border-box;
+    }
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(229,189,82,.18),
+          transparent 35%
+        ),
+        linear-gradient(145deg,#020202,#0d0d11,#020202);
+    }
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
-        rel="stylesheet"
-    >
+    .shell {
+      width: min(1080px, calc(100% - 28px));
+      margin: auto;
+      padding: 35px 0 80px;
+    }
 
-    <link
-        rel="stylesheet"
-        href="{% static 'advertising/css/campaign_manager.css' %}"
-    >
+    .topbar,
+    .actions,
+    .workflow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 11px;
+    }
+
+    .topbar {
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    a {
+      color: var(--gold-bright);
+    }
+
+    .panel {
+      padding: clamp(24px,5vw,48px);
+      border: 1px solid var(--border);
+      border-radius: 25px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.065),
+          rgba(255,255,255,.012)
+        ),
+        var(--panel);
+      box-shadow: 0 30px 90px rgba(0,0,0,.55);
+    }
+
+    .eyebrow {
+      margin: 0 0 9px;
+      color: var(--gold);
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--gold-bright);
+      font-family: Georgia, serif;
+      font-size: clamp(2.3rem,6vw,4.5rem);
+      line-height: 1;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .workflow {
+      margin: 26px 0;
+      padding: 15px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 15px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .workflow span {
+      color: rgba(255,255,255,.62);
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .workflow b {
+      color: var(--gold);
+    }
+
+    .errors,
+    .errorlist {
+      color: #ffaaaa;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 18px;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .field-wide,
+    .field-locations {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gold-bright);
+      font-weight: 900;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px;
+      border: 1px solid rgba(229,189,82,.3);
+      border-radius: 12px;
+      outline: none;
+      color: #fff;
+      background: rgba(255,255,255,.055);
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 125px;
+      resize: vertical;
+    }
+
+    option {
+      color: #111;
+    }
+
+    .field-locations > div {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .field-locations > div > div {
+      padding: 13px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 12px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .field-locations label {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin: 0;
+      color: #fff;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      min-height: auto;
+      margin-top: 4px;
+    }
+
+    .help {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.5;
+    }
+
+    .budget-rule {
+      grid-column: 1 / -1;
+      padding: 16px;
+      border: 1px solid rgba(229,189,82,.24);
+      border-radius: 13px;
+      color: #eadcae;
+      background: rgba(229,189,82,.055);
+      line-height: 1.65;
+    }
+
+    .carole-card {
+      grid-column: 1 / -1;
+      padding: 22px;
+      border: 1px solid rgba(190,141,255,.4);
+      border-radius: 17px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(190,141,255,.17),
+          transparent 45%
+        ),
+        rgba(71,38,105,.14);
+    }
+
+    .carole-card h2 {
+      margin: 0 0 8px;
+      color: #ead7ff;
+      font-family: Georgia, serif;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 49px;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(255,255,255,.05);
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button.primary {
+      color: #090602;
+      border-color: var(--gold-bright);
+      background: linear-gradient(
+        135deg,
+        var(--gold-bright),
+        var(--gold),
+        #a8791e
+      );
+    }
+
+    .button.carole {
+      border-color: rgba(218,181,255,.7);
+      color: #f2e7ff;
+      background: rgba(144,75,213,.2);
+    }
+
+    .actions {
+      justify-content: flex-end;
+      margin-top: 30px;
+    }
+
+    @media (max-width: 720px) {
+      .grid,
+      .field-locations > div {
+        grid-template-columns: 1fr;
+      }
+
+      .field-wide,
+      .field-locations {
+        grid-column: auto;
+      }
+
+      .actions {
+        display: grid;
+      }
+    }
+  </style>
 </head>
-
 <body>
-    <div class="network-shell">
+  <main class="shell">
+    <div class="topbar">
+      <a href="{% url 'advertising:campaign_list' %}">
+        ← Campaign Manager
+      </a>
 
-        <header class="network-topbar">
-            <a
-                class="network-brand"
-                href="{% url 'advertising:dashboard' %}"
-            >
-                <span class="network-emblem">MM</span>
-
-                <span>
-                    <strong>
-                        MajicMall Megaverse Media Network
-                    </strong>
-
-                    <small>
-                        The Voice of the Majestic Megaverse
-                    </small>
-                </span>
-            </a>
-
-            <a
-                class="topbar-button"
-                href="{% url 'advertising:campaign_list' %}"
-            >
-                Campaign Manager
-            </a>
-        </header>
-
-        <main class="campaign-page narrow-page">
-
-            <section class="form-heading">
-                <p class="eyebrow">
-                    Campaign Manager
-                </p>
-
-                <h1>{{ page_title }}</h1>
-
-                <p>{{ page_subtitle }}</p>
-            </section>
-
-            <form
-                class="campaign-form-panel"
-                method="post"
-                enctype="multipart/form-data"
-            >
-                {% csrf_token %}
-
-                {% if form.non_field_errors %}
-                    <div class="form-error-summary">
-                        {{ form.non_field_errors }}
-                    </div>
-                {% endif %}
-
-                <div class="campaign-form-grid">
-                    {% for field in form %}
-                        <div
-                            class="campaign-field
-                            {% if field.field.widget.input_type == 'checkbox' %}
-                                checkbox-field
-                            {% endif %}"
-                        >
-                            <label for="{{ field.id_for_label }}">
-                                {{ field.label }}
-
-                                {% if field.field.required %}
-                                    <span class="required-mark">*</span>
-                                {% endif %}
-                            </label>
-
-                            {{ field }}
-
-                            {% if field.help_text %}
-                                <small class="field-help">
-                                    {{ field.help_text|safe }}
-                                </small>
-                            {% endif %}
-
-                            {% if field.errors %}
-                                <div class="field-errors">
-                                    {{ field.errors }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-
-                <div class="form-actions">
-                    <a
-                        class="secondary-button"
-                        href="{% url 'advertising:campaign_list' %}"
-                    >
-                        Cancel
-                    </a>
-
-                    <button
-                        class="primary-button"
-                        type="submit"
-                    >
-                        {{ submit_label }}
-                    </button>
-                </div>
-            </form>
-
-        </main>
+      <a href="{% url 'advertising:inventory-manager' %}">
+        Manage Advertising Inventory
+      </a>
     </div>
+
+    <section class="panel">
+      <p class="eyebrow">
+        Digital Advertising Command Center
+      </p>
+
+      <h1>{{ page_title }}</h1>
+      <p class="subtitle">{{ page_subtitle }}</p>
+
+      <div class="workflow">
+        <span><b>1</b> Campaign</span>
+        <span>→</span>
+        <span><b>2</b> Locations</span>
+        <span>→</span>
+        <span><b>3</b> Lease Plan</span>
+        <span>→</span>
+        <span><b>4</b> Dates</span>
+        <span>→</span>
+        <span><b>5</b> Creative</span>
+        <span>→</span>
+        <span><b>6</b> Approval</span>
+        <span>→</span>
+        <span><b>7</b> Live</span>
+      </div>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="errors">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <div class="grid">
+          {% for field in form %}
+            <div
+              class="field
+              {% if field.name == 'description' or field.name == 'internal_notes' %}
+                field-wide
+              {% endif %}
+              {% if field.name == 'advertising_locations' %}
+                field-locations
+              {% endif %}"
+            >
+              <label for="{{ field.id_for_label }}">
+                {{ field.label }}
+                {% if field.field.required %}*{% endif %}
+              </label>
+
+              {{ field }}
+
+              {% if field.help_text %}
+                <small class="help">
+                  {{ field.help_text|safe }}
+                </small>
+              {% endif %}
+
+              {{ field.errors }}
+            </div>
+          {% endfor %}
+
+          <div class="budget-rule">
+            <strong>Campaign budget rules:</strong>
+            Standard inventory begins at $25. Up to two standard
+            locations requires at least $50. Premium inventory such as
+            the Homepage Billboard requires at least $50. Majestic
+            Square Signature inventory may require $250 or more. The
+            final minimum is the greater of the location-count minimum,
+            property minimum, and combined lease-plan cost.
+          </div>
+
+          <section class="carole-card">
+            <h2>🎨 Need help with artwork?</h2>
+
+            <p>
+              Work with Carole, the MajicMall Megaverse AI Marketing
+              Director, on billboard concepts, headlines, promotional
+              copy and calls to action.
+            </p>
+
+            <a
+              class="button carole"
+              href="{% url 'advertising:carole-creative-studio' %}{% if campaign %}?campaign={{ campaign.pk }}{% endif %}"
+            >
+              Click Here to Work With Carole
+            </a>
+          </section>
+        </div>
+
+        <div class="actions">
+          <a
+            class="button"
+            href="{% url 'advertising:campaign_list' %}"
+          >
+            Cancel
+          </a>
+
+          <button
+            class="button"
+            type="submit"
+            name="submit_action"
+            value="draft"
+          >
+            Save Draft
+          </button>
+
+          <button
+            class="button primary"
+            type="submit"
+            name="submit_action"
+            value="submit"
+          >
+            Submit for Approval
+          </button>
+        </div>
+      </form>
+    </section>
+  </main>
 </body>
 </html>

@@ -613,6 +613,66 @@
             <header class="section-header">
                 <div>
                     <h2 class="section-heading">
+                        Campaign Placements
+                    </h2>
+
+                    <p class="section-subtitle">
+                        Advertising locations and lease terms assigned
+                        to this campaign.
+                    </p>
+                </div>
+            </header>
+
+            {% if placements %}
+                <div class="creative-grid">
+                    {% for placement in placements %}
+                        <article class="creative-card">
+                            <p class="creative-type">
+                                {{ placement.digital_property.property_code }}
+                            </p>
+
+                            <h3 class="creative-title">
+                                {{ placement.digital_property.name }}
+                            </h3>
+
+                            <div class="creative-meta">
+                                <span class="creative-chip">
+                                    {{ placement.digital_property.get_inventory_tier_display }}
+                                </span>
+
+                                <span class="creative-chip">
+                                    {{ placement.lease_plan.name }}
+                                </span>
+
+                                <span class="creative-chip">
+                                    ${{ placement.agreed_price|floatformat:2 }}
+                                </span>
+
+                                <span class="creative-chip">
+                                    {{ placement.start_at|date:"M j, Y" }}
+                                    —
+                                    {{ placement.end_at|date:"M j, Y" }}
+                                </span>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h3>No advertising locations selected.</h3>
+
+                    <p>
+                        Edit this campaign to select billboards,
+                        banners, screens or Majestic Square inventory.
+                    </p>
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="section-panel">
+            <header class="section-header">
+                <div>
+                    <h2 class="section-heading">
                         Campaign Creatives
                     </h2>
 
@@ -623,7 +683,7 @@
 
                 <a
                     class="primary-button"
-                    href="#"
+                    href="{% url 'advertising:campaign-creative-create' campaign.pk %}"
                     aria-label="Add a creative to this campaign"
                 >
                     + Add Creative

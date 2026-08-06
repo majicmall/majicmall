@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>
+    Approval Center | Digital Advertising Command Center
+  </title>
+
+  <style>
+    :root {
+      --gold: #e5bd52;
+      --gold-bright: #ffe69a;
+      --green: #62d795;
+      --blue: #70b8ff;
+      --amber: #f0c765;
+      --border: rgba(229,189,82,.32);
+      --muted: rgba(255,255,255,.62);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(229,189,82,.18),
+          transparent 35%
+        ),
+        linear-gradient(145deg,#020202,#0d0d11,#020202);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .shell {
+      width: min(1380px,calc(100% - 28px));
+      margin: auto;
+      padding: 34px 0 80px;
+    }
+
+    .hero {
+      padding: clamp(25px,5vw,48px);
+      border: 1px solid var(--border);
+      border-radius: 25px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.065),
+          rgba(255,255,255,.012)
+        ),
+        rgba(8,8,11,.94);
+      box-shadow: 0 30px 90px rgba(0,0,0,.55);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--gold);
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--gold-bright);
+      font-family: Georgia,serif;
+      font-size: clamp(2.5rem,7vw,5rem);
+      line-height: 1;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 13px;
+      margin-top: 25px;
+    }
+
+    .metric {
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 15px;
+      background: rgba(255,255,255,.03);
+    }
+
+    .metric span,
+    .metric strong {
+      display: block;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: .7rem;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .metric strong {
+      margin-top: 9px;
+      font-family: Georgia,serif;
+      font-size: 2.4rem;
+    }
+
+    .section {
+      margin-top: 24px;
+      padding: clamp(20px,4vw,34px);
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 20px;
+      background: rgba(8,8,11,.9);
+    }
+
+    .section h2 {
+      margin-top: 0;
+      font-family: Georgia,serif;
+      font-size: 2rem;
+    }
+
+    .campaigns {
+      display: grid;
+      gap: 12px;
+    }
+
+    .campaign {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr auto;
+      gap: 17px;
+      align-items: center;
+      padding: 17px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .campaign h3 {
+      margin: 0 0 5px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: .83rem;
+      line-height: 1.5;
+    }
+
+    .status {
+      display: inline-flex;
+      padding: 7px 10px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      font-size: .65rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .pending {
+      color: var(--amber);
+    }
+
+    .scheduled {
+      color: var(--blue);
+    }
+
+    .active {
+      color: var(--green);
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
+      border: 1px solid var(--gold);
+      border-radius: 999px;
+      color: #080808;
+      background: linear-gradient(
+        135deg,
+        var(--gold-bright),
+        var(--gold)
+      );
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .empty {
+      padding: 25px;
+      border: 1px dashed rgba(229,189,82,.28);
+      border-radius: 14px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media(max-width:850px) {
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .campaign {
+        grid-template-columns: 1fr;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <p>
+      <a href="{% url 'advertising:media-network-dashboard' %}">
+        ← Digital Advertising Command Center
+      </a>
+    </p>
+
+    <section class="hero">
+      <p class="eyebrow">
+        Advertising Operations
+      </p>
+
+      <h1>Approval Center</h1>
+
+      <p class="subtitle">
+        Review campaigns, reserve advertising inventory, schedule
+        launch dates and monitor live campaigns.
+      </p>
+
+      <div class="metrics">
+        <article class="metric">
+          <span>Pending Approval</span>
+          <strong>{{ pending_count }}</strong>
+        </article>
+
+        <article class="metric">
+          <span>Scheduled</span>
+          <strong>{{ scheduled_count }}</strong>
+        </article>
+
+        <article class="metric">
+          <span>Live</span>
+          <strong>{{ active_count }}</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Pending Approval</h2>
+
+      <div class="campaigns">
+        {% for campaign in pending_campaigns %}
+          <article class="campaign">
+            <div>
+              <h3>{{ campaign.name }}</h3>
+
+              <div class="meta">
+                {{ campaign.advertiser_name|default:"No advertiser" }}
+                · Budget ${{ campaign.budget|floatformat:2 }}
+              </div>
+            </div>
+
+            <div class="meta">
+              {{ campaign.placements.count }}
+              location{{ campaign.placements.count|pluralize }}
+              ·
+              {{ campaign.creatives.count }}
+              creative{{ campaign.creatives.count|pluralize }}
+            </div>
+
+            <div>
+              <span class="status pending">
+                Pending
+              </span>
+            </div>
+
+            <a
+              class="button"
+              href="{% url 'advertising:campaign-review' campaign.pk %}"
+            >
+              Review
+            </a>
+          </article>
+        {% empty %}
+          <div class="empty">
+            No campaigns are waiting for approval.
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Scheduled Campaigns</h2>
+
+      <div class="campaigns">
+        {% for campaign in scheduled_campaigns %}
+          <article class="campaign">
+            <div>
+              <h3>{{ campaign.name }}</h3>
+              <div class="meta">
+                {{ campaign.advertiser_name }}
+              </div>
+            </div>
+
+            <div class="meta">
+              Starts {{ campaign.start_at|date:"M j, Y g:i A" }}
+            </div>
+
+            <div>
+              <span class="status scheduled">
+                Scheduled
+              </span>
+            </div>
+
+            <a
+              class="button"
+              href="{% url 'advertising:campaign-review' campaign.pk %}"
+            >
+              View
+            </a>
+          </article>
+        {% empty %}
+          <div class="empty">
+            No campaigns are currently scheduled.
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Live Campaigns</h2>
+
+      <div class="campaigns">
+        {% for campaign in active_campaigns %}
+          <article class="campaign">
+            <div>
+              <h3>{{ campaign.name }}</h3>
+              <div class="meta">
+                {{ campaign.advertiser_name }}
+              </div>
+            </div>
+
+            <div class="meta">
+              Ends {{ campaign.end_at|date:"M j, Y g:i A" }}
+            </div>
+
+            <div>
+              <span class="status active">
+                Live
+              </span>
+            </div>
+
+            <a
+              class="button"
+              href="{% url 'advertising:campaign-review' campaign.pk %}"
+            >
+              View
+            </a>
+          </article>
+        {% empty %}
+          <div class="empty">
+            No campaigns are live right now.
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+</body>
+</html>

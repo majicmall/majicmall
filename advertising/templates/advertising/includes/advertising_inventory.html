@@ -19,6 +19,16 @@
       </p>
     </div>
 
+    {% if request.user.is_staff %}
+      <a
+        href="{% url 'advertising:inventory-manager' %}"
+        class="ad-inventory-reset"
+        style="text-decoration:none;display:inline-flex;align-items:center;"
+      >
+        Manage Inventory
+      </a>
+    {% endif %}
+
     <div class="ad-inventory-total">
       <strong>{{ inventory_count }}</strong>
       <span>Locations</span>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>
+    Review {{ campaign.name }} | Advertising
+  </title>
+
+  <style>
+    :root {
+      --gold: #e5bd52;
+      --gold-bright: #ffe69a;
+      --green: #63d895;
+      --red: #ff8d8d;
+      --amber: #f0c765;
+      --border: rgba(229,189,82,.34);
+      --muted: rgba(255,255,255,.64);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: #fff;
+      font-family: Arial,sans-serif;
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(229,189,82,.18),
+          transparent 35%
+        ),
+        #030303;
+    }
+
+    .shell {
+      width: min(1180px,calc(100% - 28px));
+      margin: auto;
+      padding: 35px 0 80px;
+    }
+
+    .hero,
+    .panel {
+      padding: clamp(22px,5vw,42px);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: rgba(11,11,14,.94);
+    }
+
+    .panel {
+      margin-top: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--gold-bright);
+      font-family: Georgia,serif;
+      font-size: clamp(2.4rem,7vw,4.8rem);
+      line-height: 1;
+    }
+
+    h2 {
+      font-family: Georgia,serif;
+    }
+
+    .meta {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 13px;
+      margin-top: 20px;
+    }
+
+    .card {
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .card strong,
+    .card span {
+      display: block;
+    }
+
+    .card span {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: .7rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 13px;
+      border: 1px solid rgba(229,189,82,.3);
+      border-radius: 13px;
+      color: #fff;
+      background: rgba(255,255,255,.055);
+      font: inherit;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .button {
+      min-height: 48px;
+      padding: 12px 19px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(255,255,255,.05);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .approve {
+      color: #071109;
+      border-color: var(--green);
+      background: linear-gradient(
+        135deg,
+        #9ef2bc,
+        var(--green)
+      );
+    }
+
+    .changes {
+      color: #0c0902;
+      border-color: var(--amber);
+      background: linear-gradient(
+        135deg,
+        #ffe6a3,
+        var(--amber)
+      );
+    }
+
+    .reject {
+      color: #160505;
+      border-color: var(--red);
+      background: linear-gradient(
+        135deg,
+        #ffc0c0,
+        var(--red)
+      );
+    }
+
+    @media(max-width:700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        display: grid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <p>
+      <a href="{% url 'advertising:approval-center' %}">
+        ← Approval Center
+      </a>
+    </p>
+
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+
+    <section class="hero">
+      <p class="meta">
+        Campaign Review
+      </p>
+
+      <h1>{{ campaign.name }}</h1>
+
+      <p class="meta">
+        {{ campaign.advertiser_name|default:"No advertiser entered" }}
+        · {{ campaign.get_status_display }}
+      </p>
+
+      <div class="grid">
+        <article class="card">
+          <span>Budget</span>
+          <strong>${{ campaign.budget|floatformat:2 }}</strong>
+        </article>
+
+        <article class="card">
+          <span>Schedule</span>
+          <strong>
+            {{ campaign.start_at|date:"M j, Y g:i A" }}
+            —
+            {{ campaign.end_at|date:"M j, Y g:i A" }}
+          </strong>
+        </article>
+
+        <article class="card">
+          <span>Locations</span>
+          <strong>{{ placements|length }}</strong>
+        </article>
+
+        <article class="card">
+          <span>Creatives</span>
+          <strong>{{ creatives|length }}</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Advertising Placements</h2>
+
+      <div class="grid">
+        {% for placement in placements %}
+          <article class="card">
+            <span>
+              {{ placement.digital_property.property_code }}
+            </span>
+
+            <strong>
+              {{ placement.digital_property.name }}
+            </strong>
+
+            <p class="meta">
+              {{ placement.digital_property.get_inventory_tier_display }}
+              · {{ placement.lease_plan.name }}
+              · ${{ placement.agreed_price|floatformat:2 }}
+            </p>
+          </article>
+        {% empty %}
+          <p>No locations are attached to this campaign.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Campaign Creatives</h2>
+
+      <div class="grid">
+        {% for creative in creatives %}
+          <article class="card">
+            <span>
+              {{ creative.get_media_type_display }}
+            </span>
+
+            <strong>{{ creative.title }}</strong>
+
+            <p class="meta">
+              {{ creative.get_approval_status_display }}
+            </p>
+          </article>
+        {% empty %}
+          <p>No creative has been attached.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    {% if campaign.status == "pending" %}
+      <section class="panel">
+        <h2>Decision</h2>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <label for="review_notes">
+            Review Notes
+          </label>
+
+          <textarea
+            id="review_notes"
+            name="review_notes"
+            placeholder="Approval notes, requested changes, or rejection reason..."
+          ></textarea>
+
+          <div class="actions">
+            <button
+              class="button approve"
+              type="submit"
+              formaction="{% url 'advertising:campaign-approve' campaign.pk %}"
+            >
+              Approve Campaign
+            </button>
+
+            <button
+              class="button changes"
+              type="submit"
+              formaction="{% url 'advertising:campaign-request-changes' campaign.pk %}"
+            >
+              Request Changes
+            </button>
+
+            <button
+              class="button reject"
+              type="submit"
+              formaction="{% url 'advertising:campaign-reject' campaign.pk %}"
+            >
+              Reject Campaign
+            </button>
+          </div>
+        </form>
+      </section>
+    {% elif campaign.review_notes %}
+      <section class="panel">
+        <h2>Review Notes</h2>
+        <p class="meta">{{ campaign.review_notes }}</p>
+      </section>
+    {% endif %}
+  </main>
+</body>
+</html>

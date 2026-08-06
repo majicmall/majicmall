@@ -75,6 +75,11 @@ class DigitalProperty(models.Model):
     MajicMall Megaverse.
     """
 
+    class InventoryTier(models.TextChoices):
+        STANDARD = "standard", "Standard"
+        PREMIUM = "premium", "Premium"
+        SIGNATURE = "signature", "Majestic Square Signature"
+
     class AvailabilityStatus(models.TextChoices):
         AVAILABLE = "available", "Available"
         RESERVED = "reserved", "Reserved"
@@ -139,6 +144,26 @@ class DigitalProperty(models.Model):
     supports_video = models.BooleanField(default=False)
 
     interactive = models.BooleanField(default=False)
+
+    inventory_tier = models.CharField(
+        max_length=20,
+        choices=InventoryTier.choices,
+        default=InventoryTier.STANDARD,
+        db_index=True,
+        help_text=(
+            "Standard, Premium, or Majestic Square Signature inventory."
+        ),
+    )
+
+    minimum_spend = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=25,
+        help_text=(
+            "Minimum total campaign budget required when this property "
+            "is selected."
+        ),
+    )
 
     availability_status = models.CharField(
         max_length=20,

@@ -1,12 +1,13 @@
 from .forms import AdvertisingCreativeForm
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CampaignForm
-from .models import AdvertisingCreative, Campaign
+from .forms import CampaignForm, DigitalPropertyForm
+from .models import AdvertisingCreative, Campaign, CampaignPlacement
+from digital_property.models import DigitalProperty
 
 
 def dashboard(request):
@@ -121,6 +122,11 @@ def campaign_detail(request, pk):
         "rejected_count": creatives.filter(
             approval_status=AdvertisingCreative.ApprovalStatus.REJECTED
         ).count(),
+        "placements": campaign.placements.select_related(
+            "digital_property",
+            "lease_plan",
+            "digital_property__mall_zone",
+        ),
     }
 
     return render(
@@ -131,20 +137,44 @@ def campaign_detail(request, pk):
 
 
 def campaign_create(request):
+    submit_action = request.POST.get("submit_action", "draft")
+
     if request.method == "POST":
-        form = CampaignForm(request.POST, request.FILES)
+        form = CampaignForm(
+            request.POST,
+            request.FILES,
+            user=request.user,
+            submit_action=submit_action,
+        )
 
         if form.is_valid():
             campaign = form.save()
 
+            if submit_action == "submit":
+                messages.success(
+                    request,
+                    f'Campaign "{campaign}" was submitted for approval.',
+                )
+
+                return redirect(
+                    "advertising:campaign_detail",
+                    pk=campaign.pk,
+                )
+
             messages.success(
                 request,
-                f'Campaign "{campaign}" was created successfully.',
+                f'Campaign "{campaign}" was saved as a draft.',
             )
 
-            return redirect("advertising:campaign_list")
+            return redirect(
+                "advertising:campaign_edit",
+                pk=campaign.pk,
+            )
     else:
-        form = CampaignForm()
+        form = CampaignForm(
+            user=request.user,
+            submit_action="draft",
+        )
 
     return render(
         request,
@@ -153,35 +183,56 @@ def campaign_create(request):
             "form": form,
             "page_title": "Create Campaign",
             "page_subtitle": (
-                "Build a new advertising campaign for the "
-                "MajicMall Megaverse Media Network."
+                "Choose advertising locations, lease terms, dates, "
+                "budget and creative support."
             ),
-            "submit_label": "Create Campaign",
+            "campaign": None,
         },
     )
 
 
 def campaign_edit(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
+    submit_action = request.POST.get("submit_action", "draft")
 
     if request.method == "POST":
         form = CampaignForm(
             request.POST,
             request.FILES,
             instance=campaign,
+            user=request.user,
+            submit_action=submit_action,
         )
 
         if form.is_valid():
             campaign = form.save()
 
+            if submit_action == "submit":
+                messages.success(
+                    request,
+                    f'Campaign "{campaign}" was submitted for approval.',
+                )
+
+                return redirect(
+                    "advertising:campaign_detail",
+                    pk=campaign.pk,
+                )
+
             messages.success(
                 request,
-                f'Campaign "{campaign}" was updated successfully.',
+                f'Campaign "{campaign}" was saved as a draft.',
             )
 
-            return redirect("advertising:campaign_list")
+            return redirect(
+                "advertising:campaign_edit",
+                pk=campaign.pk,
+            )
     else:
-        form = CampaignForm(instance=campaign)
+        form = CampaignForm(
+            instance=campaign,
+            user=request.user,
+            submit_action="draft",
+        )
 
     return render(
         request,
@@ -191,9 +242,9 @@ def campaign_edit(request, pk):
             "campaign": campaign,
             "page_title": "Edit Campaign",
             "page_subtitle": (
-                "Update campaign settings, timing and network details."
+                "Update campaign placements, lease plan, dates, "
+                "budget and submission status."
             ),
-            "submit_label": "Save Changes",
         },
     )
 
@@ -383,6 +434,11 @@ def creative_create(request, campaign_id=None):
             pk=campaign_id,
         )
 
+    submit_action = request.POST.get(
+        "submit_action",
+        "draft",
+    )
+
     if request.method == "POST":
         form = AdvertisingCreativeForm(
             request.POST,
@@ -392,15 +448,27 @@ def creative_create(request, campaign_id=None):
         )
 
         if form.is_valid():
-            creative = form.save()
-
-            messages.success(
-                request,
-                "Creative asset added to the "
-                "MajicMall Megaverse Media Network.",
+            creative = form.save(
+                submit_for_review=(
+                    submit_action == "submit"
+                ),
             )
 
-            return redirect("advertising:creative-studio")
+            if submit_action == "submit":
+                messages.success(
+                    request,
+                    "Creative submitted for approval.",
+                )
+            else:
+                messages.success(
+                    request,
+                    "Creative saved as a draft.",
+                )
+
+            return redirect(
+                "advertising:campaign_detail",
+                pk=creative.campaign_id,
+            )
     else:
         form = AdvertisingCreativeForm(
             campaign=campaign,
@@ -414,4 +482,791 @@ def creative_create(request, campaign_id=None):
             "form": form,
             "campaign": campaign,
         },
+    )
+
+
+def staff_required(user):
+    return user.is_authenticated and user.is_staff
+
+
+@user_passes_test(staff_required)
+def inventory_manager(request):
+    properties = (
+        DigitalProperty.objects
+        .select_related("property_type", "mall_zone")
+        .prefetch_related("lease_plans")
+        .order_by("display_order", "name")
+    )
+
+    return render(
+        request,
+        "advertising/inventory_manager.html",
+        {
+            "properties": properties,
+        },
+    )
+
+
+@user_passes_test(staff_required)
+def inventory_create(request):
+    if request.method == "POST":
+        form = DigitalPropertyForm(
+            request.POST,
+            request.FILES,
+        )
+
+        if form.is_valid():
+            property_item = form.save()
+
+            messages.success(
+                request,
+                (
+                    f'Advertising inventory "{property_item.name}" '
+                    "was created."
+                ),
+            )
+
+            return redirect(
+                "advertising:inventory-manager",
+            )
+    else:
+        form = DigitalPropertyForm()
+
+    return render(
+        request,
+        "advertising/inventory_form.html",
+        {
+            "form": form,
+            "page_title": "Add Advertising Inventory",
+            "submit_label": "Create Inventory",
+        },
+    )
+
+
+@user_passes_test(staff_required)
+def inventory_edit(request, pk):
+    property_item = get_object_or_404(
+        DigitalProperty,
+        pk=pk,
+    )
+
+    if request.method == "POST":
+        form = DigitalPropertyForm(
+            request.POST,
+            request.FILES,
+            instance=property_item,
+        )
+
+        if form.is_valid():
+            property_item = form.save()
+
+            messages.success(
+                request,
+                (
+                    f'Advertising inventory "{property_item.name}" '
+                    "was updated."
+                ),
+            )
+
+            return redirect(
+                "advertising:inventory-manager",
+            )
+    else:
+        form = DigitalPropertyForm(
+            instance=property_item,
+        )
+
+    return render(
+        request,
+        "advertising/inventory_form.html",
+        {
+            "form": form,
+            "property_item": property_item,
+            "page_title": "Edit Advertising Inventory",
+            "submit_label": "Save Inventory",
+        },
+    )
+
+
+@login_required
+def carole_creative_studio(request):
+    campaign = None
+    campaign_id = (
+        request.POST.get("campaign")
+        or request.GET.get("campaign")
+    )
+
+    if campaign_id:
+        campaign = get_object_or_404(
+            Campaign,
+            pk=campaign_id,
+        )
+
+    creative_brief = None
+
+    if request.method == "POST":
+        promotion = request.POST.get(
+            "promotion",
+            "",
+        ).strip()
+
+        audience = request.POST.get(
+            "audience",
+            "",
+        ).strip()
+
+        offer = request.POST.get(
+            "offer",
+            "",
+        ).strip()
+
+        tone = request.POST.get(
+            "tone",
+            "Luxury and confident",
+        ).strip()
+
+        headline = (
+            f"Discover {promotion}"
+            if promotion
+            else "Discover Something Majestic"
+        )
+
+        call_to_action = (
+            "Shop Now"
+            if "sale" in offer.lower()
+            or "discount" in offer.lower()
+            else "Learn More"
+        )
+
+        creative_brief = {
+            "headline": headline,
+            "supporting_copy": (
+                f"Created for {audience or 'MajicMall Megaverse visitors'} "
+                f"with a {tone.lower()} presentation."
+            ),
+            "offer": offer or "Highlight the campaign's strongest benefit.",
+            "call_to_action": call_to_action,
+            "recommended_format": (
+                "Use a bold focal image, short headline, high contrast, "
+                "and one clear call to action."
+            ),
+        }
+
+    return render(
+        request,
+        "advertising/carole_creative_studio.html",
+        {
+            "campaign": campaign,
+            "creative_brief": creative_brief,
+        },
+    )
+
+
+
+# =========================================================
+# MM_PUSH_005E — Approval and scheduling operations
+# =========================================================
+
+from django.views.decorators.http import require_POST
+
+from .services import (
+    approve_campaign,
+    reject_campaign,
+    request_campaign_changes,
+    sync_campaign_states,
+)
+
+
+@user_passes_test(staff_required)
+def approval_center(request):
+    sync_result = sync_campaign_states()
+
+    pending_campaigns = (
+        Campaign.objects
+        .filter(status=Campaign.Status.PENDING)
+        .prefetch_related(
+            "placements",
+            "placements__digital_property",
+            "placements__lease_plan",
+            "creatives",
+        )
+        .order_by("created_at")
+    )
+
+    scheduled_campaigns = (
+        Campaign.objects
+        .filter(status=Campaign.Status.SCHEDULED)
+        .prefetch_related(
+            "placements",
+            "placements__digital_property",
+        )
+        .order_by("start_at")
+    )
+
+    active_campaigns = (
+        Campaign.objects
+        .filter(status=Campaign.Status.ACTIVE)
+        .prefetch_related(
+            "placements",
+            "placements__digital_property",
+        )
+        .order_by("end_at")
+    )
+
+    context = {
+        "pending_campaigns": pending_campaigns,
+        "scheduled_campaigns": scheduled_campaigns,
+        "active_campaigns": active_campaigns,
+        "pending_count": pending_campaigns.count(),
+        "scheduled_count": scheduled_campaigns.count(),
+        "active_count": active_campaigns.count(),
+        "sync_result": sync_result,
+    }
+
+    return render(
+        request,
+        "advertising/approval_center.html",
+        context,
+    )
+
+
+@user_passes_test(staff_required)
+def campaign_review(request, pk):
+    sync_campaign_states()
+
+    campaign = get_object_or_404(
+        Campaign.objects.prefetch_related(
+            "placements",
+            "placements__digital_property",
+            "placements__lease_plan",
+            "creatives",
+        ),
+        pk=pk,
+    )
+
+    return render(
+        request,
+        "advertising/campaign_review.html",
+        {
+            "campaign": campaign,
+            "placements": campaign.placements.all(),
+            "creatives": campaign.creatives.all(),
+        },
+    )
+
+
+@require_POST
+@user_passes_test(staff_required)
+def campaign_approve(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    review_notes = request.POST.get(
+        "review_notes",
+        "",
+    ).strip()
+
+    try:
+        approve_campaign(
+            campaign,
+            reviewed_by=request.user,
+            review_notes=review_notes,
+        )
+    except ValueError as exc:
+        messages.error(request, str(exc))
+
+        return redirect(
+            "advertising:campaign-review",
+            pk=campaign.pk,
+        )
+
+    messages.success(
+        request,
+        (
+            f'Campaign "{campaign.name}" was approved and '
+            "its advertising inventory was scheduled."
+        ),
+    )
+
+    return redirect(
+        "advertising:approval-center",
+    )
+
+
+@require_POST
+@user_passes_test(staff_required)
+def campaign_request_changes(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    review_notes = request.POST.get(
+        "review_notes",
+        "",
+    ).strip()
+
+    if not review_notes:
+        messages.error(
+            request,
+            "Enter the changes the advertiser must make.",
+        )
+
+        return redirect(
+            "advertising:campaign-review",
+            pk=campaign.pk,
+        )
+
+    request_campaign_changes(
+        campaign,
+        reviewed_by=request.user,
+        review_notes=review_notes,
+    )
+
+    messages.success(
+        request,
+        (
+            f'Changes were requested for campaign '
+            f'"{campaign.name}".'
+        ),
+    )
+
+    return redirect(
+        "advertising:approval-center",
+    )
+
+
+@require_POST
+@user_passes_test(staff_required)
+def campaign_reject(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    review_notes = request.POST.get(
+        "review_notes",
+        "",
+    ).strip()
+
+    if not review_notes:
+        messages.error(
+            request,
+            "Enter a rejection reason.",
+        )
+
+        return redirect(
+            "advertising:campaign-review",
+            pk=campaign.pk,
+        )
+
+    reject_campaign(
+        campaign,
+        reviewed_by=request.user,
+        review_notes=review_notes,
+    )
+
+    messages.success(
+        request,
+        f'Campaign "{campaign.name}" was rejected.',
+    )
+
+    return redirect(
+        "advertising:approval-center",
+    )
+
+
+# =========================================================
+# MM_PUSH_005E — Approval and scheduling operations
+# =========================================================
+
+from django.views.decorators.http import require_POST
+
+from .services import (
+    approve_campaign,
+    reject_campaign,
+    request_campaign_changes,
+    sync_campaign_states,
+)
+
+
+@user_passes_test(staff_required)
+def approval_center(request):
+    sync_result = sync_campaign_states()
+
+    pending_campaigns = (
+        Campaign.objects
+        .filter(status=Campaign.Status.PENDING)
+        .prefetch_related(
+            "placements",
+            "placements__digital_property",
+            "placements__lease_plan",
+            "creatives",
+        )
+        .order_by("created_at")
+    )
+
+    scheduled_campaigns = (
+        Campaign.objects
+        .filter(status=Campaign.Status.SCHEDULED)
+        .prefetch_related(
+            "placements",
+            "placements__digital_property",
+        )
+        .order_by("start_at")
+    )
+
+    active_campaigns = (
+        Campaign.objects
+        .filter(status=Campaign.Status.ACTIVE)
+        .prefetch_related(
+            "placements",
+            "placements__digital_property",
+        )
+        .order_by("end_at")
+    )
+
+    context = {
+        "pending_campaigns": pending_campaigns,
+        "scheduled_campaigns": scheduled_campaigns,
+        "active_campaigns": active_campaigns,
+        "pending_count": pending_campaigns.count(),
+        "scheduled_count": scheduled_campaigns.count(),
+        "active_count": active_campaigns.count(),
+        "sync_result": sync_result,
+    }
+
+    return render(
+        request,
+        "advertising/approval_center.html",
+        context,
+    )
+
+
+@user_passes_test(staff_required)
+def campaign_review(request, pk):
+    sync_campaign_states()
+
+    campaign = get_object_or_404(
+        Campaign.objects.prefetch_related(
+            "placements",
+            "placements__digital_property",
+            "placements__lease_plan",
+            "creatives",
+        ),
+        pk=pk,
+    )
+
+    return render(
+        request,
+        "advertising/campaign_review.html",
+        {
+            "campaign": campaign,
+            "placements": campaign.placements.all(),
+            "creatives": campaign.creatives.all(),
+        },
+    )
+
+
+@require_POST
+@user_passes_test(staff_required)
+def campaign_approve(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    review_notes = request.POST.get(
+        "review_notes",
+        "",
+    ).strip()
+
+    try:
+        approve_campaign(
+            campaign,
+            reviewed_by=request.user,
+            review_notes=review_notes,
+        )
+    except ValueError as exc:
+        messages.error(request, str(exc))
+
+        return redirect(
+            "advertising:campaign-review",
+            pk=campaign.pk,
+        )
+
+    messages.success(
+        request,
+        (
+            f'Campaign "{campaign.name}" was approved and '
+            "its advertising inventory was scheduled."
+        ),
+    )
+
+    return redirect(
+        "advertising:approval-center",
+    )
+
+
+@require_POST
+@user_passes_test(staff_required)
+def campaign_request_changes(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    review_notes = request.POST.get(
+        "review_notes",
+        "",
+    ).strip()
+
+    if not review_notes:
+        messages.error(
+            request,
+            "Enter the changes the advertiser must make.",
+        )
+
+        return redirect(
+            "advertising:campaign-review",
+            pk=campaign.pk,
+        )
+
+    request_campaign_changes(
+        campaign,
+        reviewed_by=request.user,
+        review_notes=review_notes,
+    )
+
+    messages.success(
+        request,
+        (
+            f'Changes were requested for campaign '
+            f'"{campaign.name}".'
+        ),
+    )
+
+    return redirect(
+        "advertising:approval-center",
+    )
+
+
+@require_POST
+@user_passes_test(staff_required)
+def campaign_reject(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    review_notes = request.POST.get(
+        "review_notes",
+        "",
+    ).strip()
+
+    if not review_notes:
+        messages.error(
+            request,
+            "Enter a rejection reason.",
+        )
+
+        return redirect(
+            "advertising:campaign-review",
+            pk=campaign.pk,
+        )
+
+    reject_campaign(
+        campaign,
+        reviewed_by=request.user,
+        review_notes=review_notes,
+    )
+
+    messages.success(
+        request,
+        f'Campaign "{campaign.name}" was rejected.',
+    )
+
+    return redirect(
+        "advertising:approval-center",
+    )
+
+
+# =========================================================
+# MM_PUSH_005E — Approval and scheduling operations
+# =========================================================
+
+from django.views.decorators.http import require_POST
+
+from .services import (
+    approve_campaign,
+    reject_campaign,
+    request_campaign_changes,
+    sync_campaign_states,
+)
+
+
+@user_passes_test(staff_required)
+def approval_center(request):
+    sync_result = sync_campaign_states()
+
+    pending_campaigns = (
+        Campaign.objects
+        .filter(status=Campaign.Status.PENDING)
+        .prefetch_related(
+            "placements",
+            "placements__digital_property",
+            "placements__lease_plan",
+            "creatives",
+        )
+        .order_by("created_at")
+    )
+
+    scheduled_campaigns = (
+        Campaign.objects
+        .filter(status=Campaign.Status.SCHEDULED)
+        .prefetch_related(
+            "placements",
+            "placements__digital_property",
+        )
+        .order_by("start_at")
+    )
+
+    active_campaigns = (
+        Campaign.objects
+        .filter(status=Campaign.Status.ACTIVE)
+        .prefetch_related(
+            "placements",
+            "placements__digital_property",
+        )
+        .order_by("end_at")
+    )
+
+    context = {
+        "pending_campaigns": pending_campaigns,
+        "scheduled_campaigns": scheduled_campaigns,
+        "active_campaigns": active_campaigns,
+        "pending_count": pending_campaigns.count(),
+        "scheduled_count": scheduled_campaigns.count(),
+        "active_count": active_campaigns.count(),
+        "sync_result": sync_result,
+    }
+
+    return render(
+        request,
+        "advertising/approval_center.html",
+        context,
+    )
+
+
+@user_passes_test(staff_required)
+def campaign_review(request, pk):
+    sync_campaign_states()
+
+    campaign = get_object_or_404(
+        Campaign.objects.prefetch_related(
+            "placements",
+            "placements__digital_property",
+            "placements__lease_plan",
+            "creatives",
+        ),
+        pk=pk,
+    )
+
+    return render(
+        request,
+        "advertising/campaign_review.html",
+        {
+            "campaign": campaign,
+            "placements": campaign.placements.all(),
+            "creatives": campaign.creatives.all(),
+        },
+    )
+
+
+@require_POST
+@user_passes_test(staff_required)
+def campaign_approve(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    review_notes = request.POST.get(
+        "review_notes",
+        "",
+    ).strip()
+
+    try:
+        approve_campaign(
+            campaign,
+            reviewed_by=request.user,
+            review_notes=review_notes,
+        )
+    except ValueError as exc:
+        messages.error(request, str(exc))
+
+        return redirect(
+            "advertising:campaign-review",
+            pk=campaign.pk,
+        )
+
+    messages.success(
+        request,
+        (
+            f'Campaign "{campaign.name}" was approved and '
+            "its advertising inventory was scheduled."
+        ),
+    )
+
+    return redirect(
+        "advertising:approval-center",
+    )
+
+
+@require_POST
+@user_passes_test(staff_required)
+def campaign_request_changes(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    review_notes = request.POST.get(
+        "review_notes",
+        "",
+    ).strip()
+
+    if not review_notes:
+        messages.error(
+            request,
+            "Enter the changes the advertiser must make.",
+        )
+
+        return redirect(
+            "advertising:campaign-review",
+            pk=campaign.pk,
+        )
+
+    request_campaign_changes(
+        campaign,
+        reviewed_by=request.user,
+        review_notes=review_notes,
+    )
+
+    messages.success(
+        request,
+        (
+            f'Changes were requested for campaign '
+            f'"{campaign.name}".'
+        ),
+    )
+
+    return redirect(
+        "advertising:approval-center",
+    )
+
+
+@require_POST
+@user_passes_test(staff_required)
+def campaign_reject(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    review_notes = request.POST.get(
+        "review_notes",
+        "",
+    ).strip()
+
+    if not review_notes:
+        messages.error(
+            request,
+            "Enter a rejection reason.",
+        )
+
+        return redirect(
+            "advertising:campaign-review",
+            pk=campaign.pk,
+        )
+
+    reject_campaign(
+        campaign,
+        reviewed_by=request.user,
+        review_notes=review_notes,
+    )
+
+    messages.success(
+        request,
+        f'Campaign "{campaign.name}" was rejected.',
+    )
+
+    return redirect(
+        "advertising:approval-center",
     )

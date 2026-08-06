@@ -57,6 +57,13 @@ def creative_upload_path(instance, filename):
 class Campaign(models.Model):
     class Status(models.TextChoices):
         DRAFT = "draft", "Draft"
+        PENDING = "pending", "Pending Approval"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
+        CHANGES_REQUESTED = (
+            "changes_requested",
+            "Changes Requested",
+        )
         SCHEDULED = "scheduled", "Scheduled"
         ACTIVE = "active", "Active"
         PAUSED = "paused", "Paused"
@@ -110,6 +117,31 @@ class Campaign(models.Model):
     internal_notes = models.TextField(
         blank=True,
         help_text="Private notes for MajicMall Media Network staff.",
+    )
+
+    review_notes = models.TextField(
+        blank=True,
+        help_text=(
+            "Approval, rejection, or requested-change notes."
+        ),
+    )
+
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="advertising_campaigns_reviewed",
+    )
+
+    reviewed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    approved_at = models.DateTimeField(
+        null=True,
+        blank=True,
     )
 
     created_by = models.ForeignKey(
@@ -387,3 +419,114 @@ class AdvertisingCreative(models.Model):
             return False
 
         return True
+
+
+class CampaignPlacement(models.Model):
+    """
+    Connect an advertising campaign to a DigitalProperty and LeasePlan.
+    One campaign budget may fund multiple placement records.
+    """
+
+    campaign = models.ForeignKey(
+        Campaign,
+        on_delete=models.CASCADE,
+        related_name="placements",
+    )
+
+    digital_property = models.ForeignKey(
+        "digital_property.DigitalProperty",
+        on_delete=models.PROTECT,
+        related_name="campaign_placements",
+    )
+
+    lease_plan = models.ForeignKey(
+        "digital_property.LeasePlan",
+        on_delete=models.PROTECT,
+        related_name="campaign_placements",
+    )
+
+    start_at = models.DateTimeField()
+
+    end_at = models.DateTimeField()
+
+    agreed_price = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(0)],
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = (
+            "start_at",
+            "digital_property__display_order",
+            "digital_property__name",
+        )
+        constraints = [
+            models.UniqueConstraint(
+                fields=(
+                    "campaign",
+                    "digital_property",
+                ),
+                name="unique_campaign_digital_property",
+            ),
+        ]
+        verbose_name = "Campaign Placement"
+        verbose_name_plural = "Campaign Placements"
+
+    def __str__(self):
+        return (
+            f"{self.campaign.name} — "
+            f"{self.digital_property.property_code}"
+        )
+
+    def clean(self):
+        super().clean()
+
+        errors = {}
+
+        if self.start_at and self.end_at:
+            if self.end_at <= self.start_at:
+                errors["end_at"] = (
+                    "The placement end must occur after its start."
+                )
+
+        if (
+            self.digital_property_id
+            and self.lease_plan_id
+            and not self.digital_property.lease_plans.filter(
+                pk=self.lease_plan_id
+            ).exists()
+        ):
+            errors["lease_plan"] = (
+                "This lease plan is not available for the selected "
+                "advertising property."
+            )
+
+        overlapping = type(self).objects.filter(
+            digital_property_id=self.digital_property_id,
+            start_at__lt=self.end_at,
+            end_at__gt=self.start_at,
+        ).exclude(pk=self.pk)
+
+        if self.campaign_id:
+            overlapping = overlapping.exclude(
+                campaign_id=self.campaign_id,
+            )
+
+        if (
+            self.digital_property_id
+            and self.start_at
+            and self.end_at
+            and overlapping.exists()
+        ):
+            errors["digital_property"] = (
+                "This advertising location is already scheduled during "
+                "the selected campaign dates."
+            )
+
+        if errors:
+            raise ValidationError(errors)
+

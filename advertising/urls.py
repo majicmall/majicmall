@@ -6,6 +6,51 @@ app_name = "advertising"
 
 urlpatterns = [
     path(
+        "approvals/",
+        views.approval_center,
+        name="approval-center",
+    ),
+    path(
+        "approvals/<int:pk>/",
+        views.campaign_review,
+        name="campaign-review",
+    ),
+    path(
+        "approvals/<int:pk>/approve/",
+        views.campaign_approve,
+        name="campaign-approve",
+    ),
+    path(
+        "approvals/<int:pk>/request-changes/",
+        views.campaign_request_changes,
+        name="campaign-request-changes",
+    ),
+    path(
+        "approvals/<int:pk>/reject/",
+        views.campaign_reject,
+        name="campaign-reject",
+    ),
+    path(
+        "inventory/",
+        views.inventory_manager,
+        name="inventory-manager",
+    ),
+    path(
+        "inventory/create/",
+        views.inventory_create,
+        name="inventory-create",
+    ),
+    path(
+        "inventory/<int:pk>/edit/",
+        views.inventory_edit,
+        name="inventory-edit",
+    ),
+    path(
+        "carole/",
+        views.carole_creative_studio,
+        name="carole-creative-studio",
+    ),
+    path(
         "creatives/",
         views.creative_studio,
         name="creative-studio",

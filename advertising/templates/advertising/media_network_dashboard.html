@@ -968,6 +968,157 @@
       MajicMall Megaverse Media Network<br>
       The Voice of the Majestic Megaverse
     </p>
-  </main>
+  
+    {% if request.user.is_staff %}
+      <section
+        id="mm-approval-center-command-link"
+        style="
+          width:min(1380px,calc(100% - 28px));
+          margin:28px auto 50px;
+          padding:clamp(22px,4vw,38px);
+          border:1px solid rgba(229,189,82,.42);
+          border-radius:24px;
+          background:
+            radial-gradient(
+              circle at top right,
+              rgba(229,189,82,.17),
+              transparent 38%
+            ),
+            linear-gradient(
+              145deg,
+              rgba(255,255,255,.07),
+              rgba(255,255,255,.015)
+            ),
+            rgba(7,7,10,.96);
+          box-shadow:
+            0 28px 80px rgba(0,0,0,.46),
+            inset 0 1px 0 rgba(255,255,255,.08);
+        "
+      >
+        <div
+          style="
+            display:flex;
+            flex-wrap:wrap;
+            align-items:center;
+            justify-content:space-between;
+            gap:22px;
+          "
+        >
+          <div style="max-width:760px;">
+            <p
+              style="
+                margin:0 0 8px;
+                color:#e5bd52;
+                font-size:.72rem;
+                font-weight:900;
+                letter-spacing:.16em;
+                text-transform:uppercase;
+              "
+            >
+              Advertising Operations
+            </p>
+
+            <h2
+              style="
+                margin:0;
+                color:#ffe69a;
+                font-family:Georgia,serif;
+                font-size:clamp(1.9rem,5vw,3.3rem);
+              "
+            >
+              🛡 Advertising Approval Center
+            </h2>
+
+            <p
+              style="
+                margin:12px 0 0;
+                color:rgba(255,255,255,.7);
+                line-height:1.7;
+              "
+            >
+              Review submitted campaigns, inspect their creatives and
+              placements, approve schedules, request changes, or reject
+              campaigns from the official advertising operations
+              workflow.
+            </p>
+          </div>
+
+          <div
+            style="
+              display:flex;
+              flex-wrap:wrap;
+              align-items:center;
+              justify-content:flex-end;
+              gap:14px;
+            "
+          >
+            <div
+              style="
+                min-width:120px;
+                padding:14px 18px;
+                border:1px solid rgba(255,255,255,.1);
+                border-radius:16px;
+                background:rgba(255,255,255,.035);
+                text-align:center;
+              "
+            >
+              <span
+                style="
+                  display:block;
+                  color:rgba(255,255,255,.62);
+                  font-size:.67rem;
+                  font-weight:900;
+                  letter-spacing:.1em;
+                  text-transform:uppercase;
+                "
+              >
+                Pending Review
+              </span>
+
+              <strong
+                style="
+                  display:block;
+                  margin-top:5px;
+                  color:#ffe69a;
+                  font-family:Georgia,serif;
+                  font-size:2rem;
+                "
+              >
+                {{ pending_approval_count|default:0 }}
+              </strong>
+            </div>
+
+            <a
+              href="{% url 'advertising:approval-center' %}"
+              style="
+                display:inline-flex;
+                min-height:52px;
+                align-items:center;
+                justify-content:center;
+                padding:13px 22px;
+                border:1px solid #e5bd52;
+                border-radius:999px;
+                color:#080808;
+                background:linear-gradient(
+                  135deg,
+                  #ffe69a,
+                  #e5bd52
+                );
+                box-shadow:0 10px 30px rgba(229,189,82,.2);
+                font-weight:900;
+                text-decoration:none;
+              "
+            >
+              Review Campaigns
+              {% if pending_approval_count %}
+                ({{ pending_approval_count }})
+              {% endif %}
+            </a>
+          </div>
+        </div>
+      </section>
+    {% endif %}
+
+</main>
 </body>
 </html>

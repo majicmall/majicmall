@@ -3,22 +3,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Add Creative | Digital Advertising Command Center</title>
+  <title>
+    Upload Creative | Digital Advertising Command Center
+  </title>
 
   <style>
     :root {
       --gold: #e8bd45;
       --gold-bright: #ffe7a0;
       --border: rgba(232,189,69,.38);
-      --muted: rgba(255,255,255,.7);
+      --muted: rgba(255,255,255,.68);
+      --purple: #c88dff;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       min-height: 100vh;
@@ -34,6 +40,10 @@
         linear-gradient(145deg,#020202,#0b0b10,#020202);
     }
 
+    a {
+      color: var(--gold-bright);
+    }
+
     .shell {
       width: min(900px,calc(100% - 28px));
       margin: auto;
@@ -44,8 +54,17 @@
       padding: clamp(25px,6vw,52px);
       border: 1px solid var(--border);
       border-radius: 26px;
-      background: rgba(13,13,17,.94);
+      background: rgba(13,13,17,.95);
       box-shadow: 0 32px 90px rgba(0,0,0,.55);
+    }
+
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--gold);
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .16em;
+      text-transform: uppercase;
     }
 
     h1 {
@@ -75,6 +94,12 @@
       background: rgba(119,59,178,.13);
     }
 
+    .carole-card h2 {
+      margin-top: 0;
+      color: #ead7ff;
+      font-family: Georgia,serif;
+    }
+
     .field {
       margin-top: 20px;
     }
@@ -99,17 +124,17 @@
       font: inherit;
     }
 
-    textarea {
-      min-height: 125px;
+    input[type="file"] {
+      padding: 12px;
     }
 
     option {
       color: #111;
     }
 
-    input[type="checkbox"] {
-      width: auto;
-      min-height: auto;
+    .errorlist {
+      color: #ffaaaa;
+      line-height: 1.5;
     }
 
     .actions {
@@ -148,42 +173,62 @@
       color: #f1e2ff;
       background: rgba(135,67,202,.22);
     }
+
+    @media(max-width:650px) {
+      .actions {
+        display: grid;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
+
 <body>
   <main class="shell">
+    <p>
+      <a
+        href="{% url 'advertising:campaign_edit' campaign.pk %}"
+      >
+        ← Return to Campaign
+      </a>
+    </p>
+
     <section class="panel">
-      <p>
-        <a href="{% url 'advertising:creative-studio' %}">
-          ← Creative Studio
-        </a>
+      <p class="eyebrow">
+        Digital Advertising Command Center
       </p>
 
-      <h1>Add Creative</h1>
+      <h1>Upload Your Creative</h1>
 
       <p class="description">
-        Upload artwork, video, audio or another campaign asset.
+        Upload the completed advertisement you want associated with
+        this campaign. Campaign targeting, scheduling, display
+        priority, rotation frequency, and placement codes are managed
+        automatically by the MajicMall Megaverse advertising system.
       </p>
 
-      {% if campaign %}
-        <div class="campaign-banner">
-          Campaign: <strong>{{ campaign.name }}</strong>
-        </div>
-      {% endif %}
+      <div class="campaign-banner">
+        Campaign:
+        <strong>{{ campaign.name }}</strong>
+      </div>
 
       <section class="carole-card">
-        <h2>🎨 Need help with artwork?</h2>
+        <h2>🎨 Need help creating your advertisement?</h2>
 
         <p>
-          Carole can help develop the concept, headline,
-          promotional copy and call to action.
+          Carole, the MajicMall Megaverse AI Marketing Director, can
+          help with artwork concepts, headlines, promotional copy,
+          calls to action, and campaign presentation.
         </p>
 
         <a
           class="button carole"
-          href="{% url 'advertising:carole-creative-studio' %}{% if campaign %}?campaign={{ campaign.pk }}{% endif %}"
+          href="{% url 'advertising:carole-creative-studio' %}?campaign={{ campaign.pk }}"
         >
-          Click Here to Work With Carole
+          Work With Carole
         </a>
       </section>
 
@@ -196,6 +241,7 @@
           <div class="field">
             <label for="{{ field.id_for_label }}">
               {{ field.label }}
+              {% if field.field.required %}*{% endif %}
             </label>
 
             {{ field }}

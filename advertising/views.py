@@ -172,7 +172,7 @@ def campaign_create(request):
 
                 return redirect(
                     "advertising:campaign-creative-create",
-                    campaign_id=campaign.pk,
+                    campaign.pk,
                 )
 
             messages.success(
@@ -243,7 +243,7 @@ def campaign_edit(request, pk):
 
                 return redirect(
                     "advertising:campaign-creative-create",
-                    campaign_id=campaign.pk,
+                    campaign.pk,
                 )
 
             messages.success(
@@ -323,6 +323,7 @@ def media_network_dashboard(request):
     active_campaign_count = 0
     paused_campaign_count = 0
     draft_campaign_count = 0
+    pending_approval_count = 0
     recent_campaigns = []
 
     if campaign_model is not None:
@@ -348,6 +349,10 @@ def media_network_dashboard(request):
 
                 draft_campaign_count = campaign_queryset.filter(
                     status__iexact="draft"
+                ).count()
+
+                pending_approval_count = campaign_queryset.filter(
+                    status__iexact="pending"
                 ).count()
 
             ordering_field = None
@@ -392,6 +397,7 @@ def media_network_dashboard(request):
 
     context = {
         "campaign_count": campaign_count,
+        "pending_approval_count": pending_approval_count,
         "active_campaign_count": active_campaign_count,
         "paused_campaign_count": paused_campaign_count,
         "draft_campaign_count": draft_campaign_count,
@@ -453,14 +459,37 @@ def creative_studio(request):
 
 
 @login_required
-def creative_create(request, campaign_id=None):
-    campaign = None
+def creative_create(request, campaign_id=None, pk=None):
+    """
+    Advertiser-facing creative upload.
 
-    if campaign_id is not None:
-        campaign = get_object_or_404(
-            Campaign,
-            pk=campaign_id,
+    The campaign may arrive as campaign_id, pk, or a positional URL
+    argument depending on the existing route configuration.
+    """
+
+    resolved_campaign_id = campaign_id or pk
+
+    if resolved_campaign_id is None:
+        resolved_campaign_id = (
+            request.POST.get("campaign_id")
+            or request.GET.get("campaign_id")
+            or request.GET.get("campaign")
         )
+
+    if resolved_campaign_id is None:
+        messages.error(
+            request,
+            "Save or select a campaign before uploading creative.",
+        )
+
+        return redirect(
+            "advertising:campaign_create",
+        )
+
+    campaign = get_object_or_404(
+        Campaign,
+        pk=resolved_campaign_id,
+    )
 
     submit_action = request.POST.get(
         "submit_action",
@@ -485,17 +514,23 @@ def creative_create(request, campaign_id=None):
             if submit_action == "submit":
                 messages.success(
                     request,
-                    "Creative submitted for approval.",
+                    (
+                        f'Creative "{creative.title}" was submitted '
+                        "for approval."
+                    ),
                 )
             else:
                 messages.success(
                     request,
-                    "Creative saved as a draft.",
+                    (
+                        f'Creative "{creative.title}" was saved '
+                        "as a draft."
+                    ),
                 )
 
             return redirect(
                 "advertising:campaign_detail",
-                pk=creative.campaign_id,
+                pk=campaign.pk,
             )
     else:
         form = AdvertisingCreativeForm(
@@ -509,6 +544,7 @@ def creative_create(request, campaign_id=None):
         {
             "form": form,
             "campaign": campaign,
+            "page_title": "Upload Creative",
         },
     )
 

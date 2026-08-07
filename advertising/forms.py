@@ -27,15 +27,6 @@ class CampaignForm(forms.ModelForm):
         ),
     )
 
-    positions_requested = forms.IntegerField(
-        min_value=1,
-        initial=1,
-        label="Rotation Positions Requested",
-        help_text=(
-            "One position displays once during each complete rotation. "
-            "Buying additional positions increases frequency."
-        ),
-    )
 
     advertising_locations = forms.ModelMultipleChoiceField(
         queryset=DigitalProperty.objects.none(),
@@ -62,7 +53,6 @@ class CampaignForm(forms.ModelForm):
         model = Campaign
         fields = (
             "booking_mode",
-            "positions_requested",
             "name",
             "advertiser_name",
             "description",
@@ -137,9 +127,6 @@ class CampaignForm(forms.ModelForm):
                     first_placement.booking_mode
                 )
 
-                self.fields["positions_requested"].initial = (
-                    first_placement.positions_reserved
-                )
 
                 self.fields["lease_plan"].initial = (
                     first_placement.lease_plan_id
@@ -234,7 +221,6 @@ class CampaignForm(forms.ModelForm):
         locations = cleaned.get("advertising_locations")
         lease_plan = cleaned.get("lease_plan")
         booking_mode = cleaned.get("booking_mode")
-        positions_requested = cleaned.get("positions_requested") or 1
         budget = cleaned.get("budget")
         start_at = cleaned.get("start_at")
         end_at = cleaned.get("end_at")
@@ -303,12 +289,40 @@ class CampaignForm(forms.ModelForm):
 
             location_count = locations.count()
 
-            billable_units = (
-                location_count
-                if booking_mode
+            if (
+                booking_mode
                 == CampaignPlacement.BookingMode.EXCLUSIVE
-                else location_count * positions_requested
-            )
+            ):
+                billable_units = location_count
+                calculated_positions = 1
+            else:
+                per_position_total = (
+                    lease_plan.price * location_count
+                )
+
+                if per_position_total > 0 and budget:
+                    calculated_positions = max(
+                        int(budget // per_position_total),
+                        1,
+                    )
+                else:
+                    calculated_positions = 1
+
+                smallest_capacity = min(
+                    location.rotation_capacity
+                    for location in locations
+                )
+
+                calculated_positions = min(
+                    calculated_positions,
+                    smallest_capacity,
+                )
+
+                billable_units = (
+                    location_count * calculated_positions
+                )
+
+            self.calculated_positions = calculated_positions
 
             network_minimum = Decimal(location_count * 25)
 
@@ -422,7 +436,11 @@ class CampaignForm(forms.ModelForm):
                             location.rotation_capacity
                             if booking_mode
                             == CampaignPlacement.BookingMode.EXCLUSIVE
-                            else positions_requested
+                            else getattr(
+                                self,
+                                "calculated_positions",
+                                1,
+                            )
                         ),
                         "start_at": start_at,
                         "end_at": end_at,
@@ -438,7 +456,11 @@ class CampaignForm(forms.ModelForm):
                     location.rotation_capacity
                     if booking_mode
                     == CampaignPlacement.BookingMode.EXCLUSIVE
-                    else positions_requested
+                    else getattr(
+                        self,
+                        "calculated_positions",
+                        1,
+                    )
                 )
                 placement.start_at = start_at
                 placement.end_at = end_at
@@ -449,21 +471,66 @@ class CampaignForm(forms.ModelForm):
 
 
 class AdvertisingCreativeForm(forms.ModelForm):
+    """
+    Advertiser-facing creative form.
+
+    Operational controls such as targeting codes, priority,
+    scheduling, play frequency, and approval status remain private
+    to MajicMall Megaverse advertising staff.
+    """
+
     class Meta:
         model = AdvertisingCreative
-        exclude = (
-            "id",
-            "pk",
-            "approval_status",
-            "review_notes",
-            "reviewed_by",
-            "reviewed_at",
-            "impressions",
-            "clicks",
-            "created_at",
-            "updated_at",
-            "created_by",
+        fields = (
+            "title",
+            "media_type",
+            "file",
+            "external_media_url",
+            "destination_url",
+            "headline",
+            "call_to_action",
+            "alt_text",
         )
+        widgets = {
+            "title": forms.TextInput(
+                attrs={
+                    "placeholder": "Example: Summer Grand Opening",
+                },
+            ),
+            "external_media_url": forms.URLInput(
+                attrs={
+                    "placeholder": (
+                        "Optional link to externally hosted media"
+                    ),
+                },
+            ),
+            "destination_url": forms.URLInput(
+                attrs={
+                    "placeholder": (
+                        "Where customers should go after clicking"
+                    ),
+                },
+            ),
+            "headline": forms.TextInput(
+                attrs={
+                    "placeholder": "Main advertising headline",
+                },
+            ),
+            "call_to_action": forms.TextInput(
+                attrs={
+                    "placeholder": (
+                        "Examples: Shop Now, Learn More, Buy Tickets"
+                    ),
+                },
+            ),
+            "alt_text": forms.TextInput(
+                attrs={
+                    "placeholder": (
+                        "Brief accessibility description of the ad"
+                    ),
+                },
+            ),
+        }
 
     def __init__(
         self,
@@ -478,32 +545,58 @@ class AdvertisingCreativeForm(forms.ModelForm):
         self.user = user
 
         for name, field in self.fields.items():
-            widget = field.widget
-            existing = widget.attrs.get("class", "")
+            existing = field.widget.attrs.get("class", "")
 
-            widget.attrs["class"] = (
+            field.widget.attrs["class"] = (
                 f"{existing} creative-input"
             ).strip()
 
-            if name in {
-                "description",
-                "caption",
-                "copy",
-                "body",
-                "notes",
-                "alt_text",
-            }:
-                widget.attrs.setdefault("rows", 5)
+            field.widget.attrs.setdefault(
+                "aria-label",
+                field.label or name.replace("_", " ").title(),
+            )
 
-        if campaign is not None and "campaign" in self.fields:
-            self.fields["campaign"].initial = campaign
-            self.fields["campaign"].widget = forms.HiddenInput()
+        self.fields["file"].help_text = (
+            "Upload your completed image, video, audio file, or PDF."
+        )
+
+        self.fields["external_media_url"].help_text = (
+            "Optional. Use this only when your creative is hosted "
+            "elsewhere."
+        )
+
+        self.fields["destination_url"].help_text = (
+            "Optional. Enter the page customers should visit after "
+            "clicking the advertisement."
+        )
+
+        self.fields["alt_text"].help_text = (
+            "Describe visual creative for customers using accessibility "
+            "technology."
+        )
+
+    def clean(self):
+        cleaned = super().clean()
+
+        uploaded_file = cleaned.get("file")
+        external_media_url = cleaned.get("external_media_url")
+
+        if not uploaded_file and not external_media_url:
+            raise ValidationError(
+                "Upload a creative file or provide an external media URL."
+            )
+
+        return cleaned
 
     def save(self, commit=True, submit_for_review=False):
         instance = super().save(commit=False)
 
-        if self.campaign is not None:
-            instance.campaign = self.campaign
+        if self.campaign is None:
+            raise ValidationError(
+                "A campaign is required before uploading creative."
+            )
+
+        instance.campaign = self.campaign
 
         if (
             self.user is not None
@@ -518,7 +611,18 @@ class AdvertisingCreativeForm(forms.ModelForm):
             else AdvertisingCreative.ApprovalStatus.DRAFT
         )
 
+        # Internal operating defaults. Advertisers do not control these.
+        instance.target_zones = []
+        instance.placement_codes = []
+        instance.priority = 100
+        instance.play_frequency = 1
+        instance.duration_seconds = None
+        instance.start_at = None
+        instance.end_at = None
+        instance.is_enabled = True
+
         if commit:
+            instance.full_clean()
             instance.save()
             self.save_m2m()
 

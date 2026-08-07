@@ -3,9 +3,12 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CampaignForm, DigitalPropertyForm
+
+from .display_engine import build_billboard_payload
 from .models import AdvertisingCreative, Campaign, CampaignPlacement
 from digital_property.models import DigitalProperty
 
@@ -1333,4 +1336,24 @@ def campaign_reject(request, pk):
 
     return redirect(
         "advertising:approval-center",
+    )
+
+
+
+def live_billboard_feed(request, property_code):
+    """
+    Public read-only feed used by approved MajicMall Megaverse
+    advertising displays.
+    """
+
+    payload = build_billboard_payload(
+        property_code=property_code,
+        request=request,
+    )
+
+    return JsonResponse(
+        payload,
+        json_dumps_params={
+            "ensure_ascii": False,
+        },
     )

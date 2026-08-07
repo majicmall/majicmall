@@ -1,0 +1,344 @@
+<style>
+  .mm-live-ad-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    overflow: hidden;
+    border-radius: inherit;
+    background: #050505;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.1s ease;
+  }
+
+  .mm-live-ad-stage.is-live {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mm-live-ad-link,
+  .mm-live-ad-media {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mm-live-ad-media {
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.025);
+    transition:
+      opacity 1.1s ease,
+      transform 6s ease;
+  }
+
+  .mm-live-ad-media.is-visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .mm-live-ad-overlay {
+    position: absolute;
+    inset: auto 0 0;
+    padding: clamp(12px, 2.2vw, 24px);
+    color: #fff;
+    background:
+      linear-gradient(
+        to top,
+        rgba(0, 0, 0, .82),
+        rgba(0, 0, 0, 0)
+      );
+    pointer-events: none;
+  }
+
+  .mm-live-ad-overlay:empty {
+    display: none;
+  }
+
+  .mm-live-ad-headline {
+    display: block;
+    font-family: Georgia, serif;
+    font-size: clamp(1rem, 2.3vw, 2rem);
+    font-weight: 800;
+    text-shadow: 0 2px 14px #000;
+  }
+
+  .mm-live-ad-cta {
+    display: inline-block;
+    margin-top: 7px;
+    color: #ffe49a;
+    font-size: clamp(.68rem, 1.4vw, .9rem);
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .mm-live-ad-sweep {
+    position: absolute;
+    inset: -35% auto -35% -30%;
+    width: 22%;
+    transform: skewX(-16deg);
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.16),
+        transparent
+      );
+    animation: mmLiveAdSweep 6s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes mmLiveAdSweep {
+    from {
+      left: -30%;
+    }
+
+    to {
+      left: 130%;
+    }
+  }
+</style>
+
+<script>
+(() => {
+  const PROPERTY_CODE = "HOME-BILLBOARD-001";
+  const FEED_URL =
+    "/advertising/display/live/" +
+    encodeURIComponent(PROPERTY_CODE) +
+    "/";
+
+  const selectors = [
+    '[data-ad-property="HOME-BILLBOARD-001"]',
+    '#home-billboard',
+    '#homepage-billboard',
+    '.home-billboard',
+    '.homepage-billboard',
+    '.billboard-screen',
+    '.billboard-display',
+    '.billboard'
+  ];
+
+  const locateBillboard = () => {
+    for (const selector of selectors) {
+      const node = document.querySelector(selector);
+
+      if (node) {
+        return node;
+      }
+    }
+
+    const candidates = Array.from(
+      document.querySelectorAll(
+        '[id*="billboard"], [class*="billboard"]'
+      )
+    );
+
+    return candidates.find((node) => {
+      const rect = node.getBoundingClientRect();
+
+      return rect.width > 120 && rect.height > 60;
+    }) || null;
+  };
+
+  const createStage = (billboard) => {
+    const existing = billboard.querySelector(
+      ":scope > .mm-live-ad-stage"
+    );
+
+    if (existing) {
+      return existing;
+    }
+
+    const computed = window.getComputedStyle(billboard);
+
+    if (computed.position === "static") {
+      billboard.style.position = "relative";
+    }
+
+    const stage = document.createElement("div");
+    stage.className = "mm-live-ad-stage";
+    stage.setAttribute("aria-live", "polite");
+
+    billboard.appendChild(stage);
+
+    return stage;
+  };
+
+  const createMedia = (item) => {
+    const isVideo = item.media_type === "video";
+    const media = document.createElement(
+      isVideo ? "video" : "img"
+    );
+
+    media.className = "mm-live-ad-media";
+    media.src = item.media_url;
+
+    if (isVideo) {
+      media.autoplay = true;
+      media.muted = true;
+      media.loop = true;
+      media.playsInline = true;
+    } else {
+      media.alt = item.alt_text || item.title || "Advertisement";
+    }
+
+    return media;
+  };
+
+  const renderItem = (stage, item) => {
+    const wrapper = item.destination_url
+      ? document.createElement("a")
+      : document.createElement("div");
+
+    wrapper.className = "mm-live-ad-link";
+
+    if (item.destination_url) {
+      wrapper.href = item.destination_url;
+      wrapper.setAttribute(
+        "aria-label",
+        item.headline || item.title || "Visit advertiser"
+      );
+    }
+
+    const media = createMedia(item);
+    wrapper.appendChild(media);
+
+    const overlay = document.createElement("div");
+    overlay.className = "mm-live-ad-overlay";
+
+    if (item.headline) {
+      const headline = document.createElement("span");
+      headline.className = "mm-live-ad-headline";
+      headline.textContent = item.headline;
+      overlay.appendChild(headline);
+    }
+
+    if (item.call_to_action) {
+      const cta = document.createElement("span");
+      cta.className = "mm-live-ad-cta";
+      cta.textContent = item.call_to_action;
+      overlay.appendChild(cta);
+    }
+
+    wrapper.appendChild(overlay);
+
+    const sweep = document.createElement("div");
+    sweep.className = "mm-live-ad-sweep";
+    wrapper.appendChild(sweep);
+
+    const oldWrapper = stage.firstElementChild;
+
+    stage.appendChild(wrapper);
+
+    requestAnimationFrame(() => {
+      stage.classList.add("is-live");
+      media.classList.add("is-visible");
+    });
+
+    window.setTimeout(() => {
+      if (oldWrapper && oldWrapper !== wrapper) {
+        oldWrapper.remove();
+      }
+    }, 1200);
+  };
+
+  const startRotation = (stage, payload) => {
+    const items = Array.isArray(payload.items)
+      ? payload.items.filter((item) => item.media_url)
+      : [];
+
+    if (!items.length) {
+      stage.classList.remove("is-live");
+      stage.replaceChildren();
+      return;
+    }
+
+    let index = 0;
+    let timer = null;
+
+    const showNext = () => {
+      const item = items[index % items.length];
+
+      renderItem(stage, item);
+
+      index += 1;
+
+      const seconds = Math.max(
+        Number(item.display_seconds || payload.display_seconds || 10),
+        1
+      );
+
+      timer = window.setTimeout(
+        showNext,
+        seconds * 1000
+      );
+    };
+
+    showNext();
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        window.clearTimeout(timer);
+        return;
+      }
+
+      window.clearTimeout(timer);
+      showNext();
+    });
+  };
+
+  const initialize = async () => {
+    const billboard = locateBillboard();
+
+    if (!billboard) {
+      console.warn(
+        "MajicMall live billboard: billboard container not found."
+      );
+
+      return;
+    }
+
+    const stage = createStage(billboard);
+
+    try {
+      const response = await fetch(
+        FEED_URL,
+        {
+          headers: {
+            "Accept": "application/json"
+          },
+          cache: "no-store"
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "Billboard feed returned " + response.status
+        );
+      }
+
+      const payload = await response.json();
+
+      startRotation(stage, payload);
+    } catch (error) {
+      console.error(
+        "MajicMall live billboard feed error:",
+        error
+      );
+
+      stage.classList.remove("is-live");
+    }
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      initialize,
+      { once: true }
+    );
+  } else {
+    initialize();
+  }
+})();
+</script>

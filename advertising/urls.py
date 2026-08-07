@@ -5,6 +5,13 @@ from . import views
 app_name = "advertising"
 
 urlpatterns = [
+
+    path(
+        "display/live/<str:property_code>/",
+        views.live_billboard_feed,
+        name="live-billboard-feed",
+    ),
+
     path(
         "approvals/",
         views.approval_center,

@@ -17,6 +17,9 @@ urlpatterns = [
     path("identity-gateway/", core_views.identity_gateway, name="identity-gateway"),
     path("healthz/", healthz, name="healthz"),
 
+    # Authenticated server-to-server integration API
+    path("api/megaverse/", include("integrations.urls")),
+
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
 

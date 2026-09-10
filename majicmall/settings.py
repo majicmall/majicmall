@@ -38,6 +38,15 @@ FOUNDATION_MAJIC_KEY = os.getenv(
 
 PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "").rstrip("/")
 
+# ============================================================
+# MajicMall Megaverse Integration Bridge
+# ============================================================
+# Shared server-to-server credential used by approved MajicMall
+# Megaverse integrations such as ATL's Hottest.
+# The actual secret must live in environment variables only.
+
+MEGAVERSE_BRIDGE_API_KEY = os.environ.get("MEGAVERSE_BRIDGE_API_KEY", "")
+
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",

@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase, override_settings
+from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
 
@@ -93,3 +93,44 @@ class MegaverseBridgeHealthTests(SimpleTestCase):
         )
 
         self.assertEqual(response.status_code, 405)
+
+
+class MegaverseIdentityTests(TestCase):
+    def test_identity_has_stable_public_uuid(self):
+        from django.contrib.auth import get_user_model
+        from integrations.models import MegaverseIdentity
+
+        User = get_user_model()
+
+        user = User.objects.create_user(
+            username="megaverse_identity_test",
+            email="megaverse-identity@example.com",
+            password=None,
+        )
+
+        identity_1, created_1 = MegaverseIdentity.objects.get_or_create(user=user)
+        identity_2, created_2 = MegaverseIdentity.objects.get_or_create(user=user)
+
+        self.assertTrue(created_1)
+        self.assertFalse(created_2)
+        self.assertEqual(identity_1.pk, identity_2.pk)
+        self.assertEqual(identity_1.public_id, identity_2.public_id)
+        self.assertTrue(identity_1.is_active)
+
+    def test_user_can_have_only_one_megaverse_identity(self):
+        from django.contrib.auth import get_user_model
+        from django.db import IntegrityError
+        from integrations.models import MegaverseIdentity
+
+        User = get_user_model()
+
+        user = User.objects.create_user(
+            username="megaverse_identity_unique_test",
+            email="megaverse-identity-unique@example.com",
+            password=None,
+        )
+
+        MegaverseIdentity.objects.create(user=user)
+
+        with self.assertRaises(IntegrityError):
+            MegaverseIdentity.objects.create(user=user)

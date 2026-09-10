@@ -106,6 +106,7 @@ INSTALLED_APPS = [
     "merchant",
     "customer",
     "delivery",
+    "integrations.apps.IntegrationsConfig",
 
     "django.contrib.sites",
     "allauth",

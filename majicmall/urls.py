@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.http import HttpResponse
 from django.views.static import serve
 from core import views as core_views
+from integrations import views as integration_views
 from merchant.views import storefront, storefront_qr, product_detail
 
 
@@ -15,6 +16,11 @@ def healthz(request):
 
 urlpatterns = [
     path("identity-gateway/", core_views.identity_gateway, name="identity-gateway"),
+    path(
+        "connect/atls-hottest/",
+        integration_views.authorize_atls_hottest,
+        name="authorize-atls-hottest",
+    ),
     path("healthz/", healthz, name="healthz"),
 
     # Authenticated server-to-server integration API

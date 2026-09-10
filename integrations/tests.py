@@ -426,3 +426,196 @@ class MegaverseIdentityExchangeEndpointTests(TestCase):
 
         authorization.refresh_from_db()
         self.assertIsNone(authorization.used_at)
+
+
+class MegaverseBrowserAuthorizationTests(TestCase):
+    def setUp(self):
+        from django.contrib.auth import get_user_model
+        from django.urls import reverse
+
+        User = get_user_model()
+
+        self.user = User.objects.create_user(
+            username="browser_bridge_user",
+            email="browser-bridge@example.invalid",
+            password="test-password-123",
+        )
+
+        self.client.force_login(self.user)
+        self.url = reverse("authorize-atls-hottest")
+        self.callback_url = (
+            "https://app.atlshottest.com/megaverse/link/callback/"
+        )
+        self.state = "secure-browser-state-123"
+
+    @override_settings(
+        ALLOWED_HOSTS=["testserver"],
+        ATL_HOTTEST_LINK_RETURN_URL="",
+    )
+    def test_authorization_fails_closed_without_callback_configuration(self):
+        response = self.client.get(
+            self.url,
+            {"state": self.state},
+            secure=True,
+        )
+
+        self.assertEqual(response.status_code, 503)
+        self.assertContains(
+            response,
+            "connection has not been configured",
+            status_code=503,
+        )
+
+    @override_settings(
+        ALLOWED_HOSTS=["testserver"],
+        ATL_HOTTEST_LINK_RETURN_URL=(
+            "https://app.atlshottest.com/megaverse/link/callback/"
+        ),
+    )
+    def test_get_displays_consent_without_issuing_code(self):
+        from integrations.models import MegaverseAuthorizationCode
+
+        response = self.client.get(
+            self.url,
+            {"state": self.state},
+            secure=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Authorize Connection")
+        self.assertFalse(
+            MegaverseAuthorizationCode.objects.filter(
+                identity__user=self.user,
+                destination="atls_hottest",
+            ).exists()
+        )
+
+    @override_settings(
+        ALLOWED_HOSTS=["testserver"],
+        ATL_HOTTEST_LINK_RETURN_URL=(
+            "https://app.atlshottest.com/megaverse/link/callback/"
+        ),
+    )
+    def test_authorize_issues_code_and_uses_only_fixed_callback(self):
+        from urllib.parse import parse_qs, urlparse
+
+        from integrations.models import (
+            MegaverseAuthorizationCode,
+            MegaverseIdentity,
+        )
+
+        response = self.client.post(
+            self.url,
+            {
+                "state": self.state,
+                "decision": "authorize",
+                "return_url": "https://evil.example/steal",
+            },
+            secure=True,
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        location = response["Location"]
+        parsed = urlparse(location)
+        params = parse_qs(parsed.query)
+
+        self.assertEqual(
+            f"{parsed.scheme}://{parsed.netloc}{parsed.path}",
+            self.callback_url,
+        )
+        self.assertNotIn("evil.example", location)
+        self.assertEqual(params.get("state"), [self.state])
+        self.assertTrue(params.get("code", [""])[0])
+
+        identity = MegaverseIdentity.objects.get(user=self.user)
+
+        authorization = MegaverseAuthorizationCode.objects.get(
+            identity=identity,
+            destination="atls_hottest",
+        )
+
+        self.assertIsNone(authorization.used_at)
+
+    @override_settings(
+        ALLOWED_HOSTS=["testserver"],
+        ATL_HOTTEST_LINK_RETURN_URL=(
+            "https://app.atlshottest.com/megaverse/link/callback/"
+        ),
+    )
+    def test_deny_returns_access_denied_without_issuing_code(self):
+        from urllib.parse import parse_qs, urlparse
+
+        from integrations.models import MegaverseAuthorizationCode
+
+        response = self.client.post(
+            self.url,
+            {
+                "state": self.state,
+                "decision": "deny",
+            },
+            secure=True,
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        params = parse_qs(urlparse(response["Location"]).query)
+
+        self.assertEqual(params.get("error"), ["access_denied"])
+        self.assertEqual(params.get("state"), [self.state])
+
+        self.assertFalse(
+            MegaverseAuthorizationCode.objects.filter(
+                identity__user=self.user,
+                destination="atls_hottest",
+            ).exists()
+        )
+
+    @override_settings(
+        ALLOWED_HOSTS=["testserver"],
+        ATL_HOTTEST_LINK_RETURN_URL=(
+            "https://app.atlshottest.com/megaverse/link/callback/"
+        ),
+    )
+    def test_missing_state_is_rejected(self):
+        response = self.client.get(
+            self.url,
+            secure=True,
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+    @override_settings(
+        ALLOWED_HOSTS=["testserver"],
+        ATL_HOTTEST_LINK_RETURN_URL=(
+            "https://app.atlshottest.com/megaverse/link/callback/"
+        ),
+    )
+    def test_inactive_identity_cannot_authorize(self):
+        from integrations.models import (
+            MegaverseAuthorizationCode,
+            MegaverseIdentity,
+        )
+
+        identity = MegaverseIdentity.objects.create(
+            user=self.user,
+            is_active=False,
+        )
+
+        response = self.client.post(
+            self.url,
+            {
+                "state": self.state,
+                "decision": "authorize",
+            },
+            secure=True,
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+        self.assertFalse(
+            MegaverseAuthorizationCode.objects.filter(
+                identity=identity,
+                destination="atls_hottest",
+            ).exists()
+        )

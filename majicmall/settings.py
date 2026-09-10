@@ -47,6 +47,13 @@ PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "").rstrip("/")
 
 MEGAVERSE_BRIDGE_API_KEY = os.environ.get("MEGAVERSE_BRIDGE_API_KEY", "")
 
+# Fixed callback for the ATL's Hottest identity connection.
+# Never accept an arbitrary callback URL from the browser.
+ATL_HOTTEST_LINK_RETURN_URL = os.environ.get(
+    "ATL_HOTTEST_LINK_RETURN_URL",
+    "",
+).strip()
+
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",

@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 
 from .auth import require_megaverse_bridge_auth
 from .models import MegaverseAuthorizationCode, MegaverseIdentity
@@ -55,6 +56,7 @@ def bridge_health(request):
     )
 
 
+@csrf_exempt
 @require_POST
 @require_megaverse_bridge_auth
 def exchange_identity_code(request):
